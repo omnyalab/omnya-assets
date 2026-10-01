@@ -1,0 +1,146 @@
+---
+import Base from '../layouts/Base.astro';
+import Frame from '../components/Frame.astro';
+import Clip from '../components/Clip.astro';
+import Duo from '../components/Duo.astro';
+import Arrow from '../components/Arrow.astro';
+import Num from '../components/Num.astro';
+import SampleCta from '../components/SampleCta.astro';
+import { projects, slug, number, pad, isFilm, deliverables, href, type Project, type Still, type Clip as ClipT } from '../lib/data';
+import { t, langFromPath, localize } from '../i18n';
+import { alt } from '../lib/alts';
+import { srcset, sizes as dims } from '../lib/media';
+
+interface Props {
+  p: Project;
+}
+const { p } = Astro.props;
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang);
+const P = T.project;
+const cat = T.categories[p.category];
+const altOf = (s: Still) => alt(p, lang, p.gallery.indexOf(s));
+const idx = projects.indexOf(p);
+const next = projects[(idx + 1) % projects.length];
+const film = isFilm(p);
+const { stills, films } = deliverables(p);
+const { dw, dh } = dims(p.cover);
+const nd = dims(next.cover);
+
+// Build the page rhythm: big stills alternated with films, verticals paired.
+type Block =
+  | { kind: 'still'; still: Still; layout: string }
+  | { kind: 'pair'; stills: [Still, Still] }
+  | { kind: 'clip'; clip: ClipT };
+
+const blocks: Block[] = [];
+const layouts = ['bleed', 'right', 'inset', 'left'];
+const queue = [...p.gallery];
+const clips = [...p.videos];
+let h = 0;
+let sinceClip = 0;
+while (queue.length) {
+  const s = queue.shift()!;
+  if (s.orientation === 'vertical' && queue[0]?.orientation === 'vertical') {
+    blocks.push({ kind: 'pair', stills: [s, queue.shift()!] });
+  } else if (s.orientation === 'vertical') {
+    blocks.push({ kind: 'still', still: s, layout: 'right' });
+  } else {
+    blocks.push({ kind: 'still', still: s, layout: layouts[h++ % layouts.length] });
+  }
+  sinceClip++;
+  if (sinceClip >= 2 && clips.length) {
+    blocks.push({ kind: 'clip', clip: clips.shift()! });
+    sinceClip = 0;
+  }
+}
+clips.forEach((clip) => blocks.push({ kind: 'clip', clip }));
+
+const stillSizes: Record<string, string> = {
+  bleed: '100vw',
+  inset: '(min-width: 900px) 94vw, 92vw',
+  right: '(min-width: 900px) 56vw, 78vw',
+  left: '(min-width: 900px) 64vw, 78vw',
+};
+---
+
+<Base page="project" title={p.title} description={P.description(p.title, cat)} og={`/og/${slug(p)}.jpg`} ogAlt={alt(p, lang)}>
+  <Fragment slot="head">
+    <link rel="preload" as="image" imagesrcset={srcset(p.cover)} imagesizes="(max-width: 899px) 75vw, 100vw" fetchpriority="high" />
+  </Fragment>
+
+  <section class="phero" data-phero data-header="light" data-header-media>
+    <div class="phero__media">
+      <img src={p.cover.mobile} srcset={srcset(p.cover)} sizes="(max-width: 899px) 75vw, 100vw" width={dw} height={dh} alt={alt(p, lang)} fetchpriority="high" data-hero-img />
+    </div>
+    <div class="phero__shade"></div>
+    <div class="phero__txt">
+      <div class="phero__top">
+        <span data-fade data-intro>{cat}</span>
+        <span data-fade="0.1" data-intro><Num value={number(p)} intro /> / {pad(projects.length)}</span>
+      </div>
+      <h1 class="t-display phero__title" data-split="intro">{p.title}</h1>
+    </div>
+  </section>
+
+  <section class="pinfo wrap">
+    <dl class="pinfo__grid">
+      {p.description && <p class="pinfo__desc t-sub" data-fade>{p.description}</p>}
+      <div class="pinfo__item" data-fade><dt>{P.category}</dt><dd>{cat}</dd></div>
+      <div class="pinfo__item" data-fade="0.06"><dt>{P.stills}</dt><dd><Num value={pad(stills)} /></dd></div>
+      {
+        films > 0 ? (
+          <div class="pinfo__item" data-fade="0.12"><dt>{P.films}</dt><dd><Num value={pad(films)} /></dd></div>
+        ) : (
+          <div class="pinfo__item" data-fade="0.12"><dt>{P.project}</dt><dd><Num value={number(p)} /> / {pad(projects.length)}</dd></div>
+        )
+      }
+    </dl>
+  </section>
+
+  <section class="pmedia" aria-label={P.media}>
+    {
+      blocks.map((b) => {
+        if (b.kind === 'pair')
+          return (
+            <div class="pm pm--pair">
+              {b.stills.map((s) => (
+                <Frame still={s} alt={altOf(s)} sizes="(min-width: 900px) 46vw, 92vw" />
+              ))}
+            </div>
+          );
+        if (b.kind === 'clip')
+          return (
+            <div class:list={['pm', 'pm--video', film ? 'pm--inset' : 'pm--bleed']}>
+              <Clip clip={b.clip} label={`${p.title}, ${P.film}`} film={film} />
+            </div>
+          );
+        return (
+          <div class:list={['pm', `pm--${b.layout}`]}>
+            <Frame still={b.still} alt={altOf(b.still)} sizes={stillSizes[b.layout]} />
+          </div>
+        );
+      })
+    }
+  </section>
+
+  <section class="pcta wrap">
+    <Duo size="h2" a={P.ctaA} b={P.ctaB} />
+    <div class="pcta__row">
+      <p class="t-sub" data-fade style="max-width: 26ch">{P.ctaLine}</p>
+      <SampleCta data-fade />
+    </div>
+  </section>
+
+  <a href={localize(href(next), lang)} class="next" data-plink data-cursor={T.cursor.next}>
+    <div class="frame" data-cover data-reveal>
+      <div class="frame__in">
+        <img data-src={next.cover.mobile} data-srcset={srcset(next.cover)} sizes="100vw" width={nd.dw} height={nd.dh} alt={alt(next, lang)} loading="lazy" decoding="async" />
+      </div>
+    </div>
+    <div class="next__txt">
+      <div class="next__label"><span>{P.next}</span><span>{number(next)} / {pad(projects.length)}</span></div>
+      <span class="t-display" data-split>{next.title}</span>
+    </div>
+  </a>
+</Base>

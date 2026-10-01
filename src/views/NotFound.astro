@@ -1,0 +1,18 @@
+---
+import Base from '../layouts/Base.astro';
+import Duo from '../components/Duo.astro';
+import Arrow from '../components/Arrow.astro';
+import { t, langFromPath, localize } from '../i18n';
+
+const lang = langFromPath(Astro.url.pathname);
+const N = t(lang).notFound;
+---
+
+<Base page="404" title={N.title} footer={false}>
+  <section class="nf wrap">
+    <Duo as="h1" size="display" a={N.a} b={N.b} intro />
+    <p style="margin-top: 32px" data-fade data-intro>
+      <a class="btn" href={localize('/', lang)}>{N.back} <Arrow /></a>
+    </p>
+  </section>
+</Base>

@@ -1,0 +1,38 @@
+---
+import type { Still } from '../lib/data';
+import { srcset, sizes as dims } from '../lib/media';
+
+interface Props {
+  still: Still;
+  alt: string;
+  sizes?: string;
+  eager?: boolean;
+  reveal?: boolean;
+  /** Force a frame ratio (e.g. "4 / 5"); defaults to the image's own. */
+  ar?: string;
+  /** Marks the image that grows into the project cover on click. */
+  cover?: boolean;
+  class?: string;
+}
+const { still, alt, sizes = '100vw', eager = false, reveal = true, ar, cover = false, class: cls } = Astro.props;
+const { dw, dh } = dims(still);
+const ratio = ar ?? `${still.w} / ${still.h}`;
+---
+
+<div
+  class:list={['frame', cls]}
+  style={`--ar: ${ratio}`}
+  data-reveal={reveal ? '' : undefined}
+  data-cover={cover ? '' : undefined}
+>
+  <div class="frame__in">
+    {
+      eager ? (
+        <img src={still.mobile} srcset={srcset(still)} sizes={sizes} width={dw} height={dh} alt={alt} fetchpriority="high" decoding="async" />
+      ) : (
+        // Deferred: src is set after the intro so nothing competes with the first paint
+        <img data-src={still.mobile} data-srcset={srcset(still)} sizes={sizes} width={dw} height={dh} alt={alt} loading="lazy" decoding="async" />
+      )
+    }
+  </div>
+</div>

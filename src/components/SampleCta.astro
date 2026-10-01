@@ -1,0 +1,19 @@
+---
+// "Get a free sample" with the one-line explanation underneath.
+import Arrow from './Arrow.astro';
+import { t, langFromPath } from '../i18n';
+
+interface Props {
+  /** On dark backgrounds (footer). */
+  light?: boolean;
+  class?: string;
+  [key: `data-${string}`]: unknown;
+}
+const { light = false, class: cls, ...rest } = Astro.props;
+const T = t(langFromPath(Astro.url.pathname));
+---
+
+<div class:list={['cta', cls]} {...rest}>
+  <button type="button" class:list={['btn', { 'btn--light': light }]} data-sample>{T.cta} <Arrow /></button>
+  <p class="cta__note">{T.ctaNote}</p>
+</div>

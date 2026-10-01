@@ -1,0 +1,74 @@
+---
+import Logo from './Logo.astro';
+import SampleCta from './SampleCta.astro';
+import { contact } from '../lib/contact';
+import { t, langFromPath, localize, langs } from '../i18n';
+
+interface Props {
+  page: string;
+}
+const { page } = Astro.props;
+const path = Astro.url.pathname;
+const lang = langFromPath(path);
+const T = t(lang);
+const links = [
+  { href: localize('/work', lang), label: T.nav.work, key: 'work', note: T.navNotes.work },
+  { href: localize('/studio', lang), label: T.nav.studio, key: 'studio', note: T.navNotes.studio },
+  { href: localize('/contact', lang), label: T.nav.contact, key: 'contact', note: T.navNotes.contact },
+];
+const current = (key: string) => (page === key ? 'page' : undefined);
+const startsDark = page === 'home' || page === 'project';
+---
+
+<!-- Pages that open over the reel or a cover start with the light header, no waiting for the script -->
+<header class:list={['hdr', { 'is-light is-media': startsDark }]} data-hdr>
+  <a href={localize('/', lang)} class="hdr__logo" aria-label={T.nav.home}>
+    <Logo light lightNow={startsDark} />
+  </a>
+  <nav class="hdr__nav" aria-label="Main">
+    {links.map((l) => <a href={l.href} class="u" aria-current={current(l.key)}>{l.label}</a>)}
+    <button type="button" class="btn btn--sm" data-sample title={T.ctaNote}>{T.ctaShort}</button>
+  </nav>
+  <div class="hdr__end">
+    <nav class="lang" aria-label={T.nav.lang}>
+      {
+        langs.map((l, i) => (
+          <>
+            {i > 0 && <span class="lang__sep" aria-hidden="true">/</span>}
+            <a href={localize(path, l)} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} data-lang-link>
+              {l.toUpperCase()}
+            </a>
+          </>
+        ))
+      }
+    </nav>
+    <button type="button" class="burger" aria-expanded="false" aria-controls="menu" aria-label={T.nav.menu} data-label-open={T.nav.menu} data-label-close={T.nav.close} data-menu-toggle>
+      <span class="burger__l"></span>
+      <span class="burger__l"></span>
+    </button>
+  </div>
+</header>
+
+<div class="menu" id="menu" aria-hidden="true" data-menu>
+  <ul class="menu__list">
+    {
+      links.map((l) => (
+        <li>
+          <a href={l.href} aria-current={current(l.key)} data-m>
+            <span>{l.label}</span>
+            <small>{l.note}</small>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <div class="menu__foot">
+    <SampleCta class="menu__cta" data-m />
+    <div class="menu__meta" data-m>
+      <a href={`mailto:${contact.email}`}>{contact.email}</a>
+      <a href={contact.instagram} target="_blank" rel="noopener">Instagram</a>
+      <a href={contact.phoneHref}>{contact.phone}</a>
+      <a href={contact.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</div>

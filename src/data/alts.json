@@ -1,0 +1,425 @@
+{
+  "01_penthouse_dubai": {
+    "cover": {
+      "en": "balcony with lanterns and a flowering wall overlooking the Burj Khalifa at sunset",
+      "it": "balcone con lanterne e parete fiorita affacciato sul Burj Khalifa al tramonto"
+    },
+    "gallery": [
+      {
+        "en": "bedroom opening onto a flowering terrace, a woman drawing the curtain",
+        "it": "camera da letto aperta su un terrazzo fiorito, una donna scosta la tenda"
+      },
+      {
+        "en": "living room with a crystal ceiling chandelier and a raised lounge platform",
+        "it": "soggiorno con lampadario di cristallo a soffitto e salotto su una pedana rialzata"
+      },
+      {
+        "en": "close-up of the crystal chandelier in warm light",
+        "it": "dettaglio del lampadario di cristallo nella luce calda"
+      },
+      {
+        "en": "dressing corridor with shoe display, a brass sculpture and a red carpet",
+        "it": "corridoio guardaroba con vetrine per le scarpe, una scultura in ottone e un tappeto rosso"
+      },
+      {
+        "en": "bathroom vanity with a backlit mirror, a woman getting ready",
+        "it": "bagno con mobile lavabo e specchio retroilluminato, una donna si prepara"
+      },
+      {
+        "en": "close-up of a mother-of-pearl cabinet with a brass handle",
+        "it": "dettaglio di un mobile in madreperla con maniglia in ottone"
+      },
+      {
+        "en": "walk-in wardrobe, a hand reaching for a shirt on brass rails",
+        "it": "cabina armadio, una mano prende una camicia dalle aste in ottone"
+      },
+      {
+        "en": "close-up of a sculptural ribbon of light on the ceiling",
+        "it": "dettaglio di una lampada a nastro luminoso sul soffitto"
+      }
+    ]
+  },
+  "02_villa_cape_town": {
+    "cover": {
+      "en": "open-plan living room facing the ocean at sunset",
+      "it": "soggiorno open space affacciato sull'oceano al tramonto"
+    },
+    "gallery": [
+      {
+        "en": "aerial view of the villa with pool, terraces and mountains behind",
+        "it": "vista dall'alto della villa con piscina, terrazze e montagne alle spalle"
+      },
+      {
+        "en": "living room with stone walls, a woman arriving with her bag",
+        "it": "soggiorno con pareti in pietra, una donna appena arrivata con la borsa"
+      },
+      {
+        "en": "bedroom with stone walls and a view of the sea",
+        "it": "camera da letto con pareti in pietra e vista sul mare"
+      },
+      {
+        "en": "freestanding bathtub with a brass tap against a stone wall",
+        "it": "vasca freestanding con rubinetto in ottone davanti a una parete in pietra"
+      },
+      {
+        "en": "two friends laughing on the terrace by the pool",
+        "it": "due amiche ridono sulla terrazza accanto alla piscina"
+      },
+      {
+        "en": "guests in the infinity pool at golden hour",
+        "it": "ospiti nella piscina a sfioro nella luce del tramonto"
+      },
+      {
+        "en": "front of the villa with stone walls and the driveway",
+        "it": "facciata della villa con muri in pietra e vialetto d'ingresso"
+      }
+    ]
+  },
+  "03_ca_dei_colli": {
+    "cover": {
+      "en": "pool terrace with loungers above the Prosecco hills",
+      "it": "terrazza con piscina e lettini sopra le colline del Prosecco"
+    },
+    "gallery": [
+      {
+        "en": "living room with arched windows looking onto the vineyards",
+        "it": "soggiorno con finestre ad arco aperte sui vigneti"
+      },
+      {
+        "en": "couple walking out of the stone farmhouse with a bottle of wine",
+        "it": "coppia esce dal casale in pietra con una bottiglia di vino"
+      },
+      {
+        "en": "prosecco poured into two glasses above the vineyards at sunset",
+        "it": "prosecco versato in due calici sopra i vigneti al tramonto"
+      },
+      {
+        "en": "aerial view of the hills, vineyards and morning mist",
+        "it": "vista aerea delle colline con vigneti e nebbia del mattino"
+      },
+      {
+        "en": "a curly dog resting on the brick terrace",
+        "it": "un cane dal pelo riccio riposa sulla terrazza in cotto"
+      },
+      {
+        "en": "woman smiling from a car window among the vineyards",
+        "it": "donna sorride dal finestrino dell'auto tra i vigneti"
+      },
+      {
+        "en": "open window with a white curtain, vineyards and a bell tower outside",
+        "it": "finestra aperta con tenda bianca, fuori vigneti e un campanile"
+      }
+    ]
+  },
+  "04_forest_house": {
+    "cover": {
+      "en": "aerial view of the house among the redwoods",
+      "it": "vista dall'alto della casa tra le sequoie"
+    },
+    "gallery": [
+      {
+        "en": "double-height living room with a stone fireplace and a glass staircase",
+        "it": "soggiorno a doppia altezza con camino in pietra e scala in vetro"
+      },
+      {
+        "en": "lap pool along the glazed wing, surrounded by forest",
+        "it": "piscina lunga accanto all'ala vetrata, circondata dal bosco"
+      },
+      {
+        "en": "bedroom with full-height glazing onto the forest",
+        "it": "camera da letto con vetrate a tutta altezza sul bosco"
+      },
+      {
+        "en": "walk-in wardrobe with lit display cabinets and a central island",
+        "it": "cabina armadio con vetrine illuminate e isola centrale"
+      },
+      {
+        "en": "bar with a green stone counter and a patterned rug",
+        "it": "bar con bancone in pietra verde e tappeto decorato"
+      },
+      {
+        "en": "dining nook with a round table facing the redwoods",
+        "it": "angolo pranzo con tavolo rotondo affacciato sulle sequoie"
+      },
+      {
+        "en": "the house reflected in a pond among the trees",
+        "it": "la casa riflessa in uno specchio d'acqua tra gli alberi"
+      }
+    ]
+  },
+  "05_corfu_resort": {
+    "cover": {
+      "en": "suite terrace with a daybed and a private plunge pool among olive trees",
+      "it": "terrazza della suite con daybed e piscina privata tra gli ulivi"
+    },
+    "gallery": [
+      {
+        "en": "fire pit lounge under an ancient olive tree at night",
+        "it": "salotto con braciere sotto un ulivo secolare di sera"
+      },
+      {
+        "en": "guests at dinner under a pergola among the olive trees",
+        "it": "ospiti a cena sotto un pergolato tra gli ulivi"
+      },
+      {
+        "en": "spa with an indoor pool, a guest in a white robe",
+        "it": "spa con piscina interna, un'ospite in accappatoio bianco"
+      },
+      {
+        "en": "herbal tea poured from a brass teapot on the terrace",
+        "it": "tisana versata da una teiera in ottone sulla terrazza"
+      },
+      {
+        "en": "yoga on a wooden deck under the olive trees",
+        "it": "yoga su una pedana in legno sotto gli ulivi"
+      },
+      {
+        "en": "aerial night view of the villas lit among the hills",
+        "it": "vista aerea notturna delle ville illuminate tra le colline"
+      },
+      {
+        "en": "an ancient stone head in an olive grove at sunrise",
+        "it": "una testa antica in pietra in un uliveto all'alba"
+      }
+    ]
+  },
+  "06_kassab_residence": {
+    "cover": {
+      "en": "contemporary house reflected in the pool",
+      "it": "casa contemporanea riflessa nella piscina"
+    },
+    "gallery": [
+      {
+        "en": "classic wooden motorboat on the lake",
+        "it": "motoscafo d'epoca in legno sul lago"
+      },
+      {
+        "en": "close-up of a fig leaf in soft light",
+        "it": "dettaglio di una foglia di ficus nella luce morbida"
+      },
+      {
+        "en": "open living area with sofas, a staircase and a billiard table",
+        "it": "zona giorno aperta con divani, scala e tavolo da biliardo"
+      },
+      {
+        "en": "close-up of the flames of a linear fireplace",
+        "it": "dettaglio delle fiamme di un camino lineare"
+      },
+      {
+        "en": "the facade lit at dusk",
+        "it": "la facciata illuminata al crepuscolo"
+      },
+      {
+        "en": "dining area with round tables and a kitchen bar",
+        "it": "zona pranzo con tavoli rotondi e bancone della cucina"
+      }
+    ]
+  },
+  "07_elvira_dubai": {
+    "cover": {
+      "en": "lobby with a marble reception desk and a view of the city",
+      "it": "lobby con reception in marmo e vista sulla città"
+    },
+    "gallery": [
+      {
+        "en": "lounge with library shelves and a round rug overlooking the skyline",
+        "it": "lounge con libreria e tappeto rotondo affacciata sullo skyline"
+      },
+      {
+        "en": "coffee bar with a green marble counter",
+        "it": "caffetteria con bancone in marmo verde"
+      },
+      {
+        "en": "informal meeting area with a video call on a large screen",
+        "it": "area riunioni informale con una videochiamata su grande schermo"
+      },
+      {
+        "en": "workspace with glass offices and armchairs in the sun",
+        "it": "spazio di lavoro con uffici vetrati e poltrone al sole"
+      }
+    ]
+  },
+  "08_cavista_dubai": {
+    "cover": {
+      "en": "rooftop restaurant terrace with teal chairs and the city skyline",
+      "it": "terrazza del ristorante sul tetto con sedie verde acqua e skyline della città"
+    },
+    "gallery": [
+      {
+        "en": "dining room under a cloud of glass discs, with arched windows",
+        "it": "sala sotto una nuvola di dischi di vetro, con finestre ad arco"
+      },
+      {
+        "en": "golden arched niche at the restaurant entrance",
+        "it": "nicchia dorata ad arco all'ingresso del ristorante"
+      },
+      {
+        "en": "dining room under a glass roof with a terrazzo floor and a bar",
+        "it": "sala sotto una copertura vetrata con pavimento in terrazzo e bancone bar"
+      },
+      {
+        "en": "terrace with planters and dining tables between the towers",
+        "it": "terrazza con fioriere e tavoli tra i grattacieli"
+      },
+      {
+        "en": "dining room with a glass disc chandelier and marble tables",
+        "it": "sala con lampadario a dischi di vetro e tavoli in marmo"
+      },
+      {
+        "en": "restroom with green marble, oval brass mirrors and stone basins",
+        "it": "bagno con marmo verde, specchi ovali in ottone e lavabi in pietra"
+      }
+    ]
+  },
+  "09_alma_residence": {
+    "cover": {
+      "en": "open living room with kitchen, sofa and dining table in afternoon light",
+      "it": "soggiorno open space con cucina, divano e tavolo da pranzo nella luce del pomeriggio"
+    },
+    "gallery": [
+      {
+        "en": "bedroom with a mirrored wardrobe and French windows onto the garden",
+        "it": "camera da letto con armadio a specchio e portefinestre sul giardino"
+      },
+      {
+        "en": "children's bedroom with a desk and a round rug",
+        "it": "cameretta con scrivania e tappeto rotondo"
+      },
+      {
+        "en": "bathroom with a walk-in shower and a window onto the garden",
+        "it": "bagno con doccia walk-in e finestra sul giardino"
+      },
+      {
+        "en": "corridor with built-in wardrobes and a runner",
+        "it": "corridoio con armadi a muro e passatoia"
+      }
+    ]
+  },
+  "10_greece_retreat": {
+    "cover": {
+      "en": "whitewashed boathouses with coloured doors on the water",
+      "it": "rimesse per barche imbiancate a calce con porte colorate sull'acqua"
+    },
+    "gallery": []
+  },
+  "11_naoshima_house": {
+    "cover": {
+      "en": "aerial view of the concrete house on the wooded shore, with its jetty",
+      "it": "vista aerea della casa in cemento sulla riva boscosa, con il suo pontile"
+    },
+    "gallery": [
+      {
+        "en": "aerial view of the coastal road, the house and the jetty",
+        "it": "vista aerea della strada costiera, della casa e del pontile"
+      },
+      {
+        "en": "road through the pines leading to the house",
+        "it": "strada tra i pini che porta alla casa"
+      },
+      {
+        "en": "driveway along the water to the concrete house",
+        "it": "viale lungo l'acqua fino alla casa in cemento"
+      },
+      {
+        "en": "a woman opening the tall dark wooden front door",
+        "it": "una donna apre l'alto portone in legno scuro"
+      },
+      {
+        "en": "bedroom with wooden slats, marble and soft lighting",
+        "it": "camera da letto con listelli in legno, marmo e luce soffusa"
+      },
+      {
+        "en": "close-up of the bed with linen and a wooden bedside table",
+        "it": "dettaglio del letto con lenzuola di lino e comodino in legno"
+      }
+    ]
+  },
+  "12_seaview_suites": {
+    "cover": {
+      "en": "suite bedroom with glazing open onto the sea at sunset",
+      "it": "camera della suite con vetrate aperte sul mare al tramonto"
+    },
+    "gallery": [
+      {
+        "en": "the same suite at dusk, lamps on and the sea outside",
+        "it": "la stessa suite all'imbrunire, con le lampade accese e il mare fuori"
+      },
+      {
+        "en": "bed with a breakfast tray and soft lamps",
+        "it": "letto con vassoio della colazione e lampade soffuse"
+      },
+      {
+        "en": "bedroom with backlit wooden panels and plants",
+        "it": "camera con pannelli in legno retroilluminati e piante"
+      },
+      {
+        "en": "living room with sofa, round coffee table and TV wall by day",
+        "it": "soggiorno con divano, tavolino rotondo e parete TV di giorno"
+      },
+      {
+        "en": "the same living room in the evening with soft lighting",
+        "it": "lo stesso soggiorno di sera con luci soffuse"
+      }
+    ]
+  },
+  "13_alchimia_spaces": {
+    "cover": {
+      "en": "living room with orange and green sofas, wooden slats and a pool among palms",
+      "it": "soggiorno con divani arancio e verdi, listelli in legno e piscina tra le palme"
+    },
+    "gallery": [
+      {
+        "en": "bedroom with a backlit wooden slat wall",
+        "it": "camera da letto con parete a listelli in legno retroilluminata"
+      },
+      {
+        "en": "lounge with a long sofa and backlit wooden slats",
+        "it": "lounge con divano lungo e listelli in legno retroilluminati"
+      },
+      {
+        "en": "lounge with a sofa, a paper lamp and dark stone panels",
+        "it": "lounge con divano, lampada di carta e pannelli in pietra scura"
+      },
+      {
+        "en": "stone reception desk with bar stools",
+        "it": "bancone reception in pietra con sgabelli"
+      }
+    ]
+  },
+  "14_mountain_hotel": {
+    "cover": {
+      "en": "lounge and bar with wooden beams and a view of the mountains",
+      "it": "lounge e bar con travi in legno e vista sulle montagne"
+    },
+    "gallery": [
+      {
+        "en": "stone reception desk with guests arriving",
+        "it": "reception in pietra con ospiti in arrivo"
+      }
+    ]
+  },
+  "15_offices": {
+    "cover": {
+      "en": "meeting room with a long wooden table and glazing onto the hills",
+      "it": "sala riunioni con lungo tavolo in legno e vetrate sulle colline"
+    },
+    "gallery": [
+      {
+        "en": "open-plan workspace with desks and a dark fluted wall",
+        "it": "open space con scrivanie e parete scura a cannettatura"
+      },
+      {
+        "en": "break area with a coffee machine and high tables",
+        "it": "area relax con macchina del caffè e tavolini alti"
+      },
+      {
+        "en": "reception with a marble desk and a backlit fluted wall",
+        "it": "reception con bancone in marmo e parete a cannettatura retroilluminata"
+      }
+    ]
+  },
+  "_reel": {
+    "en": "Omnya Lab showreel, balcony with lanterns overlooking the Burj Khalifa at sunset",
+    "it": "Showreel di Omnya Lab, balcone con lanterne affacciato sul Burj Khalifa al tramonto"
+  }
+}

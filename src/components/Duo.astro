@@ -1,0 +1,18 @@
+---
+// Two-tone heading: first part in ink, second part in grey. No final period.
+interface Props {
+  a: string;
+  b: string;
+  as?: 'h1' | 'h2' | 'h3' | 'p';
+  size?: 'display' | 'h1' | 'h2' | 'h3' | 'sub';
+  intro?: boolean;
+  /** Seconds to wait before an intro heading plays. */
+  delay?: number;
+  class?: string;
+}
+const { a, b, as: Tag = 'h2', size = 'h1', intro = false, delay, class: cls } = Astro.props;
+---
+
+<Tag class:list={[`t-${size}`, cls]} data-split={intro ? 'intro' : ''} data-delay={delay}>
+  {a}{' '}<span class="mute">{b}</span>
+</Tag>

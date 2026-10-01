@@ -1,0 +1,52 @@
+---
+import type { Clip } from '../lib/data';
+import { t, langFromPath } from '../i18n';
+
+interface Props {
+  clip: Clip;
+  label: string;
+  /** A film with sound and burnt-in subtitles: plays on demand, never as a muted loop. */
+  film?: boolean;
+}
+const { clip, label, film = false } = Astro.props;
+const T = t(langFromPath(Astro.url.pathname));
+---
+
+{
+  film ? (
+    <div class="film" data-film>
+      <div class="frame" style="--ar: 16 / 9" data-reveal>
+        <div class="frame__in">
+          <video
+            playsinline
+            preload="none"
+            data-poster={clip.poster}
+            data-src-d={clip.desktop}
+            data-src-m={clip.mobile}
+            aria-label={label}
+          />
+        </div>
+        <button type="button" class="film__play" data-cursor={T.cursor.play} aria-label={T.project.playFilm(label)}>
+          <span>{T.project.play[0]}<br />{T.project.play[1]}</span>
+        </button>
+      </div>
+      <p class="film__note">{T.project.filmNote}</p>
+    </div>
+  ) : (
+    <div class="frame" style="--ar: 16 / 9" data-reveal>
+      <div class="frame__in">
+        <video
+          muted
+          loop
+          playsinline
+          preload="none"
+          data-poster={clip.poster}
+          data-src-d={clip.desktop}
+          data-src-m={clip.mobile}
+          data-lazy-video
+          aria-label={label}
+        />
+      </div>
+    </div>
+  )
+}

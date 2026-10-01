@@ -1,0 +1,51 @@
+---
+import { contact } from '../lib/contact';
+import SampleCta from './SampleCta.astro';
+import { t, langFromPath, localize } from '../i18n';
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="ftr" data-header="light">
+  <div class="ftr__in" data-ftr>
+    <p class="ftr__kicker t-sub"><span>{T.footer.kickerA}</span> <span>{T.footer.kickerB}</span></p>
+    <a class="ftr__mail" href={`mailto:${contact.email}`}><span class="u">{contact.email}</span></a>
+
+    <div class="ftr__grid">
+      <div>
+        <h2>{T.footer.call}</h2>
+        <ul>
+          <li><a class="u" href={contact.phoneHref}>{contact.phone}</a></li>
+          <li class="ftr__note">{T.phoneNote}</li>
+        </ul>
+      </div>
+      <div>
+        <h2>{T.footer.studio}</h2>
+        <ul>
+          <li>{T.places}</li>
+          <li class="ftr__note" data-clocks>
+            <span data-tz="Europe/Rome" data-city={T.venice}>{T.venice} --:--</span> · <span data-tz="Asia/Dubai" data-city={T.dubai}>{T.dubai} --:--</span>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h2>{T.footer.follow}</h2>
+        <ul>
+          <li><a class="u" href={contact.instagram} target="_blank" rel="noopener">Instagram</a></li>
+          <li><a class="u" href={contact.linkedin} target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a class="u" href={contact.calendly} target="_blank" rel="noopener">{T.footer.book}</a></li>
+        </ul>
+      </div>
+      <div class="ftr__cta">
+        <SampleCta light />
+      </div>
+    </div>
+
+    <div class="ftr__bottom">
+      <span>© {year} Omnya Lab®</span>
+      <span>{T.footer.vat} {contact.vat}</span>
+      <a class="u" href={localize('/privacy-policy', lang)}>{T.footer.privacy}</a>
+    </div>
+  </div>
+</footer>

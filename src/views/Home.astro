@@ -1,0 +1,118 @@
+---
+import Base from '../layouts/Base.astro';
+import Duo from '../components/Duo.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import Frame from '../components/Frame.astro';
+import Arrow from '../components/Arrow.astro';
+import SampleCta from '../components/SampleCta.astro';
+import { projects, pad } from '../lib/data';
+import { sizes as dims } from '../lib/media';
+import { t, langFromPath, localize } from '../i18n';
+import { alt, reelAlt } from '../lib/alts';
+
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang);
+const H = T.home;
+
+// Sizes follow the asymmetric grid in global.css (.pcard[data-slot])
+const sizes = [
+  '(min-width: 900px) 34vw, 75vw',
+  '(min-width: 900px) 50vw, 75vw',
+  '(min-width: 900px) 66vw, 84vw',
+  '(min-width: 900px) 34vw, 84vw',
+  '(min-width: 900px) 66vw, 100vw',
+  '(min-width: 900px) 42vw, 75vw',
+  '(min-width: 900px) 50vw, 92vw',
+];
+// Studio picture: public/process/studio.webp
+const studioStill = { src: '/process/studio.webp', mobile: '/process/studio.webp', w: 2400, h: 1340, orientation: 'horizontal' as const };
+const featured = projects.filter((p) => p.featured);
+// "See all the work": gallery shots from every project. Each row has its own
+// pictures (first and second shot of each project), never repeated across rows.
+const rows = [
+  projects.map((p) => p.gallery[0]).filter(Boolean),
+  projects.map((p) => p.gallery[1]).filter(Boolean),
+];
+---
+
+<Base page="home">
+  <section class="hero" data-hero data-header="light" data-header-media data-header-until=".after-hero" aria-label={H.reel}>
+    <div class="hero__media">
+      {/* One file only: the script picks desktop (16:9) or mobile (9:16, under 768px) */}
+      <img class="hero__poster" data-early data-src-d="/reel/hero_desktop_poster.webp" data-src-m="/reel/hero_mobile_poster.webp" alt={reelAlt(lang)} />
+      <video autoplay muted loop playsinline preload="none" aria-label={H.reelLabel} data-reel data-src-d="/reel/hero_desktop.mp4" data-src-m="/reel/hero_mobile.mp4"></video>
+    </div>
+    <div class="hero__shade"></div>
+    <div class="hero__dim"></div>
+    <div class="hero__cue" aria-hidden="true">
+      <div class="hero__cue-in" data-fade="0.1" data-intro><span>{H.scroll}</span><i></i></div>
+    </div>
+  </section>
+
+  <div class="after-hero">
+    <section class="statement wrap">
+      <Duo as="h1" size="h1" class="statement__title" a={H.titleA} b={H.titleB} />
+      <div class="statement__row">
+        <p class="statement__line" data-fade>{H.line}</p>
+        <SampleCta data-fade />
+      </div>
+    </section>
+
+    <section class="plist wrap" aria-labelledby="work-title">
+      <div class="label plist__head" data-fade>
+        <h2 id="work-title">{H.selected}</h2>
+      </div>
+      <div class="plist__grid">
+        {featured.map((p, i) => <ProjectCard project={p} slot={i % 7} sizes={sizes[i % 7]} />)}
+      </div>
+    </section>
+
+    <!-- Edge to edge, as big as a project: the rest of the work slides behind -->
+    <a href={localize('/work', lang)} class="seeall" data-cursor={T.cursor.view} data-seeall data-header="light">
+      <div class="seeall__bg" aria-hidden="true">
+        {
+          rows.map((row, r) => (
+            <div class="seeall__row" data-dir={r % 2 ? 'right' : 'left'}>
+              {/* one set; the script repeats it as many times as the screen needs */}
+              <div class="seeall__track" data-track>
+                {row.map((g) => {
+                  const d = dims(g);
+                  return (
+                    <span class="seeall__item" style={`--ar: ${g.w} / ${g.h}`}>
+                      <img data-seeall-src={g.mobile} width={d.mw} height={Math.round((d.mw * g.h) / g.w)} alt="" decoding="async" />
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <div class="seeall__shade"></div>
+      <div class="seeall__txt">
+        <span class="seeall__title" data-split>{H.seeAllA}<br /><span class="mute">{H.seeAllB}</span></span>
+        <span class="seeall__arrow" aria-hidden="true"><Arrow class="seeall__arrow-svg" /></span>
+      </div>
+    </a>
+
+    <!-- Everything here is made with AI: after the work, before the studio -->
+    <section class="ai wrap" aria-label={`${H.aiA} ${H.aiB}`}>
+      <Duo size="h2" class="ai__title" a={H.aiA} b={H.aiB} />
+      <div class="ai__row">
+        <p class="ai__text" data-fade>{H.aiText}</p>
+        <p class="ai__note" data-fade>{H.aiNote}</p>
+      </div>
+    </section>
+
+    <section class="teaser wrap" aria-label={H.studio}>
+      <div class="teaser__grid">
+        <div class="teaser__txt">
+          <span class="t-small mute" data-fade>{H.studio}</span>
+          <Duo size="h2" a={H.studioA} b={H.studioB} />
+          <a href={localize('/studio', lang)} class="btn" data-fade>{H.aboutStudio} <Arrow /></a>
+        </div>
+        <Frame still={studioStill} alt={H.studioImgAlt} sizes="(min-width: 900px) 56vw, 100vw" class="teaser__img" />
+      </div>
+    </section>
+  </div>
+</Base>

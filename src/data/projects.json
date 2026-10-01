@@ -79,7 +79,8 @@
         "mobile": "/projects/01_penthouse_dubai/penthouse_dubai_video_02_720.mp4",
         "poster": "/projects/01_penthouse_dubai/penthouse_dubai_video_02_poster.webp"
       }
-    ]
+    ],
+    "featured": true
   },
   {
     "id": "02_villa_cape_town",
@@ -159,7 +160,8 @@
         "mobile": "/projects/02_villa_cape_town/villa_cape_town_video_03_720.mp4",
         "poster": "/projects/02_villa_cape_town/villa_cape_town_video_03_poster.webp"
       }
-    ]
+    ],
+    "featured": true
   },
   {
     "id": "03_ca_dei_colli",
@@ -229,7 +231,8 @@
         "mobile": "/projects/03_ca_dei_colli/ca_dei_colli_video_01_720.mp4",
         "poster": "/projects/03_ca_dei_colli/ca_dei_colli_video_01_poster.webp"
       }
-    ]
+    ],
+    "featured": true
   },
   {
     "id": "04_forest_house",
@@ -293,7 +296,8 @@
         "orientation": "vertical"
       }
     ],
-    "videos": []
+    "videos": [],
+    "featured": true
   },
   {
     "id": "05_corfu_resort",
@@ -363,7 +367,8 @@
         "mobile": "/projects/05_corfu_resort/corfu_resort_video_01_720.mp4",
         "poster": "/projects/05_corfu_resort/corfu_resort_video_01_poster.webp"
       }
-    ]
+    ],
+    "featured": true
   },
   {
     "id": "06_kassab_residence",
@@ -426,7 +431,8 @@
         "mobile": "/projects/06_kassab_residence/kassab_residence_video_01_720.mp4",
         "poster": "/projects/06_kassab_residence/kassab_residence_video_01_poster.webp"
       }
-    ]
+    ],
+    "featured": true
   },
   {
     "id": "07_elvira_dubai",
@@ -474,6 +480,355 @@
         "desktop": "/projects/07_elvira_dubai/elvira_dubai_video_01_1080.mp4",
         "mobile": "/projects/07_elvira_dubai/elvira_dubai_video_01_720.mp4",
         "poster": "/projects/07_elvira_dubai/elvira_dubai_video_01_poster.webp"
+      }
+    ],
+    "featured": true
+  },
+  {
+    "id": "08_cavista_dubai",
+    "title": "Cavista Dubai",
+    "category": "luxury",
+    "cover": {
+      "src": "/projects/08_cavista_dubai/cavista_dubai_cover.webp",
+      "mobile": "/projects/08_cavista_dubai/cavista_dubai_cover_mobile.webp",
+      "w": 1024,
+      "h": 688,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/08_cavista_dubai/cavista_dubai_gallery_01.webp",
+        "mobile": "/projects/08_cavista_dubai/cavista_dubai_gallery_01_mobile.webp",
+        "w": 1024,
+        "h": 688,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/08_cavista_dubai/cavista_dubai_gallery_02.webp",
+        "mobile": "/projects/08_cavista_dubai/cavista_dubai_gallery_02_mobile.webp",
+        "w": 1024,
+        "h": 688,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/08_cavista_dubai/cavista_dubai_gallery_03.webp",
+        "mobile": "/projects/08_cavista_dubai/cavista_dubai_gallery_03_mobile.webp",
+        "w": 1024,
+        "h": 688,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/08_cavista_dubai/cavista_dubai_gallery_04.webp",
+        "mobile": "/projects/08_cavista_dubai/cavista_dubai_gallery_04_mobile.webp",
+        "w": 1024,
+        "h": 688,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/08_cavista_dubai/cavista_dubai_gallery_05.webp",
+        "mobile": "/projects/08_cavista_dubai/cavista_dubai_gallery_05_mobile.webp",
+        "w": 1024,
+        "h": 688,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/08_cavista_dubai/cavista_dubai_gallery_06.webp",
+        "mobile": "/projects/08_cavista_dubai/cavista_dubai_gallery_06_mobile.webp",
+        "w": 1024,
+        "h": 688,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [],
+    "featured": false
+  },
+  {
+    "id": "09_alma_residence",
+    "title": "Alma Residence",
+    "category": "real-estate",
+    "cover": {
+      "src": "/projects/09_alma_residence/alma_residence_cover.webp",
+      "mobile": "/projects/09_alma_residence/alma_residence_cover_mobile.webp",
+      "w": 1531,
+      "h": 1027,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/09_alma_residence/alma_residence_gallery_01.webp",
+        "mobile": "/projects/09_alma_residence/alma_residence_gallery_01_mobile.webp",
+        "w": 1484,
+        "h": 1060,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/09_alma_residence/alma_residence_gallery_02.webp",
+        "mobile": "/projects/09_alma_residence/alma_residence_gallery_02_mobile.webp",
+        "w": 1531,
+        "h": 1027,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/09_alma_residence/alma_residence_gallery_03.webp",
+        "mobile": "/projects/09_alma_residence/alma_residence_gallery_03_mobile.webp",
+        "w": 1086,
+        "h": 1448,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/09_alma_residence/alma_residence_gallery_04.webp",
+        "mobile": "/projects/09_alma_residence/alma_residence_gallery_04_mobile.webp",
+        "w": 1126,
+        "h": 1397,
+        "orientation": "vertical"
+      }
+    ],
+    "videos": [],
+    "featured": false
+  },
+  {
+    "id": "10_greece_retreat",
+    "title": "Greece Retreat",
+    "category": "luxury",
+    "cover": {
+      "src": "/projects/10_greece_retreat/greece_retreat_cover.webp",
+      "mobile": "/projects/10_greece_retreat/greece_retreat_cover_mobile.webp",
+      "w": 1920,
+      "h": 1080,
+      "orientation": "horizontal"
+    },
+    "gallery": [],
+    "videos": [
+      {
+        "desktop": "/projects/10_greece_retreat/greece_retreat_video_01_1080.mp4",
+        "mobile": "/projects/10_greece_retreat/greece_retreat_video_01_720.mp4",
+        "poster": "/projects/10_greece_retreat/greece_retreat_video_01_poster.webp"
+      }
+    ],
+    "featured": false
+  },
+  {
+    "id": "11_naoshima_house",
+    "title": "Naoshima House",
+    "category": "luxury",
+    "featured": false,
+    "cover": {
+      "src": "/projects/11_naoshima_house/naoshima_house_cover.webp",
+      "mobile": "/projects/11_naoshima_house/naoshima_house_cover_mobile.webp",
+      "w": 5269,
+      "h": 2783,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/11_naoshima_house/naoshima_house_gallery_01.webp",
+        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_01_mobile.webp",
+        "w": 5134,
+        "h": 2758,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/11_naoshima_house/naoshima_house_gallery_02.webp",
+        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_02_mobile.webp",
+        "w": 5306,
+        "h": 2920,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/11_naoshima_house/naoshima_house_gallery_03.webp",
+        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_03_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/11_naoshima_house/naoshima_house_gallery_04.webp",
+        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_04_mobile.webp",
+        "w": 2752,
+        "h": 1536,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/11_naoshima_house/naoshima_house_gallery_05.webp",
+        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_05_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/11_naoshima_house/naoshima_house_gallery_06.webp",
+        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_06_mobile.webp",
+        "w": 2752,
+        "h": 1536,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [
+      {
+        "desktop": "/projects/11_naoshima_house/naoshima_house_video_01_1080.mp4",
+        "mobile": "/projects/11_naoshima_house/naoshima_house_video_01_720.mp4",
+        "poster": "/projects/11_naoshima_house/naoshima_house_video_01_poster.webp"
+      }
+    ]
+  },
+  {
+    "id": "12_seaview_suites",
+    "title": "Seaview Suites",
+    "category": "luxury",
+    "featured": false,
+    "cover": {
+      "src": "/projects/12_seaview_suites/seaview_suites_cover.webp",
+      "mobile": "/projects/12_seaview_suites/seaview_suites_cover_mobile.webp",
+      "w": 5504,
+      "h": 3072,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/12_seaview_suites/seaview_suites_gallery_01.webp",
+        "mobile": "/projects/12_seaview_suites/seaview_suites_gallery_01_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/12_seaview_suites/seaview_suites_gallery_02.webp",
+        "mobile": "/projects/12_seaview_suites/seaview_suites_gallery_02_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/12_seaview_suites/seaview_suites_gallery_03.webp",
+        "mobile": "/projects/12_seaview_suites/seaview_suites_gallery_03_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/12_seaview_suites/seaview_suites_gallery_04.webp",
+        "mobile": "/projects/12_seaview_suites/seaview_suites_gallery_04_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/12_seaview_suites/seaview_suites_gallery_05.webp",
+        "mobile": "/projects/12_seaview_suites/seaview_suites_gallery_05_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": []
+  },
+  {
+    "id": "13_alchimia_spaces",
+    "title": "Alchimia Spaces",
+    "category": "luxury",
+    "featured": false,
+    "cover": {
+      "src": "/projects/13_alchimia_spaces/alchimia_spaces_cover.webp",
+      "mobile": "/projects/13_alchimia_spaces/alchimia_spaces_cover_mobile.webp",
+      "w": 5504,
+      "h": 3072,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/13_alchimia_spaces/alchimia_spaces_gallery_01.webp",
+        "mobile": "/projects/13_alchimia_spaces/alchimia_spaces_gallery_01_mobile.webp",
+        "w": 2048,
+        "h": 2048,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/13_alchimia_spaces/alchimia_spaces_gallery_02.webp",
+        "mobile": "/projects/13_alchimia_spaces/alchimia_spaces_gallery_02_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/13_alchimia_spaces/alchimia_spaces_gallery_03.webp",
+        "mobile": "/projects/13_alchimia_spaces/alchimia_spaces_gallery_03_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/13_alchimia_spaces/alchimia_spaces_gallery_04.webp",
+        "mobile": "/projects/13_alchimia_spaces/alchimia_spaces_gallery_04_mobile.webp",
+        "w": 2500,
+        "h": 2268,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": []
+  },
+  {
+    "id": "14_mountain_hotel",
+    "title": "Mountain Hotel",
+    "category": "luxury",
+    "featured": false,
+    "cover": {
+      "src": "/projects/14_mountain_hotel/mountain_hotel_cover.webp",
+      "mobile": "/projects/14_mountain_hotel/mountain_hotel_cover_mobile.webp",
+      "w": 2048,
+      "h": 1360,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/14_mountain_hotel/mountain_hotel_gallery_01.webp",
+        "mobile": "/projects/14_mountain_hotel/mountain_hotel_gallery_01_mobile.webp",
+        "w": 2048,
+        "h": 1360,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": []
+  },
+  {
+    "id": "15_offices",
+    "title": "Offices",
+    "category": "real-estate",
+    "featured": false,
+    "cover": {
+      "src": "/projects/15_offices/offices_cover.webp",
+      "mobile": "/projects/15_offices/offices_cover_mobile.webp",
+      "w": 5504,
+      "h": 3072,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/15_offices/offices_gallery_01.webp",
+        "mobile": "/projects/15_offices/offices_gallery_01_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/15_offices/offices_gallery_02.webp",
+        "mobile": "/projects/15_offices/offices_gallery_02_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/15_offices/offices_gallery_03.webp",
+        "mobile": "/projects/15_offices/offices_gallery_03_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [
+      {
+        "desktop": "/projects/15_offices/offices_video_01_1080.mp4",
+        "mobile": "/projects/15_offices/offices_video_01_720.mp4",
+        "poster": "/projects/15_offices/offices_video_01_poster.webp"
       }
     ]
   }

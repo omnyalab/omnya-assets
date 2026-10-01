@@ -1,0 +1,80 @@
+---
+import Base from '../layouts/Base.astro';
+import Duo from '../components/Duo.astro';
+import mdEn from '../../docs/PRIVACY.md?raw';
+import mdIt from '../../docs/PRIVACY.it.md?raw';
+import { t, langFromPath } from '../i18n';
+
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang);
+const md = lang === 'it' ? mdIt : mdEn;
+
+// docs/PRIVACY.md (and PRIVACY.it.md) are the single source: "# Title", an update line, an intro,
+// then "## 01 Heading" sections made of plain paragraphs.
+const lines = md.split('\n');
+const title = lines.find((l) => l.startsWith('# '))!.slice(2).trim();
+const [titleA, ...rest] = title.split(', ');
+const titleB = rest.join(', ');
+const UPDATED = /^(LAST UPDATED|ULTIMO AGGIORNAMENTO):\s*/i;
+const updated = (lines.find((l) => UPDATED.test(l)) ?? '').replace(UPDATED, '');
+const updatedNice = updated.charAt(0) + updated.slice(1).toLowerCase();
+
+const linkify = (t: string) =>
+  t
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/\b(info@omnyalab\.com)\b/g, '<a class="u" href="mailto:$1">$1</a>')
+    .replace(/\b((?:vercel|calendly)\.com\/[\w\-/]+)/g, '<a class="u" href="https://$1" target="_blank" rel="noopener">$1</a>');
+
+type Section = { n: string; h: string; paras: string[] };
+const intro: string[] = [];
+const sections: Section[] = [];
+let block: string[] = [];
+let current: Section | null = null;
+const flush = () => {
+  if (!block.length) return;
+  const text = block.join('\n');
+  (current ? current.paras : intro).push(text);
+  block = [];
+};
+for (const l of lines) {
+  if (l.startsWith('# ') || UPDATED.test(l)) continue;
+  const m = l.match(/^##\s+(\d+)\s+(.*)$/);
+  if (m) {
+    flush();
+    current = { n: m[1], h: m[2], paras: [] };
+    sections.push(current);
+    continue;
+  }
+  if (!l.trim()) flush();
+  else block.push(l.trim());
+}
+flush();
+---
+
+<Base page="privacy" title={T.privacy.title} description={T.privacy.description}>
+  <section class="phead wrap">
+    <Duo as="h1" size="h1" a={`${titleA},`} b={titleB} intro />
+    <div class="phead__meta"><span class="mute" data-fade data-intro>{T.privacy.updated} {updatedNice}</span></div>
+  </section>
+
+  <section class="wrap legal">
+    <div class="legal__intro t-sub">
+      {intro.map((p) => <p data-fade>{p}</p>)}
+    </div>
+    {
+      sections.map((s) => (
+        <article class="legal__sec" data-fade>
+          <h2 class="t-h3">
+            <small>{s.n}</small>
+            <span>{s.h}</span>
+          </h2>
+          <div class="legal__body">
+            {s.paras.map((p) => (
+              <p set:html={linkify(p).replace(/\n/g, '<br />')} />
+            ))}
+          </div>
+        </article>
+      ))
+    }
+  </section>
+</Base>

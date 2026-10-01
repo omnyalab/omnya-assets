@@ -1,0 +1,11 @@
+---
+// Project number (01, 02…): rises from under a mask, no counter effect.
+interface Props {
+  value: string;
+  intro?: boolean;
+  class?: string;
+}
+const { value, intro = false, class: cls } = Astro.props;
+---
+
+<span class:list={['num', cls]} data-num={intro ? 'intro' : ''}><span>{value}</span></span>

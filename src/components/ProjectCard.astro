@@ -1,0 +1,39 @@
+---
+import Frame from './Frame.astro';
+import Num from './Num.astro';
+import { href, number, type Project } from '../lib/data';
+import { t, langFromPath, localize } from '../i18n';
+import { alt } from '../lib/alts';
+
+interface Props {
+  project: Project;
+  slot: number;
+  sizes: string;
+  kind?: 'pcard' | 'wcard';
+  ar?: string;
+  shape?: string;
+  /** First card on screen: load right away instead of after the intro. */
+  eager?: boolean;
+}
+const { project: p, slot, sizes, kind = 'pcard', ar, shape, eager = false } = Astro.props;
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang);
+---
+
+<a
+  href={localize(href(p), lang)}
+  class:list={['pcard', kind]}
+  data-slot={slot}
+  data-o={p.cover.orientation}
+  data-cat={p.category}
+  data-shape={shape}
+  data-plink
+  data-cursor={T.cursor.view}
+>
+  <Frame still={p.cover} alt={alt(p, lang)} sizes={sizes} ar={ar} eager={eager} class="pcard__frame" cover />
+  <div class="pcard__cap">
+    <Num class="pcard__n" value={number(p)} />
+    <span class="pcard__title">{p.title}</span>
+    <span class="pcard__cat">{T.categories[p.category]}</span>
+  </div>
+</a>

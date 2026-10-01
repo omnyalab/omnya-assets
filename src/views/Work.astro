@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { projects, pad } from '../lib/data';
+import { t, langFromPath } from '../i18n';
+
+const T = t(langFromPath(Astro.url.pathname));
+const count = (c?: string) => pad(c ? projects.filter((p) => p.category === c).length : projects.length);
+const filters = [
+  { key: 'all', label: T.work.all, n: count() },
+  ...Object.entries(T.categories).map(([key, label]) => ({ key, label, n: count(key) })),
+];
+const shape = (i: number, o: string) => (o === 'vertical' || i % 4 === 1 || i % 4 === 2 ? 'tall' : i % 4 === 3 ? 'wide' : '');
+const ar = (s: string) => (s === 'tall' ? '4 / 5' : s === 'wide' ? '3 / 2' : '16 / 10');
+const sizes = ['(min-width: 900px) 58vw, calc(100vw - 32px)', '(min-width: 900px) 34vw, 84vw', '(min-width: 900px) 34vw, 84vw', '(min-width: 900px) 50vw, calc(100vw - 32px)'];
+---
+
+<Base page="work" title={T.work.title} description={T.work.description}>
+  <section class="phead wrap">
+    <div class="work__head">
+      <h1 class="t-display work__title" data-split="intro">{T.work.titleA}{' '}<span class="mute">{T.work.titleB}</span></h1>
+      <span class="pill" data-fade="0.2" data-intro>2026</span>
+    </div>
+    <div class="phead__meta">
+      <div class="filters" role="group" aria-label={T.work.filterLabel} data-fade data-intro>
+        {
+          filters.map((f, i) => (
+            <button type="button" data-filter={f.key} aria-pressed={i === 0 ? 'true' : 'false'}>
+              {f.label}<sup>{f.n}</sup>
+            </button>
+          ))
+        }
+      </div>
+      <span class="t-small mute phead__note" data-fade="0.1" data-intro>{T.work.note}</span>
+    </div>
+  </section>
+
+  <section class="wrap" aria-label={T.work.title}>
+    <div class="wgrid" data-wgrid>
+      {
+        projects.map((p, i) => {
+          const s = shape(i, p.cover.orientation);
+          return <ProjectCard project={p} slot={i % 4} sizes={sizes[i % 4]} kind="wcard" shape={s} ar={ar(s)} eager={i === 0} />;
+        })
+      }
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,28 @@
+---
+// The PNG carries generous padding; .logo crops to the ink and splits it
+// into two parts ("omnya" / "lab") so each can move on its own.
+interface Props {
+  light?: boolean;
+  /** Load the white version right away (pages that open over a dark image). */
+  lightNow?: boolean;
+  class?: string;
+}
+const { light = false, lightNow = false, class: cls } = Astro.props;
+const parts = ['a', 'b'];
+---
+
+<span class:list={['logo', cls]} role="img" aria-label="Omnya Lab">
+  {
+    parts.map((p) => (
+      <span class={`logo__part logo__part--${p}`}>
+        <img class="logo__img logo__img--dark" src="/brand/logo_twotone_black.png" alt="" width="1600" height="452" />
+        {light && lightNow && (
+          <img class="logo__img logo__img--light" src="/brand/logo_twotone_white.png" alt="" width="1600" height="452" />
+        )}
+        {light && !lightNow && (
+          <img class="logo__img logo__img--light" data-src="/brand/logo_twotone_white.png" alt="" width="1600" height="452" />
+        )}
+      </span>
+    ))
+  }
+</span>

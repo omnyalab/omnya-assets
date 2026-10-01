@@ -1,0 +1,80 @@
+---
+import Base from '../layouts/Base.astro';
+import Duo from '../components/Duo.astro';
+import Arrow from '../components/Arrow.astro';
+import { contact, sampleLinks } from '../lib/contact';
+import { t, langFromPath } from '../i18n';
+import { pad } from '../lib/data';
+
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang);
+const C = T.contact;
+const links = sampleLinks(lang);
+---
+
+<Base page="contact" title={C.title} description={C.description}>
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://assets.calendly.com" />
+  </Fragment>
+
+  <section class="phead wrap">
+    <Duo as="h1" size="h1" a={C.titleA} b={C.titleB} intro />
+  </section>
+
+  <section class="wrap">
+    <p class="label" data-fade><span>{C.email}</span><span class="mute">{C.files}</span></p>
+    <div style="padding-top: 18px">
+      <a class="ct__mail" href={`mailto:${contact.email}`} data-fade><span class="u">{contact.email}</span></a>
+    </div>
+
+    <!-- What the free sample is, right above the two ways to ask for it -->
+    <div class="how">
+      <Duo as="h2" size="h3" class="how__title" a={C.howA} b={C.howB} />
+      <div class="how__body">
+        <ol class="how__list">
+          {
+            C.steps.map((step, i) => (
+              <li data-fade>
+                <span class="how__n">{pad(i + 1)}</span>
+                <span class="how__t">{step}</span>
+              </li>
+            ))
+          }
+        </ol>
+        <div class="ct__btns" data-fade>
+          <a class="btn" href={links.whatsapp} target="_blank" rel="noopener">WhatsApp <Arrow diag /></a>
+          <a class="btn" href={links.email}>Email <Arrow diag /></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="ct__grid">
+      <div class="ct__block" data-fade>
+        <h2>{C.phone}</h2>
+        <a class="ct__phone u" href={contact.phoneHref}>{contact.phone}</a>
+        <p class="t-small mute" style="margin-top: 8px">{T.phoneNote}</p>
+      </div>
+      <div class="ct__block" data-fade>
+        <h2>{C.more}</h2>
+        <ul class="ct__list">
+          <li><a href={contact.howWeWork} target="_blank" rel="noopener">{T.studio.howWeWork} <Arrow diag /></a></li>
+          <li><a href={contact.portfolio} target="_blank" rel="noopener">{T.studio.portfolio} <Arrow diag /></a></li>
+          <li><a href={contact.instagram} target="_blank" rel="noopener">Instagram <Arrow diag /></a></li>
+          <li><a href={contact.linkedin} target="_blank" rel="noopener">LinkedIn <Arrow diag /></a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap ct__cal" id="book" data-calendly>
+    <div class="label" data-fade>
+      <h2>{C.book}</h2>
+      <a class="u" href={contact.calendly} target="_blank" rel="noopener">{C.bookNote}</a>
+    </div>
+    <div class="cal">
+      <div class="cal__ph">{C.loading}</div>
+      <div data-calendly-mount style="min-width: 300px; height: 700px"></div>
+    </div>
+  </section>
+  <div class="section"></div>
+</Base>

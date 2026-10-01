@@ -1,0 +1,104 @@
+---
+import { Font } from 'astro:assets';
+import { ClientRouter } from 'astro:transitions';
+import Preloader from '../components/Preloader.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SampleSheet from '../components/SampleSheet.astro';
+import { sampleLinks } from '../lib/contact';
+import { t, langFromPath, localize, langs } from '../i18n';
+import { alt } from '../lib/alts';
+import { projects } from '../lib/data';
+import '../styles/global.css';
+
+interface Props {
+  page: string;
+  title?: string;
+  description?: string;
+  /** Social preview, 1200x630 (generated in public/og by scripts/make-og.mjs). */
+  og?: string;
+  ogAlt?: string;
+  footer?: boolean;
+}
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang);
+const defaultOgAlt = `Omnya Lab, ${alt(projects.find((p) => p.id === '01_penthouse_dubai')!, lang)}`;
+const { page, title, description = T.siteDescription, og = '/og/omnya-lab.jpg', ogAlt = defaultOgAlt, footer = true } = Astro.props;
+const fullTitle = title ? `${title} | Omnya Lab` : T.siteTitle;
+const path = Astro.url.pathname;
+const canonical = new URL(localize(path, lang), Astro.site);
+const ogImage = new URL(og, Astro.site);
+const links = sampleLinks(lang);
+---
+
+<!doctype html>
+<html lang={T.htmlLang} data-page={page} data-lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#EDEAE4" />
+    {langs.map((l) => <link rel="alternate" hreflang={l} href={new URL(localize(path, l), Astro.site)} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(localize(path, 'en'), Astro.site)} />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Omnya Lab" />
+    <meta property="og:locale" content={T.ogLocale} />
+    <meta property="og:locale:alternate" content={lang === 'en' ? 'it_IT' : 'en_US'} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:secure_url" content={ogImage} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogAlt} />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      // Safety net: never leave content hidden if the app script fails.
+      setTimeout(function () { if (!window.__omApp) document.documentElement.classList.remove('js'); }, 5000);
+    </script>
+    <Font cssVariable="--font-inter-tight" preload />
+    <link rel="preload" as="image" href="/brand/logo_twotone_black.png" fetchpriority="high" />
+    <slot name="head" />
+    <ClientRouter fallback="none" />
+    {import.meta.env.PROD && <script is:inline defer src="/_vercel/insights/script.js"></script>}
+  </head>
+  <body>
+    <Preloader />
+    <div class="grain" aria-hidden="true" transition:persist="grain"></div>
+
+    <Header page={page} />
+    <main id="main">
+      <slot />
+    </main>
+    {footer && <Footer />}
+
+    <SampleSheet />
+    <a class="wa-fab" href={links.whatsapp} target="_blank" rel="noopener" aria-label="WhatsApp" transition:persist={`fab-${lang}`} data-fab>
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2Zm0 18.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.26 8.26 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 4.54 0 8.24 3.7 8.24 8.24 0 4.55-3.7 8.24-8.23 8.24Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28Z" /></svg>
+    </a>
+    <div class="tlayer" aria-hidden="true" transition:persist="tlayer" data-tlayer></div>
+    <div class="sbar" aria-hidden="true" transition:persist="sbar" data-sbar><div class="sbar__thumb" data-sbar-thumb></div></div>
+    <div class="curtain" aria-hidden="true" transition:persist="curtain" data-curtain><div class="curtain__in"><p class="curtain__title" data-curtain-label></p><span class="curtain__line" data-curtain-line></span></div></div>
+    <div class="cursor" aria-hidden="true" transition:persist="cursor" data-cursor-el>
+      <span class="cursor__dot"></span>
+      <span class="cursor__bub"><span data-cursor-label>{T.cursor.view}</span></span>
+    </div>
+
+    <script>
+      import '../scripts/app';
+    </script>
+  </body>
+</html>

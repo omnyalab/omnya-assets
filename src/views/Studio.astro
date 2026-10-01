@@ -1,0 +1,84 @@
+---
+// Studio: asymmetric like the home. Pictures of different sizes alternate with
+// short blocks of text. Images from public/studio (each with a _mobile copy).
+import Base from '../layouts/Base.astro';
+import Duo from '../components/Duo.astro';
+import Frame from '../components/Frame.astro';
+import SampleCta from '../components/SampleCta.astro';
+import { pad, type Still } from '../lib/data';
+import { t, langFromPath } from '../i18n';
+
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang);
+const S = T.studio;
+
+const still = (name: string, w: number, h: number): Still => ({
+  src: `/studio/${name}.webp`,
+  mobile: `/studio/${name}_mobile.webp`,
+  w,
+  h,
+  orientation: w >= h ? 'horizontal' : 'vertical',
+});
+const naoshima = still('studio_01_naoshima', 2400, 1321);
+const kitchen = still('studio_02_forest_kitchen', 2400, 1610);
+const prosecco = still('studio_03_prosecco', 2400, 1340);
+const pearl = still('studio_05_mother_of_pearl', 2400, 1350);
+---
+
+<Base page="studio" title={S.title} description={S.description}>
+  <section class="phead wrap">
+    <Duo as="h1" size="h1" a={S.titleA} b={S.titleB} intro />
+  </section>
+
+  <section class="wrap studio__intro">
+    <p class="t-small mute" data-fade>{S.about}</p>
+    <p class="studio__txt t-sub" data-fade>{S.text}</p>
+  </section>
+
+  <!-- 1. Naoshima, almost full width -->
+  <div class="st-wide">
+    <Frame still={naoshima} alt={S.alts.naoshima} sizes="(min-width: 900px) 94vw, 100vw" />
+  </div>
+
+  <!-- What we do -->
+  <section class="st-block wrap">
+    <p class="t-small mute" data-fade>{S.whatWeDo}</p>
+    <div>
+      <Duo size="h2" a={S.servicesA} b={S.servicesB} />
+      <ul class="st-list">
+        {S.services.map((x) => <li class="t-h3" data-fade>{x}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <!-- 2. Kitchen left, mother of pearl right, smaller and lower -->
+  <div class="st-pair wrap">
+    <Frame still={kitchen} alt={S.alts.kitchen} sizes="(min-width: 900px) 56vw, 88vw" class="st-pair__a" />
+    <Frame still={pearl} alt={S.alts.pearl} sizes="(min-width: 900px) 32vw, 64vw" class="st-pair__b" />
+  </div>
+
+  <!-- How we work -->
+  <section class="st-block wrap">
+    <p class="t-small mute" data-fade>{S.howLabel}</p>
+    <ol class="how__list">
+      {
+        S.steps.map((step, i) => (
+          <li data-fade>
+            <span class="how__n">{pad(i + 1)}</span>
+            <span class="how__t">{step}</span>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <!-- 3. One sentence on the left, prosecco large on the right -->
+  <section class="st-detail wrap">
+    <Duo size="h2" class="st-detail__txt" a={S.detailsA} b={S.detailsB} />
+    <Frame still={prosecco} alt={S.alts.prosecco} sizes="(min-width: 900px) 58vw, 100vw" class="st-detail__img" />
+  </section>
+
+  <section class="st-cta wrap">
+    <SampleCta data-fade />
+  </section>
+</Base>

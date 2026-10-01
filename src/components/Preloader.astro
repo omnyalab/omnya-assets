@@ -1,0 +1,89 @@
+---
+// First visit only. A thin line sketches a contemporary villa (flat roof, big
+// glazing, a portico) while the logo is revealed underneath, left to right:
+// house and logo finish together, then the panel lifts. About 2s, once per visit.
+import Logo from './Logo.astro';
+import { t, langFromPath } from '../i18n';
+
+const T = t(langFromPath(Astro.url.pathname));
+
+// Two-point perspective, low horizon (y 205), corner of the house at x 210.
+// Every line is its own path so it can be drawn in sequence.
+const lines = [
+  // ground, overshooting the corners like a sketch
+  'M40 246.6 L210 255 L552 240.6',
+  // roof slab: underside and top edge, ends
+  'M70 120.4 L210 105 L540 132.7',
+  'M70 113.6 L210 97 L540 124.7',
+  'M70 113.6 V120.4',
+  'M540 124.7 V132.7',
+  // corner and wall ends
+  'M210 97 V255',
+  'M90 118.2 V248.4',
+  'M470 126.8 V244.1',
+  // big glazing on the long side, with mullions
+  'M228 118.5 L455 137.6 L455 238.7 L228 248.2 Z',
+  'M285 123.3 V245.8',
+  'M340 127.9 V243.5',
+  'M395 132.5 V241.2',
+  // narrow slot window on the short side
+  'M120 132.9 V236.1',
+  'M138 130.9 V237',
+  // portico: two slender columns under the cantilever
+  'M505 129.8 V242.6',
+  'M535 132.3 V241.4',
+];
+---
+
+<div class="pre" id="pre" transition:persist="pre" aria-hidden="true">
+  <div class="pre__in">
+    <div class="pre__frame">
+      <svg class="pre__sketch" viewBox="0 0 580 330" fill="none" stroke="#111111" stroke-linecap="round" stroke-linejoin="round">
+        {lines.map((d, i) => <path d={d} pathLength="1" style={`--i:${i}`} />)}
+      </svg>
+    </div>
+    <Logo class="pre__logo" />
+    <span class="sr-only">{T.siteTitle}</span>
+  </div>
+</div>
+
+<script is:inline>
+  // Once per visit. Drawing and logo are one CSS animation started by a class;
+  // this only decides when it starts and when the panel lifts.
+  (function () {
+    var pre = document.getElementById('pre');
+    if (!pre || pre.dataset.init) return;
+    pre.dataset.init = '1';
+    var seen = false;
+    try { seen = sessionStorage.getItem('omSeenIntro') === '1'; } catch (e) {}
+    // ?intro in the address shows it again, handy to review it
+    if (/[?&]intro\b/.test(location.search)) seen = false;
+    if (seen) {
+      pre.classList.add('is-done', 'is-gone');
+      window.__omPre = 'done';
+      return;
+    }
+    window.__omPre = 'running';
+    // While the panel covers the page, content paints normally underneath
+    document.documentElement.classList.add('pre-run');
+    // drawing + logo ~0.95s, a short pause, then the panel lifts (0.7s): ~2s
+    var started = Date.now(), MIN = 1300, MAX = 1350, closed = false;
+    requestAnimationFrame(function () { pre.classList.add('is-drawing'); });
+    function close() {
+      if (closed) return;
+      closed = true;
+      var wait = Math.max(0, MIN - (Date.now() - started));
+      setTimeout(function () {
+        try { sessionStorage.setItem('omSeenIntro', '1'); } catch (e) {}
+        window.__omPre = 'done';
+        document.documentElement.classList.remove('pre-run');
+        window.dispatchEvent(new Event('om:pre-exit'));
+        pre.classList.add('is-done');
+        setTimeout(function () { pre.classList.add('is-gone'); }, 800);
+      }, wait);
+    }
+    if (document.readyState === 'complete') close();
+    else window.addEventListener('load', close);
+    setTimeout(close, MAX);
+  })();
+</script>

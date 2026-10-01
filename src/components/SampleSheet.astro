@@ -1,0 +1,37 @@
+---
+import { contact, sampleLinks } from '../lib/contact';
+import { t, langFromPath } from '../i18n';
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang).sheet;
+const links = sampleLinks(lang);
+const arrow =
+  '<svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 15L15 3M6 3h9v9" stroke="currentColor"/></svg>';
+---
+
+<div class="sheet" role="dialog" aria-modal="true" aria-labelledby={`sheet-title-${lang}`} aria-hidden="true" transition:persist={`sheet-${lang}`} data-sheet>
+  <div class="sheet__bg" data-sheet-close></div>
+  <div class="sheet__panel" data-sheet-panel>
+    <div class="sheet__head">
+      <span class="mute">{T.kicker}</span>
+      <button type="button" class="u" data-sheet-close>{T.close}</button>
+    </div>
+    <h2 class="sheet__title t-h3" id={`sheet-title-${lang}`} data-s>
+      {T.titleA}{' '}<span class="mute">{T.titleB}</span>
+    </h2>
+    <a class="sheet__opt" href={links.whatsapp} target="_blank" rel="noopener" data-s>
+      <span class="sheet__opt-n">01</span>
+      <span class="sheet__opt-t">WhatsApp</span>
+      <Fragment set:html={arrow} />
+      <span class="sheet__opt-d">{T.waDesc}</span>
+    </a>
+    <a class="sheet__opt" href={links.email} data-s>
+      <span class="sheet__opt-n">02</span>
+      <span class="sheet__opt-t">Email</span>
+      <Fragment set:html={arrow} />
+      <span class="sheet__opt-d">{T.mailDesc}</span>
+    </a>
+    <p class="sheet__foot" data-s>
+      {T.talk} <a class="u" href={contact.calendly} target="_blank" rel="noopener">{T.book}</a>
+    </p>
+  </div>
+</div>
