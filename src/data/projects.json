@@ -1,0 +1,480 @@
+[
+  {
+    "id": "01_penthouse_dubai",
+    "title": "Penthouse Dubai",
+    "category": "luxury",
+    "cover": {
+      "src": "/projects/01_penthouse_dubai/penthouse_dubai_cover.webp",
+      "mobile": "/projects/01_penthouse_dubai/penthouse_dubai_cover_mobile.webp",
+      "w": 1536,
+      "h": 2752,
+      "orientation": "vertical"
+    },
+    "gallery": [
+      {
+        "src": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_01.webp",
+        "mobile": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_01_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_02.webp",
+        "mobile": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_02_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_03.webp",
+        "mobile": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_03_mobile.webp",
+        "w": 3840,
+        "h": 2160,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_04.webp",
+        "mobile": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_04_mobile.webp",
+        "w": 3840,
+        "h": 2160,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_05.webp",
+        "mobile": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_05_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_06.webp",
+        "mobile": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_06_mobile.webp",
+        "w": 3840,
+        "h": 2160,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_07.webp",
+        "mobile": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_07_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_08.webp",
+        "mobile": "/projects/01_penthouse_dubai/penthouse_dubai_gallery_08_mobile.webp",
+        "w": 3840,
+        "h": 2160,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [
+      {
+        "desktop": "/projects/01_penthouse_dubai/penthouse_dubai_video_01_1080.mp4",
+        "mobile": "/projects/01_penthouse_dubai/penthouse_dubai_video_01_720.mp4",
+        "poster": "/projects/01_penthouse_dubai/penthouse_dubai_video_01_poster.webp"
+      },
+      {
+        "desktop": "/projects/01_penthouse_dubai/penthouse_dubai_video_02_1080.mp4",
+        "mobile": "/projects/01_penthouse_dubai/penthouse_dubai_video_02_720.mp4",
+        "poster": "/projects/01_penthouse_dubai/penthouse_dubai_video_02_poster.webp"
+      }
+    ]
+  },
+  {
+    "id": "02_villa_cape_town",
+    "title": "Villa Cape Town",
+    "category": "real-estate",
+    "cover": {
+      "src": "/projects/02_villa_cape_town/villa_cape_town_cover.webp",
+      "mobile": "/projects/02_villa_cape_town/villa_cape_town_cover_mobile.webp",
+      "w": 2752,
+      "h": 1536,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/02_villa_cape_town/villa_cape_town_gallery_01.webp",
+        "mobile": "/projects/02_villa_cape_town/villa_cape_town_gallery_01_mobile.webp",
+        "w": 2752,
+        "h": 1536,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/02_villa_cape_town/villa_cape_town_gallery_02.webp",
+        "mobile": "/projects/02_villa_cape_town/villa_cape_town_gallery_02_mobile.webp",
+        "w": 2752,
+        "h": 1536,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/02_villa_cape_town/villa_cape_town_gallery_03.webp",
+        "mobile": "/projects/02_villa_cape_town/villa_cape_town_gallery_03_mobile.webp",
+        "w": 2752,
+        "h": 1536,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/02_villa_cape_town/villa_cape_town_gallery_04.webp",
+        "mobile": "/projects/02_villa_cape_town/villa_cape_town_gallery_04_mobile.webp",
+        "w": 2752,
+        "h": 1536,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/02_villa_cape_town/villa_cape_town_gallery_05.webp",
+        "mobile": "/projects/02_villa_cape_town/villa_cape_town_gallery_05_mobile.webp",
+        "w": 2752,
+        "h": 1536,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/02_villa_cape_town/villa_cape_town_gallery_06.webp",
+        "mobile": "/projects/02_villa_cape_town/villa_cape_town_gallery_06_mobile.webp",
+        "w": 2752,
+        "h": 1536,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/02_villa_cape_town/villa_cape_town_gallery_07.webp",
+        "mobile": "/projects/02_villa_cape_town/villa_cape_town_gallery_07_mobile.webp",
+        "w": 2752,
+        "h": 1536,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [
+      {
+        "desktop": "/projects/02_villa_cape_town/villa_cape_town_video_01_1080.mp4",
+        "mobile": "/projects/02_villa_cape_town/villa_cape_town_video_01_720.mp4",
+        "poster": "/projects/02_villa_cape_town/villa_cape_town_video_01_poster.webp"
+      },
+      {
+        "desktop": "/projects/02_villa_cape_town/villa_cape_town_video_02_1080.mp4",
+        "mobile": "/projects/02_villa_cape_town/villa_cape_town_video_02_720.mp4",
+        "poster": "/projects/02_villa_cape_town/villa_cape_town_video_02_poster.webp"
+      },
+      {
+        "desktop": "/projects/02_villa_cape_town/villa_cape_town_video_03_1080.mp4",
+        "mobile": "/projects/02_villa_cape_town/villa_cape_town_video_03_720.mp4",
+        "poster": "/projects/02_villa_cape_town/villa_cape_town_video_03_poster.webp"
+      }
+    ]
+  },
+  {
+    "id": "03_ca_dei_colli",
+    "title": "Ca' dei Colli",
+    "category": "real-estate",
+    "cover": {
+      "src": "/projects/03_ca_dei_colli/ca_dei_colli_cover.webp",
+      "mobile": "/projects/03_ca_dei_colli/ca_dei_colli_cover_mobile.webp",
+      "w": 5504,
+      "h": 3072,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/03_ca_dei_colli/ca_dei_colli_gallery_01.webp",
+        "mobile": "/projects/03_ca_dei_colli/ca_dei_colli_gallery_01_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/03_ca_dei_colli/ca_dei_colli_gallery_02.webp",
+        "mobile": "/projects/03_ca_dei_colli/ca_dei_colli_gallery_02_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/03_ca_dei_colli/ca_dei_colli_gallery_03.webp",
+        "mobile": "/projects/03_ca_dei_colli/ca_dei_colli_gallery_03_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/03_ca_dei_colli/ca_dei_colli_gallery_04.webp",
+        "mobile": "/projects/03_ca_dei_colli/ca_dei_colli_gallery_04_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/03_ca_dei_colli/ca_dei_colli_gallery_05.webp",
+        "mobile": "/projects/03_ca_dei_colli/ca_dei_colli_gallery_05_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/03_ca_dei_colli/ca_dei_colli_gallery_06.webp",
+        "mobile": "/projects/03_ca_dei_colli/ca_dei_colli_gallery_06_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/03_ca_dei_colli/ca_dei_colli_gallery_07.webp",
+        "mobile": "/projects/03_ca_dei_colli/ca_dei_colli_gallery_07_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [
+      {
+        "desktop": "/projects/03_ca_dei_colli/ca_dei_colli_video_01_1080.mp4",
+        "mobile": "/projects/03_ca_dei_colli/ca_dei_colli_video_01_720.mp4",
+        "poster": "/projects/03_ca_dei_colli/ca_dei_colli_video_01_poster.webp"
+      }
+    ]
+  },
+  {
+    "id": "04_forest_house",
+    "title": "Forest House",
+    "category": "real-estate",
+    "cover": {
+      "src": "/projects/04_forest_house/forest_house_cover.webp",
+      "mobile": "/projects/04_forest_house/forest_house_cover_mobile.webp",
+      "w": 2496,
+      "h": 1664,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/04_forest_house/forest_house_gallery_01.webp",
+        "mobile": "/projects/04_forest_house/forest_house_gallery_01_mobile.webp",
+        "w": 5056,
+        "h": 3392,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/04_forest_house/forest_house_gallery_02.webp",
+        "mobile": "/projects/04_forest_house/forest_house_gallery_02_mobile.webp",
+        "w": 4790,
+        "h": 2748,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/04_forest_house/forest_house_gallery_03.webp",
+        "mobile": "/projects/04_forest_house/forest_house_gallery_03_mobile.webp",
+        "w": 5056,
+        "h": 3392,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/04_forest_house/forest_house_gallery_04.webp",
+        "mobile": "/projects/04_forest_house/forest_house_gallery_04_mobile.webp",
+        "w": 5056,
+        "h": 3392,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/04_forest_house/forest_house_gallery_05.webp",
+        "mobile": "/projects/04_forest_house/forest_house_gallery_05_mobile.webp",
+        "w": 1080,
+        "h": 1440,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/04_forest_house/forest_house_gallery_06.webp",
+        "mobile": "/projects/04_forest_house/forest_house_gallery_06_mobile.webp",
+        "w": 1632,
+        "h": 2175,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/04_forest_house/forest_house_gallery_07.webp",
+        "mobile": "/projects/04_forest_house/forest_house_gallery_07_mobile.webp",
+        "w": 1080,
+        "h": 1440,
+        "orientation": "vertical"
+      }
+    ],
+    "videos": []
+  },
+  {
+    "id": "05_corfu_resort",
+    "title": "Corfu Resort",
+    "category": "luxury",
+    "cover": {
+      "src": "/projects/05_corfu_resort/corfu_resort_cover.webp",
+      "mobile": "/projects/05_corfu_resort/corfu_resort_cover_mobile.webp",
+      "w": 1344,
+      "h": 752,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_01.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_01_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_02.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_02_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_03.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_03_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_04.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_04_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_05.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_05_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_06.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_06_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_07.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_07_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [
+      {
+        "desktop": "/projects/05_corfu_resort/corfu_resort_video_01_1080.mp4",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_video_01_720.mp4",
+        "poster": "/projects/05_corfu_resort/corfu_resort_video_01_poster.webp"
+      }
+    ]
+  },
+  {
+    "id": "06_kassab_residence",
+    "title": "Kassab Residence",
+    "category": "real-estate",
+    "cover": {
+      "src": "/projects/06_kassab_residence/kassab_residence_cover.webp",
+      "mobile": "/projects/06_kassab_residence/kassab_residence_cover_mobile.webp",
+      "w": 2752,
+      "h": 1536,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/06_kassab_residence/kassab_residence_gallery_01.webp",
+        "mobile": "/projects/06_kassab_residence/kassab_residence_gallery_01_mobile.webp",
+        "w": 2752,
+        "h": 1536,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/06_kassab_residence/kassab_residence_gallery_02.webp",
+        "mobile": "/projects/06_kassab_residence/kassab_residence_gallery_02_mobile.webp",
+        "w": 2752,
+        "h": 1536,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/06_kassab_residence/kassab_residence_gallery_03.webp",
+        "mobile": "/projects/06_kassab_residence/kassab_residence_gallery_03_mobile.webp",
+        "w": 4096,
+        "h": 2294,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/06_kassab_residence/kassab_residence_gallery_04.webp",
+        "mobile": "/projects/06_kassab_residence/kassab_residence_gallery_04_mobile.webp",
+        "w": 2752,
+        "h": 1536,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/06_kassab_residence/kassab_residence_gallery_05.webp",
+        "mobile": "/projects/06_kassab_residence/kassab_residence_gallery_05_mobile.webp",
+        "w": 2880,
+        "h": 1280,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/06_kassab_residence/kassab_residence_gallery_06.webp",
+        "mobile": "/projects/06_kassab_residence/kassab_residence_gallery_06_mobile.webp",
+        "w": 4096,
+        "h": 2294,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [
+      {
+        "desktop": "/projects/06_kassab_residence/kassab_residence_video_01_1080.mp4",
+        "mobile": "/projects/06_kassab_residence/kassab_residence_video_01_720.mp4",
+        "poster": "/projects/06_kassab_residence/kassab_residence_video_01_poster.webp"
+      }
+    ]
+  },
+  {
+    "id": "07_elvira_dubai",
+    "title": "Elvira Dubai",
+    "category": "luxury",
+    "cover": {
+      "src": "/projects/07_elvira_dubai/elvira_dubai_cover.webp",
+      "mobile": "/projects/07_elvira_dubai/elvira_dubai_cover_mobile.webp",
+      "w": 5056,
+      "h": 3392,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/07_elvira_dubai/elvira_dubai_gallery_01.webp",
+        "mobile": "/projects/07_elvira_dubai/elvira_dubai_gallery_01_mobile.webp",
+        "w": 5056,
+        "h": 3392,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/07_elvira_dubai/elvira_dubai_gallery_02.webp",
+        "mobile": "/projects/07_elvira_dubai/elvira_dubai_gallery_02_mobile.webp",
+        "w": 2752,
+        "h": 1536,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/07_elvira_dubai/elvira_dubai_gallery_03.webp",
+        "mobile": "/projects/07_elvira_dubai/elvira_dubai_gallery_03_mobile.webp",
+        "w": 2752,
+        "h": 1536,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/07_elvira_dubai/elvira_dubai_gallery_04.webp",
+        "mobile": "/projects/07_elvira_dubai/elvira_dubai_gallery_04_mobile.webp",
+        "w": 2048,
+        "h": 1360,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [
+      {
+        "desktop": "/projects/07_elvira_dubai/elvira_dubai_video_01_1080.mp4",
+        "mobile": "/projects/07_elvira_dubai/elvira_dubai_video_01_720.mp4",
+        "poster": "/projects/07_elvira_dubai/elvira_dubai_video_01_poster.webp"
+      }
+    ]
+  }
+]
