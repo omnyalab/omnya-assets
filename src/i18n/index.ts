@@ -208,8 +208,8 @@ const en = {
     note: '*Prices for standard work. A simple project can cost less; a very complex one we price together before we start.',
     caseLabel: '(A real project)',
     caseA: '€1,860',
-    caseB: 'that sold a resort',
-    caseText: 'Hygeia Grove, Corfu. The resort only existed on paper. With 24 images and a 90-second film, for €1,860, the architect presented it before the first stone was laid. He won the project, the client paid for it and construction has already started.',
+    caseB: 'that earned almost €100,000',
+    caseText: 'Hygeia Grove, Corfu. The resort only existed on paper. With 24 images and a 90-second film, for €1,860, the architect presented it before the first stone was laid. His client fell for the story told in the film and gave him the project. The architect earned almost €100,000 from it, and construction has already started.',
     caseStats: [
       { n: '24', label: 'Images, inside and out' },
       { n: '90″', label: 'Of film with music' },
@@ -453,8 +453,8 @@ const it: Dict = {
     note: '*Prezzi per lavori standard. Un progetto semplice può costare meno; uno molto complesso lo valutiamo insieme prima di partire.',
     caseLabel: '(Un progetto vero)',
     caseA: '1.860 euro',
-    caseB: 'che hanno venduto un resort',
-    caseText: 'Hygeia Grove, Corfù. Il resort esisteva solo sulla carta. Con 24 render e un film da 90 secondi, per 1.860 euro, l’architetto l’ha presentato prima di posare la prima pietra. Si è aggiudicato il progetto, il cliente l’ha pagato e il cantiere è già partito.',
+    caseB: 'che ne hanno fruttati quasi 100.000',
+    caseText: 'Hygeia Grove, Corfù. Il resort esisteva solo sulla carta. Con 24 render e un film da 90 secondi, per 1.860 euro, l’architetto l’ha presentato prima di posare la prima pietra. Il cliente si è innamorato della storia raccontata nel film e gli ha affidato il progetto. L’architetto ci ha guadagnato quasi 100.000 euro, e il cantiere è già partito.',
     caseStats: [
       { n: '24', label: 'Render, interni ed esterni' },
       { n: '90″', label: 'Di film con musica' },
