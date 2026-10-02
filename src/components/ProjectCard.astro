@@ -1,6 +1,7 @@
 ---
 import Frame from './Frame.astro';
 import Num from './Num.astro';
+import Arrow from './Arrow.astro';
 import { href, number, type Project } from '../lib/data';
 import { t, langFromPath, localize } from '../i18n';
 import { alt } from '../lib/alts';
@@ -30,10 +31,14 @@ const T = t(lang);
   data-plink
   data-cursor={T.cursor.view}
 >
-  <Frame still={p.cover} alt={alt(p, lang)} sizes={sizes} ar={ar} eager={eager} class="pcard__frame" cover />
+  <div class="pcard__media">
+    <Frame still={p.cover} alt={alt(p, lang)} sizes={sizes} ar={ar} eager={eager} class="pcard__frame" cover />
+    {/* touch screens: the same "View" circle as the desktop cursor, shown while the card is mid-screen */}
+    <span class="pcard__view" aria-hidden="true"><span>{T.cursor.view}</span></span>
+  </div>
   <div class="pcard__cap">
     <Num class="pcard__n" value={number(p)} />
-    <span class="pcard__title">{p.title}</span>
+    <span class="pcard__title">{p.title}<Arrow diag class="pcard__arrow" /></span>
     <span class="pcard__cat">{T.categories[p.category]}</span>
   </div>
 </a>

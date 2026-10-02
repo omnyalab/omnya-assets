@@ -12,7 +12,7 @@ import Duo from '../components/Duo.astro';
 import Frame from '../components/Frame.astro';
 import Arrow from '../components/Arrow.astro';
 import SampleCta from '../components/SampleCta.astro';
-import { pad, projects, type Still } from '../lib/data';
+import { pad, type Still } from '../lib/data';
 import { srcset } from '../lib/media';
 import { kit } from '../lib/kit';
 import { contact } from '../lib/contact';
@@ -44,13 +44,6 @@ const views = [
 const stageSet = (name: string) => srcset(still(name, 2400, 1340));
 const stageSizes = '(min-width: 900px) 62vw, calc(100vw - 32px)';
 
-// What we make: one picture per service, straight from the projects
-const shot = (path: string) => projects.flatMap((p) => p.gallery).find((g) => g.src === path)!;
-const makeImgs = [
-  shot('/projects/01_penthouse_dubai/penthouse_dubai_gallery_02.webp'),
-  shot('/projects/03_ca_dei_colli/ca_dei_colli_gallery_04.webp'),
-  shot('/projects/06_kassab_residence/kassab_residence_gallery_06.webp'),
-];
 const pearl = still('studio_05_mother_of_pearl', 2400, 1350);
 const files = kit(lang);
 const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubject)}`;
@@ -185,26 +178,20 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
   </section>
 
   <!-- 4. What we make -->
-  <section class="make wrap" aria-labelledby="make-title" data-make>
+  <section class="make wrap" aria-labelledby="make-title">
     <p class="t-small mute" data-fade>{S.makeLabel}</p>
     <Duo size="h2" class="make__title" a={S.makeA} b={S.makeB} />
     <ul class="make__list">
       {
-        S.services.map((sv, i) => (
-          <li class="make__row" data-make-row={i}>
+        S.services.map((sv) => (
+          <li class="make__row">
             <span class="make__name t-h2">{sv.name}</span>
             <span class="make__text">{sv.text}</span>
             <span class="make__price">{sv.price}</span>
-            <span class="make__thumb frame" style={`--ar: ${makeImgs[i].w} / ${makeImgs[i].h}`}>
-              <img data-src={makeImgs[i].mobile} width={makeImgs[i].w} height={makeImgs[i].h} alt={sv.alt} decoding="async" />
-            </span>
           </li>
         ))
       }
     </ul>
-    <div class="make__float" aria-hidden="true" data-make-float>
-      {makeImgs.map((m) => <img data-src={m.mobile} width={m.w} height={m.h} alt="" decoding="async" />)}
-    </div>
     <a href={localize('/pricing', lang)} class="btn make__btn" data-fade>{S.seePrices} <Arrow /></a>
   </section>
 

@@ -301,9 +301,7 @@ img[data-src], img[data-seeall-src], img[data-src-d]:not([src]) { visibility: hi
   border-bottom: 1px solid var(--line);
   opacity: 0; transition: opacity 0.4s ease;
 }
-@media (max-width: 899px) {
-  .hdr.is-solid::before { opacity: 1; }
-}
+.hdr.is-solid::before { opacity: 1; }
 html.menu-open .hdr::before { opacity: 0; }
 
 /* Over the reel and project covers: a whisper of shadow on logo, languages, burger */
@@ -421,7 +419,7 @@ html.menu-open .hdr .logo__img--light { opacity: 0; }
 .ftr__bottom a { color: #fff; }
 @media (min-width: 900px) {
   .ftr__grid { grid-template-columns: repeat(4, 1fr); }
-  .ftr__cta { grid-column: auto; justify-self: end; align-self: start; }
+  .ftr__cta { grid-column: 1 / -1; justify-self: start; }
 }
 
 /* ==========================================================================
@@ -446,8 +444,9 @@ html.menu-open .hdr .logo__img--light { opacity: 0; }
 }
 .curtain__title {
   text-align: center; text-wrap: balance;
-  /* 20% smaller than the first version */
-  font-size: clamp(2.1rem, 8.8vw, 7.2rem); line-height: 0.92; letter-spacing: -0.045em;
+  /* 20% smaller than the first version; line height leaves room between a
+     descender (g, p) and the capitals of the next line */
+  font-size: clamp(2.1rem, 8.8vw, 7.2rem); line-height: 1.12; letter-spacing: -0.045em;
   max-width: 12ch;
 }
 .curtain__line {
@@ -455,7 +454,7 @@ html.menu-open .hdr .logo__img--light { opacity: 0; }
   background: var(--ink); transform-origin: left center; transform: scaleX(0);
 }
 @media (min-width: 700px) { .curtain__line { width: 560px; } }
-.curtain .cw-mask { padding: 0.22em 0.04em 0.24em; margin: -0.22em -0.04em -0.24em; }
+.curtain .cw-mask { padding: 0.12em 0.04em 0.14em; margin: -0.12em -0.04em -0.14em; }
 
 /* Custom scrollbar: desktop with Lenis only */
 .sbar { display: none; }
@@ -585,11 +584,13 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
 .hero__media video, .hero__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hero__shade {
   position: absolute; inset: 0; pointer-events: none;
-  /* top and bottom for the header and the cue, an oval behind the title.
-     Measured on every frame of both reels: the white line keeps at least
-     4.5:1 on the brightest one (the 70% line, 3.4:1, large text). */
+  /* top and bottom for the header and the cue, and a long soft oval behind the
+     title (eased stops, no visible edge, 0.4 at most). With the title's wide
+     shadow, large text keeps about 3:1 on the brightest frame of the reels. */
   background:
-    radial-gradient(62% 38% at 50% 50%, rgba(0, 0, 0, 0.54) 0%, rgba(0, 0, 0, 0.54) 75%, rgba(0, 0, 0, 0) 100%),
+    radial-gradient(85% 62% at 50% 50%,
+      rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.39) 20%, rgba(0, 0, 0, 0.36) 35%, rgba(0, 0, 0, 0.3) 50%,
+      rgba(0, 0, 0, 0.23) 62%, rgba(0, 0, 0, 0.15) 74%, rgba(0, 0, 0, 0.07) 86%, rgba(0, 0, 0, 0.02) 94%, rgba(0, 0, 0, 0) 100%),
     linear-gradient(180deg, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0) 26%, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.36) 100%);
 }
 .hero__title {
@@ -597,7 +598,7 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
   display: grid; place-items: center; text-align: center;
   pointer-events: none;
 }
-.hero__title h1 { max-width: 12ch; }
+.hero__title h1 { max-width: 12ch; text-shadow: 0 0 24px rgba(0, 0, 0, 0.28), 0 0 90px rgba(0, 0, 0, 0.32); }
 .hero__title .mute { color: rgba(255, 255, 255, 0.7); }
 .hero__dim { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }
 /* Scroll cue: label + a line with a segment that keeps falling. The whole cue
@@ -651,6 +652,19 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
   padding-top: 14px; font-size: var(--fs-small);
 }
 .pcard__title { font-size: var(--fs-sub); letter-spacing: -0.02em; line-height: 1.2; }
+.pcard__arrow { display: inline-block; width: 0.55em; height: 0.55em; margin-left: 0.3em; vertical-align: 0.08em; }
+.pcard__media { position: relative; }
+/* touch screens: the desktop cursor's "View" circle, while the card is mid-screen */
+.pcard__view {
+  position: absolute; left: 50%; top: 50%; z-index: 2; pointer-events: none;
+  width: 88px; height: 88px; margin: -44px 0 0 -44px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--bg); color: var(--ink); font-size: var(--fs-small);
+  opacity: 0; transform: scale(0.4);
+  transition: transform 0.6s var(--ease), opacity 0.4s ease;
+}
+.pcard.is-center .pcard__view { opacity: 1; transform: scale(1); }
+@media (hover: hover) and (pointer: fine) { .pcard__view { display: none; } }
 .pcard__cat { color: var(--mute); }
 .pcard__n { color: var(--mute); }
 
@@ -884,7 +898,8 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
 .poster {
   --pr: 0.7465;
   --px: 0.5;
-  --iw: max(100cqw, 100cqh * var(--pr));
+  --zoom: 1;
+  --iw: calc(max(100cqw, 100cqh * var(--pr)) * var(--zoom));
   --ih: calc(var(--iw) / var(--pr));
   --ox: calc((100cqw - var(--iw)) * var(--px));
   position: relative; z-index: 0; overflow: hidden;
@@ -894,9 +909,9 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
   color: #fff;
 }
 .poster__img {
-  position: absolute; inset: 0; width: 100%; height: 100%; max-width: none;
-  object-fit: cover;
-  object-position: calc(var(--px) * 100%) var(--oy);
+  /* same box for both photos: they always line up */
+  position: absolute; left: var(--ox); top: var(--oy); width: var(--iw); height: var(--ih); max-width: none;
+  object-fit: fill;
 }
 .poster__fg { z-index: 2; }
 .poster__word {
@@ -950,8 +965,8 @@ p.poster__top { flex-direction: column; justify-content: flex-start; gap: 0; }
   --w1: 1.66;                    /* em widths of the two lines (measured) */
   --w2: 1.54;
   --hide: 0.24;                  /* em of the second line behind the wall, mid word */
-  --yb-want: 76cqh;
-  --fs: min(calc((100cqw - 2 * var(--g)) / max(var(--w1), var(--w2))), 36cqh, calc((var(--ih) * 0.46 - var(--hdr) - 72px) / 1.29));
+  --yb-want: 70cqh;
+  --fs: min(calc((100cqw - 2 * var(--g)) / max(var(--w1), var(--w2))), 36cqh, calc((var(--yb-want) - var(--hdr) - 72px) / 1.53));
   --xc: calc(var(--g) + var(--fs) * var(--w2) / 2);
   --wy: calc(var(--ih) * var(--wall) - var(--slope) * (var(--xc) - var(--ox)));
   --oy: clamp(100cqh - var(--ih), var(--yb-want) - var(--hide) * var(--fs) - var(--wy), 0px);
@@ -959,6 +974,9 @@ p.poster__top { flex-direction: column; justify-content: flex-start; gap: 0; }
   --drop: 0.036;
 }
 html[lang='it'] .poster--try { --w1: 2.23; --w2: 2.18; }
+/* tall screens: the photo is drawn a little larger so it can move up with the
+   words; "free" stays partly behind the wall */
+@media (orientation: portrait) { .poster--try { --zoom: 1.12; --yb-want: 45cqh; } }
 .poster__word--two .poster__mask + .poster__mask { margin-top: 0; }
 .poster--try .poster__shade {
   background:
@@ -1107,8 +1125,6 @@ img[data-stage-src] { visibility: hidden; }
 .make__name { grid-column: 1; }
 .make__price { grid-column: 2; grid-row: 1; font-size: var(--fs-sub); letter-spacing: -0.02em; white-space: nowrap; }
 .make__text { grid-column: 1 / -1; max-width: 40ch; color: #3a3936; }
-.make__thumb { grid-column: 1 / -1; margin-top: 8px; width: 62%; }
-.make__float { display: none; }
 .make__btn { margin-top: clamp(32px, 4vw, 56px); }
 .make__row { grid-template-columns: minmax(0, 1fr) auto; }
 .make__name { overflow-wrap: anywhere; }
@@ -1122,21 +1138,6 @@ img[data-stage-src] { visibility: hidden; }
   .make__name { grid-column: 1; }
   .make__text { grid-column: 2; grid-row: 1; }
   .make__price { grid-column: 3; justify-self: end; font-size: var(--fs-h3); letter-spacing: -0.035em; line-height: 1; }
-}
-@media (min-width: 900px) and (hover: hover) and (pointer: fine) {
-  .make__thumb { display: none; }
-  .make__row { transition: color 0.6s var(--ease); }
-  .make__list:hover .make__row { color: var(--mute); }
-  .make__list:hover .make__row:hover { color: var(--ink); }
-  .make__list:hover .make__row .make__text { color: inherit; }
-  .make__float {
-    display: block; position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none;
-    width: 22vw; aspect-ratio: 16 / 10; margin: calc(-11vw * 10 / 16) 0 0 -11vw;
-    overflow: hidden; background: #dcd7cf;
-    clip-path: inset(50% 50% 50% 50%);
-  }
-  .make__float img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
-  .make__float img.is-on { opacity: 1; }
 }
 
 /* ---------- Timings: dark, like the footer ---------- */
@@ -1195,10 +1196,10 @@ img[data-stage-src] { visibility: hidden; }
 .kit__size { color: var(--mute); }
 .kit__dl { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; }
 .kit__dl .btn__arrow { width: 12px; height: 12px; transform: rotate(90deg); }
-.kit__web { margin-top: clamp(40px, 6vw, 72px); color: var(--mute); max-width: 60ch; }
+.kit__web { margin-top: 32px; color: var(--mute); max-width: 60ch; }
 .kit__web a { color: var(--ink); }
 @media (min-width: 900px) {
-  .kit__web { margin-left: calc(41.6% + var(--g) * 0.4); }
+  .kit__web { margin-top: 40px; }
 }
 @media (min-width: 900px) and (hover: hover) and (pointer: fine) {
   /* three printed covers on a table: slightly overlapped and turned */
@@ -1214,6 +1215,8 @@ img[data-stage-src] { visibility: hidden; }
   .kit__item:hover { z-index: 3; }
   .kit__item:hover .kit__card { transform: translateY(-18px) rotate(0deg); box-shadow: 0 1px 2px rgba(17, 17, 17, 0.08), 0 40px 70px -28px rgba(17, 17, 17, 0.45); }
   .kit__meta { padding-top: 32px; padding-left: 3vw; }
+  /* the covers are centred (27 + 27 + 19vw, minus two 2vw overlaps): start under the first */
+  .kit__web { margin-left: calc((100% - 69vw) / 2); }
   .kit__item:first-child .kit__meta { padding-left: 0; }
 }
 
@@ -1233,7 +1236,6 @@ img[data-stage-src] { visibility: hidden; }
 .ptable tbody tr:last-child { border-bottom: 1px solid var(--line); }
 .ptable__q { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; grid-row: 1 / 3; }
 .ptable__qn { font-size: var(--fs-sub); letter-spacing: -0.02em; }
-.ptable__unit { font-size: var(--fs-small); color: var(--mute); }
 .ptable__price { font-size: var(--fs-h3); line-height: 1; letter-spacing: -0.035em; text-align: right !important; white-space: nowrap; }
 .ptable__each { grid-column: 2; font-size: var(--fs-small); color: var(--mute); text-align: right !important; }
 .ptable__each[data-label]::after { content: ' / ' attr(data-label); }
@@ -1388,9 +1390,6 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' al pezzo'; }
   .js:not(.pre-run) [data-num] > span { transform: none; }
   .hero__cue i::after { animation: none; }
   .js:not(.pre-run) [data-poster] .poster__w { transform: none; }
-  /* no picture following the pointer: each service keeps its still picture */
-  .make__float { display: none !important; }
-  .make__thumb { display: block !important; width: min(62%, 420px); }
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
   .pre__logo .logo__img { animation: none !important; }
 }

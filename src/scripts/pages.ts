@@ -2,9 +2,25 @@ import { gsap, ScrollTrigger, Flip, reduced, fine, isMobile, heroIsMobile } from
 import { onDestroy, inPage, onIntro } from './anim';
 import { contact } from '../lib/contact';
 
+/* ---------- Project cards on touch screens ----------
+   No cursor to say "View": the same circle appears on the picture while the
+   card crosses the middle of the screen, and goes when it leaves. */
+function cardHints() {
+  if (fine) return;
+  const cards = document.querySelectorAll<HTMLElement>('.pcard');
+  if (!cards.length) return;
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach((e) => e.target.classList.toggle('is-center', e.isIntersecting)),
+    { rootMargin: '-45% 0px -45% 0px' }
+  );
+  cards.forEach((c) => io.observe(c));
+  onDestroy(() => io.disconnect());
+}
+
 /* ---------- Home ---------- */
 export function home(intro: Promise<void>) {
   seeAll();
+  cardHints();
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   const video = hero?.querySelector('video');
   if (!hero || !video) return;
@@ -114,6 +130,7 @@ function seeAll() {
 
 /* ---------- Work: category filter with Flip ---------- */
 export function work() {
+  cardHints();
   const grid = document.querySelector<HTMLElement>('[data-wgrid]');
   const buttons = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
   if (!grid || !buttons.length) return;

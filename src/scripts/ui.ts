@@ -172,6 +172,8 @@ function darkAt(y: number): HTMLElement | null {
 const isDarkAt = (y: number) => !!darkAt(y);
 
 let lastY = 0;
+let fabDown = false;
+let fabMoved = 0;
 function updateHeader(force = false) {
   const hdr = document.querySelector<HTMLElement>('[data-hdr]');
   if (!hdr) return;
@@ -192,12 +194,17 @@ function updateHeader(force = false) {
   // on paper, once the page moves: a solid bar (mobile, see CSS)
   set('is-solid', !zone && y > 8);
 
-  // WhatsApp button: fades out as soon as the footer comes in
+  // WhatsApp button: out of the way while scrolling down, back when scrolling up
+  // or after a short stop; never over the footer
   const fab = document.querySelector<HTMLElement>('[data-fab]');
   if (fab) {
+    const now = performance.now();
+    if (dy > 2) { fabDown = true; fabMoved = now; }
+    else if (dy < -2) { fabDown = false; fabMoved = now; }
     const ftr = document.querySelector('.ftr');
     const overFooter = !!ftr && ftr.getBoundingClientRect().top < window.innerHeight - 8;
-    fab.classList.toggle('is-on', y > 40 && !overFooter);
+    const resting = now - fabMoved > 700;
+    fab.classList.toggle('is-on', y > 40 && !overFooter && (!fabDown || resting));
   }
 }
 

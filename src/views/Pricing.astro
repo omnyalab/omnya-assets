@@ -38,7 +38,6 @@ const bestRow = P.imagesRows.length - 1;
             <tr class:list={{ 'is-best': i === bestRow }}>
               <th scope="row" class="ptable__q">
                 <span class="ptable__qn">{q}</span>
-                <span class="ptable__unit">{P.imagesUnit(q)}</span>
                 {i === bestRow && <span class="ptable__pill">{P.best}</span>}
               </th>
               <td class="ptable__price">{price}</td>

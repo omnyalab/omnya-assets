@@ -5,10 +5,9 @@
 //   scroll scrubs p, snapping on each stage. Touch: no pin, the stages run once on
 //   their own (every 2.2s) when the frame is half on screen; dots and swipe.
 //   Reduced motion: a still grid (CSS), only the view buttons work.
-// - What we make: on desktop a small picture follows the pointer over the rows.
 // - Timings: the figures count up from zero once, in 1.2s.
 // The pictures never move with the scroll: only the stage changes.
-import { gsap, ScrollTrigger, SplitText, reduced, fine } from './core';
+import { gsap, ScrollTrigger, SplitText, reduced } from './core';
 import { onDestroy, inPage, onIntro } from './anim';
 
 const EASE = 'expo.out';
@@ -18,7 +17,6 @@ const seg = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
 export function studio(intro: Promise<void>) {
   posters(intro);
   stages();
-  make();
   times();
 }
 
@@ -287,44 +285,6 @@ function stages() {
       box.removeEventListener('pointercancel', cancel);
     };
   });
-}
-
-/* ---------- What we make: a picture follows the pointer (desktop) ---------- */
-function make() {
-  const sec = document.querySelector<HTMLElement>('[data-make]');
-  if (!sec || !fine || reduced || !window.matchMedia('(min-width: 900px)').matches) return;
-  const float = sec.querySelector<HTMLElement>('[data-make-float]')!;
-  const list = sec.querySelector<HTMLElement>('.make__list')!;
-  const imgs = Array.from(float.querySelectorAll('img'));
-  const rows = Array.from(sec.querySelectorAll<HTMLElement>('[data-make-row]'));
-  const xTo = gsap.quickTo(float, 'x', { duration: 0.5, ease: 'power3' });
-  const yTo = gsap.quickTo(float, 'y', { duration: 0.5, ease: 'power3' });
-  let inside = false;
-  let mx = 0, my = 0;
-
-  const place = (snap = false) => {
-    const r = sec.getBoundingClientRect();
-    const x = mx - r.left;
-    const y = my - r.top;
-    if (snap) gsap.set(float, { x, y });
-    else { xTo(x); yTo(y); }
-  };
-  const onMove = (e: MouseEvent) => { mx = e.clientX; my = e.clientY; place(!inside); inside = true; };
-  const onScroll = () => { if (inside) place(); };
-  const onLeave = () => {
-    inside = false;
-    gsap.to(float, { clipPath: 'inset(50% 50% 50% 50%)', duration: 0.6, ease: EASE });
-  };
-  rows.forEach((row, i) =>
-    row.addEventListener('mouseenter', () => {
-      imgs.forEach((im, j) => im.classList.toggle('is-on', j === i));
-      gsap.to(float, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.7, ease: EASE });
-    })
-  );
-  list.addEventListener('mousemove', onMove);
-  list.addEventListener('mouseleave', onLeave);
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onDestroy(() => window.removeEventListener('scroll', onScroll));
 }
 
 /* ---------- Timings: count up once ---------- */
