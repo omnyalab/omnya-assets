@@ -44,16 +44,24 @@ const rows = [
     </div>
     <div class="hero__shade"></div>
     <div class="hero__dim"></div>
-    <div class="hero__cue" aria-hidden="true">
-      <div class="hero__cue-in" data-fade="0.1" data-intro><span>{H.scroll}</span><i></i></div>
+    <div class="hero__title wrap">
+      <Duo as="h1" size="h1" a={H.heroA} b={H.heroB} intro />
     </div>
+    <a class="hero__cue" href="#statement" aria-label={H.scrollLabel} data-scroll-to>
+      <span class="hero__cue-in" data-fade="0.3" data-intro><span>{H.scroll}</span><i></i></span>
+    </a>
   </section>
 
   <div class="after-hero">
-    <section class="statement wrap">
-      <Duo as="h1" size="h1" class="statement__title" a={H.titleA} b={H.titleB} />
+    <section class="statement wrap" id="statement">
+      <Duo as="h2" size="h1" class="statement__title" a={H.titleA} b={H.titleB} />
       <div class="statement__row">
-        <p class="statement__line" data-fade>{H.line}</p>
+        <div class="statement__txt">
+          <p class="statement__line" data-fade>{H.line}</p>
+          <ul class="facts" data-fade>
+            {H.facts.map((f) => <li>{f}</li>)}
+          </ul>
+        </div>
         <SampleCta data-fade />
       </div>
     </section>

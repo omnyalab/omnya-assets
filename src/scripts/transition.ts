@@ -10,7 +10,7 @@ import { t, langFromPath, stripLang } from '../i18n';
 
 export type Mode = 'none' | 'curtain' | 'project';
 
-const keys: Record<string, string> = { '/': 'home', '/work': 'work', '/studio': 'studio', '/contact': 'contact', '/privacy-policy': 'privacy' };
+const keys: Record<string, string> = { '/': 'home', '/work': 'work', '/studio': 'studio', '/pricing': 'pricing', '/contact': 'contact', '/privacy-policy': 'privacy' };
 const bySlug = new Map(projects.map((p) => [`/work/${slug(p)}`, p]));
 
 /** Two tones [ink, grey], in the language of the destination page. */

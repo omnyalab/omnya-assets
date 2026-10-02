@@ -24,6 +24,8 @@ export interface Project {
   description?: string;
   /** Shown on the home page. */
   featured?: boolean;
+  /** Address under /work, when it differs from the id (renamed projects keep their folders). */
+  slug?: string;
 }
 
 export const projects = raw as Project[];
@@ -37,7 +39,7 @@ export const categories: Record<Project['category'], string> = {
 const FILMS = new Set(['03_ca_dei_colli']);
 export const isFilm = (p: Project) => FILMS.has(p.id);
 
-export const slug = (p: Project) => p.id.replace(/^\d+_/, '').replace(/_/g, '-');
+export const slug = (p: Project) => p.slug ?? p.id.replace(/^\d+_/, '').replace(/_/g, '-');
 export const href = (p: Project) => `/work/${slug(p)}`;
 export const pad = (n: number) => String(n).padStart(2, '0');
 export const number = (p: Project) => pad(projects.indexOf(p) + 1);

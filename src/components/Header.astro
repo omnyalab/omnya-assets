@@ -14,10 +14,11 @@ const T = t(lang);
 const links = [
   { href: localize('/work', lang), label: T.nav.work, key: 'work', note: T.navNotes.work },
   { href: localize('/studio', lang), label: T.nav.studio, key: 'studio', note: T.navNotes.studio },
+  { href: localize('/pricing', lang), label: T.nav.pricing, key: 'pricing', note: T.navNotes.pricing },
   { href: localize('/contact', lang), label: T.nav.contact, key: 'contact', note: T.navNotes.contact },
 ];
 const current = (key: string) => (page === key ? 'page' : undefined);
-const startsDark = page === 'home' || page === 'project';
+const startsDark = page === 'home' || page === 'project' || page === 'studio';
 ---
 
 <!-- Pages that open over the reel or a cover start with the light header, no waiting for the script -->

@@ -301,7 +301,8 @@
   },
   {
     "id": "05_corfu_resort",
-    "title": "Corfu Resort",
+    "title": "Hygeia Grove",
+    "slug": "hygeia-grove",
     "category": "luxury",
     "cover": {
       "src": "/projects/05_corfu_resort/corfu_resort_cover.webp",

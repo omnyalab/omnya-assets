@@ -2,8 +2,10 @@
 import { contact } from '../lib/contact';
 import SampleCta from './SampleCta.astro';
 import { t, langFromPath, localize } from '../i18n';
+import { kit } from '../lib/kit';
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
+const files = kit(lang);
 const year = new Date().getFullYear();
 ---
 
@@ -35,6 +37,12 @@ const year = new Date().getFullYear();
           <li><a class="u" href={contact.instagram} target="_blank" rel="noopener">Instagram</a></li>
           <li><a class="u" href={contact.linkedin} target="_blank" rel="noopener">LinkedIn</a></li>
           <li><a class="u" href={contact.calendly} target="_blank" rel="noopener">{T.footer.book}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>{T.footer.kit}</h2>
+        <ul>
+          {files.map((f) => <li><a class="u" href={f.href} download={f.file}>{f.name}</a> <span class="ftr__note">PDF, {f.size}</span></li>)}
         </ul>
       </div>
       <div class="ftr__cta">

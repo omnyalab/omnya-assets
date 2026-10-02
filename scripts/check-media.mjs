@@ -38,7 +38,8 @@ const viewports = {
 const browser = await puppeteer.launch({
   executablePath: CHROME,
   headless: true,
-  args: ['--autoplay-policy=no-user-gesture-required', '--mute-audio'],
+  // as root (CI, containers) Chrome refuses to start without --no-sandbox
+  args: ['--autoplay-policy=no-user-gesture-required', '--mute-audio', ...(process.getuid?.() === 0 ? ['--no-sandbox'] : [])],
 });
 
 const problems = [];
@@ -49,7 +50,10 @@ async function inspect(page) {
     const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     const bad = [];
     // the preloader is skipped after the first visit: its photo intentionally has no file
-    const imgs = [...document.querySelectorAll('img')].filter((im) => !im.closest('.pre.is-gone'));
+    // images that are not rendered at all (display: none for this screen or mode,
+    // e.g. the reduced-motion grid or the desktop-only hover pictures) are never
+    // loaded on purpose
+    const imgs = [...document.querySelectorAll('img')].filter((im) => !im.closest('.pre.is-gone') && im.getClientRects().length > 0);
     // give late images a moment
     for (let i = 0; i < 40 && imgs.some((im) => im.src && !im.complete); i++) await wait(250);
     for (const im of imgs) {

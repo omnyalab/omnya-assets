@@ -22,7 +22,7 @@ const INK = { left: 110, top: 110, width: 1380, height: 232 }; // logo ink box i
 const O = { left: 110, width: 169 }; // the first "o"
 
 const projects = JSON.parse(readFileSync('src/data/projects.json', 'utf8'));
-const slug = (p) => p.id.replace(/^\d+_/, '').replace(/_/g, '-');
+const slug = (p) => p.slug ?? p.id.replace(/^\d+_/, '').replace(/_/g, '-');
 mkdirSync('public/og', { recursive: true });
 
 const logo = (file, width) => sharp(`public/brand/${file}`).extract(INK).resize({ width }).png().toBuffer();

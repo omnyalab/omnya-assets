@@ -14,8 +14,10 @@ export function initCursor() {
   const dot = root.querySelector<HTMLElement>('.cursor__dot')!;
   const bub = root.querySelector<HTMLElement>('.cursor__bub')!;
   const label = root.querySelector<HTMLElement>('[data-cursor-label]')!;
-  const qx = [gsap.quickTo(dot, 'x', { duration: 0.18, ease: 'power3' }), gsap.quickTo(bub, 'x', { duration: 0.55, ease: 'power3' })];
-  const qy = [gsap.quickTo(dot, 'y', { duration: 0.18, ease: 'power3' }), gsap.quickTo(bub, 'y', { duration: 0.55, ease: 'power3' })];
+  // The dot replaces the system arrow (see .has-dot in global.css), so it follows almost at once
+  html.classList.add('has-dot');
+  const qx = [gsap.quickTo(dot, 'x', { duration: 0.08, ease: 'power3' }), gsap.quickTo(bub, 'x', { duration: 0.55, ease: 'power3' })];
+  const qy = [gsap.quickTo(dot, 'y', { duration: 0.08, ease: 'power3' }), gsap.quickTo(bub, 'y', { duration: 0.55, ease: 'power3' })];
   let shown = false;
   let mx = -1, my = -1;
   window.addEventListener('mousemove', (e) => {
@@ -49,6 +51,21 @@ export function initCursor() {
   }
   document.documentElement.addEventListener('mouseleave', () => { root.classList.add('is-hidden'); shown = false; });
   document.addEventListener('astro:after-swap', () => root.classList.remove('is-view', 'is-link'));
+}
+
+/* ---------- In-page links that scroll smoothly ([data-scroll-to], e.g. the home "Scroll" cue) ---------- */
+export function initScrollLinks() {
+  document.addEventListener('click', (e) => {
+    const a = (e.target as Element).closest<HTMLAnchorElement>('a[data-scroll-to]');
+    if (!a) return;
+    const target = document.querySelector<HTMLElement>(a.getAttribute('href') || '');
+    if (!target) return;
+    e.preventDefault();
+    if (lenis && !reduced) lenis.scrollTo(target, { duration: 1.2 });
+    else target.scrollIntoView({ behavior: 'auto' });
+    target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: true });
+  });
 }
 
 /* ---------- Free-sample sheet ---------- */

@@ -1,0 +1,115 @@
+---
+// Prices: two tables (images by quantity, films by length), a real project on
+// a dark band, terms, then the free sample and the price list PDF.
+// On phones each table row becomes one line: quantity left, price large right.
+import Base from '../layouts/Base.astro';
+import Duo from '../components/Duo.astro';
+import Arrow from '../components/Arrow.astro';
+import SampleCta from '../components/SampleCta.astro';
+import { projects, href } from '../lib/data';
+import { kitFile } from '../lib/kit';
+import { srcset } from '../lib/media';
+import { t, langFromPath, localize } from '../i18n';
+
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang);
+const P = T.pricing;
+const hygeia = projects.find((p) => p.id === '05_corfu_resort')!;
+const prices = kitFile(lang, 'prices');
+const bestRow = P.imagesRows.length - 1;
+---
+
+<Base page="pricing" title={P.title} description={P.description}>
+  <section class="phead wrap">
+    <Duo as="h1" size="h1" a={P.titleA} b={P.titleB} intro />
+  </section>
+
+  <!-- Images -->
+  <section class="prices wrap" aria-labelledby="images-title">
+    <h2 class="t-h3 prices__title" id="images-title" data-split>{P.imagesA}{' '}<span class="mute">{P.imagesB}</span></h2>
+    <table class="ptable" data-fade>
+      <caption class="sr-only">{P.imagesA}, {P.imagesB}</caption>
+      <thead>
+        <tr>{P.imagesCols.map((c) => <th scope="col">{c}</th>)}</tr>
+      </thead>
+      <tbody>
+        {
+          P.imagesRows.map(([q, price, each], i) => (
+            <tr class:list={{ 'is-best': i === bestRow }}>
+              <th scope="row" class="ptable__q">
+                <span class="ptable__qn">{q}</span>
+                <span class="ptable__unit">{P.imagesUnit(q)}</span>
+                {i === bestRow && <span class="ptable__pill">{P.best}</span>}
+              </th>
+              <td class="ptable__price">{price}</td>
+              <td class="ptable__each" data-label={P.imagesCols[2]}>{each}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+    <p class="prices__note" data-fade>{P.imagesNote}</p>
+  </section>
+
+  <!-- Films -->
+  <section class="prices wrap" aria-labelledby="films-title">
+    <h2 class="t-h3 prices__title" id="films-title" data-split>{P.filmsA}{' '}<span class="mute">{P.filmsB}</span></h2>
+    <table class="ptable ptable--films" data-fade>
+      <caption class="sr-only">{P.filmsA}, {P.filmsB}</caption>
+      <thead>
+        <tr>{P.filmsCols.map((c) => <th scope="col">{c}</th>)}</tr>
+      </thead>
+      <tbody>
+        {
+          P.filmsRows.map(([len, price, use]) => (
+            <tr>
+              <th scope="row" class="ptable__q"><span class="ptable__qn">{len}</span></th>
+              <td class="ptable__price">{price}</td>
+              <td class="ptable__each">{use}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+    <p class="prices__note" data-fade>{P.filmsNote}</p>
+    <p class="prices__star" data-fade>{P.note}</p>
+  </section>
+
+  <!-- A real project -->
+  <section class="pcase" aria-labelledby="case-title" data-header="light">
+    <div class="pcase__bg" aria-hidden="true">
+      <img data-src={hygeia.gallery[5].mobile} data-srcset={srcset(hygeia.gallery[5])} sizes="100vw" alt="" decoding="async" />
+    </div>
+    <div class="pcase__in wrap">
+      <p class="t-small pcase__label" data-fade>{P.caseLabel}</p>
+      <h2 class="t-h1 pcase__title" id="case-title" data-split>{P.caseA}{' '}<span class="mute">{P.caseB}</span></h2>
+      <div class="pcase__row">
+        <p class="t-sub pcase__text" data-fade>{P.caseText}</p>
+        <ul class="pcase__stats">
+          {
+            P.caseStats.map((st) => (
+              <li data-fade>
+                <span class="pcase__n">{st.n}</span>
+                <span class="pcase__l">{st.label}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <a href={localize(href(hygeia), lang)} class="btn btn--light pcase__link" data-fade>{P.caseLink} <Arrow /></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Terms -->
+  <section class="pterms wrap">
+    <p class="t-small mute" data-fade>{P.termsLabel}</p>
+    <p class="t-sub pterms__text" data-fade>{P.terms}</p>
+  </section>
+
+  <section class="pend wrap">
+    <SampleCta data-fade />
+    <a class="btn pend__pdf" href={prices.href} download={prices.file} data-fade>
+      {P.pdf} <span class="pend__size">PDF, {prices.size}</span> <Arrow class="btn__arrow btn__arrow--down" />
+    </a>
+  </section>
+</Base>

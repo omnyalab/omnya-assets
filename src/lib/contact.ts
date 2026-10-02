@@ -15,8 +15,6 @@ export const contact = {
     'https://wa.me/393442030728?text=Hi%20Omnya%20team%2C%20I%E2%80%99d%20like%20to%20request%20a%20free%20sample.',
   emailSample:
     'mailto:info@omnyalab.com?subject=Free%20Sample%20Request&body=Hi%20Omnya%20team%2C%0A%0AI%E2%80%99d%20like%20to%20request%20a%20free%20sample.%0A%0AStudio%20or%20property%3A%20%0AProject%3A%20%0AWhat%20I%20already%20have%20(model%2C%20drawings%2C%20photos)%3A%20%0A%0ALooking%20forward%20to%20seeing%20what%20you%20can%20do.',
-  howWeWork: 'https://drive.google.com/file/d/17KHUCTaPuxjkfN8ZRBnAJ30DbVghRvSU/view',
-  portfolio: 'https://drive.google.com/file/d/12b_M-PoAMbYQiKGbYLAUJJskdUHUXq_R/view',
 };
 
 // Pre-filled messages follow the page language. English keeps the exact links

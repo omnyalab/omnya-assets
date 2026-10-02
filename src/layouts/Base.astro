@@ -69,7 +69,7 @@ const links = sampleLinks(lang);
       // Safety net: never leave content hidden if the app script fails.
       setTimeout(function () { if (!window.__omApp) document.documentElement.classList.remove('js'); }, 5000);
     </script>
-    <Font cssVariable="--font-inter-tight" preload />
+    <Font cssVariable="--font-inter-tight" preload={[{ weight: 400 }]} />
     <link rel="preload" as="image" href="/brand/logo_twotone_black.png" fetchpriority="high" />
     <slot name="head" />
     <ClientRouter fallback="none" />

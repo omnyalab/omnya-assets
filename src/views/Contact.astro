@@ -5,11 +5,14 @@ import Arrow from '../components/Arrow.astro';
 import { contact, sampleLinks } from '../lib/contact';
 import { t, langFromPath } from '../i18n';
 import { pad } from '../lib/data';
+import { kitFile } from '../lib/kit';
 
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const C = T.contact;
 const links = sampleLinks(lang);
+const portfolio = kitFile(lang, 'portfolio');
+const howWeWork = kitFile(lang, 'howWeWork');
 ---
 
 <Base page="contact" title={C.title} description={C.description}>
@@ -57,8 +60,8 @@ const links = sampleLinks(lang);
       <div class="ct__block" data-fade>
         <h2>{C.more}</h2>
         <ul class="ct__list">
-          <li><a href={contact.howWeWork} target="_blank" rel="noopener">{T.studio.howWeWork} <Arrow diag /></a></li>
-          <li><a href={contact.portfolio} target="_blank" rel="noopener">{T.studio.portfolio} <Arrow diag /></a></li>
+          <li><a href={howWeWork.href} download={howWeWork.file}><span>{howWeWork.name} <span class="mute">PDF, {howWeWork.size}</span></span> <Arrow diag /></a></li>
+          <li><a href={portfolio.href} download={portfolio.file}><span>{portfolio.name} <span class="mute">PDF, {portfolio.size}</span></span> <Arrow diag /></a></li>
           <li><a href={contact.instagram} target="_blank" rel="noopener">Instagram <Arrow diag /></a></li>
           <li><a href={contact.linkedin} target="_blank" rel="noopener">LinkedIn <Arrow diag /></a></li>
         </ul>
@@ -73,7 +76,7 @@ const links = sampleLinks(lang);
     </div>
     <div class="cal">
       <div class="cal__ph">{C.loading}</div>
-      <div data-calendly-mount style="min-width: 300px; height: 700px"></div>
+      <div data-calendly-mount style="min-width: min(300px, 100%); height: 700px"></div>
     </div>
   </section>
   <div class="section"></div>

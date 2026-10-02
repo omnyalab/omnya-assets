@@ -1,0 +1,8 @@
+{
+  "redirects": [
+    { "source": "/work/corfu-resort", "destination": "/work/hygeia-grove", "permanent": true },
+    { "source": "/work/corfu-resort/", "destination": "/work/hygeia-grove", "permanent": true },
+    { "source": "/it/work/corfu-resort", "destination": "/it/work/hygeia-grove", "permanent": true },
+    { "source": "/it/work/corfu-resort/", "destination": "/it/work/hygeia-grove", "permanent": true }
+  ]
+}

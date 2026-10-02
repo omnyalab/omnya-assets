@@ -146,13 +146,39 @@ export async function initPage(intro: Promise<void>) {
   ScrollTrigger.refresh();
 }
 
-/* ---------- Deferred media: nothing offscreen loads before the first paint ---------- */
+/* ---------- Deferred media: nothing offscreen loads before the first paint ----------
+   Pictures get their file when they come within a screen and a half of the
+   viewport. This used to hand everything to the browser at once with
+   loading="lazy"; on iPhone Safari a lazy image whose src arrives from script
+   after the page has laid out could stay unloaded (an empty grey frame) until
+   something forced a new layout. Our own observer does not depend on that. */
 function releaseMedia(scope: HTMLElement) {
-  scope.querySelectorAll<HTMLImageElement>('img[data-src]').forEach((img) => {
+  const imgs = Array.from(scope.querySelectorAll<HTMLImageElement>('img[data-src]'));
+  const load = (img: HTMLImageElement) => {
+    if (!img.dataset.src) return;
     if (img.dataset.srcset) img.srcset = img.dataset.srcset;
-    img.src = img.dataset.src!;
+    img.src = img.dataset.src;
     img.removeAttribute('data-src');
-  });
+    img.removeAttribute('data-srcset');
+  };
+  if (imgs.length) {
+    if (!('IntersectionObserver' in window)) imgs.forEach(load);
+    else {
+      const io = new IntersectionObserver(
+        (entries) => entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          // [data-load-group] (e.g. a horizontal carousel): pictures clipped by
+          // the scroller never intersect, so the whole group loads together
+          const group = e.target.closest('[data-load-group]');
+          const batch = group ? Array.from(group.querySelectorAll<HTMLImageElement>('img[data-src]')) : [e.target as HTMLImageElement];
+          batch.forEach((img) => { io.unobserve(img); load(img); });
+        }),
+        { rootMargin: '150% 0px 150% 0px' }
+      );
+      imgs.forEach((img) => io.observe(img));
+      onDestroy(() => io.disconnect());
+    }
+  }
   scope.querySelectorAll<HTMLVideoElement>('video[data-poster]').forEach((v) => {
     v.poster = v.dataset.poster!;
     v.removeAttribute('data-poster');

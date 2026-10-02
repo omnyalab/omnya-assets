@@ -30,8 +30,8 @@ const ratio = ar ?? `${still.w} / ${still.h}`;
       eager ? (
         <img src={still.mobile} srcset={srcset(still)} sizes={sizes} width={dw} height={dh} alt={alt} fetchpriority="high" decoding="async" />
       ) : (
-        // Deferred: src is set after the intro so nothing competes with the first paint
-        <img data-src={still.mobile} data-srcset={srcset(still)} sizes={sizes} width={dw} height={dh} alt={alt} loading="lazy" decoding="async" />
+        // Deferred: src is set by script after the intro, when the frame gets near (anim.ts)
+        <img data-src={still.mobile} data-srcset={srcset(still)} sizes={sizes} width={dw} height={dh} alt={alt} decoding="async" />
       )
     }
   </div>

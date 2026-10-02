@@ -1,84 +1,288 @@
 ---
-// Studio: asymmetric like the home. Pictures of different sizes alternate with
-// short blocks of text. Images from public/studio (each with a _mobile copy).
+// Studio: how we work, told with our own pictures.
+// 1. poster: the word sits behind the travertine volume (photo / word / cut-out photo)
+// 2. intro
+// 3. from model to image: one frame, four stages (pinned and scrubbed on desktop,
+//    self-running on touch, a still grid with reduced motion)
+// 4. what we make, 5. timings (dark), 6. made with AI, 7. kit, 8. websites line
+// 9. closing poster: "try it free" behind the wall
+// Animations: src/scripts/studio.ts. Images: public/studio (each with a _mobile copy).
 import Base from '../layouts/Base.astro';
 import Duo from '../components/Duo.astro';
 import Frame from '../components/Frame.astro';
+import Arrow from '../components/Arrow.astro';
 import SampleCta from '../components/SampleCta.astro';
-import { pad, type Still } from '../lib/data';
-import { t, langFromPath } from '../i18n';
+import { pad, projects, type Still } from '../lib/data';
+import { srcset } from '../lib/media';
+import { kit } from '../lib/kit';
+import { contact } from '../lib/contact';
+import { t, langFromPath, localize } from '../i18n';
 
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const S = T.studio;
 
-const still = (name: string, w: number, h: number): Still => ({
-  src: `/studio/${name}.webp`,
-  mobile: `/studio/${name}_mobile.webp`,
+const still = (name: string, w: number, h: number, dir = 'studio'): Still => ({
+  src: `/${dir}/${name}.webp`,
+  mobile: `/${dir}/${name}_mobile.webp`,
   w,
   h,
   orientation: w >= h ? 'horizontal' : 'vertical',
 });
-const naoshima = still('studio_01_naoshima', 2400, 1321);
-const kitchen = still('studio_02_forest_kitchen', 2400, 1610);
-const prosecco = still('studio_03_prosecco', 2400, 1340);
+
+// Posters: the photo, then the word, then the same photo with the sky cut out.
+// Both files share size, object-fit and object-position, so they always line up.
+const posterSet = (name: string) => `/studio/${name}_mobile.webp 1200w, /studio/${name}.webp 1493w`;
+// cover on a portrait photo: on tall screens the picture is wider than the screen
+const posterSizes = '(max-aspect-ratio: 1493/2000) 75svh, 100vw';
+
+// From model to image: view 1 is 2048x1360, view 2 is 2752x1536
+const views = [
+  { id: 1, w: 2048, h: 1360, stages: ['stage1_model_view1', 'stage2_clay_view1', 'stage4_final_view1', 'stage4_final_view1'] },
+  { id: 2, w: 2752, h: 1536, stages: ['stage1_model_view2', 'stage2_clay_view2', 'stage4_final_view2', 'stage4_final_view2'] },
+];
+const stageSet = (name: string) => srcset(still(name, 2400, 1340));
+const stageSizes = '(min-width: 900px) 62vw, calc(100vw - 32px)';
+
+// What we make: one picture per service, straight from the projects
+const shot = (path: string) => projects.flatMap((p) => p.gallery).find((g) => g.src === path)!;
+const makeImgs = [
+  shot('/projects/01_penthouse_dubai/penthouse_dubai_gallery_02.webp'),
+  shot('/projects/03_ca_dei_colli/ca_dei_colli_gallery_04.webp'),
+  shot('/projects/06_kassab_residence/kassab_residence_gallery_06.webp'),
+];
 const pearl = still('studio_05_mother_of_pearl', 2400, 1350);
+const files = kit(lang);
+const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubject)}`;
 ---
 
 <Base page="studio" title={S.title} description={S.description}>
-  <section class="phead wrap">
-    <Duo as="h1" size="h1" a={S.titleA} b={S.titleB} intro />
+  <Fragment slot="head">
+    <link rel="preload" as="image" imagesrcset={posterSet('studio_poster_bg')} imagesizes={posterSizes} fetchpriority="high" />
+    <link rel="preload" as="image" imagesrcset={posterSet('studio_poster_fg')} imagesizes={posterSizes} fetchpriority="high" />
+  </Fragment>
+
+  <!-- 1. Opening poster -->
+  <section class="poster poster--studio" data-poster="intro" data-header="light" data-header-media>
+    <img class="poster__img" srcset={posterSet('studio_poster_bg')} sizes={posterSizes} src="/studio/studio_poster_bg_mobile.webp" width="1493" height="2000" alt={S.posterAlt} fetchpriority="high" decoding="async" />
+    <h1 class="poster__word" aria-label={S.title}>
+      <span class="poster__mask" aria-hidden="true"><span class="poster__w">{S.word}</span></span>
+    </h1>
+    <img class="poster__img poster__fg" srcset={posterSet('studio_poster_fg')} sizes={posterSizes} src="/studio/studio_poster_fg_mobile.webp" width="1493" height="2000" alt="" fetchpriority="high" decoding="async" />
+    <div class="poster__shade" aria-hidden="true"></div>
+    <p class="poster__top wrap" data-fade="0.3" data-intro><span>{S.posterA}</span><span class="poster__soft">{S.posterB}</span></p>
   </section>
 
-  <section class="wrap studio__intro">
-    <p class="t-small mute" data-fade>{S.about}</p>
-    <p class="studio__txt t-sub" data-fade>{S.text}</p>
+  <!-- 2. Intro -->
+  <section class="st-intro wrap">
+    <Duo size="h2" class="st-intro__title" a={S.introA} b={S.introB} />
+    <p class="st-intro__txt t-sub" data-fade>{S.introText}</p>
   </section>
 
-  <!-- 1. Naoshima, almost full width -->
-  <div class="st-wide">
-    <Frame still={naoshima} alt={S.alts.naoshima} sizes="(min-width: 900px) 94vw, 100vw" />
-  </div>
+  <!-- 3. From model to image -->
+  <section class="stages" aria-labelledby="stages-title" data-stages>
+    <div class="stages__head wrap">
+      <p class="t-small mute" data-fade>{S.stagesLabel}</p>
+      <Duo size="h2" class="stages__title" a={S.stagesA} b={S.stagesB} />
+    </div>
 
-  <!-- What we do -->
-  <section class="st-block wrap">
-    <p class="t-small mute" data-fade>{S.whatWeDo}</p>
-    <div>
-      <Duo size="h2" a={S.servicesA} b={S.servicesB} />
-      <ul class="st-list">
-        {S.services.map((x) => <li class="t-h3" data-fade>{x}</li>)}
-      </ul>
+    <!-- Live version: one frame, four stages -->
+    <div class="stages__live wrap" data-stages-live data-words={S.status.join('|')}>
+      <div class="stages__grid">
+        <div class="stages__txt" aria-live="polite">
+          {
+            S.stages.map((st, i) => (
+              <div class:list={['stages__block', { 'is-on': i === 0 }]} data-stage-txt={i} aria-hidden={i === 0 ? undefined : 'true'}>
+                <span class="stages__n" data-stage-split>{pad(i + 1)}</span>
+                <h3 class="stages__t t-h3" data-stage-split>{st.title}</h3>
+                <p class="stages__p t-sub" data-stage-split>{st.text}</p>
+              </div>
+            ))
+          }
+        </div>
+
+        <figure class="stages__fig">
+          <div class="stages__views" role="group" aria-label={S.viewsLabel}>
+            {
+              S.views.map((v, i) => (
+                <button type="button" class="chip" aria-pressed={i === 0 ? 'true' : 'false'} data-view={i}>
+                  {v}
+                </button>
+              ))
+            }
+          </div>
+          <div class="stages__frames" data-stages-frames>
+            {
+              views.map((v, vi) => (
+                <div class:list={['stages__frame', { 'is-on': vi === 0 }]} style={`--ar: ${v.w} / ${v.h}`} data-frame={vi} aria-hidden={vi === 0 ? undefined : 'true'}>
+                  {v.stages.map((name, si) => (
+                    <div class={`stage stage--${si + 1}`} data-stage={si}>
+                      <img
+                        data-stage-src={`/studio/${name}_mobile.webp`}
+                        data-stage-srcset={stageSet(name)}
+                        sizes={stageSizes}
+                        width={v.w}
+                        height={v.h}
+                        alt={si === 0 || si === 3 ? S.stageAlts[vi][si] : ''}
+                        decoding="async"
+                      />
+                    </div>
+                  ))}
+                  <div class="stages__ui" aria-hidden="true">
+                    <span class="stages__status" data-status>{S.status[0]}</span>
+                    <span class="stages__bar"><i data-bar></i></span>
+                  </div>
+                  <span class="stages__line" aria-hidden="true" data-line></span>
+                </div>
+              ))
+            }
+          </div>
+          <div class="stages__foot">
+            <figcaption class="t-small mute">{S.caption}</figcaption>
+            <div class="stages__dots" role="group" aria-label={S.stage}>
+              {
+                S.stages.map((st, i) => (
+                  <button type="button" class="stages__dot" aria-label={`${pad(i + 1)} ${st.title}`} aria-pressed={i === 0 ? 'true' : 'false'} data-goto={i}>
+                    <span>{pad(i + 1)}</span>
+                  </button>
+                ))
+              }
+            </div>
+          </div>
+        </figure>
+      </div>
+    </div>
+
+    <!-- Reduced motion: the four stages side by side, nothing moves -->
+    <div class="stages__still wrap" data-stages-still>
+      <div class="stages__views" role="group" aria-label={S.viewsLabel}>
+        {
+          S.views.map((v, i) => (
+            <button type="button" class="chip" aria-pressed={i === 0 ? 'true' : 'false'} data-still-view={i}>
+              {v}
+            </button>
+          ))
+        }
+      </div>
+      {
+        views.map((v, vi) => (
+          <ol class:list={['stages__list', { 'is-on': vi === 0 }]} data-still-list={vi}>
+            {S.stages.map((st, si) => (
+              <li class="stages__item">
+                <div class:list={['stages__thumb', { 'is-wip': si === 2 }]} style={`--ar: ${v.w} / ${v.h}`}>
+                  <img data-stage-src={`/studio/${v.stages[si]}_mobile.webp`} data-stage-srcset={stageSet(v.stages[si])} sizes="(min-width: 900px) 46vw, calc(100vw - 32px)" width={v.w} height={v.h} alt={S.stageAlts[vi][si]} decoding="async" />
+                  {si === 2 && <span class="stages__status">{S.status[1]}</span>}
+                </div>
+                <p class="stages__item-t"><span class="mute">{pad(si + 1)}</span> {st.title}</p>
+                <p class="t-small stages__item-p">{st.text}</p>
+              </li>
+            ))}
+          </ol>
+        ))
+      }
+      <p class="t-small mute">{S.caption}</p>
     </div>
   </section>
 
-  <!-- 2. Kitchen left, mother of pearl right, smaller and lower -->
-  <div class="st-pair wrap">
-    <Frame still={kitchen} alt={S.alts.kitchen} sizes="(min-width: 900px) 56vw, 88vw" class="st-pair__a" />
-    <Frame still={pearl} alt={S.alts.pearl} sizes="(min-width: 900px) 32vw, 64vw" class="st-pair__b" />
-  </div>
-
-  <!-- How we work -->
-  <section class="st-block wrap">
-    <p class="t-small mute" data-fade>{S.howLabel}</p>
-    <ol class="how__list">
+  <!-- 4. What we make -->
+  <section class="make wrap" aria-labelledby="make-title" data-make>
+    <p class="t-small mute" data-fade>{S.makeLabel}</p>
+    <Duo size="h2" class="make__title" a={S.makeA} b={S.makeB} />
+    <ul class="make__list">
       {
-        S.steps.map((step, i) => (
-          <li data-fade>
-            <span class="how__n">{pad(i + 1)}</span>
-            <span class="how__t">{step}</span>
+        S.services.map((sv, i) => (
+          <li class="make__row" data-make-row={i}>
+            <span class="make__name t-h2">{sv.name}</span>
+            <span class="make__text">{sv.text}</span>
+            <span class="make__price">{sv.price}</span>
+            <span class="make__thumb frame" style={`--ar: ${makeImgs[i].w} / ${makeImgs[i].h}`}>
+              <img data-src={makeImgs[i].mobile} width={makeImgs[i].w} height={makeImgs[i].h} alt={sv.alt} decoding="async" />
+            </span>
           </li>
         ))
       }
-    </ol>
+    </ul>
+    <div class="make__float" aria-hidden="true" data-make-float>
+      {makeImgs.map((m) => <img data-src={m.mobile} width={m.w} height={m.h} alt="" decoding="async" />)}
+    </div>
+    <a href={localize('/pricing', lang)} class="btn make__btn" data-fade>{S.seePrices} <Arrow /></a>
   </section>
 
-  <!-- 3. One sentence on the left, prosecco large on the right -->
-  <section class="st-detail wrap">
-    <Duo size="h2" class="st-detail__txt" a={S.detailsA} b={S.detailsB} />
-    <Frame still={prosecco} alt={S.alts.prosecco} sizes="(min-width: 900px) 58vw, 100vw" class="st-detail__img" />
+  <!-- 5. Timings -->
+  <section class="times" aria-labelledby="times-title" data-header="light" data-times>
+    <div class="wrap">
+      <p class="t-small times__label" data-fade>{S.timeLabel}</p>
+      <h2 class="t-h2 times__title" id="times-title" data-split>{S.timeA}{' '}<span class="mute">{S.timeB}</span></h2>
+      <ul class="times__list">
+        {
+          S.timings.map((tm) => (
+            <li class="times__item" data-fade>
+              <span class="times__n">
+                <span class="sr-only">{tm.n.join('–')}</span>
+                <span aria-hidden="true" class="times__digits">
+                  {tm.n.map((d, i) => (
+                    <>
+                      {i > 0 && <span class="times__dash" />}
+                      <span data-count={d}>{d}</span>
+                    </>
+                  ))}
+                </span>
+              </span>
+              <span class="times__l">{tm.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="times__note" data-fade>{S.timeNote}</p>
+    </div>
   </section>
 
-  <section class="st-cta wrap">
-    <SampleCta data-fade />
+  <!-- 6. Made with AI -->
+  <section class="st-ai wrap">
+    <Duo size="h2" class="st-ai__title" a={S.aiA} b={S.aiB} />
+    <p class="t-sub st-ai__p" data-fade>{S.aiText}</p>
+    <Frame still={pearl} alt={S.pearlAlt} sizes="(min-width: 900px) 46vw, 100vw" class="st-ai__img" />
+  </section>
+
+  <!-- 7. Kit -->
+  <section class="kit wrap" id="kit" aria-labelledby="kit-title">
+    <p class="t-small mute" data-fade>{S.kitLabel}</p>
+    <h2 class="t-h2 kit__title" id="kit-title" data-split>{S.kitA}{' '}<span class="mute">{S.kitB}</span></h2>
+    <ul class="kit__cards" data-kit data-load-group>
+      {
+        files.map((f) => (
+          <li class:list={['kit__item', { 'kit__item--tall': f.cover.h > f.cover.w }]} style={`--ar: ${f.cover.w} / ${f.cover.h}`}>
+            <a class="kit__card" href={f.href} download={f.file} tabindex="-1" aria-hidden="true">
+              <img data-src={f.cover.mobile} data-srcset={srcset(f.cover as Still)} sizes="(min-width: 900px) 30vw, 70vw" width={f.cover.w} height={f.cover.h} alt="" decoding="async" />
+            </a>
+            <div class="kit__meta">
+              <span class="kit__name">{f.name}</span>
+              <span class="kit__size">PDF, {f.size}</span>
+              <a class="kit__dl u" href={f.href} download={f.file}>{S.download}<span class="sr-only"> {f.name}, PDF, {f.size}</span> <Arrow /></a>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+    <!-- 8. Websites, on request only -->
+    <p class="kit__web t-small" data-fade>{S.webA} <a class="u" href={webMail}>{S.webLink}</a>{S.webB}</p>
+  </section>
+
+  <!-- 9. Closing poster -->
+  <section class="poster poster--try" data-poster data-header="light" data-header-media>
+    <img class="poster__img" data-src="/studio/tryfree_poster_bg_mobile.webp" data-srcset={posterSet('tryfree_poster_bg')} sizes={posterSizes} width="1493" height="2000" alt={S.tryAlt} decoding="async" />
+    <h2 class="poster__word poster__word--two" aria-label={`${S.tryA} ${S.tryB}`}>
+      <span class="poster__mask" aria-hidden="true"><span class="poster__w">{S.tryA}</span></span>
+      <span class="poster__mask" aria-hidden="true"><span class="poster__w">{S.tryB}</span></span>
+    </h2>
+    <img class="poster__img poster__fg" data-src="/studio/tryfree_poster_fg_mobile.webp" data-srcset={posterSet('tryfree_poster_fg')} sizes={posterSizes} width="1493" height="2000" alt="" decoding="async" />
+    <div class="poster__shade" aria-hidden="true"></div>
+    <div class="poster__top wrap" data-fade>
+      <p><a class="u" href={`mailto:${contact.email}`}>{contact.email}</a><span class="poster__soft">omnyalab.com · <a class="u" href={contact.instagram} target="_blank" rel="noopener">@omnyalab</a></span></p>
+      <p class="poster__note">{S.tryNote}</p>
+    </div>
+    <div class="poster__cta wrap">
+      <SampleCta class="cta--poster" />
+    </div>
   </section>
 </Base>
