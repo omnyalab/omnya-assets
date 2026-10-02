@@ -173,7 +173,8 @@ const isDarkAt = (y: number) => !!darkAt(y);
 
 let lastY = 0;
 let fabDown = false;
-let fabMoved = 0;
+let fabResting = true;
+let restTimer = 0;
 function updateHeader(force = false) {
   const hdr = document.querySelector<HTMLElement>('[data-hdr]');
   if (!hdr) return;
@@ -197,19 +198,31 @@ function updateHeader(force = false) {
   // WhatsApp button: out of the way while scrolling down, back when scrolling up
   // or after a short stop; never over the footer
   const fab = document.querySelector<HTMLElement>('[data-fab]');
-  if (fab) {
-    const now = performance.now();
-    if (dy > 2) { fabDown = true; fabMoved = now; }
-    else if (dy < -2) { fabDown = false; fabMoved = now; }
+  if (fab && getComputedStyle(fab).display !== 'none') {
+    if (dy > 2) fabDown = true;
+    else if (dy < -2) fabDown = false;
     const ftr = document.querySelector('.ftr');
     const overFooter = !!ftr && ftr.getBoundingClientRect().top < window.innerHeight - 8;
-    const resting = now - fabMoved > 700;
-    fab.classList.toggle('is-on', y > 40 && !overFooter && (!fabDown || resting));
+    const on = y > 40 && !overFooter && (!fabDown || fabResting);
+    if (fab.classList.contains('is-on') !== on) fab.classList.toggle('is-on', on);
   }
 }
 
+/* Runs only when something moves: one passive scroll listener, at most one
+   update per frame, and a last one shortly after the scroll stops. */
 export function initHeaderLoop() {
-  gsap.ticker.add(() => updateHeader());
+  let queued = false;
+  const run = () => { queued = false; updateHeader(); };
+  const request = () => { if (!queued) { queued = true; requestAnimationFrame(run); } };
+  const onScroll = () => {
+    fabResting = false;
+    clearTimeout(restTimer);
+    restTimer = window.setTimeout(() => { fabResting = true; request(); }, 700);
+    request();
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', request, { passive: true });
+  document.addEventListener('astro:page-load', request);
 }
 
 /* ---------- Clocks in the footer ---------- */

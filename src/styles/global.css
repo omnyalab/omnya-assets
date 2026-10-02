@@ -131,7 +131,12 @@ a { -webkit-tap-highlight-color: transparent; }
 /* Line masks from SplitText: room for descenders */
 /* Line masks: generous room above and below so neither tall letters (b, l, h, d)
    nor tails (y, g, p) are ever clipped; the negative margins keep the layout. */
-.line-mask { padding: 0.2em 0.14em 0.24em; margin: -0.2em -0.14em -0.24em; }
+.line-mask {
+  padding: 0.2em 0 0.24em; margin: -0.2em 0 -0.24em;
+  /* clip only top and bottom: letters (and their overhang) are never cut at the sides,
+     and the line keeps its final width from the first frame */
+  overflow-x: visible !important; overflow-y: clip !important;
+}
 .line { will-change: transform; }
 
 /* ---------- Layout helpers ---------- */
@@ -297,11 +302,11 @@ img[data-src], img[data-seeall-src], img[data-src-d]:not([src]) { visibility: hi
 .hdr::before {
   content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background: rgba(237, 234, 228, 0.9);
-  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
   opacity: 0; transition: opacity 0.4s ease;
 }
-.hdr.is-solid::before { opacity: 1; }
+/* the blur exists only while the bar is shown: nothing to composite otherwise */
+.hdr.is-solid::before { opacity: 1; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 html.menu-open .hdr::before { opacity: 0; }
 
 /* Over the reel and project covers: a whisper of shadow on logo, languages, burger */
@@ -813,8 +818,9 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
 .wend { padding-top: clamp(72px, 10vw, 160px); padding-bottom: var(--section); border-top: 1px solid var(--line); }
 .wend__title { max-width: 16ch; }
 .wend__title .mute { display: block; }
-.wend__row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 20px var(--g); margin-top: clamp(32px, 5vw, 64px); }
-@media (min-width: 900px) { .wend__row { padding-left: 41.6%; } }
+.wend__btns { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin-top: clamp(32px, 5vw, 64px); }
+.wend__note { margin-top: 12px; }
+@media (min-width: 600px) { .wend__btns { flex-direction: row; flex-wrap: wrap; gap: 12px 14px; } }
 
 /* ==========================================================================
    Project page

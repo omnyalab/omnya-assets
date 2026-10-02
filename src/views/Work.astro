@@ -5,7 +5,6 @@ import { projects } from '../lib/data';
 import { t, langFromPath, localize } from '../i18n';
 import Duo from '../components/Duo.astro';
 import Arrow from '../components/Arrow.astro';
-import SampleCta from '../components/SampleCta.astro';
 
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
@@ -49,9 +48,10 @@ const sizes = ['(min-width: 900px) 58vw, calc(100vw - 32px)', '(min-width: 900px
   <!-- After the last project: an invitation instead of empty space -->
   <section class="wend wrap">
     <Duo size="h1" class="wend__title" a={T.work.endA} b={T.work.endB} />
-    <div class="wend__row">
-      <SampleCta data-fade />
-      <a href={localize('/pricing', lang)} class="btn" data-fade>{T.work.prices} <Arrow /></a>
+    <div class="wend__btns" data-fade>
+      <button type="button" class="btn" data-sample>{T.cta} <Arrow /></button>
+      <a href={localize('/pricing', lang)} class="btn">{T.work.prices} <Arrow /></a>
     </div>
+    <p class="cta__note wend__note" data-fade>{T.ctaNote}</p>
   </section>
 </Base>

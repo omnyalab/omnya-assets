@@ -84,11 +84,7 @@ export async function initPage(intro: Promise<void>) {
     splits.forEach(({ el, split }) => {
       const play = (delay = 0) => {
         el.dataset.played = '1';
-        // once in, the masks go: nothing can clip a letter (or a shadow) afterwards
-        gsap.to(split.lines, {
-          yPercent: 0, duration: D, stagger: 0.08, delay, ease: EASE,
-          onComplete: () => { if (el.isConnected) split.revert(); },
-        });
+        gsap.to(split.lines, { yPercent: 0, duration: D, stagger: 0.08, delay, ease: EASE });
       };
       if (el.dataset.split === 'intro') play(Number(el.dataset.delay || 0));
       else ScrollTrigger.create({ trigger: el, start: 'top 88%', once: true, onEnter: () => play() });
