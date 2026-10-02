@@ -1,3 +1,5 @@
+Come primo passo, dalla cartella principale del repo, esegui `npm install` (lo script di configurazione dell'ambiente è vuoto di proposito). Se l'installazione dà errore per la versione di Node, usa Node 22 o superiore e riprova.
+
 Lavora sul repo omnyalab/omnya-assets (Astro + GSAP + Lenis, EN alla radice, IT sotto /it/). Prima di toccare qualcosa leggi README.md, docs/BRIEF.md, src/i18n/index.ts, src/styles/global.css, src/scripts/core.ts, anim.ts, pages.ts, ui.ts e src/views/*. Rispetta le regole già scritte nel codice: durate 0.6-0.9s con expo.out, elementi che entrano insieme sfalsati, le foto non si muovono con lo scroll (niente parallax, scale o skew sulle immagini), su touch le immagini sono ferme.
 
 Lavora sul branch `site-update-oct-2026`, che esiste già su GitHub: fai checkout di quel branch, non partire da main. Alla fine fai push dello stesso branch (Vercel crea l'anteprima). Non fare merge su main: lo controllo io dall'anteprima.
