@@ -6,7 +6,7 @@ import Duo from '../components/Duo.astro';
 import Arrow from '../components/Arrow.astro';
 import Num from '../components/Num.astro';
 import SampleCta from '../components/SampleCta.astro';
-import { projects, slug, number, pad, isFilm, deliverables, href, type Project, type Still, type Clip as ClipT } from '../lib/data';
+import { projects, slug, pad, isFilm, deliverables, href, type Project, type Still, type Clip as ClipT } from '../lib/data';
 import { t, langFromPath, localize } from '../i18n';
 import { alt } from '../lib/alts';
 import { srcset, sizes as dims } from '../lib/media';
@@ -77,7 +77,6 @@ const stillSizes: Record<string, string> = {
     <div class="phero__txt">
       <div class="phero__top">
         <span data-fade data-intro>{cat}</span>
-        <span data-fade="0.1" data-intro><Num value={number(p)} intro /> / {pad(projects.length)}</span>
       </div>
       <h1 class="t-display phero__title" data-split="intro">{p.title}</h1>
     </div>
@@ -88,13 +87,8 @@ const stillSizes: Record<string, string> = {
       {p.description && <p class="pinfo__desc t-sub" data-fade>{p.description}</p>}
       <div class="pinfo__item" data-fade><dt>{P.category}</dt><dd>{cat}</dd></div>
       <div class="pinfo__item" data-fade="0.06"><dt>{P.stills}</dt><dd><Num value={pad(stills)} /></dd></div>
-      {
-        films > 0 ? (
-          <div class="pinfo__item" data-fade="0.12"><dt>{P.films}</dt><dd><Num value={pad(films)} /></dd></div>
-        ) : (
-          <div class="pinfo__item" data-fade="0.12"><dt>{P.project}</dt><dd><Num value={number(p)} /> / {pad(projects.length)}</dd></div>
-        )
-      }
+      {films > 0 && <div class="pinfo__item" data-fade="0.12"><dt>{P.films}</dt><dd><Num value={pad(films)} /></dd></div>}
+      <div class="pinfo__item" data-fade="0.18"><dt>{P.year}</dt><dd>2026</dd></div>
     </dl>
   </section>
 
@@ -132,15 +126,18 @@ const stillSizes: Record<string, string> = {
     </div>
   </section>
 
-  <a href={localize(href(next), lang)} class="next" data-plink data-cursor={T.cursor.next}>
+  <a href={localize(href(next), lang)} class="next" data-plink data-cursor={T.cursor.view} aria-label={`${P.next}: ${next.title}`}>
     <div class="frame" data-cover data-reveal>
       <div class="frame__in">
         <img data-src={next.cover.mobile} data-srcset={srcset(next.cover)} sizes="100vw" width={nd.dw} height={nd.dh} alt={alt(next, lang)} loading="lazy" decoding="async" />
       </div>
     </div>
     <div class="next__txt">
-      <div class="next__label"><span>{P.next}</span><span>{number(next)} / {pad(projects.length)}</span></div>
-      <span class="t-display" data-split>{next.title}</span>
+      <span class="t-h2 next__label" aria-hidden="true">{P.next}</span>
+      <div class="next__row">
+        <span class="t-display next__title" data-split aria-hidden="true">{next.title}</span>
+        <span class="next__arrow" aria-hidden="true"><Arrow class="next__arrow-svg" /></span>
+      </div>
     </div>
   </a>
 </Base>

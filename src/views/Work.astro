@@ -1,15 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { projects, pad } from '../lib/data';
-import { t, langFromPath } from '../i18n';
+import { projects } from '../lib/data';
+import { t, langFromPath, localize } from '../i18n';
+import Duo from '../components/Duo.astro';
+import Arrow from '../components/Arrow.astro';
+import SampleCta from '../components/SampleCta.astro';
 
-const T = t(langFromPath(Astro.url.pathname));
-const count = (c?: string) => pad(c ? projects.filter((p) => p.category === c).length : projects.length);
-const filters = [
-  { key: 'all', label: T.work.all, n: count() },
-  ...Object.entries(T.categories).map(([key, label]) => ({ key, label, n: count(key) })),
-];
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang);
+const filters = [{ key: 'all', label: T.work.all }, ...Object.entries(T.categories).map(([key, label]) => ({ key, label }))];
 const shape = (i: number, o: string) => (o === 'vertical' || i % 4 === 1 || i % 4 === 2 ? 'tall' : i % 4 === 3 ? 'wide' : '');
 const ar = (s: string) => (s === 'tall' ? '4 / 5' : s === 'wide' ? '3 / 2' : '16 / 10');
 const sizes = ['(min-width: 900px) 58vw, calc(100vw - 32px)', '(min-width: 900px) 34vw, 84vw', '(min-width: 900px) 34vw, 84vw', '(min-width: 900px) 50vw, calc(100vw - 32px)'];
@@ -26,7 +26,7 @@ const sizes = ['(min-width: 900px) 58vw, calc(100vw - 32px)', '(min-width: 900px
         {
           filters.map((f, i) => (
             <button type="button" data-filter={f.key} aria-pressed={i === 0 ? 'true' : 'false'}>
-              {f.label}<sup>{f.n}</sup>
+              {f.label}
             </button>
           ))
         }
@@ -43,6 +43,15 @@ const sizes = ['(min-width: 900px) 58vw, calc(100vw - 32px)', '(min-width: 900px
           return <ProjectCard project={p} slot={i % 4} sizes={sizes[i % 4]} kind="wcard" shape={s} ar={ar(s)} eager={i === 0} />;
         })
       }
+    </div>
+  </section>
+
+  <!-- After the last project: an invitation instead of empty space -->
+  <section class="wend wrap">
+    <Duo size="h1" class="wend__title" a={T.work.endA} b={T.work.endB} />
+    <div class="wend__row">
+      <SampleCta data-fade />
+      <a href={localize('/pricing', lang)} class="btn" data-fade>{T.work.prices} <Arrow /></a>
     </div>
   </section>
 </Base>

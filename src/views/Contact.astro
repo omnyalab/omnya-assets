@@ -5,14 +5,15 @@ import Arrow from '../components/Arrow.astro';
 import { contact, sampleLinks } from '../lib/contact';
 import { t, langFromPath } from '../i18n';
 import { pad } from '../lib/data';
-import { kitFile } from '../lib/kit';
+import Frame from '../components/Frame.astro';
+import { projects } from '../lib/data';
 
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const C = T.contact;
 const links = sampleLinks(lang);
-const portfolio = kitFile(lang, 'portfolio');
-const howWeWork = kitFile(lang, 'howWeWork');
+// a pause between the details and the calendar: Villa Cape Town, edge to edge
+const photo = projects.find((p) => p.id === '02_villa_cape_town')!.cover;
 ---
 
 <Base page="contact" title={C.title} description={C.description}>
@@ -24,11 +25,9 @@ const howWeWork = kitFile(lang, 'howWeWork');
     <Duo as="h1" size="h1" a={C.titleA} b={C.titleB} intro />
   </section>
 
-  <section class="wrap">
-    <p class="label" data-fade><span>{C.email}</span><span class="mute">{C.files}</span></p>
-    <div style="padding-top: 18px">
-      <a class="ct__mail" href={`mailto:${contact.email}`} data-fade><span class="u">{contact.email}</span></a>
-    </div>
+  <!-- a) email -->
+  <section class="wrap ct-a">
+    <a class="ct__mail" href={`mailto:${contact.email}`} data-fade><span class="u">{contact.email}</span></a>
 
     <!-- What the free sample is, right above the two ways to ask for it -->
     <div class="how">
@@ -50,18 +49,26 @@ const howWeWork = kitFile(lang, 'howWeWork');
         </div>
       </div>
     </div>
+  </section>
 
-    <div class="ct__grid">
+  <!-- b) phone, studio, social in one row -->
+  <section class="wrap ct-b">
+    <div class="ct__cols">
       <div class="ct__block" data-fade>
         <h2>{C.phone}</h2>
         <a class="ct__phone u" href={contact.phoneHref}>{contact.phone}</a>
-        <p class="t-small mute" style="margin-top: 8px">{T.phoneNote}</p>
+        <p class="t-small mute ct__note">{T.phoneNote}</p>
       </div>
       <div class="ct__block" data-fade>
-        <h2>{C.more}</h2>
+        <h2>{T.footer.studio}</h2>
+        <p class="ct__big">{T.places}</p>
+        <p class="t-small mute ct__note">
+          <span data-tz="Europe/Rome" data-city={T.venice}>{T.venice} --:--</span> · <span data-tz="Asia/Dubai" data-city={T.dubai}>{T.dubai} --:--</span>
+        </p>
+      </div>
+      <div class="ct__block" data-fade>
+        <h2>{T.footer.follow}</h2>
         <ul class="ct__list">
-          <li><a href={howWeWork.href} download={howWeWork.file}><span>{howWeWork.name} <span class="mute">PDF, {howWeWork.size}</span></span> <Arrow diag /></a></li>
-          <li><a href={portfolio.href} download={portfolio.file}><span>{portfolio.name} <span class="mute">PDF, {portfolio.size}</span></span> <Arrow diag /></a></li>
           <li><a href={contact.instagram} target="_blank" rel="noopener">Instagram <Arrow diag /></a></li>
           <li><a href={contact.linkedin} target="_blank" rel="noopener">LinkedIn <Arrow diag /></a></li>
         </ul>
@@ -69,9 +76,14 @@ const howWeWork = kitFile(lang, 'howWeWork');
     </div>
   </section>
 
+  <!-- c) a picture, then the call -->
+  <div class="ct-c">
+    <Frame still={photo} alt={C.photoAlt} sizes="100vw" />
+  </div>
+
   <section class="wrap ct__cal" id="book" data-calendly>
-    <div class="label" data-fade>
-      <h2>{C.book}</h2>
+    <div class="label ct__calhead" data-fade>
+      <h2 class="t-h3">{C.book}</h2>
       <a class="u" href={contact.calendly} target="_blank" rel="noopener">{C.bookNote}</a>
     </div>
     <div class="cal">
@@ -79,5 +91,4 @@ const howWeWork = kitFile(lang, 'howWeWork');
       <div data-calendly-mount style="min-width: min(300px, 100%); height: 700px"></div>
     </div>
   </section>
-  <div class="section"></div>
 </Base>
