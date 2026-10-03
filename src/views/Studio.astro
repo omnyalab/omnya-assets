@@ -74,7 +74,7 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
   <!-- 3. From model to image -->
   <section class="stages" aria-labelledby="stages-title" data-stages>
     <div class="stages__head wrap">
-      <p class="t-small mute" data-fade>{S.stagesLabel}</p>
+      <p class="t-small mute d-only" data-fade>{S.stagesLabel}</p>
       <Duo size="h2" class="stages__title" a={S.stagesA} b={S.stagesB} />
     </div>
 
@@ -178,7 +178,7 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
 
   <!-- 4. What we make -->
   <section class="make wrap" aria-labelledby="make-title">
-    <p class="t-small mute" data-fade>{S.makeLabel}</p>
+    <p class="t-small mute d-only" data-fade>{S.makeLabel}</p>
     <Duo size="h2" class="make__title" a={S.makeA} b={S.makeB} />
     <ul class="make__list">
       {
@@ -197,7 +197,7 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
   <!-- 5. Timings -->
   <section class="times" aria-labelledby="times-title" data-header="light" data-times>
     <div class="wrap">
-      <p class="t-small times__label" data-fade>{S.timeLabel}</p>
+      <p class="t-small times__label d-only" data-fade>{S.timeLabel}</p>
       <h2 class="t-h2 times__title" id="times-title" data-split>{S.timeA}{' '}<span class="mute">{S.timeB}</span></h2>
       <ul class="times__list">
         {
@@ -265,7 +265,7 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
     <div class="poster__shade" aria-hidden="true"></div>
     <div class="poster__top wrap" data-fade>
       <p><a class="u" href={`mailto:${contact.email}`}>{contact.email}</a><span class="poster__soft">omnyalab.com · <a class="u" href={contact.instagram} target="_blank" rel="noopener">@omnyalab</a></span></p>
-      <p class="poster__note">{S.tryNote}</p>
+      <p class="poster__note d-only">{S.tryNote}</p>
     </div>
     <div class="poster__cta wrap">
       <SampleCta class="cta--poster" />

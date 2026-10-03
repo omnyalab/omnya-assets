@@ -149,6 +149,10 @@ a { -webkit-tap-highlight-color: transparent; }
   padding-bottom: 14px; border-bottom: 1px solid var(--line);
 }
 .label .mute { color: var(--mute); }
+/* Phones: drop the secondary lines (small labels, notes under buttons, menu notes); desktop keeps them */
+@media (max-width: 899.98px) {
+  .d-only, .cta__note, .menu__list small { display: none !important; }
+}
 
 /* ---------- Links & buttons ---------- */
 .u {
@@ -759,6 +763,8 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
 }
 
 .teaser { padding-block: var(--section); border-top: 1px solid var(--line); }
+/* Phones: the AI block and the studio teaser sat too far apart */
+@media (max-width: 899.98px) { .ai { padding-bottom: 64px; } .teaser { padding-top: 64px; } }
 .teaser__grid { display: grid; gap: 40px; }
 .teaser__img { width: 100%; }
 @media (min-width: 900px) {
@@ -1338,9 +1344,10 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' al pezzo'; }
 .pterms__text { max-width: 44ch; }
 @media (min-width: 900px) {
   .pterms { grid-template-columns: 5fr 7fr; column-gap: var(--g); align-items: start; }
-  .pterms > :first-child { padding-top: 8px; }
+  .pterms__title .mute { display: block; }
 }
-.pend { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 28px var(--g); padding-bottom: var(--section); }
+.pend { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px var(--g); padding-bottom: var(--section); }
+@media (min-width: 900px) { .pend { gap: 28px var(--g); } }
 .pend__size { color: var(--mute); transition: color 0.6s var(--ease); }
 @media (hover: hover) { .pend__pdf:hover .pend__size { color: inherit; } }
 .btn__arrow--down { transform: rotate(90deg); }

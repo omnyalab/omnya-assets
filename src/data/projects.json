@@ -372,55 +372,55 @@
     "featured": true
   },
   {
-    "id": "06_kassab_residence",
-    "title": "Kassab Residence",
+    "id": "06_whitmore_residence",
+    "title": "The Whitmore Residence",
     "category": "real-estate",
     "cover": {
-      "src": "/projects/06_kassab_residence/kassab_residence_cover.webp",
-      "mobile": "/projects/06_kassab_residence/kassab_residence_cover_mobile.webp",
+      "src": "/projects/06_whitmore_residence/whitmore_residence_cover.webp",
+      "mobile": "/projects/06_whitmore_residence/whitmore_residence_cover_mobile.webp",
       "w": 2752,
       "h": 1536,
       "orientation": "horizontal"
     },
     "gallery": [
       {
-        "src": "/projects/06_kassab_residence/kassab_residence_gallery_01.webp",
-        "mobile": "/projects/06_kassab_residence/kassab_residence_gallery_01_mobile.webp",
+        "src": "/projects/06_whitmore_residence/whitmore_residence_gallery_01.webp",
+        "mobile": "/projects/06_whitmore_residence/whitmore_residence_gallery_01_mobile.webp",
         "w": 2752,
         "h": 1536,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/06_kassab_residence/kassab_residence_gallery_02.webp",
-        "mobile": "/projects/06_kassab_residence/kassab_residence_gallery_02_mobile.webp",
+        "src": "/projects/06_whitmore_residence/whitmore_residence_gallery_02.webp",
+        "mobile": "/projects/06_whitmore_residence/whitmore_residence_gallery_02_mobile.webp",
         "w": 2752,
         "h": 1536,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/06_kassab_residence/kassab_residence_gallery_03.webp",
-        "mobile": "/projects/06_kassab_residence/kassab_residence_gallery_03_mobile.webp",
+        "src": "/projects/06_whitmore_residence/whitmore_residence_gallery_03.webp",
+        "mobile": "/projects/06_whitmore_residence/whitmore_residence_gallery_03_mobile.webp",
         "w": 4096,
         "h": 2294,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/06_kassab_residence/kassab_residence_gallery_04.webp",
-        "mobile": "/projects/06_kassab_residence/kassab_residence_gallery_04_mobile.webp",
+        "src": "/projects/06_whitmore_residence/whitmore_residence_gallery_04.webp",
+        "mobile": "/projects/06_whitmore_residence/whitmore_residence_gallery_04_mobile.webp",
         "w": 2752,
         "h": 1536,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/06_kassab_residence/kassab_residence_gallery_05.webp",
-        "mobile": "/projects/06_kassab_residence/kassab_residence_gallery_05_mobile.webp",
+        "src": "/projects/06_whitmore_residence/whitmore_residence_gallery_05.webp",
+        "mobile": "/projects/06_whitmore_residence/whitmore_residence_gallery_05_mobile.webp",
         "w": 2880,
         "h": 1280,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/06_kassab_residence/kassab_residence_gallery_06.webp",
-        "mobile": "/projects/06_kassab_residence/kassab_residence_gallery_06_mobile.webp",
+        "src": "/projects/06_whitmore_residence/whitmore_residence_gallery_06.webp",
+        "mobile": "/projects/06_whitmore_residence/whitmore_residence_gallery_06_mobile.webp",
         "w": 4096,
         "h": 2294,
         "orientation": "horizontal"
@@ -428,9 +428,9 @@
     ],
     "videos": [
       {
-        "desktop": "/projects/06_kassab_residence/kassab_residence_video_01_1080.mp4",
-        "mobile": "/projects/06_kassab_residence/kassab_residence_video_01_720.mp4",
-        "poster": "/projects/06_kassab_residence/kassab_residence_video_01_poster.webp"
+        "desktop": "/projects/06_whitmore_residence/whitmore_residence_video_01_1080.mp4",
+        "mobile": "/projects/06_whitmore_residence/whitmore_residence_video_01_720.mp4",
+        "poster": "/projects/06_whitmore_residence/whitmore_residence_video_01_poster.webp"
       }
     ],
     "featured": true

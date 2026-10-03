@@ -2,12 +2,16 @@
 // - Posters: the giant word rises from behind the building (1.1s, expo.out).
 // - From model to image: one frame, four stages, driven by a single value p (0..3).
 //   Desktop (fine pointer, 900px+): the section is pinned for three screens and the
-//   scroll scrubs p, snapping on each stage. Touch: no pin, the stages run once on
-//   their own (every 2.2s) when the frame is half on screen; dots and swipe.
+//   scroll scrubs p, snapping on each stage. Touch: no pin, the stages run on their
+//   own (every 2.2s) while the frame is on screen; at the end of a view the next view
+//   comes in by itself and starts again from 01. Dots, swipe and the view buttons
+//   stop the automatic run.
+//   Changing view always starts again from stage 01 (on desktop the page scrolls
+//   back to the start of the pinned section).
 //   Reduced motion: a still grid (CSS), only the view buttons work.
 // - Timings: the figures count up from zero once, in 1.2s.
 // The pictures never move with the scroll: only the stage changes.
-import { gsap, ScrollTrigger, SplitText, reduced } from './core';
+import { gsap, ScrollTrigger, SplitText, reduced, lenis } from './core';
 import { onDestroy, inPage, onIntro } from './anim';
 
 const EASE = 'expo.out';
@@ -103,6 +107,9 @@ function stages() {
   const blocks = Array.from(live.querySelectorAll<HTMLElement>('[data-stage-txt]'));
   const state = { p: 0 };
   let shown = 0; // stage whose text is on screen
+  let pin: ScrollTrigger | null = null; // desktop pin, when active
+  let pinTw: gsap.core.Tween | null = null;
+  let onUserView: (() => void) | null = null; // touch: a view tap stops the automatic run
   let lastStatus = '';
 
   const render = () => {
@@ -183,6 +190,21 @@ function stages() {
     view = v;
     lastStatus = '';
     ensure(v);
+    // every view starts from stage 01
+    if (pin && pinTw) {
+      // desktop: jump back to the start of the pinned range. The section is pinned,
+      // so the jump is invisible: only the stage goes back to 01.
+      if (pin.scroll() > pin.start + 1) {
+        if (lenis) lenis.scrollTo(pin.start, { immediate: true, force: true });
+        else window.scrollTo(0, pin.start);
+        pin.update();
+        pin.getTween()?.progress(1); // finish the scrub at its new target, no rewind animation
+        pinTw.progress(0);
+      }
+    } else {
+      gsap.killTweensOf(state);
+    }
+    state.p = 0;
     pills.forEach((b, j) => b.setAttribute('aria-pressed', String(j === v)));
     frames.forEach((f, j) => {
       f.classList.toggle('is-on', j === v);
@@ -191,7 +213,7 @@ function stages() {
     });
     render();
   };
-  pills.forEach((b, i) => b.addEventListener('click', () => setView(i)));
+  pills.forEach((b, i) => b.addEventListener('click', () => { onUserView?.(); setView(i); }));
   render();
 
   const mm = gsap.matchMedia();
@@ -214,7 +236,9 @@ function stages() {
         snap: { snapTo: [0, 1 / 3, 2 / 3, 1], duration: { min: 0.3, max: 0.8 }, delay: 0.08, ease: 'power2.inOut' },
       },
     });
-    return () => { tw.scrollTrigger?.kill(); tw.kill(); state.p = 0; render(); };
+    pin = tw.scrollTrigger ?? null;
+    pinTw = tw;
+    return () => { pin = null; pinTw = null; tw.scrollTrigger?.kill(); tw.kill(); state.p = 0; render(); };
   });
 
   // Touch and small screens: no pin. The stages run once by themselves, then dots and swipe.
@@ -225,6 +249,7 @@ function stages() {
     let tween: gsap.core.Tween | null = null;
     let auto: gsap.core.Tween | null = null;
     let user = false;
+    let visible = false;
 
     const goTo = (i: number) => {
       i = Math.max(0, Math.min(3, i));
@@ -235,18 +260,26 @@ function stages() {
       const d = one ? STEP[Math.min(i, from) | 0] : Math.min(1.2, Math.abs(i - from) * 0.5);
       tween = gsap.to(state, { p: i, duration: d, ease: one && i > from && from === 0 ? 'none' : 'power1.inOut', onUpdate: render });
     };
+    // one step every 2.2s while the frame is on screen; at stage 04 the next view
+    // fades in and runs again from 01. After the last view it stops.
     const next = () => {
-      if (user || state.p >= 3) return;
-      goTo(Math.round(state.p) + 1);
+      auto = null;
+      if (user || !visible) return;
+      if (state.p >= 3) {
+        if (view >= frames.length - 1) return;
+        tween?.kill();
+        setView(view + 1);
+      } else goTo(Math.round(state.p) + 1);
       auto = gsap.delayedCall(2.2, next);
     };
-    const stopAuto = () => { user = true; auto?.kill(); };
+    const stopAuto = () => { user = true; auto?.kill(); auto = null; };
+    onUserView = stopAuto;
 
     const io = new IntersectionObserver(
       ([e]) => {
-        if (!e.isIntersecting) return;
-        io.disconnect();
-        auto = gsap.delayedCall(2.2, next);
+        visible = e.isIntersecting;
+        if (!visible) { auto?.kill(); auto = null; return; }
+        if (!user && !auto) auto = gsap.delayedCall(2.2, next);
       },
       { threshold: 0.5 }
     );
@@ -276,6 +309,7 @@ function stages() {
     box.addEventListener('pointercancel', cancel);
 
     return () => {
+      onUserView = null;
       io.disconnect();
       tween?.kill();
       auto?.kill();
