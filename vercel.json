@@ -21,23 +21,23 @@
       "permanent": true
     },
     {
-      "source": "/work/kassab-residence",
-      "destination": "/work/whitmore-residence",
+      "source": "/work/whitmore-residence",
+      "destination": "/work",
       "permanent": true
     },
     {
-      "source": "/work/kassab-residence/",
-      "destination": "/work/whitmore-residence",
+      "source": "/work/whitmore-residence/",
+      "destination": "/work",
       "permanent": true
     },
     {
-      "source": "/it/work/kassab-residence",
-      "destination": "/it/work/whitmore-residence",
+      "source": "/it/work/whitmore-residence",
+      "destination": "/it/work",
       "permanent": true
     },
     {
-      "source": "/it/work/kassab-residence/",
-      "destination": "/it/work/whitmore-residence",
+      "source": "/it/work/whitmore-residence/",
+      "destination": "/it/work",
       "permanent": true
     }
   ]

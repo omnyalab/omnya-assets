@@ -372,68 +372,68 @@
     "featured": true
   },
   {
-    "id": "06_whitmore_residence",
-    "title": "The Whitmore Residence",
-    "category": "real-estate",
+    "id": "11_naoshima_house",
+    "title": "Naoshima House",
+    "category": "luxury",
+    "featured": true,
     "cover": {
-      "src": "/projects/06_whitmore_residence/whitmore_residence_cover.webp",
-      "mobile": "/projects/06_whitmore_residence/whitmore_residence_cover_mobile.webp",
-      "w": 2752,
-      "h": 1536,
+      "src": "/projects/11_naoshima_house/naoshima_house_cover.webp",
+      "mobile": "/projects/11_naoshima_house/naoshima_house_cover_mobile.webp",
+      "w": 5269,
+      "h": 2783,
       "orientation": "horizontal"
     },
     "gallery": [
       {
-        "src": "/projects/06_whitmore_residence/whitmore_residence_gallery_01.webp",
-        "mobile": "/projects/06_whitmore_residence/whitmore_residence_gallery_01_mobile.webp",
+        "src": "/projects/11_naoshima_house/naoshima_house_gallery_01.webp",
+        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_01_mobile.webp",
+        "w": 5134,
+        "h": 2758,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/11_naoshima_house/naoshima_house_gallery_02.webp",
+        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_02_mobile.webp",
+        "w": 5306,
+        "h": 2920,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/11_naoshima_house/naoshima_house_gallery_03.webp",
+        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_03_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/11_naoshima_house/naoshima_house_gallery_04.webp",
+        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_04_mobile.webp",
         "w": 2752,
         "h": 1536,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/06_whitmore_residence/whitmore_residence_gallery_02.webp",
-        "mobile": "/projects/06_whitmore_residence/whitmore_residence_gallery_02_mobile.webp",
+        "src": "/projects/11_naoshima_house/naoshima_house_gallery_05.webp",
+        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_05_mobile.webp",
+        "w": 5504,
+        "h": 3072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/11_naoshima_house/naoshima_house_gallery_06.webp",
+        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_06_mobile.webp",
         "w": 2752,
         "h": 1536,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/06_whitmore_residence/whitmore_residence_gallery_03.webp",
-        "mobile": "/projects/06_whitmore_residence/whitmore_residence_gallery_03_mobile.webp",
-        "w": 4096,
-        "h": 2294,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/06_whitmore_residence/whitmore_residence_gallery_04.webp",
-        "mobile": "/projects/06_whitmore_residence/whitmore_residence_gallery_04_mobile.webp",
-        "w": 2752,
-        "h": 1536,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/06_whitmore_residence/whitmore_residence_gallery_05.webp",
-        "mobile": "/projects/06_whitmore_residence/whitmore_residence_gallery_05_mobile.webp",
-        "w": 2880,
-        "h": 1280,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/06_whitmore_residence/whitmore_residence_gallery_06.webp",
-        "mobile": "/projects/06_whitmore_residence/whitmore_residence_gallery_06_mobile.webp",
-        "w": 4096,
-        "h": 2294,
         "orientation": "horizontal"
       }
     ],
     "videos": [
       {
-        "desktop": "/projects/06_whitmore_residence/whitmore_residence_video_01_1080.mp4",
-        "mobile": "/projects/06_whitmore_residence/whitmore_residence_video_01_720.mp4",
-        "poster": "/projects/06_whitmore_residence/whitmore_residence_video_01_poster.webp"
+        "desktop": "/projects/11_naoshima_house/naoshima_house_video_01_1080.mp4",
+        "mobile": "/projects/11_naoshima_house/naoshima_house_video_01_720.mp4",
+        "poster": "/projects/11_naoshima_house/naoshima_house_video_01_poster.webp"
       }
-    ],
-    "featured": true
+    ]
   },
   {
     "id": "07_elvira_dubai",
@@ -607,70 +607,6 @@
       }
     ],
     "featured": false
-  },
-  {
-    "id": "11_naoshima_house",
-    "title": "Naoshima House",
-    "category": "luxury",
-    "featured": false,
-    "cover": {
-      "src": "/projects/11_naoshima_house/naoshima_house_cover.webp",
-      "mobile": "/projects/11_naoshima_house/naoshima_house_cover_mobile.webp",
-      "w": 5269,
-      "h": 2783,
-      "orientation": "horizontal"
-    },
-    "gallery": [
-      {
-        "src": "/projects/11_naoshima_house/naoshima_house_gallery_01.webp",
-        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_01_mobile.webp",
-        "w": 5134,
-        "h": 2758,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/11_naoshima_house/naoshima_house_gallery_02.webp",
-        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_02_mobile.webp",
-        "w": 5306,
-        "h": 2920,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/11_naoshima_house/naoshima_house_gallery_03.webp",
-        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_03_mobile.webp",
-        "w": 5504,
-        "h": 3072,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/11_naoshima_house/naoshima_house_gallery_04.webp",
-        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_04_mobile.webp",
-        "w": 2752,
-        "h": 1536,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/11_naoshima_house/naoshima_house_gallery_05.webp",
-        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_05_mobile.webp",
-        "w": 5504,
-        "h": 3072,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/11_naoshima_house/naoshima_house_gallery_06.webp",
-        "mobile": "/projects/11_naoshima_house/naoshima_house_gallery_06_mobile.webp",
-        "w": 2752,
-        "h": 1536,
-        "orientation": "horizontal"
-      }
-    ],
-    "videos": [
-      {
-        "desktop": "/projects/11_naoshima_house/naoshima_house_video_01_1080.mp4",
-        "mobile": "/projects/11_naoshima_house/naoshima_house_video_01_720.mp4",
-        "poster": "/projects/11_naoshima_house/naoshima_house_video_01_poster.webp"
-      }
-    ]
   },
   {
     "id": "12_seaview_suites",
