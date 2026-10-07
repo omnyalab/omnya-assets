@@ -1,11 +1,10 @@
-// Home hero: the drone shot is an image sequence drawn on a canvas, driven by
-// the scroll. No <video> and no video.currentTime: scrubbing a video stutters on
-// iOS, a canvas does not.
+// Home hero. Two worlds, switched by gsap.matchMedia at 768px (heroIsMobile):
 //
+// DESKTOP (768px and up): the drone shot is an image sequence drawn on a
+// canvas, driven by the scroll.
 // - The hero stays put (position: sticky inside .hero-pin, see global.css) for
-//   120% of the screen on desktop and 100% on phones, then the page slides over
-//   it. Sticky instead of a JS pin: nothing switches to position: fixed, so
-//   there is never a jump on iOS when the pin starts or ends.
+//   120% of the screen, then the page slides over it. Sticky instead of a JS
+//   pin: nothing switches to position: fixed, so nothing jumps.
 // - Frames were picked at equal steps of motion (scripts/hero-frames.mjs), so a
 //   steady scroll moves the camera at a steady speed.
 // - The scroll only sets a target position, in frames and fractional (37.4).
@@ -14,64 +13,105 @@
 //   the next one is cross-faded over the current one (alpha = the decimals), so
 //   the picture moves continuously instead of in steps.
 // - Frames are fetched as files and decoded ahead with createImageBitmap, in a
-//   window around the position (20 ahead in the scroll direction, 8 behind;
-//   wider on desktop); the ones that leave the window are closed. drawImage
-//   only ever gets decoded pictures. A frame not decoded yet is replaced by the
-//   nearest one that is: never an empty canvas.
-// - The first frame is the <picture> in the page (no-JS, under the
-//   preloader, which waits for it). Right after the preloader come the key
-//   frames, one in eight; the rest once the page has settled or the visitor
-//   moves, the holes nearest to the position first.
+//   window around the position; the ones that leave the window are closed.
+//   drawImage only ever gets decoded pictures. A frame not decoded yet is
+//   replaced by the nearest one that is: never an empty canvas.
+// - The first frame is the <picture> in the page (no-JS, under the preloader,
+//   which waits for it). Right after the preloader come the key frames, one in
+//   eight; the rest once the page has settled or the visitor moves, the holes
+//   nearest to the position first.
 // - The canvas is 100lvh tall and is only reallocated when the width or the
-//   orientation changes: the Safari toolbar coming and going changes nothing.
-// - The h1 is simply there, still, from the moment the preloader lifts. It only
-//   leaves at the end: once the drone has landed and the next section starts
-//   sliding over the hero, it fades, rises 40px and blurs to 8px over the first
-//   60% of that slide, tied to the scroll (and comes back the same way).
-import { gsap, ScrollTrigger, reduced, fine, heroIsMobile } from './core';
-import { onDestroy, inPage, onIntro } from './anim';
+//   orientation changes.
+//
+// PHONES (up to 767px): no scrub at all. A plain muted video of the climb
+// (public/hero/mobile.mp4) plays once when the intro starts and stays on its
+// last frame; the hero is a normal 100svh section the page slides over. None
+// of the frame code runs and no frame is downloaded.
+//
+// Both: the h1 is simply there, still, from the moment the preloader lifts. It
+// only leaves when the next section slides over the hero: it fades, rises 40px
+// and blurs to 8px over the first 60% of that slide, tied to the scroll (and
+// comes back the same way).
+import { gsap, ScrollTrigger, reduced, fine } from './core';
+import { onDestroy } from './anim';
 
-type SetKey = 'desktop' | 'mobile';
-type Sets = Record<SetKey, { count: number; w: number; h: number }>;
+type Frames = { count: number; w: number; h: number };
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
-const setKey = (): SetKey => (heroIsMobile() ? 'mobile' : 'desktop');
 
 export function hero(intro: Promise<void>) {
   const pin = document.querySelector<HTMLElement>('[data-hero-pin]');
   const section = pin?.querySelector<HTMLElement>('[data-hero]');
   const canvas = section?.querySelector<HTMLCanvasElement>('[data-hero-frames]');
   const first = section?.querySelector<HTMLImageElement>('[data-hero-first]');
+  const video = section?.querySelector<HTMLVideoElement>('[data-hero-video]');
   const h1 = section?.querySelector<HTMLElement>('[data-hero-title]');
-  if (!pin || !section || !canvas || !first || !h1) return;
-  const sets = JSON.parse(section.dataset.frames || '{}') as Sets;
-
-  const seq = sequence(canvas, first, sets);
-  onDestroy(seq.destroy);
-
-  // Reduced motion: no scrub, the last frame and the plain h1
-  if (reduced) {
-    seq.seek(1, true);
-    onIntro(intro, () => seq.load([sets[setKey()].count - 1]));
-    return;
-  }
-
+  const after = document.querySelector<HTMLElement>('.after-hero');
+  if (!pin || !section || !canvas || !first || !video || !h1 || !after) return;
+  const frames = (JSON.parse(section.dataset.frames || '{}') as { desktop: Frames }).desktop;
   const cue = section.querySelector<HTMLElement>('.hero__cue');
-  inPage(() => {
-    // The scroll left to the drone: the pin is the hero, the drone's run and
-    // one more screen for the page to slide over the hero
-    const run = () => Math.max(1, pin.offsetHeight - 2 * section.offsetHeight);
-    let p = 0; // raw scroll progress through the drone's run
+
+  // The intro has started (preloader gone, or the page transition done). A
+  // branch mounted later (a resize across 768px) finds it already resolved.
+  const ready = intro.then(() => undefined);
+
+  /* Shared: the title leaves while the next section slides over the hero
+     (opacity, 40px up, blur 8px over the first 60% of that slide), and the
+     scroll cue fades with it. Until then the h1 carries no inline style. */
+  const clearTitle = () => { h1.style.opacity = h1.style.transform = h1.style.filter = ''; };
+  const titleExit = (trigger: ScrollTrigger.Vars, hideCue: () => boolean) => {
     const cueOut = cue ? gsap.to(cue, { autoAlpha: 0, duration: 0.4, ease: 'power1.out', paused: true }) : null;
     let cueHidden = false;
-    let leaving = false; // the title's exit has started
+    let leaving = false;
     const cueSync = () => {
-      const hide = p > 0.05 || leaving;
+      const hide = hideCue() || leaving;
       if (!cueOut || hide === cueHidden) return;
       cueHidden = hide;
       if (hide) cueOut.play();
       else cueOut.reverse();
     };
+    const exit = { e: 0 };
+    const ease = gsap.parseEase('power1.in');
+    gsap.to(exit, {
+      e: 1,
+      ease: 'none',
+      onUpdate: () => {
+        const k = ease(exit.e);
+        leaving = exit.e > 0;
+        cueSync();
+        if (k <= 0) { clearTitle(); return; }
+        h1.style.opacity = String(1 - k);
+        h1.style.transform = `translate3d(0, ${-40 * k}px, 0)`;
+        h1.style.filter = `blur(${8 * k}px)`;
+      },
+      scrollTrigger: { ...trigger, scrub: 0.6, invalidateOnRefresh: true },
+    });
+    return cueSync;
+  };
+
+  const mm = gsap.matchMedia();
+  onDestroy(() => mm.revert());
+
+  /* ---------- Desktop (768px and up): the scroll-driven drone shot ---------- */
+  mm.add('(min-width: 768px)', () => {
+    let alive = true;
+    const seq = sequence(canvas, first, frames);
+
+    // Reduced motion: no scrub, the last frame and the plain h1
+    if (reduced) {
+      seq.seek(1, true);
+      ready.then(() => { if (alive) seq.load([frames.count - 1]); });
+      return () => { alive = false; seq.destroy(); };
+    }
+
+    // The scroll left to the drone: the pin is the hero, the drone's run and
+    // one more screen for the page to slide over the hero
+    const run = () => Math.max(1, pin.offsetHeight - 2 * section.offsetHeight);
+    let p = 0; // raw scroll progress through the drone's run
+    const cueSync = titleExit(
+      { trigger: pin, start: () => `top+=${run()} top`, end: () => `top+=${run() + section.offsetHeight * 0.6} top` },
+      () => p > 0.05
+    );
     // No scrub here: the trigger only hands the target to the sequence, which
     // does its own smoothing (see sequence below)
     ScrollTrigger.create({
@@ -82,38 +122,10 @@ export function hero(intro: Promise<void>) {
       onUpdate: (self) => { p = self.progress; seq.seek(p); cueSync(); },
       onRefresh: (self) => { p = self.progress; seq.seek(p); cueSync(); },
     });
-    // The title leaves only when the next section starts to slide over the hero:
-    // first 60% of that slide, never during the drone's run. Until then it
-    // carries no inline style at all (no filter: Safari keeps it crisp).
-    const exit = { e: 0 };
-    const ease = gsap.parseEase('power1.in');
-    gsap.to(exit, {
-      e: 1,
-      ease: 'none',
-      onUpdate: () => {
-        const k = ease(exit.e);
-        leaving = exit.e > 0;
-        cueSync();
-        if (k <= 0) { h1.style.opacity = h1.style.transform = h1.style.filter = ''; return; }
-        h1.style.opacity = String(1 - k);
-        h1.style.transform = `translate3d(0, ${-40 * k}px, 0)`;
-        h1.style.filter = `blur(${8 * k}px)`;
-      },
-      scrollTrigger: {
-        trigger: pin,
-        start: () => `top+=${run()} top`,
-        end: () => `top+=${run() + section.offsetHeight * 0.6} top`,
-        scrub: 0.6,
-        invalidateOnRefresh: true,
-      },
-    });
-  });
 
-  onIntro(intro, () => {
-    // Key frames right away: whoever scrolls at once already sees the drone
-    // move. The ones in between wait for the page to settle (load + 2s), or
-    // for the visitor to move first.
-    seq.loadKeys();
+    // Key frames right after the intro: whoever scrolls at once already sees
+    // the drone move. The ones in between wait for the page to settle (load +
+    // 2s), or for the visitor to move first.
     let timer = 0;
     const evs = ['scroll', 'wheel', 'touchstart', 'pointerdown', 'keydown'];
     const off = () => {
@@ -123,29 +135,80 @@ export function hero(intro: Promise<void>) {
     };
     function start() { off(); seq.loadRest(); }
     function later() { timer = window.setTimeout(start, 2000); }
-    evs.forEach((e) => window.addEventListener(e, start, { passive: true }));
-    if (document.readyState === 'complete') later();
-    else window.addEventListener('load', later, { once: true });
-    onDestroy(off);
+    ready.then(() => {
+      if (!alive) return;
+      seq.loadKeys();
+      evs.forEach((e) => window.addEventListener(e, start, { passive: true }));
+      if (document.readyState === 'complete') later();
+      else window.addEventListener('load', later, { once: true });
+    });
+
+    return () => { alive = false; off(); seq.destroy(); clearTitle(); };
+  });
+
+  /* ---------- Phones (up to 767px): a plain video, once ----------
+     No pin, no canvas, no frames: the hero is a normal 100svh section and
+     #statement slides over it. The climb plays once when the intro starts and
+     stays on its last frame (the pool). If autoplay is refused (iOS Low Power
+     Mode) the video simply never shows: the poster underneath stays, no play
+     button. Reduced motion: no video at all, the <picture> shows the last
+     frame by itself (its own media query). */
+  mm.add('(max-width: 767px)', () => {
+    if (reduced) return;
+    let alive = true;
+    let started = false;
+    let done = false;
+
+    titleExit({ trigger: after, start: 'top bottom', end: () => `top bottom-=${section.offsetHeight * 0.6}` }, () => false);
+
+    const onPlaying = () => video.classList.add('is-on');
+    // ended: the video stays paused on its last frame, never back to the start
+    const onEnded = () => { done = true; };
+    // back from the background before the end: carry on from where it was
+    const onVis = () => {
+      if (!document.hidden && started && !done && video.paused) video.play().catch(() => {});
+    };
+    video.addEventListener('playing', onPlaying);
+    video.addEventListener('ended', onEnded);
+    document.addEventListener('visibilitychange', onVis);
+
+    ready.then(() => {
+      if (!alive) return;
+      started = true;
+      video.muted = true;
+      video.src = video.dataset.src!;
+      video.play().catch(() => {}); // refused: the poster stays
+    });
+
+    return () => {
+      alive = false;
+      video.removeEventListener('playing', onPlaying);
+      video.removeEventListener('ended', onEnded);
+      document.removeEventListener('visibilitychange', onVis);
+      video.pause();
+      video.classList.remove('is-on');
+      video.removeAttribute('src');
+      video.load(); // stops the download
+      clearTitle();
+    };
   });
 }
 
 /* ---------- The frame sequence ---------- */
 type Pic = (ImageBitmap | HTMLImageElement) & { __i?: number };
 
-function sequence(canvas: HTMLCanvasElement, first: HTMLImageElement, sets: Sets) {
+function sequence(canvas: HTMLCanvasElement, first: HTMLImageElement, set: Frames) {
   const ctx = canvas.getContext('2d')!;
   const touch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
   // Smoothing per 16.7ms: a little quicker on desktop, where Lenis already
   // smooths the wheel before it gets here
   const LERP = fine ? 0.25 : 0.18;
-  // Decoded window around the position (a 750px phone frame is ~4MB decoded,
-  // a 1600px desktop frame ~5.7MB: all 144 would be ~820MB, so desktop gets a
-  // wider window instead)
+  // Decoded window around the position (a 1600px frame is ~5.7MB decoded: all
+  // 144 would be ~820MB, so a window; a little narrower on touch screens)
   const AHEAD = touch ? 20 : 40;
   const BEHIND = touch ? 8 : 12;
 
-  let key = setKey();
+  const key = 'desktop';
   let ext: 'avif' | 'webp' | null = null;
   let gen = 0; // bumps on set change and on destroy: stale work is dropped
   let dead = false;
@@ -165,7 +228,7 @@ function sequence(canvas: HTMLCanvasElement, first: HTMLImageElement, sets: Sets
   let drawnSig = '';
   let shown = false;
 
-  const count = () => sets[key].count;
+  const count = () => set.count;
   const url = (i: number) => `/hero/${key}/${String(i + 1).padStart(4, '0')}.${ext}`;
 
   // Same format the <picture> picked: AVIF where the browser takes it, WebP otherwise
@@ -197,7 +260,7 @@ function sequence(canvas: HTMLCanvasElement, first: HTMLImageElement, sets: Sets
     land = l;
     // Never more pixels than the frames have: past their own resolution a bigger
     // canvas adds no detail, only work for every drawImage
-    const { w: fw, h: fh } = sets[key];
+    const { w: fw, h: fh } = set;
     const native = Math.min(fw / w, fh / h); // frame px per CSS px, at object-fit: cover
     const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1, native));
     canvas.width = Math.round(w * dpr);
@@ -407,31 +470,18 @@ function sequence(canvas: HTMLCanvasElement, first: HTMLImageElement, sets: Sets
   }
   reset();
 
-  // Redraw on resize; swap the whole set only when the screen crosses 768px
+  // Redraw on resize (the phone/desktop switch is the caller's matchMedia)
   let t = 0;
-  let progress = 0;
   const onResize = () => {
     clearTimeout(t);
-    t = window.setTimeout(() => {
-      const k = setKey();
-      if (k !== key) {
-        key = k;
-        reset();
-        target = pos = progress * (count() - 1);
-        if (phase === 0) enqueue([Math.round(target)]);
-        if (phase >= 1) enqueue(keys());
-        if (phase === 2) enqueue(rest());
-      }
-      if (size()) kick();
-    }, 120);
+    t = window.setTimeout(() => { if (size()) kick(); }, 120);
   };
   window.addEventListener('resize', onResize);
 
   return {
     /** scroll progress 0..1 → target position; `jump` skips the easing */
     seek(p: number, jump = false) {
-      progress = clamp01(p);
-      const next = progress * (count() - 1);
+      const next = clamp01(p) * (count() - 1);
       if (next !== target) dir = next > target ? 1 : -1;
       target = next;
       if (jump) pos = target;

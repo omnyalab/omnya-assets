@@ -135,14 +135,15 @@ for (const [name, vp] of Object.entries(viewports)) {
 // Every file in projects.json, desktop and mobile, plus brand, home hero frames, social images and icons
 const data = JSON.parse(readFileSync('src/data/projects.json', 'utf8'));
 const imgUrls = new Set([
-  ...['desktop', 'mobile'].flatMap((k) => readdirSync(`public/hero/${k}`).map((f) => `/hero/${k}/${f}`)),
+  ...readdirSync('public/hero/desktop').map((f) => `/hero/desktop/${f}`),
+  '/hero/mobile_poster.webp', '/hero/mobile_end.webp',
   '/process/studio.webp',
   ...readdirSync('public/brand').map((f) => `/brand/${f}`),
   ...readdirSync('public/og').map((f) => `/og/${f}`),
   ...readdirSync('public/studio').map((f) => `/studio/${f}`),
   '/favicon-32.png', '/icon-192.png', '/apple-touch-icon.png', '/favicon.ico',
 ]);
-const vidUrls = new Set();
+const vidUrls = new Set(['/hero/mobile.mp4']);
 for (const p of data) {
   for (const m of [p.cover, ...p.gallery]) { imgUrls.add(m.src); imgUrls.add(m.mobile); }
   for (const v of p.videos) { vidUrls.add(v.desktop); vidUrls.add(v.mobile); imgUrls.add(v.poster); }

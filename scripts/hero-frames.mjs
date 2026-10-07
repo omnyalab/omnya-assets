@@ -1,20 +1,20 @@
-// Home hero: image sequences for the scroll-driven drone shot.
+// Home hero, desktop: image sequence for the scroll-driven drone shot.
 //   hero-src/pc_video_1.mp4      → public/hero/desktop/0001.avif|webp … (144 frames, 1600px wide)
-//   hero-src/mobile_video_1.mp4  → public/hero/mobile/0001.avif|webp …  (128 frames, 750px wide)
-//   src/data/hero-frames.json    frame count and size of each set, read by the home page
+//   src/data/hero-frames.json    frame count and size, read by the home page
+// Phones have no scrub: they play public/hero/mobile.mp4 (made by hand from
+// hero-src/mobile_video_1.mp4, see the README).
 //
 // The clip starts almost still and slows down at the end. Picking frames at
 // equal steps of time would make the scroll crawl at the start and rush in the
 // middle, so the frames are picked at equal steps of motion instead: for every
 // pair of consecutive frames we measure the mean absolute difference in
-// greyscale at 214x120 (120x214 for the vertical cut), add them up, and take
-// the frames where the running total crosses 0, 1/(n-1), 2/(n-1) … of the whole.
+// greyscale at 214x120, add them up, and take the frames where the running
+// total crosses 0, 1/(n-1), 2/(n-1) … of the whole.
 // The camera then moves at the same speed for every pixel scrolled.
 //
 // Needs ffmpeg with libaom-av1 and libwebp (brew install ffmpeg). Not part of
 // `npm run build`: run it by hand when the videos change, then commit the frames.
-//   npm run hero:frames            both sets
-//   npm run hero:frames mobile     one set only
+//   npm run hero:frames
 import { spawn } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readdirSync, rmSync, statSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { cpus, tmpdir } from 'node:os';
@@ -22,7 +22,6 @@ import { join } from 'node:path';
 
 const SETS = {
   desktop: { src: 'hero-src/pc_video_1.mp4', count: 144, width: 1600, probe: [214, 120], limitMB: 12 },
-  mobile: { src: 'hero-src/mobile_video_1.mp4', count: 128, width: 750, probe: [120, 214], limitMB: 8 },
 };
 // Starting quality, as in avifenc/sharp (0-100) and cwebp. Lowered in steps of 5
 // if a set goes over its size limit.
@@ -141,7 +140,7 @@ async function build(key) {
 
 const only = process.argv[2];
 const keys = only ? [only] : Object.keys(SETS);
-if (keys.some((k) => !SETS[k])) throw new Error(`unknown set "${only}", use desktop or mobile`);
+if (keys.some((k) => !SETS[k])) throw new Error(`unknown set "${only}", use desktop`);
 const manifest = existsSync(MANIFEST) ? JSON.parse(readFileSync(MANIFEST, 'utf8')) : {};
 for (const key of keys) manifest[key] = await build(key);
 writeFileSync(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);

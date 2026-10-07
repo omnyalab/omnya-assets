@@ -12,7 +12,7 @@ npm run dev      # anteprima su http://localhost:5173
 npm run build    # sito statico in dist/
 npm run check:media   # con `npx astro preview --port 4322` attivo: controlla immagini e video di tutte le pagine, mobile e desktop
                       # (su Linux: CHROME_PATH=/percorso/di/chrome npm run check:media)
-npm run hero:frames   # rigenera i fotogrammi della hero da hero-src/*.mp4 (serve ffmpeg; non fa parte del build, poi committa public/hero)
+npm run hero:frames   # rigenera i fotogrammi desktop della hero da hero-src/pc_video_1.mp4 (serve ffmpeg; non fa parte del build, poi committa public/hero)
 ```
 
 ## Lingue
@@ -30,7 +30,13 @@ Inglese alla radice, italiano sotto `/it/` con gli stessi indirizzi (`/work/x` �
 - Contatti e link: `src/lib/contact.ts`
 - Privacy: `docs/PRIVACY.md` (la pagina /privacy-policy si genera da lì)
 - Stili: `src/styles/global.css`
-- Hero della home: video sorgente in `hero-src/`, fotogrammi in `public/hero/` (script `scripts/hero-frames.mjs`), animazione in `src/scripts/hero.ts`
+- Hero della home: video sorgente in `hero-src/`, logica in `src/scripts/hero.ts`. Desktop: fotogrammi in `public/hero/desktop/` (script `scripts/hero-frames.mjs`). Telefoni: un video normale, `public/hero/mobile.mp4`, con i poster `mobile_poster.webp` (primo frame) e `mobile_end.webp` (ultimo, per reduced motion). Per rifarli da `hero-src/mobile_video_1.mp4`:
+  ```bash
+  ffmpeg -i hero-src/mobile_video_1.mp4 -vf "scale=1080:1920:flags=lanczos,fps=24" -c:v libx264 -preset slow -crf 23 -profile:v high -level 4.1 -pix_fmt yuv420p -an -movflags +faststart public/hero/mobile.mp4
+  ffmpeg -i hero-src/mobile_video_1.mp4 -vf "select=eq(n\,0),scale=828:-2" -frames:v 1 -c:v libwebp -quality 74 public/hero/mobile_poster.webp
+  ffmpeg -sseof -0.1 -i hero-src/mobile_video_1.mp4 -vf "scale=828:-2" -frames:v 1 -update 1 -c:v libwebp -quality 80 public/hero/mobile_end.webp
+  ```
+  (CRF 23 → circa 4,3 MB: tra 3 e 5 MB, alzalo se il video nuovo pesa di più)
 - Animazioni: `src/scripts/`
 
 ## Deploy

@@ -7,14 +7,5 @@
       "avif": 55,
       "webp": 50
     }
-  },
-  "mobile": {
-    "count": 128,
-    "w": 750,
-    "h": 1346,
-    "quality": {
-      "avif": 55,
-      "webp": 60
-    }
   }
 }

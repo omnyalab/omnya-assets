@@ -591,27 +591,38 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
   .hero { position: sticky; top: 0; }
 }
 .hero__media { position: absolute; inset: 0; }
-.hero__media img, .hero__frames { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero__media img, .hero__frames, .hero__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 /* The frames canvas covers the first frame once it has drawn something */
 .hero__frames { opacity: 0; }
 .hero__frames.is-on { opacity: 1; }
-/* Scroll-driven hero (src/scripts/hero.ts), phones and desktop alike: the hero
-   is a full screen held by position: sticky for the drone's run (100% of the
-   screen on phones, 120% from 768px), then one more screen while the page
-   slides over it. Plain sticky: nothing jumps when it starts or stops.
-   The picture runs to the large viewport height, so when the iPhone toolbar
-   collapses there is picture under it, never a strip of paper. */
-@media (prefers-reduced-motion: no-preference) {
-  .js .hero-pin { --run: 100svh; height: calc(200svh + var(--run)); }
+/* Desktop and tablets (768px and up): the scroll-driven hero (src/scripts/hero.ts).
+   The hero is a full screen held by position: sticky for the drone's run (120%
+   of the screen), then one more screen while the page slides over it. Plain
+   sticky: nothing jumps when it starts or stops. The picture runs to the large
+   viewport height, so when a toolbar collapses there is picture under it. */
+@media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+  .js .hero-pin { --run: 120svh; height: calc(200svh + var(--run)); }
   .js .hero { position: sticky; top: 0; height: 100svh; min-height: 0; overflow-x: clip; overflow-y: visible; }
   .js .hero__media, .js .hero__shade { bottom: auto; height: max(100%, 100lvh); }
   /* the frames canvas has a fixed height: the toolbar never resizes it */
   .js .hero__frames { bottom: auto; height: 100lvh; }
   .js .hero-pin + .after-hero { margin-top: -100svh; }
 }
-@media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
-  .js .hero-pin { --run: 120svh; }
+/* Phones (up to 767px): no scrub. A normal full-screen section the page
+   slides over (the wrapper steps aside so the hero can stick inside <main>),
+   with a plain video of the climb on top of its first frame. */
+@media (max-width: 767px) {
+  .hero-pin { display: contents; }
+  .hero { position: sticky; top: 0; height: 100svh; min-height: 0; }
+  .hero__frames { display: none; }
 }
+/* The video only shows once it really plays: if autoplay is refused (iOS Low
+   Power Mode) the poster underneath stays and no play button ever appears */
+.hero__video { opacity: 0; pointer-events: none; }
+.hero__video.is-on { opacity: 1; }
+.hero__video::-webkit-media-controls,
+.hero__video::-webkit-media-controls-start-playback-button { display: none !important; -webkit-appearance: none; }
+@media (min-width: 768px) { .hero__video { display: none; } }
 .hero__shade {
   position: absolute; inset: 0; pointer-events: none;
   /* A whisper only: top for the header, bottom for the cue (0.22 at most) and a
