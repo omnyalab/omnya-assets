@@ -8,7 +8,7 @@ import SampleCta from '../components/SampleCta.astro';
 import { projects, pad } from '../lib/data';
 import { sizes as dims } from '../lib/media';
 import { t, langFromPath, localize } from '../i18n';
-import { alt, reelAlt } from '../lib/alts';
+import heroFrames from '../data/hero-frames.json';
 
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
@@ -36,21 +36,35 @@ const rows = [
 ---
 
 <Base page="home">
-  <section class="hero" data-hero data-header="light" data-header-media data-header-until=".after-hero" aria-label={H.reel}>
-    <div class="hero__media">
-      {/* One file only: the script picks desktop (16:9) or mobile (9:16, under 768px) */}
-      <img class="hero__poster" data-early data-src-d="/reel/hero_desktop_poster.webp" data-src-m="/reel/hero_mobile_poster.webp" alt={reelAlt(lang)} />
-      <video autoplay muted loop playsinline preload="none" aria-label={H.reelLabel} data-reel data-src-d="/reel/hero_desktop.mp4" data-src-m="/reel/hero_mobile.mp4"></video>
-    </div>
-    <div class="hero__shade"></div>
-    <div class="hero__dim"></div>
-    <div class="hero__title wrap">
-      <Duo as="h1" size="h1" a={H.heroA} b={H.heroB} intro />
-    </div>
-    <a class="hero__cue" href="#statement" aria-label={H.scrollLabel} data-scroll-to>
-      <span class="hero__cue-in" data-fade="0.3" data-intro><span>{H.scroll}</span><i></i></span>
-    </a>
-  </section>
+  <!-- The hero stays on screen (sticky) while the scroll flies the drone up to
+       the villa, then the page slides over it. Frames: public/hero, made by
+       scripts/hero-frames.mjs; the drawing is in src/scripts/hero.ts -->
+  <div class="hero-pin" data-hero-pin>
+    <section class="hero" data-hero data-header="light" data-header-media data-header-until=".after-hero" aria-label={H.reel} data-frames={JSON.stringify(heroFrames)}>
+      <div class="hero__media">
+        {/* First frame: what shows without JavaScript and under the preloader. Vertical cut under 768px.
+            Low priority on purpose: Chrome never counts a full-screen picture as LCP, the h1 is the LCP,
+            and a high-priority picture would only steal bandwidth from the font the h1 needs
+            (Lighthouse mobile LCP 4.8s with "high", 4.2s with "low"). It still loads under the preloader. */}
+        <picture>
+          <source media="(max-width: 767px)" type="image/avif" srcset="/hero/mobile/0001.avif" width={heroFrames.mobile.w} height={heroFrames.mobile.h} />
+          <source media="(max-width: 767px)" type="image/webp" srcset="/hero/mobile/0001.webp" width={heroFrames.mobile.w} height={heroFrames.mobile.h} />
+          <source type="image/avif" srcset="/hero/desktop/0001.avif" />
+          <img class="hero__poster" src="/hero/desktop/0001.webp" width={heroFrames.desktop.w} height={heroFrames.desktop.h} alt="" fetchpriority="low" data-hero-first data-pre-wait />
+        </picture>
+        <canvas class="hero__frames" aria-hidden="true" data-hero-frames></canvas>
+      </div>
+      <div class="hero__shade"></div>
+      <div class="hero__dim"></div>
+      <canvas class="hero__px" aria-hidden="true" data-hero-px></canvas>
+      <div class="hero__title wrap">
+        <h1 class="t-h1" data-hero-title>{H.heroA}{' '}<span class="mute">{H.heroB}</span></h1>
+      </div>
+      <a class="hero__cue" href="#statement" aria-label={H.scrollLabel} data-scroll-to>
+        <span class="hero__cue-in" data-fade="0.3" data-intro><span>{H.scroll}</span><i></i></span>
+      </a>
+    </section>
+  </div>
 
   <div class="after-hero">
     <section class="statement wrap" id="statement">

@@ -73,14 +73,26 @@ const lines = [
       if (closed) return;
       closed = true;
       var wait = Math.max(0, MIN - (Date.now() - started));
-      setTimeout(function () {
-        try { sessionStorage.setItem('omSeenIntro', '1'); } catch (e) {}
-        window.__omPre = 'done';
-        document.documentElement.classList.remove('pre-run');
-        window.dispatchEvent(new Event('om:pre-exit'));
-        pre.classList.add('is-done');
-        setTimeout(function () { pre.classList.add('is-gone'); }, 800);
-      }, wait);
+      setTimeout(function () { ready(exit); }, wait);
+    }
+    // A picture marked [data-pre-wait] (the home hero's first frame) must be on
+    // screen when the panel lifts, never an empty hero: wait for its decode,
+    // 1.5s at most on top of the usual time
+    function ready(go) {
+      var img = document.querySelector('img[data-pre-wait]');
+      if (!img || !img.decode) return go();
+      var done = false;
+      var once = function () { if (!done) { done = true; go(); } };
+      img.decode().then(once, once);
+      setTimeout(once, 1500);
+    }
+    function exit() {
+      try { sessionStorage.setItem('omSeenIntro', '1'); } catch (e) {}
+      window.__omPre = 'done';
+      document.documentElement.classList.remove('pre-run');
+      window.dispatchEvent(new Event('om:pre-exit'));
+      pre.classList.add('is-done');
+      setTimeout(function () { pre.classList.add('is-gone'); }, 800);
     }
     if (document.readyState === 'complete') close();
     else window.addEventListener('load', close);

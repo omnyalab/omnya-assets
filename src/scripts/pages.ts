@@ -1,5 +1,6 @@
-import { gsap, ScrollTrigger, Flip, reduced, fine, isMobile, heroIsMobile } from './core';
-import { onDestroy, inPage, onIntro } from './anim';
+import { gsap, ScrollTrigger, Flip, reduced, fine, isMobile } from './core';
+import { onDestroy, inPage } from './anim';
+import { hero } from './hero';
 import { contact } from '../lib/contact';
 
 /* ---------- Project cards on touch screens ----------
@@ -21,40 +22,7 @@ function cardHints() {
 export function home(intro: Promise<void>) {
   seeAll();
   cardHints();
-  const hero = document.querySelector<HTMLElement>('[data-hero]');
-  const video = hero?.querySelector('video');
-  if (!hero || !video) return;
-
-  inPage(() => {
-    // Measured on the reel itself, which starts at rest at the top of the page
-    const scrub = { trigger: hero, start: 'top top', end: 'bottom top', scrub: true };
-    ScrollTrigger.create({
-      trigger: hero, start: 'top top', end: 'bottom top',
-      onLeave: () => video.pause(),
-      onEnterBack: () => video.play().catch(() => {}),
-    });
-    if (reduced) return;
-    // The reel itself never moves: only a darkening veil (desktop) and the cue fading out
-    if (fine) gsap.to(hero.querySelector('.hero__dim'), { opacity: 0.5, ease: 'none', scrollTrigger: scrub });
-    if (fine) gsap.to(hero.querySelector('.hero__cue'), {
-      opacity: 0, ease: 'none',
-      scrollTrigger: { trigger: document.body, start: 'top top', end: '+=160', scrub: true },
-    });
-  });
-
-  onIntro(intro, () => {
-    // The reel only starts downloading once the page is on screen, and only the
-    // file for this screen: vertical 9:16 under 768px, 16:9 above
-    if (!video.getAttribute('src')) video.src = (heroIsMobile() ? video.dataset.srcM : video.dataset.srcD)!;
-    video.preload = 'auto';
-    video.play().catch(() => {});
-    // Browsers pause muted video in background tabs: resume when visible again
-    const resume = () => {
-      if (!document.hidden && video.paused && window.scrollY < window.innerHeight) video.play().catch(() => {});
-    };
-    document.addEventListener('visibilitychange', resume);
-    onDestroy(() => document.removeEventListener('visibilitychange', resume));
-  });
+  hero(intro);
 }
 
 /* "See all the work": two rows of gallery shots slide in opposite directions.

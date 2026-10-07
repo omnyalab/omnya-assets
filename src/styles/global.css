@@ -583,14 +583,34 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
   color: #fff; overflow: hidden;
   background: #1a1714;
 }
-/* Desktop only: the page slides over the reel. On touch screens the reel simply
-   scrolls away with the page, no sticky, nothing tied to the scroll. */
+/* Without JavaScript or with reduced motion (the scroll-driven hero is below):
+   on desktop the page slides over the hero, on touch screens it simply scrolls
+   away with the page. */
 @media (min-width: 900px) { .hero { height: 100svh; } }
 @media (hover: hover) and (pointer: fine) {
   .hero { position: sticky; top: 0; }
 }
 .hero__media { position: absolute; inset: 0; }
-.hero__media video, .hero__media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero__media img, .hero__frames { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* The frames canvas covers the first frame once it has drawn something */
+.hero__frames { opacity: 0; }
+.hero__frames.is-on { opacity: 1; }
+/* Scroll-driven hero (src/scripts/hero.ts), phones and desktop alike: the hero
+   is a full screen held by position: sticky for the drone's run (100% of the
+   screen on phones, 120% from 768px), then one more screen while the page
+   slides over it. Plain sticky: nothing jumps when it starts or stops.
+   The picture runs to the large viewport height, so when the iPhone toolbar
+   collapses there is picture under it, never a strip of paper. */
+@media (prefers-reduced-motion: no-preference) {
+  .js .hero-pin { --run: 100svh; height: calc(200svh + var(--run)); }
+  .js .hero { position: sticky; top: 0; height: 100svh; min-height: 0; overflow-x: clip; overflow-y: visible; }
+  .js .hero__media, .js .hero__shade, .js .hero__dim { bottom: auto; height: max(100%, 100lvh); }
+  .js .hero-pin + .after-hero { margin-top: -100svh; }
+}
+@media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+  .js .hero-pin { --run: 120svh; }
+}
+.hero__px { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; opacity: 0; pointer-events: none; }
 .hero__shade {
   position: absolute; inset: 0; pointer-events: none;
   /* top and bottom for the header and the cue, and a long soft oval behind the
@@ -616,7 +636,13 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
     rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.28) 25%, rgba(0, 0, 0, 0.22) 45%, rgba(0, 0, 0, 0.14) 62%,
     rgba(0, 0, 0, 0.07) 78%, rgba(0, 0, 0, 0.02) 91%, rgba(0, 0, 0, 0) 100%);
 }
-.hero__title .mute { color: rgba(255, 255, 255, 0.7); }
+/* --ta: the title's text strength. The pixel effect brings it in (hero.ts);
+   without JavaScript or with reduced motion it is simply 1. */
+.hero__title h1 { color: rgb(255 255 255 / var(--ta, 1)); }
+.hero__title .mute { color: rgb(255 255 255 / calc(0.7 * var(--ta, 1))); }
+@media (prefers-reduced-motion: no-preference) {
+  .js:not(.pre-run) .hero__title h1 { --ta: 0; }
+}
 .hero__dim { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }
 /* Scroll cue: label + a line with a segment that keeps falling. The whole cue
    is a 44px-wide link to the next section. */

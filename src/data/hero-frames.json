@@ -1,0 +1,20 @@
+{
+  "desktop": {
+    "count": 100,
+    "w": 1600,
+    "h": 892,
+    "quality": {
+      "avif": 55,
+      "webp": 60
+    }
+  },
+  "mobile": {
+    "count": 80,
+    "w": 828,
+    "h": 1486,
+    "quality": {
+      "avif": 55,
+      "webp": 65
+    }
+  }
+}

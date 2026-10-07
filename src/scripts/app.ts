@@ -1,5 +1,5 @@
 import type { TransitionBeforePreparationEvent, TransitionBeforeSwapEvent } from 'astro:transitions/client';
-import { gsap, ScrollTrigger, fine, heroIsMobile, initLenis, lenis, preloaderExit, startScroll, stopScroll, wait } from './core';
+import { gsap, ScrollTrigger, fine, initLenis, lenis, preloaderExit, startScroll, stopScroll, wait } from './core';
 import { initPage, destroyPage } from './anim';
 import { leave, enter, type Mode } from './transition';
 import { initCursor, initSheet, initMenu, initHeaderLoop, initScrollbar, initScrollLinks, collectHeaderZones, initClocks, closeSheet, closeMenu } from './ui';
@@ -17,20 +17,6 @@ function releaseEarly() {
     img.src = img.dataset.src!;
     img.removeAttribute('data-src');
   });
-}
-
-// The reel poster (vertical under 768px, only that one is fetched). On a first
-// load it waits for the page to finish loading, so it never competes with the
-// first paint; under the preloader it still has all the time it needs.
-function releasePoster() {
-  document.querySelectorAll<HTMLImageElement>('img[data-early][data-src-d]:not([src])').forEach((img) => {
-    img.src = (heroIsMobile() ? img.dataset.srcM : img.dataset.srcD)!;
-  });
-}
-function releasePosterAfterLoad() {
-  const later = () => setTimeout(releasePoster, 300);
-  if (document.readyState === 'complete') later();
-  else window.addEventListener('load', later, { once: true });
 }
 
 initLenis();
@@ -82,8 +68,8 @@ document.addEventListener('astro:after-swap', () => {
 
 document.addEventListener('astro:page-load', () => {
   // First visit: let the first paint happen before these start downloading
-  if (booted) { releaseEarly(); releasePoster(); }
-  else { setTimeout(releaseEarly, 300); releasePosterAfterLoad(); }
+  if (booted) releaseEarly();
+  else setTimeout(releaseEarly, 300);
   let intro: Promise<void>;
   if (!booted) {
     booted = true;

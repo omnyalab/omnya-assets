@@ -20,7 +20,7 @@ function routes(dir = 'dist', prefix = '') {
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
     if (statSync(p).isDirectory()) {
-      if (name === '_astro' || name === 'projects' || name === 'reel' || name === 'brand') continue;
+      if (name === '_astro' || name === 'projects' || name === 'hero' || name === 'brand') continue;
       out.push(...routes(p, `${prefix}/${name}`));
     } else if (name === 'index.html') out.push(prefix || '/');
   }
@@ -132,18 +132,17 @@ for (const [name, vp] of Object.entries(viewports)) {
   }
 }
 
-// Every file in projects.json, desktop and mobile, plus brand, reel, social images and icons
+// Every file in projects.json, desktop and mobile, plus brand, home hero frames, social images and icons
 const data = JSON.parse(readFileSync('src/data/projects.json', 'utf8'));
 const imgUrls = new Set([
-  '/reel/hero_desktop_poster.webp',
-  '/reel/hero_mobile_poster.webp',
+  ...['desktop', 'mobile'].flatMap((k) => readdirSync(`public/hero/${k}`).map((f) => `/hero/${k}/${f}`)),
   '/process/studio.webp',
   ...readdirSync('public/brand').map((f) => `/brand/${f}`),
   ...readdirSync('public/og').map((f) => `/og/${f}`),
   ...readdirSync('public/studio').map((f) => `/studio/${f}`),
   '/favicon-32.png', '/icon-192.png', '/apple-touch-icon.png', '/favicon.ico',
 ]);
-const vidUrls = new Set(['/reel/hero_desktop.mp4', '/reel/hero_mobile.mp4']);
+const vidUrls = new Set();
 for (const p of data) {
   for (const m of [p.cover, ...p.gallery]) { imgUrls.add(m.src); imgUrls.add(m.mobile); }
   for (const v of p.videos) { vidUrls.add(v.desktop); vidUrls.add(v.mobile); imgUrls.add(v.poster); }
@@ -169,7 +168,7 @@ const fileProblems = await page.evaluate(async (imgs, vids) => {
   return bad;
 }, [...imgUrls], [...vidUrls]);
 problems.push(...fileProblems);
-console.log(`\nfiles   ${imgUrls.size} images and ${vidUrls.size} videos from projects.json, brand, reel, social images and icons: ${fileProblems.length ? 'PROBLEMS' : 'ok'}`);
+console.log(`\nfiles   ${imgUrls.size} images and ${vidUrls.size} videos from projects.json, brand, hero frames, social images and icons: ${fileProblems.length ? 'PROBLEMS' : 'ok'}`);
 
 await browser.close();
 console.log(`\n${stats.pages} page loads, ${stats.images} <img>, ${stats.videos} <video>, ${stats.posters} posters checked on the pages`);

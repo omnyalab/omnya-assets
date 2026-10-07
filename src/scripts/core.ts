@@ -8,6 +8,9 @@ import Lenis from 'lenis';
 gsap.registerPlugin(ScrollTrigger, SplitText, Flip, CustomEase);
 // The brief's curve, cubic-bezier(0.16, 1, 0.3, 1), usable as ease: 'om'
 CustomEase.create('om', '0.16,1,0.3,1');
+// The iPhone toolbar resizing the viewport must never re-measure the triggers
+// (the home hero is a 200svh+ scrub: a refresh mid-scroll would make it jump)
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 export { gsap, ScrollTrigger, SplitText, Flip };
 

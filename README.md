@@ -12,6 +12,7 @@ npm run dev      # anteprima su http://localhost:5173
 npm run build    # sito statico in dist/
 npm run check:media   # con `npx astro preview --port 4322` attivo: controlla immagini e video di tutte le pagine, mobile e desktop
                       # (su Linux: CHROME_PATH=/percorso/di/chrome npm run check:media)
+npm run hero:frames   # rigenera i fotogrammi della hero da hero-src/*.mp4 (serve ffmpeg; non fa parte del build, poi committa public/hero)
 ```
 
 ## Lingue
@@ -29,6 +30,7 @@ Inglese alla radice, italiano sotto `/it/` con gli stessi indirizzi (`/work/x` ‚
 - Contatti e link: `src/lib/contact.ts`
 - Privacy: `docs/PRIVACY.md` (la pagina /privacy-policy si genera da l√¨)
 - Stili: `src/styles/global.css`
+- Hero della home: video sorgente in `hero-src/`, fotogrammi in `public/hero/` (script `scripts/hero-frames.mjs`), animazione in `src/scripts/hero.ts`
 - Animazioni: `src/scripts/`
 
 ## Deploy

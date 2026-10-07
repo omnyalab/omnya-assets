@@ -14,4 +14,3 @@ export function alt(p: Project, lang: Lang, index?: number) {
   return pair ? `${p.title}, ${pair[lang]}` : p.title;
 }
 
-export const reelAlt = (lang: Lang) => (table._reel as Pair)[lang];
