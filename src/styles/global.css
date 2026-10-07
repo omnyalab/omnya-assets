@@ -604,46 +604,39 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
 @media (prefers-reduced-motion: no-preference) {
   .js .hero-pin { --run: 100svh; height: calc(200svh + var(--run)); }
   .js .hero { position: sticky; top: 0; height: 100svh; min-height: 0; overflow-x: clip; overflow-y: visible; }
-  .js .hero__media, .js .hero__shade, .js .hero__dim { bottom: auto; height: max(100%, 100lvh); }
+  .js .hero__media, .js .hero__shade { bottom: auto; height: max(100%, 100lvh); }
   .js .hero-pin + .after-hero { margin-top: -100svh; }
 }
 @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
   .js .hero-pin { --run: 120svh; }
 }
-.hero__px { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; opacity: 0; pointer-events: none; }
 .hero__shade {
   position: absolute; inset: 0; pointer-events: none;
-  /* top and bottom for the header and the cue, and a long soft oval behind the
-     title (eased stops, no visible edge, 0.4 at most). With the title's wide
-     shadow, large text keeps about 3:1 on the brightest frame of the reels. */
+  /* A whisper only: top for the header, bottom for the cue (0.22 at most) and a
+     faint oval in the middle (0.15 at most). The title reads thanks to its own
+     glow and shadow (.hero__title h1), not to a darker picture. */
   background:
     radial-gradient(85% 62% at 50% 50%,
-      rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.39) 20%, rgba(0, 0, 0, 0.36) 35%, rgba(0, 0, 0, 0.3) 50%,
-      rgba(0, 0, 0, 0.23) 62%, rgba(0, 0, 0, 0.15) 74%, rgba(0, 0, 0, 0.07) 86%, rgba(0, 0, 0, 0.02) 94%, rgba(0, 0, 0, 0) 100%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0) 26%, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.36) 100%);
+      rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.146) 20%, rgba(0, 0, 0, 0.135) 35%, rgba(0, 0, 0, 0.113) 50%,
+      rgba(0, 0, 0, 0.086) 62%, rgba(0, 0, 0, 0.056) 74%, rgba(0, 0, 0, 0.026) 86%, rgba(0, 0, 0, 0.008) 94%, rgba(0, 0, 0, 0) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0) 26%, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.22) 100%);
 }
 .hero__title {
   position: absolute; inset: 0; z-index: 2;
   display: grid; place-items: center; text-align: center;
   pointer-events: none;
 }
-.hero__title h1 { position: relative; max-width: 12ch; }
-/* one soft glow behind the whole title, outside the line masks: it fades to
-   nothing well inside its own box (closest-side), so no edge ever shows */
+.hero__title h1 { position: relative; max-width: 12ch; text-shadow: 0 2px 24px rgba(0, 0, 0, 0.25); }
+/* one soft glow behind the whole title: it fades to nothing well inside its own
+   box (closest-side), so no edge ever shows. This is what keeps the title
+   readable on the brightest frames of the drone shot. */
 .hero__title h1::before {
   content: ''; position: absolute; z-index: -1; inset: -45% -22%; pointer-events: none;
   background: radial-gradient(closest-side,
-    rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.28) 25%, rgba(0, 0, 0, 0.22) 45%, rgba(0, 0, 0, 0.14) 62%,
-    rgba(0, 0, 0, 0.07) 78%, rgba(0, 0, 0, 0.02) 91%, rgba(0, 0, 0, 0) 100%);
+    rgba(0, 0, 0, 0.38) 0%, rgba(0, 0, 0, 0.355) 25%, rgba(0, 0, 0, 0.28) 45%, rgba(0, 0, 0, 0.18) 62%,
+    rgba(0, 0, 0, 0.09) 78%, rgba(0, 0, 0, 0.025) 91%, rgba(0, 0, 0, 0) 100%);
 }
-/* --ta: the title's text strength. The pixel effect brings it in (hero.ts);
-   without JavaScript or with reduced motion it is simply 1. */
-.hero__title h1 { color: rgb(255 255 255 / var(--ta, 1)); }
-.hero__title .mute { color: rgb(255 255 255 / calc(0.7 * var(--ta, 1))); }
-@media (prefers-reduced-motion: no-preference) {
-  .js:not(.pre-run) .hero__title h1 { --ta: 0; }
-}
-.hero__dim { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }
+.hero__title .mute { color: rgba(255, 255, 255, 0.7); }
 /* Scroll cue: label + a line with a segment that keeps falling. The whole cue
    is a 44px-wide link to the next section. */
 .hero__cue {
@@ -1148,8 +1141,9 @@ img[data-stage-src] { visibility: hidden; }
   .stages__head { grid-template-columns: 5fr 7fr; column-gap: var(--g); align-items: start; }
   .stages__head > :first-child { padding-top: 8px; }
 }
-/* Desktop: the section is pinned, the frame fits the screen */
-@media (min-width: 900px) and (hover: hover) and (pointer: fine) {
+/* From 900px (desktop, and tablets in landscape): the section is pinned, text
+   and frame side by side, the frame fits the screen */
+@media (min-width: 900px) {
   .stages__live { min-height: 100svh; display: grid; align-content: center; padding-top: calc(var(--hdr) * 0.6); padding-bottom: 24px; }
   .stages__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--g); align-items: center; }
   .stages__txt { grid-column: 1 / span 4; align-self: center; }
@@ -1157,7 +1151,24 @@ img[data-stage-src] { visibility: hidden; }
   .stages__frames { width: min(100%, calc((100svh - var(--hdr) - 150px) * 1.506)); margin-left: auto; }
   .stages__views { justify-content: flex-end; }
   .stages__foot { width: min(100%, calc((100svh - var(--hdr) - 150px) * 1.506)); margin-left: auto; }
+}
+/* With a mouse the scroll is the only control: no dots */
+@media (min-width: 900px) and (hover: hover) and (pointer: fine) {
   .stages__dots { display: none; }
+}
+/* Phones and small tablets: pinned too (two screens), so the whole block (text,
+   views, frame, dots) has to fit one small viewport: centred, and the frame
+   never taller than what is left */
+@media (max-width: 899px) {
+  .stages__live { min-height: 100svh; display: grid; align-content: center; padding-top: calc(var(--hdr) * 0.6); padding-bottom: 12px; }
+  .stages__frames, .stages__foot { width: min(100%, calc((100svh - var(--hdr) - 340px) * 1.506)); margin-inline: auto; }
+}
+/* Short phones (iPhone SE and the like): the number and the gaps follow the
+   small viewport height (svh never changes with the Safari toolbar), so the
+   dots stay on screen while pinned. Same sizes as before on a regular phone. */
+@media (max-width: 899px) {
+  .stages__grid { gap: clamp(14px, 3.3svh, 28px); }
+  .stages__n { font-size: clamp(3rem, 8svh, 4.25rem); margin-bottom: clamp(8px, 1.9svh, 16px); }
 }
 
 /* Reduced motion: four still stages */

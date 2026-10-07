@@ -1,13 +1,13 @@
 // Studio page.
 // - Posters: the giant word rises from behind the building (1.1s, expo.out).
 // - From model to image: one frame, four stages, driven by a single value p (0..3).
-//   Desktop (fine pointer, 900px+): the section is pinned for three screens and the
-//   scroll scrubs p, snapping on each stage. Touch: no pin, the stages run on their
-//   own (every 2.2s) while the frame is on screen; at the end of a view the next view
-//   comes in by itself and starts again from 01. Dots, swipe and the view buttons
-//   stop the automatic run.
-//   Changing view always starts again from stage 01 (on desktop the page scrolls
-//   back to the start of the pinned section).
+//   Everywhere the section is pinned and the scroll scrubs p, snapping on each
+//   stage; when the picture reaches 04 the page scrolls on. Desktop (fine
+//   pointer, 900px+): the pin lasts three screens. Touch and small screens: two
+//   screens (200svh), so a thumb gets through it without effort.
+//   The dots 01-04 show the stage; tapping one scrolls the page to that stage.
+//   Changing view always starts again from stage 01: the page goes back to the
+//   start of the pinned section (invisible, the section is pinned).
 //   Reduced motion: a still grid (CSS), only the view buttons work.
 // - Timings: the figures count up from zero once, in 1.2s.
 // The pictures never move with the scroll: only the stage changes.
@@ -107,9 +107,8 @@ function stages() {
   const blocks = Array.from(live.querySelectorAll<HTMLElement>('[data-stage-txt]'));
   const state = { p: 0 };
   let shown = 0; // stage whose text is on screen
-  let pin: ScrollTrigger | null = null; // desktop pin, when active
+  let pin: ScrollTrigger | null = null; // the pin, while active
   let pinTw: gsap.core.Tween | null = null;
-  let onUserView: (() => void) | null = null; // touch: a view tap stops the automatic run
   let lastStatus = '';
 
   const render = () => {
@@ -192,8 +191,8 @@ function stages() {
     ensure(v);
     // every view starts from stage 01
     if (pin && pinTw) {
-      // desktop: jump back to the start of the pinned range. The section is pinned,
-      // so the jump is invisible: only the stage goes back to 01.
+      // jump back to the start of the pinned range. The section is pinned, so
+      // the jump is invisible: only the stage goes back to 01.
       if (pin.scroll() > pin.start + 1) {
         if (lenis) lenis.scrollTo(pin.start, { immediate: true, force: true });
         else window.scrollTo(0, pin.start);
@@ -213,14 +212,31 @@ function stages() {
     });
     render();
   };
-  pills.forEach((b, i) => b.addEventListener('click', () => { onUserView?.(); setView(i); }));
+  pills.forEach((b, i) => b.addEventListener('click', () => setView(i)));
+  // Dots: scroll to that stage inside the pinned range. While that scroll runs,
+  // the snap aims at the same stage instead of guessing from the speed.
+  let dotTarget: number | null = null;
+  let dotTimer = 0;
+  dots.forEach((d) =>
+    d.addEventListener('click', () => {
+      if (!pin) return;
+      const i = Number(d.dataset.goto);
+      dotTarget = i / 3;
+      clearTimeout(dotTimer);
+      dotTimer = window.setTimeout(() => (dotTarget = null), 2000);
+      const y = pin.start + ((pin.end - pin.start) * i) / 3;
+      if (lenis) lenis.scrollTo(y, { duration: 1 });
+      else window.scrollTo({ top: y, behavior: 'smooth' });
+    })
+  );
+  onDestroy(() => clearTimeout(dotTimer));
   render();
 
   const mm = gsap.matchMedia();
   onDestroy(() => mm.revert());
 
-  // Desktop: pinned for three screens, the scroll moves through the stages
-  mm.add('(min-width: 900px) and (hover: hover) and (pointer: fine)', () => {
+  // Pinned for `screens` screens, the scroll moves through the stages
+  const pinned = (screens: () => number) => {
     const tw = gsap.to(state, {
       p: 3,
       ease: 'none',
@@ -228,97 +244,38 @@ function stages() {
       scrollTrigger: {
         trigger: live,
         start: 'top top',
-        end: () => `+=${window.innerHeight * 3}`,
+        end: () => `+=${screens()}`,
         pin: true,
         scrub: 0.8,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        snap: { snapTo: [0, 1 / 3, 2 / 3, 1], duration: { min: 0.3, max: 0.8 }, delay: 0.08, ease: 'power2.inOut' },
+        snap: {
+          snapTo: (v: number) => dotTarget ?? Math.round(v * 3) / 3,
+          duration: { min: 0.3, max: 0.8 }, delay: 0.08, ease: 'power2.inOut',
+        },
       },
     });
     pin = tw.scrollTrigger ?? null;
     pinTw = tw;
     return () => { pin = null; pinTw = null; tw.scrollTrigger?.kill(); tw.kill(); state.p = 0; render(); };
-  });
+  };
 
-  // Touch and small screens: no pin. The stages run once by themselves, then dots and swipe.
-  mm.add('(max-width: 899px), (hover: none), (pointer: coarse)', () => {
-    const box = live.querySelector<HTMLElement>('[data-stages-frames]')!;
-    // durations per step: the 1→2 dissolve lasts 0.6s (it fills 70% of its step)
-    const STEP = [0.86, 1.1, 1.4];
-    let tween: gsap.core.Tween | null = null;
-    let auto: gsap.core.Tween | null = null;
-    let user = false;
-    let visible = false;
+  // Desktop: three screens
+  mm.add('(min-width: 900px) and (hover: hover) and (pointer: fine)', () => pinned(() => window.innerHeight * 3));
 
-    const goTo = (i: number) => {
-      i = Math.max(0, Math.min(3, i));
-      const from = state.p;
-      if (Math.abs(i - from) < 0.001) return;
-      tween?.kill();
-      const one = Math.abs(i - from) <= 1.001 && Number.isInteger(from);
-      const d = one ? STEP[Math.min(i, from) | 0] : Math.min(1.2, Math.abs(i - from) * 0.5);
-      tween = gsap.to(state, { p: i, duration: d, ease: one && i > from && from === 0 ? 'none' : 'power1.inOut', onUpdate: render });
-    };
-    // one step every 2.2s while the frame is on screen; at stage 04 the next view
-    // fades in and runs again from 01. After the last view it stops.
-    const next = () => {
-      auto = null;
-      if (user || !visible) return;
-      if (state.p >= 3) {
-        if (view >= frames.length - 1) return;
-        tween?.kill();
-        setView(view + 1);
-      } else goTo(Math.round(state.p) + 1);
-      auto = gsap.delayedCall(2.2, next);
-    };
-    const stopAuto = () => { user = true; auto?.kill(); auto = null; };
-    onUserView = stopAuto;
+  // Touch and small screens: two screens of the small viewport (200svh), measured
+  // once per refresh, so the iPhone toolbar coming and going changes nothing
+  mm.add('(max-width: 899px), (hover: none), (pointer: coarse)', () => pinned(() => svh() * 2));
+}
 
-    const io = new IntersectionObserver(
-      ([e]) => {
-        visible = e.isIntersecting;
-        if (!visible) { auto?.kill(); auto = null; return; }
-        if (!user && !auto) auto = gsap.delayedCall(2.2, next);
-      },
-      { threshold: 0.5 }
-    );
-    io.observe(box);
-
-    const onDot = (e: Event) => {
-      const b = (e.currentTarget as HTMLElement);
-      stopAuto();
-      goTo(Number(b.dataset.goto));
-    };
-    dots.forEach((d) => d.addEventListener('click', onDot));
-
-    let sx = 0, sy = 0, tracking = false;
-    const down = (e: PointerEvent) => { tracking = true; sx = e.clientX; sy = e.clientY; };
-    const up = (e: PointerEvent) => {
-      if (!tracking) return;
-      tracking = false;
-      const dx = e.clientX - sx;
-      const dy = e.clientY - sy;
-      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
-      stopAuto();
-      goTo(Math.round(state.p) + (dx < 0 ? 1 : -1));
-    };
-    const cancel = () => { tracking = false; };
-    box.addEventListener('pointerdown', down);
-    box.addEventListener('pointerup', up);
-    box.addEventListener('pointercancel', cancel);
-
-    return () => {
-      onUserView = null;
-      io.disconnect();
-      tween?.kill();
-      auto?.kill();
-      dots.forEach((d) => d.removeEventListener('click', onDot));
-      box.removeEventListener('pointerdown', down);
-      box.removeEventListener('pointerup', up);
-      box.removeEventListener('pointercancel', cancel);
-    };
-  });
+/** 100svh in px (the viewport with the iPhone toolbars shown). */
+function svh() {
+  const probe = document.createElement('div');
+  probe.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:100svh;visibility:hidden;pointer-events:none';
+  document.body.append(probe);
+  const h = probe.offsetHeight;
+  probe.remove();
+  return h || window.innerHeight;
 }
 
 /* ---------- Timings: count up once ---------- */
