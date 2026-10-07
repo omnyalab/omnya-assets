@@ -10,6 +10,9 @@ import { sizes as dims } from '../lib/media';
 import { t, langFromPath, localize } from '../i18n';
 import heroFrames from '../data/hero-frames.json';
 
+// An empty 1x1 GIF: a <source> that resolves to nothing to download
+const pixel = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const H = T.home;
@@ -38,25 +41,36 @@ const rows = [
 <Base page="home">
   <!-- Desktop: the hero stays on screen (sticky) while the scroll flies the
        drone up to the villa, then the page slides over it (frames in
-       public/hero/desktop, made by scripts/hero-frames.mjs). Phones: a plain
-       video of the same climb, played once. Logic: src/scripts/hero.ts -->
+       public/hero/desktop, made by scripts/hero-frames.mjs). Phones: the reel,
+       muted and looping, starting as soon as the page loads; the page slides
+       over it. Logic: src/scripts/hero.ts -->
   <div class="hero-pin" data-hero-pin>
     <section class="hero" data-hero data-header="light" data-header-media data-header-until=".after-hero" aria-label={H.reel} data-frames={JSON.stringify(heroFrames)}>
       <div class="hero__media">
-        {/* First frame: what shows without JavaScript and under the preloader (which waits for its decode).
-            Phones: the video's first frame, or its last one with reduced motion (no video then).
+        {/* Desktop first frame: what shows without JavaScript and under the preloader (which waits for its decode).
             Low priority on purpose: Chrome never counts a full-screen picture as LCP, the h1 is the LCP,
-            and a high-priority picture would only steal bandwidth from the font the h1 needs. */}
+            and a high-priority picture would only steal bandwidth from the font the h1 needs.
+            On phones it resolves to an empty inline pixel: nothing is downloaded there. */}
         <picture>
-          <source media="(max-width: 767px) and (prefers-reduced-motion: reduce)" type="image/webp" srcset="/hero/mobile_end.webp" width={828} height={1486} />
-          <source media="(max-width: 767px)" type="image/webp" srcset="/hero/mobile_poster.webp" width={828} height={1486} />
+          <source media="(max-width: 767px)" srcset={pixel} />
           <source type="image/avif" srcset="/hero/desktop/0001.avif" />
           <img class="hero__poster" src="/hero/desktop/0001.webp" width={heroFrames.desktop.w} height={heroFrames.desktop.h} alt="" fetchpriority="low" data-hero-first data-pre-wait />
         </picture>
+        {/* Phones: the reel's first frame, the first thing on screen (the preloader waits for it, never for
+            the video). With reduced motion it is all there is. On desktop: the empty pixel.
+            Default priority: Chrome raises it anyway for a picture in view (poster at ~1.2s on Fast 4G either
+            way), while fetchpriority="high" cost the h1 0.4s of Lighthouse LCP (4.5s → 4.9s). */}
+        <picture class="hero__reel-poster">
+          <source media="(min-width: 768px)" srcset={pixel} />
+          <img src="/reel/hero_mobile_poster.webp" width="828" height="1472" alt="" data-pre-wait />
+        </picture>
         {/* Desktop only (hidden on phones, never drawn there) */}
         <canvas class="hero__frames" aria-hidden="true" data-hero-frames></canvas>
-        {/* Phones only: the file is attached by the script, so nothing downloads on desktop */}
-        <video class="hero__video" muted playsinline autoplay preload="auto" disablepictureinpicture aria-hidden="true" data-hero-video data-src="/hero/mobile.mp4"></video>
+        {/* Phones only: the reel loads with the page (the source only matches a phone without reduced motion,
+            so desktop never downloads it) and plays by itself, in a loop */}
+        <video class="hero__video" muted playsinline autoplay loop preload="auto" disablepictureinpicture aria-hidden="true" data-hero-video>
+          <source src="/reel/hero_mobile.mp4" type="video/mp4" media="(max-width: 767px) and (prefers-reduced-motion: no-preference)" />
+        </video>
       </div>
       <div class="hero__shade"></div>
       <div class="hero__title wrap">

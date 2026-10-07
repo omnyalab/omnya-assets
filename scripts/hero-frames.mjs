@@ -1,8 +1,8 @@
 // Home hero, desktop: image sequence for the scroll-driven drone shot.
 //   hero-src/pc_video_1.mp4      → public/hero/desktop/0001.avif|webp … (144 frames, 1600px wide)
 //   src/data/hero-frames.json    frame count and size, read by the home page
-// Phones have no scrub: they play public/hero/mobile.mp4 (made by hand from
-// hero-src/mobile_video_1.mp4, see the README).
+// Phones have no scrub: they play the reel, public/reel/hero_mobile.mp4 (see
+// the README).
 //
 // The clip starts almost still and slows down at the end. Picking frames at
 // equal steps of time would make the scroll crawl at the start and rush in the

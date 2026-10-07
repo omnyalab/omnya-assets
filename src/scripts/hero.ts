@@ -23,10 +23,10 @@
 // - The canvas is 100lvh tall and is only reallocated when the width or the
 //   orientation changes.
 //
-// PHONES (up to 767px): no scrub at all. A plain muted video of the climb
-// (public/hero/mobile.mp4) plays once when the intro starts and stays on its
-// last frame; the hero is a normal 100svh section the page slides over. None
-// of the frame code runs and no frame is downloaded.
+// PHONES (up to 767px): no scrub at all. The reel (public/reel/hero_mobile.mp4,
+// muted, looping) starts as soon as the page loads, over its poster; the hero
+// is a normal 100svh section the page slides over. None of the frame code runs
+// and no frame is downloaded.
 //
 // Both: the h1 is simply there, still, from the moment the preloader lifts. It
 // only leaves when the next section slides over the hero: it fades, rises 40px
@@ -50,6 +50,9 @@ export function hero(intro: Promise<void>) {
   if (!pin || !section || !canvas || !first || !video || !h1 || !after) return;
   const frames = (JSON.parse(section.dataset.frames || '{}') as { desktop: Frames }).desktop;
   const cue = section.querySelector<HTMLElement>('.hero__cue');
+  // The reel's file, as the page gives it (only on a phone without reduced motion)
+  const reelSource = video.querySelector('source');
+  const reelUrl = reelSource?.getAttribute('src') || '';
 
   // The intro has started (preloader gone, or the page transition done). A
   // branch mounted later (a resize across 768px) finds it already resolved.
@@ -94,6 +97,8 @@ export function hero(intro: Promise<void>) {
 
   /* ---------- Desktop (768px and up): the scroll-driven drone shot ---------- */
   mm.add('(min-width: 768px)', () => {
+    // Coming from phone width: the reel must not keep a file or a download going
+    if (reelSource?.getAttribute('src')) { video.pause(); reelSource.removeAttribute('src'); video.load(); }
     let alive = true;
     const seq = sequence(canvas, first, frames);
 
@@ -146,49 +151,58 @@ export function hero(intro: Promise<void>) {
     return () => { alive = false; off(); seq.destroy(); clearTitle(); };
   });
 
-  /* ---------- Phones (up to 767px): a plain video, once ----------
+  /* ---------- Phones (up to 767px): the reel ----------
      No pin, no canvas, no frames: the hero is a normal 100svh section and
-     #statement slides over it. The climb plays once when the intro starts and
-     stays on its last frame (the pool). If autoplay is refused (iOS Low Power
-     Mode) the video simply never shows: the poster underneath stays, no play
-     button. Reduced motion: no video at all, the <picture> shows the last
-     frame by itself (its own media query). */
+     #statement slides over it. The reel (muted, inline, looping) gets its file
+     from the page itself (a <source> that only matches a phone without reduced
+     motion) and starts on its own as soon as it can, preloader or not. It only
+     shows once it really plays: if autoplay is refused (iOS Low Power Mode) the
+     poster stays, no play button, and the first tap or scroll tries again.
+     Paused while the next section covers the hero, playing again when it comes
+     back. Reduced motion: no file at all, the poster only. */
   mm.add('(max-width: 767px)', () => {
     if (reduced) return;
     let alive = true;
-    let started = false;
-    let done = false;
+    let covered = false;
 
     titleExit({ trigger: after, start: 'top bottom', end: () => `top bottom-=${section.offsetHeight * 0.6}` }, () => false);
 
-    const onPlaying = () => video.classList.add('is-on');
-    // ended: the video stays paused on its last frame, never back to the start
-    const onEnded = () => { done = true; };
-    // back from the background before the end: carry on from where it was
-    const onVis = () => {
-      if (!document.hidden && started && !done && video.paused) video.play().catch(() => {});
+    // Autoplay refused: try again on the first touch, tap, scroll or key
+    const retryEvents = ['touchend', 'click', 'scroll', 'keydown'];
+    const retry = () => play();
+    const retryOff = () => retryEvents.forEach((e) => window.removeEventListener(e, retry));
+    // playing, whoever started it (autoplay or us): show it, stop retrying
+    const show = () => { video.classList.add('is-on'); retryOff(); };
+    const play = () => {
+      if (!alive || covered || document.hidden) return;
+      video.play().then(show, () => {});
     };
-    video.addEventListener('playing', onPlaying);
-    video.addEventListener('ended', onEnded);
-    document.addEventListener('visibilitychange', onVis);
+    retryEvents.forEach((e) => window.addEventListener(e, retry, { passive: true }));
+    video.addEventListener('playing', show);
 
-    ready.then(() => {
-      if (!alive) return;
-      started = true;
-      video.muted = true;
-      video.src = video.dataset.src!;
-      video.play().catch(() => {}); // refused: the poster stays
+    // Coming from desktop width: the file was dropped there (or never picked
+    // at load), attach it again
+    if (reelSource && reelUrl && !reelSource.getAttribute('src')) { reelSource.src = reelUrl; video.load(); }
+    else if (!video.currentSrc && reelSource?.getAttribute('src')) video.load();
+    play();
+
+    // Paused while the next section covers the hero, playing again when it comes back
+    ScrollTrigger.create({
+      trigger: after,
+      start: 'top top',
+      onEnter: () => { covered = true; video.pause(); },
+      onLeaveBack: () => { covered = false; play(); },
     });
+    const onVis = () => { if (!document.hidden) play(); };
+    document.addEventListener('visibilitychange', onVis);
 
     return () => {
       alive = false;
-      video.removeEventListener('playing', onPlaying);
-      video.removeEventListener('ended', onEnded);
+      retryOff();
+      video.removeEventListener('playing', show);
       document.removeEventListener('visibilitychange', onVis);
       video.pause();
       video.classList.remove('is-on');
-      video.removeAttribute('src');
-      video.load(); // stops the download
       clearTitle();
     };
   });

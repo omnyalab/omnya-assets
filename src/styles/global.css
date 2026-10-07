@@ -610,7 +610,7 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
 }
 /* Phones (up to 767px): no scrub. A normal full-screen section the page
    slides over (the wrapper steps aside so the hero can stick inside <main>),
-   with a plain video of the climb on top of its first frame. */
+   with the reel on top of its poster. */
 @media (max-width: 767px) {
   .hero-pin { display: contents; }
   .hero { position: sticky; top: 0; height: 100svh; min-height: 0; }
@@ -622,7 +622,7 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
 .hero__video.is-on { opacity: 1; }
 .hero__video::-webkit-media-controls,
 .hero__video::-webkit-media-controls-start-playback-button { display: none !important; -webkit-appearance: none; }
-@media (min-width: 768px) { .hero__video { display: none; } }
+@media (min-width: 768px) { .hero__video, .hero__reel-poster { display: none; } }
 .hero__shade {
   position: absolute; inset: 0; pointer-events: none;
   /* A whisper only: top for the header, bottom for the cue (0.22 at most) and a

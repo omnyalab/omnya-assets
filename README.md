@@ -30,13 +30,11 @@ Inglese alla radice, italiano sotto `/it/` con gli stessi indirizzi (`/work/x` �
 - Contatti e link: `src/lib/contact.ts`
 - Privacy: `docs/PRIVACY.md` (la pagina /privacy-policy si genera da lì)
 - Stili: `src/styles/global.css`
-- Hero della home: video sorgente in `hero-src/`, logica in `src/scripts/hero.ts`. Desktop: fotogrammi in `public/hero/desktop/` (script `scripts/hero-frames.mjs`). Telefoni: un video normale, `public/hero/mobile.mp4`, con i poster `mobile_poster.webp` (primo frame) e `mobile_end.webp` (ultimo, per reduced motion). Per rifarli da `hero-src/mobile_video_1.mp4`:
+- Hero della home, logica in `src/scripts/hero.ts`. Desktop: scrub a fotogrammi da `hero-src/pc_video_1.mp4`, fotogrammi in `public/hero/desktop/` (script `scripts/hero-frames.mjs`). Telefoni: il reel, `public/reel/hero_mobile.mp4` in loop, con il poster `hero_mobile_poster.webp` (primo frame, 828px, ~110 KB perché arrivi prima del video). Il reel è stato ricodificato più leggero così:
   ```bash
-  ffmpeg -i hero-src/mobile_video_1.mp4 -vf "scale=1080:1920:flags=lanczos,fps=24" -c:v libx264 -preset slow -crf 23 -profile:v high -level 4.1 -pix_fmt yuv420p -an -movflags +faststart public/hero/mobile.mp4
-  ffmpeg -i hero-src/mobile_video_1.mp4 -vf "select=eq(n\,0),scale=828:-2" -frames:v 1 -c:v libwebp -quality 74 public/hero/mobile_poster.webp
-  ffmpeg -sseof -0.1 -i hero-src/mobile_video_1.mp4 -vf "scale=828:-2" -frames:v 1 -update 1 -c:v libwebp -quality 80 public/hero/mobile_end.webp
+  ffmpeg -i reel.mp4 -vf "scale=1080:1920:flags=lanczos,fps=24" -c:v libx264 -preset veryslow -crf 27.5 -x264-params aq-mode=3 -profile:v high -level 4.1 -pix_fmt yuv420p -g 48 -keyint_min 48 -sc_threshold 0 -an -movflags +faststart public/reel/hero_mobile.mp4
   ```
-  (CRF 23 → circa 4,3 MB: tra 3 e 5 MB, alzalo se il video nuovo pesa di più)
+  (keyframe ogni 2 s, circa 3 MB; con un reel nuovo regola il CRF per stare tra 2,5 e 3 MB)
 - Animazioni: `src/scripts/`
 
 ## Deploy

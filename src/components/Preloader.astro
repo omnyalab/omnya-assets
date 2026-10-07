@@ -75,15 +75,15 @@ const lines = [
       var wait = Math.max(0, MIN - (Date.now() - started));
       setTimeout(function () { ready(exit); }, wait);
     }
-    // A picture marked [data-pre-wait] (the home hero's first frame) must be on
-    // screen when the panel lifts, never an empty hero: wait for its decode,
-    // 1.5s at most on top of the usual time
+    // Pictures marked [data-pre-wait] (the home hero's first frame, on phones
+    // the reel's poster) must be on screen when the panel lifts, never an empty
+    // hero: wait for their decode, 1.5s at most on top of the usual time
     function ready(go) {
-      var img = document.querySelector('img[data-pre-wait]');
-      if (!img || !img.decode) return go();
+      var imgs = Array.prototype.slice.call(document.querySelectorAll('img[data-pre-wait]'));
+      if (!imgs.length || !imgs[0].decode) return go();
       var done = false;
       var once = function () { if (!done) { done = true; go(); } };
-      img.decode().then(once, once);
+      Promise.all(imgs.map(function (img) { return img.decode().catch(function () {}); })).then(once, once);
       setTimeout(once, 1500);
     }
     function exit() {
