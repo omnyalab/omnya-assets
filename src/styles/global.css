@@ -605,6 +605,8 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
   .js .hero-pin { --run: 100svh; height: calc(200svh + var(--run)); }
   .js .hero { position: sticky; top: 0; height: 100svh; min-height: 0; overflow-x: clip; overflow-y: visible; }
   .js .hero__media, .js .hero__shade { bottom: auto; height: max(100%, 100lvh); }
+  /* the frames canvas has a fixed height: the toolbar never resizes it */
+  .js .hero__frames { bottom: auto; height: 100lvh; }
   .js .hero-pin + .after-hero { margin-top: -100svh; }
 }
 @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
