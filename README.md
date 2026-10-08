@@ -3,7 +3,7 @@
 Brief completo in `docs/BRIEF.md`. Contenuti già compressi in `public/`, dati dei progetti in `src/data/projects.json`.
 
 ## Stack
-Astro (statico) + GSAP (ScrollTrigger, SplitText, Flip) + Lenis, sincronizzati su un unico ticker. Font: Inter Tight (Google Fonts, servito in locale dal build).
+Astro (statico) + GSAP (ScrollTrigger, SplitText, Flip) + Lenis, sincronizzati su un unico ticker. Font: SF Pro Display, file woff2 in `public/fonts/` (400, 500, 600, 700, solo caratteri latini).
 
 ## Comandi
 ```bash
@@ -19,7 +19,7 @@ npm run hero:frames   # rigenera i fotogrammi desktop della hero da hero-src/pc_
 Inglese alla radice, italiano sotto `/it/` con gli stessi indirizzi (`/work/x` ↔ `/it/work/x`). Tutti i testi sono in `src/i18n/index.ts`; la privacy italiana è in `docs/PRIVACY.it.md`. Le pagine stanno in `src/views/`, `src/pages/` e `src/pages/it/` le richiamano soltanto.
 
 ## Immagini generate
-`npm run build` lancia prima `scripts/make-og.mjs`, che crea da logo e copertine le anteprime social 1200x630 (`public/og/`), favicon e icona iPhone. I file in `public/projects` non vengono toccati.
+`npm run build` lancia prima `scripts/make-og.mjs`, che crea da logo e copertine le anteprime social 1200x630 (`public/og/`). Favicon, icona iPhone e icone del manifest (`site.webmanifest`) sono i file del brand kit, già in `public/`. I file in `public/projects` non vengono toccati.
 
 ## Dove mettere le mani
 - Progetti: `src/data/projects.json` (`featured: true` = in home; campo opzionale `description`, massimo due righe, sotto la cover; campo opzionale `slug` quando l'indirizzo deve essere diverso dall'id, come `hygeia-grove`)

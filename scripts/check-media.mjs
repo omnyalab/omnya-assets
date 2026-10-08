@@ -141,7 +141,7 @@ const imgUrls = new Set([
   ...readdirSync('public/brand').map((f) => `/brand/${f}`),
   ...readdirSync('public/og').map((f) => `/og/${f}`),
   ...readdirSync('public/studio').map((f) => `/studio/${f}`),
-  '/favicon-32.png', '/icon-192.png', '/apple-touch-icon.png', '/favicon.ico',
+  ...['/favicon.ico', '/favicon.svg', '/favicon-dark.svg', '/favicon-16.png', '/favicon-32.png', '/favicon-48.png', '/favicon-192.png', '/favicon-512.png', '/apple-touch-icon.png'],
 ]);
 const vidUrls = new Set(['/reel/hero_mobile.mp4']);
 for (const p of data) {

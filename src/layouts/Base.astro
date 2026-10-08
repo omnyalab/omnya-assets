@@ -1,5 +1,4 @@
 ---
-import { Font } from 'astro:assets';
 import { ClientRouter } from 'astro:transitions';
 import Preloader from '../components/Preloader.astro';
 import Header from '../components/Header.astro';
@@ -42,10 +41,14 @@ const links = sampleLinks(lang);
     <meta name="theme-color" content="#EDEAE4" />
     {langs.map((l) => <link rel="alternate" hreflang={l} href={new URL(localize(path, l), Astro.site)} />)}
     <link rel="alternate" hreflang="x-default" href={new URL(localize(path, 'en'), Astro.site)} />
-    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <!-- browsers take the last icon that fits: SVG after PNG, the dark tab variant last -->
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" media="(prefers-color-scheme: dark)" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Omnya Lab" />
     <meta property="og:locale" content={T.ogLocale} />
@@ -69,8 +72,9 @@ const links = sampleLinks(lang);
       // Safety net: never leave content hidden if the app script fails.
       setTimeout(function () { if (!window.__omApp) document.documentElement.classList.remove('js'); }, 5000);
     </script>
-    <Font cssVariable="--font-inter-tight" preload={[{ weight: 400 }]} />
-    <link rel="preload" as="image" href="/brand/logo_twotone_black.png" fetchpriority="high" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/sfprodisplay-regular.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/sfprodisplay-semibold.woff2" crossorigin />
+    <link rel="preload" as="image" href="/brand/OmnyaLab_Logo_Black.svg" fetchpriority="high" />
     <slot name="head" />
     <ClientRouter fallback="none" />
     {import.meta.env.PROD && <script is:inline defer src="/_vercel/insights/script.js"></script>}

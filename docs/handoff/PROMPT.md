@@ -49,10 +49,10 @@ Oggi la prima schermata è solo il video, senza testo. Il cliente non capisce ch
 
 ## 4. Pagina Studio, da rifare da zero
 
-Riscrivi `src/views/Studio.astro` e le sue animazioni. Deve essere la pagina più bella del sito, ma coerente con il resto: stesso font Inter Tight, stesso fondo `--bg`, titoli `Duo` in due toni, etichette tra parentesi, stesse durate ed easing, stessi margini `--g`, `.wrap`. Converti le immagini in WebP (desktop 2400px e `_mobile` 1200px, come le altre) dentro `public/studio/`.
+Riscrivi `src/views/Studio.astro` e le sue animazioni. Deve essere la pagina più bella del sito, ma coerente con il resto: stesso font SF Pro Display, stesso fondo `--bg`, titoli `Duo` in due toni, etichette tra parentesi, stesse durate ed easing, stessi margini `--g`, `.wrap`. Converti le immagini in WebP (desktop 2400px e `_mobile` 1200px, come le altre) dentro `public/studio/`.
 
 ### 4.1 Apertura poster
-- A tutto schermo `studio_poster_bg.jpg`. Sopra, la parola `studio` gigantesca (Inter Tight 600, letter-spacing -0.062em, line-height 0.8, colore `#16140f`), allineata a sinistra e dimensionata in modo che la "o" finale passi dietro il volume in travertino. Sopra la parola, `studio_poster_fg.png` (lo stesso scatto con il cielo trasparente): la parola risulta dietro l'edificio. Le due immagini devono avere lo stesso `object-fit: cover` e la stessa `object-position`, così restano allineate a ogni dimensione dello schermo.
+- A tutto schermo `studio_poster_bg.jpg`. Sopra, la parola `studio` gigantesca (SF Pro Display 600, letter-spacing -0.062em, line-height 0.8, colore `#16140f`), allineata a sinistra e dimensionata in modo che la "o" finale passi dietro il volume in travertino. Sopra la parola, `studio_poster_fg.png` (lo stesso scatto con il cielo trasparente): la parola risulta dietro l'edificio. Le due immagini devono avere lo stesso `object-fit: cover` e la stessa `object-position`, così restano allineate a ogni dimensione dello schermo.
 - In alto, testo piccolo: EN `how we work` / `from your file to the final image`, IT `come lavoriamo` / `dal tuo file all'immagine finale`.
 - All'apertura la parola sale da dietro l'edificio (translateY dal basso dentro una maschera, 1.1s, expo.out). Con prefers-reduced-motion è già in posizione.
 - Mobile: stessa composizione in verticale, parola dimensionata sulla larghezza dello schermo, controlla che la "o" resti dietro l'edificio a 390, 430 e 768px.

@@ -25,7 +25,7 @@ Mobile first. I clienti aprono il sito dal telefono, quasi sempre dal link di In
 
 ## Tipografia
 - Un solo font grottesco, un solo peso (400), gerarchia solo con la dimensione
-- Font: Neue Montreal (Pangram Pangram). Alternativa gratuita: Inter Tight
+- Font: SF Pro Display (file woff2 in `public/fonts/`)
 - Titoli giganti con tracking negativo (circa -0.04em), su mobile scalano con clamp()
 - Titoli in due toni: prima parte #111111, seconda parte #9B9893
 - Niente corsivi, niente grassetti, niente punto finale nei titoli, niente maiuscolo urlato
@@ -33,9 +33,8 @@ Mobile first. I clienti aprono il sito dal telefono, quasi sempre dal link di In
 
 ## Logo
 In `public/brand/`:
-- `logo_twotone_black.png` su fondo chiaro (versione principale: omnya nero, lab grigio)
-- `logo_twotone_white.png` sopra foto e video scuri
-- `logo_mono_black.png`, `logo_mono_white.png`, `logo_twotone_gold.png` di scorta
+- `OmnyaLab_Logo_Black.svg` su fondo chiaro (versione principale: omnya nero, lab grigio)
+- `OmnyaLab_Logo_White.svg` sopra foto e video scuri
 Usare SEMPRE il logo nuovo. Il vecchio simbolo che ruota non esiste più.
 
 ## Caricamento iniziale (preloader)

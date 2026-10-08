@@ -3,6 +3,28 @@
    Mobile first: every rule is written for ~390px, then widened.
    ========================================================================== */
 
+/* SF Pro Display, one file per weight (public/fonts) */
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/sfprodisplay-regular.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/sfprodisplay-medium.woff2') format('woff2');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/sfprodisplay-semibold.woff2') format('woff2');
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('/fonts/sfprodisplay-bold.woff2') format('woff2');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
 :root {
   --bg: #edeae4;
   --ink: #111111;
@@ -15,7 +37,7 @@
   --dark-mute: #8f8b85;
   --dark-line: #262523;
 
-  --font: var(--font-inter-tight), 'Inter Tight', 'Helvetica Neue', Arial, sans-serif;
+  --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 
   --g: clamp(16px, 3.4vw, 48px);
   --section: clamp(112px, 15vw, 200px);
@@ -263,20 +285,13 @@ img[data-src], img[data-seeall-src], img[data-src-d]:not([src]) { visibility: hi
 @keyframes preDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 
 /* The logo is uncovered left to right while the house is drawn, ending with it */
-.pre__logo { width: min(44vw, 200px); clip-path: inset(-10% 100% -10% 0); }
+.pre__logo { width: min(37.3vw, 170px); clip-path: inset(-10% 100% -10% 0); }
 .pre.is-drawing .pre__logo { animation: preLogo 0.85s cubic-bezier(0.65, 0, 0.35, 1) 0.1s both; }
 @keyframes preLogo { from { clip-path: inset(-10% 100% -10% 0); } to { clip-path: inset(-10% 0% -10% 0); } }
 
-/* Shared cropped logo (two parts: omnya / lab) */
-.logo { position: relative; display: block; aspect-ratio: 1380 / 232; }
-.logo__part { position: absolute; inset: 0; overflow: hidden; }
-.logo__part--a { clip-path: inset(-20% 31.3% -20% 0); }
-.logo__part--b { clip-path: inset(-20% 0 -20% 68.7%); }
-.logo__img {
-  position: absolute; max-width: none;
-  width: 115.942%; left: -7.971%; top: -47.414%;
-  height: auto;
-}
+/* Shared logo. Widths are 0.85x the old wordmark's: same height of the lowercase letters */
+.logo { position: relative; display: block; aspect-ratio: 831.16 / 175.29; }
+.logo__img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; }
 
 /* ==========================================================================
    Header
@@ -292,7 +307,7 @@ img[data-src], img[data-seeall-src], img[data-src-d]:not([src]) { visibility: hi
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease;
 }
 .hdr.is-hidden { transform: translateY(-110%); }
-.hdr__logo { width: 112px; display: block; }
+.hdr__logo { width: 95px; display: block; }
 .hdr__logo .logo__img { transition: opacity 0.4s ease; }
 .hdr__logo .logo__img--light { opacity: 0; }
 .hdr.is-light { color: #fff; }
@@ -348,7 +363,7 @@ html.menu-open .hdr .logo__img--dark { opacity: 1; }
 html.menu-open .hdr .logo__img--light { opacity: 0; }
 
 @media (min-width: 900px) {
-  .hdr__logo { width: 136px; }
+  .hdr__logo { width: 115px; }
   .burger { display: none; }
   .hdr__end { margin-left: clamp(20px, 2.6vw, 40px); }
   .hdr__nav { margin-left: auto; display: flex; align-items: center; gap: clamp(20px, 2.6vw, 40px); font-size: var(--fs-small); }

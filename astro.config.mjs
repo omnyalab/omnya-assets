@@ -1,5 +1,5 @@
 // @ts-check
-import { defineConfig, fontProviders } from 'astro/config';
+import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   site: 'https://omnyalab.com',
@@ -14,16 +14,4 @@ export default defineConfig({
   prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
   // three.js is a separate chunk, loaded only on desktop for the home WebGL
   vite: { build: { chunkSizeWarningLimit: 600 } },
-  fonts: [
-    {
-      provider: fontProviders.google(),
-      name: 'Inter Tight',
-      cssVariable: '--font-inter-tight',
-      // 600 only for the giant words on the Studio posters
-      weights: [400, 600],
-      styles: ['normal'],
-      subsets: ['latin'],
-      fallbacks: ['Helvetica Neue', 'Arial', 'sans-serif'],
-    },
-  ],
 });

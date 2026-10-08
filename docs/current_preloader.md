@@ -7,7 +7,7 @@ Comportamento da mantenere: una volta per visita, minimo 1100ms, massimo 3000ms,
   <div class="om-preload__grain"></div>
   <div class="om-preload__logo">
     <img class="om-preload__mark" src="(vecchio simbolo, NON usare)" alt="">
-    <img class="om-preload__word" src="(vecchio logo, sostituire con public/brand/logo_twotone_black.png)" alt="Omnya Lab">
+    <img class="om-preload__word" src="(vecchio logo, sostituire con public/brand/OmnyaLab_Logo_Black.svg)" alt="Omnya Lab">
   </div>
   <div class="om-preload__bar"><span id="omPreBar"></span></div>
 </div>

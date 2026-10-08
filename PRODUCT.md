@@ -19,7 +19,7 @@ Everything on the site is made with AI by the studio, with art direction, materi
 Mobile first (390px before desktop), Lighthouse mobile performance above 90. English at the root, Italian under `/it/` with the same slugs. Static Astro site on Vercel; preview deploys per branch, `main` is checked by the owner before merging.
 
 ## Capabilities and Constraints
-- Stack: Astro (static) + GSAP (ScrollTrigger, SplitText, Flip) + Lenis on one ticker. Font: Inter Tight 400 (600 only for the Studio posters).
+- Stack: Astro (static) + GSAP (ScrollTrigger, SplitText, Flip) + Lenis on one ticker. Font: SF Pro Display 400 (600 only for the Studio posters).
 - Projects come from `src/data/projects.json`; all copy from `src/i18n/index.ts`.
 - Media is delivered already compressed: do not recompress or rename files in `public/projects`.
 - Motion rules in code: 0.6–0.9s, expo.out, staggered entrances; photos never move with the scroll; touch screens keep images still; prefers-reduced-motion respected.
