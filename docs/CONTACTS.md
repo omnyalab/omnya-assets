@@ -4,7 +4,7 @@ Tutti presi dal sito attuale. Usare esattamente questi, già collegati.
 
 ## Dati
 - Email: info@omnyalab.com
-- Telefono e WhatsApp: +39 344 203 0728
+- Telefono e WhatsApp: +39 379 222 0465
 - Sedi: Venice · Dubai
 - Nota sotto il telefono: "International: WhatsApp or email only"
 - Instagram: https://www.instagram.com/omnyalab/
@@ -16,7 +16,7 @@ Tutti presi dal sito attuale. Usare esattamente questi, già collegati.
 Ogni pulsante porta a un canale preciso, con il messaggio già scritto:
 
 1. **Campione gratuito / richiesta veloce → WhatsApp**
-   https://wa.me/393442030728?text=Hi%20Omnya%20team%2C%20I%E2%80%99d%20like%20to%20request%20a%20free%20sample.
+   https://wa.me/393792220465?text=Hi%20Omnya%20team%2C%20I%E2%80%99d%20like%20to%20request%20a%20free%20sample.
 
 2. **Progetto vero, con file da mandare → Email**
    mailto:info@omnyalab.com?subject=Free%20Sample%20Request&body=Hi%20Omnya%20team%2C%0A%0AI%E2%80%99d%20like%20to%20request%20a%20free%20sample.%0A%0AStudio%20or%20property%3A%20%0AProject%3A%20%0AWhat%20I%20already%20have%20(model%2C%20drawings%2C%20photos)%3A%20%0A%0ALooking%20forward%20to%20seeing%20what%20you%20can%20do.
