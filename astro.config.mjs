@@ -2,7 +2,7 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://omnyalab.com',
+  site: 'https://www.omnyalab.com',
   server: { port: 5173, host: true },
   devToolbar: { enabled: false },
   // Corfu Resort is now Hygeia Grove. Real 301s live in vercel.json; these pages
