@@ -1,5 +1,5 @@
 // Generates the social previews from the logo.
-//   public/og/omnya-lab.jpg      1200x630, Penthouse Dubai cover + logo (general pages)
+//   public/og/omnya-lab.jpg      1200x630 (general pages) is hand-made and committed as is: never regenerated here
 //   public/og/<project>.jpg      1200x630, each project cover + small logo
 // Favicons and app icons come ready from the brand kit (public/favicon*, apple-touch-icon.png).
 // Runs before every build (npm "prebuild"). If sharp is missing it keeps the
@@ -45,8 +45,6 @@ async function og(src, out, logoWidth) {
     .toFile(out);
 }
 
-const penthouse = projects.find((p) => p.id === '01_penthouse_dubai');
-await og(penthouse.cover.src, 'public/og/omnya-lab.jpg', 380);
 for (const p of projects) await og(p.cover.src, `public/og/${slug(p)}.jpg`, 220);
 
-console.log(`[og] ${projects.length + 1} social images ready`);
+console.log(`[og] ${projects.length} social images ready`);
