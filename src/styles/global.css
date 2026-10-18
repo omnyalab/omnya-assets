@@ -1361,18 +1361,11 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 /* highlighted row: dark band, white pill */
 .ptable tr.is-best {
   color: #fff; margin-inline: calc(-1 * var(--g)); padding-inline: var(--g); border-top-color: transparent;
-  background-color: #0f1013;
+  background-color: #111214;
   background-image:
-    linear-gradient(115deg, transparent 30%, rgba(217, 193, 160, 0.16) 45%, rgba(244, 242, 238, 0.10) 50%, rgba(174, 182, 196, 0.12) 55%, transparent 70%),
-    linear-gradient(115deg, transparent 55%, rgba(217, 193, 160, 0.08) 62%, transparent 72%);
-  background-size: 260% 100%, 340% 100%;
-  background-position: 100% 0, 0% 0;
-  animation: satin 14s ease-in-out infinite alternate;
+    radial-gradient(120% 140% at 0% 0%, rgba(217, 193, 160, 0.16) 0%, transparent 55%),
+    radial-gradient(90% 120% at 100% 100%, rgba(174, 182, 196, 0.10) 0%, transparent 60%);
 }
-@keyframes satin {
-  to { background-position: 0% 0, 100% 0; }
-}
-@media (prefers-reduced-motion: reduce) { .ptable tr.is-best { animation: none; } }
 .ptable tr.is-best + tr { border-top-color: transparent; }
 .ptable tr.is-best .ptable__each { color: rgba(255, 255, 255, 0.72); }
 .ptable tr.is-best .ptable__pill { background: #fff; color: var(--ink); }
@@ -1381,6 +1374,8 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 .ptable tr.is-best .ptable__pill { height: 24px; padding: 0 10px; font-size: 12px; letter-spacing: 0.01em; white-space: nowrap; }
 .ptable--films .ptable__each::after { content: none; }
 .ptable--launch .ptable__qn { white-space: nowrap; }
+.prices__note--desk { }
+@media (max-width: 899px) { .prices__note--desk { display: none; } }
 .prices__volume { margin-top: clamp(32px, 4vw, 56px); max-width: 34ch; color: var(--ink); }
 .prices__note { margin-top: 22px; max-width: 52ch; color: #3a3936; }
 .prices__star { margin-top: 14px; max-width: 62ch; font-size: var(--fs-small); color: var(--mute); }

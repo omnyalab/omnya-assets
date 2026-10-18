@@ -208,7 +208,7 @@ const en = {
     filmsRows: [
       ['30 s', '€1,200', 'Reels and pitches'],
       ['60 s', '€2,200', 'Launch film'],
-      ['90–120 s', '€3,900', 'Full launch film'],
+      ['90 – 120 s', '€3,900', 'Full launch film'],
     ],
     filmsNote: 'Made from the approved images or from the renders you already have. Music, editing, colour grading and the reels for social media are always included.',
     launchA: 'Launch packages',
@@ -470,7 +470,7 @@ const it: Dict = {
     filmsRows: [
       ['30 s', '€ 1.200', 'Reel e presentazioni'],
       ['60 s', '€ 2.200', 'Film di lancio'],
-      ['90-120 s', '€ 3.900', 'Film di lancio completo'],
+      ['90 – 120 s', '€ 3.900', 'Film di lancio completo'],
     ],
     filmsNote: 'Li facciamo dalle immagini approvate o dai render che hai già. Musica, montaggio, color grading e i reel per i social sono sempre inclusi.',
     launchA: 'Pacchetti di lancio',
