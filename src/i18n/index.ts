@@ -217,7 +217,7 @@ const en = {
     launchRows: [
       ['Launch S', '€2,900', '8 images, 30-second film, 3 reels. In 5 days'],
       ['Launch M', '€4,900', '15 images, 60-second film, 3 reels, presentation. In 1 week'],
-      ['Launch L', '€8,900', '25 images, 2-minute film, 6 reels, presentation, 10 stills for social media. In 2 weeks'],
+      ['Launch L', '€8,900', '25 images, 2-minute film, 6 reels, presentation. In 2 weeks'],
     ],
     launchNote: 'Everything a project needs to go on sale, from the same work: the images for the brochure, the film for the launch and the reels for social media.',
     volume: 'Working on several projects, or need us on an ongoing basis? We’ll put together a quote around it.',
@@ -479,7 +479,7 @@ const it: Dict = {
     launchRows: [
       ['Launch S', '€ 2.900', '8 immagini, film da 30 secondi, 3 reel. In 5 giorni'],
       ['Launch M', '€ 4.900', '15 immagini, film da 60 secondi, 3 reel, presentazione. In 1 settimana'],
-      ['Launch L', '€ 8.900', '25 immagini, film da 2 minuti, 6 reel, presentazione, 10 immagini per i social. In 2 settimane'],
+      ['Launch L', '€ 8.900', '25 immagini, film da 2 minuti, 6 reel, presentazione. In 2 settimane'],
     ],
     launchNote: 'Tutto quello che serve per mettere in vendita un progetto, dallo stesso lavoro: le immagini per la brochure, il film per il lancio e i reel per i social.',
     volume: 'Hai più progetti in corso o ti serve una collaborazione continuativa? Ti prepariamo un preventivo su misura.',

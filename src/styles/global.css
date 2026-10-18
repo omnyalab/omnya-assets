@@ -1359,12 +1359,25 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
   background: var(--ink); color: var(--bg); font-size: var(--fs-small); line-height: 1;
 }
 /* highlighted row: dark band, white pill */
-.ptable tr.is-best { background: var(--ink); color: #fff; margin-inline: calc(-1 * var(--g)); padding-inline: var(--g); border-top-color: transparent; }
+.ptable tr.is-best {
+  color: #fff; margin-inline: calc(-1 * var(--g)); padding-inline: var(--g); border-top-color: transparent;
+  background-color: #0f1013;
+  background-image:
+    linear-gradient(115deg, transparent 30%, rgba(217, 193, 160, 0.16) 45%, rgba(244, 242, 238, 0.10) 50%, rgba(174, 182, 196, 0.12) 55%, transparent 70%),
+    linear-gradient(115deg, transparent 55%, rgba(217, 193, 160, 0.08) 62%, transparent 72%);
+  background-size: 260% 100%, 340% 100%;
+  background-position: 100% 0, 0% 0;
+  animation: satin 14s ease-in-out infinite alternate;
+}
+@keyframes satin {
+  to { background-position: 0% 0, 100% 0; }
+}
+@media (prefers-reduced-motion: reduce) { .ptable tr.is-best { animation: none; } }
 .ptable tr.is-best + tr { border-top-color: transparent; }
 .ptable tr.is-best .ptable__each { color: rgba(255, 255, 255, 0.72); }
 .ptable tr.is-best .ptable__pill { background: #fff; color: var(--ink); }
 /* pill sits on its own line above the name */
-.ptable tr.is-best .ptable__q { flex-direction: column; align-items: flex-start; gap: 10px; }
+.ptable tr.is-best .ptable__q { flex-direction: column; align-items: flex-start; gap: 10px; align-self: center; }
 .ptable tr.is-best .ptable__pill { height: 24px; padding: 0 10px; font-size: 12px; letter-spacing: 0.01em; white-space: nowrap; }
 .ptable--films .ptable__each::after { content: none; }
 .ptable--launch .ptable__qn { white-space: nowrap; }
@@ -1373,31 +1386,29 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 .prices__star { margin-top: 14px; max-width: 62ch; font-size: var(--fs-small); color: var(--mute); }
 @media (min-width: 900px) {
   .prices { display: grid; grid-template-columns: 5fr 7fr; column-gap: var(--g); align-items: start; }
-  .prices__title { grid-column: 1; grid-row: 1 / 4; }
+  .prices__title { grid-column: 1; grid-row: 1 / 5; }
   .prices > :not(.prices__title) { grid-column: 2; }
-  .ptable { display: table; }
+  /* every row is the same grid, so the columns line up and the highlighted
+     row can be a rounded band that sticks out without moving its content */
+  .ptable { --cols: minmax(0, 1fr) 30% 13%; }
+  .ptable--films { --cols: minmax(0, 1fr) 28% 28%; }
+  .ptable--launch { --cols: 30% 24% minmax(0, 1fr); }
   .ptable thead { position: static; width: auto; height: auto; overflow: visible; clip: auto; white-space: normal; }
-  .ptable tr { display: table-row; padding: 0; }
-  .ptable th, .ptable td { display: table-cell; vertical-align: baseline; padding: 22px 0 24px; border-top: 1px solid var(--line); }
-  .ptable tbody tr:last-child th, .ptable tbody tr:last-child td { border-bottom: 1px solid var(--line); }
-  .ptable thead th { padding: 0 0 12px; border-top: 0; font-size: var(--fs-small); color: var(--mute); }
+  .ptable tr { grid-template-columns: var(--cols); column-gap: 24px; padding: 22px 0 24px; align-items: last baseline; }
+  .ptable thead tr { padding: 0 0 12px; }
+  .ptable thead th { font-size: var(--fs-small); color: var(--mute); }
   .ptable thead th:not(:first-child) { text-align: right; }
-  .ptable__q { display: table-cell; }
+  .ptable__q { grid-row: auto; display: block; }
   .ptable__q > * + * { margin-left: 12px; }
   .ptable__qn { font-size: var(--fs-h3); line-height: 1; letter-spacing: -0.035em; }
-  .ptable__each { font-size: var(--fs-sub); color: var(--ink); letter-spacing: -0.02em; padding-left: var(--g) !important; }
+  .ptable__each { grid-column: auto; font-size: var(--fs-sub); color: var(--ink); letter-spacing: -0.02em; }
   .ptable__each[data-label]::after { content: none !important; }
-  .ptable__price { padding-left: var(--g) !important; }
-  .ptable tr.is-best { background: none; }
-  .ptable tr.is-best > * { background: var(--ink); border-top-color: transparent; }
-  .ptable tr.is-best + tr > * { border-top-color: transparent; }
-  .ptable tr.is-best > :first-child { padding-left: 24px; border-radius: 14px 0 0 14px; }
-  .ptable tr.is-best > :last-child { padding-right: 24px; border-radius: 0 14px 14px 0; }
+  .ptable tr.is-best { margin-inline: -24px; padding-inline: 24px; border-radius: 16px; }
   .ptable tr.is-best .ptable__each { color: #fff; }
-  .ptable tr.is-best .ptable__pill { display: flex; width: fit-content; margin: 0 0 12px; }
+  .ptable tr.is-best .ptable__q { display: flex; align-self: last baseline; }
   .ptable tr.is-best .ptable__q > * + * { margin-left: 0; }
-  .ptable tr.is-best > * { vertical-align: bottom; }
-  .ptable--films .ptable__each { text-align: right; }
+  .ptable tr.is-best .ptable__pill { margin-bottom: 2px; }
+  .ptable--launch .ptable__each { line-height: 1.35; }
 }
 
 /* A real project: dark band, the resort behind */
