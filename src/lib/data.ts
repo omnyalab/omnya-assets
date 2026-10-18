@@ -12,6 +12,8 @@ export interface Clip {
   desktop: string;
   mobile: string;
   poster: string;
+  /** Aspect ratio when it is not 16 / 9, e.g. "9 / 16" for a vertical film. */
+  ar?: string;
 }
 export interface Project {
   id: string;

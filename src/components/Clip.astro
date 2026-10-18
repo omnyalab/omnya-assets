@@ -13,12 +13,14 @@ interface Props {
 const { clip, label, film = false, note } = Astro.props;
 const T = t(langFromPath(Astro.url.pathname));
 const filmNote = note ?? T.project.filmNote;
+const ar = clip.ar ?? '16 / 9';
+const vertical = ar === '9 / 16';
 ---
 
 {
   film ? (
-    <div class="film" data-film>
-      <div class="frame" style="--ar: 16 / 9" data-reveal>
+    <div class:list={['film', vertical && 'film--vertical']} data-film>
+      <div class="frame" style={`--ar: ${ar}`} data-reveal>
         <div class="frame__in">
           <video
             playsinline
@@ -36,7 +38,7 @@ const filmNote = note ?? T.project.filmNote;
       <p class="film__note">{filmNote}</p>
     </div>
   ) : (
-    <div class="frame" style="--ar: 16 / 9" data-reveal>
+    <div class="frame" style={`--ar: ${ar}`} data-reveal>
       <div class="frame__in">
         <video
           muted

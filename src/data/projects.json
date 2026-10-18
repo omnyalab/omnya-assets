@@ -1,5 +1,115 @@
 [
   {
+    "id": "16_samar",
+    "title": "Samar Residences",
+    "slug": "samar",
+    "category": "luxury",
+    "film": true,
+    "subtitles": false,
+    "featured": true,
+    "cover": {
+      "src": "/projects/16_samar/samar_cover.webp",
+      "mobile": "/projects/16_samar/samar_cover_mobile.webp",
+      "w": 1340,
+      "h": 2400,
+      "orientation": "vertical"
+    },
+    "gallery": [
+      {
+        "src": "/projects/16_samar/samar_gallery_01.webp",
+        "mobile": "/projects/16_samar/samar_gallery_01_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_02.webp",
+        "mobile": "/projects/16_samar/samar_gallery_02_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_03.webp",
+        "mobile": "/projects/16_samar/samar_gallery_03_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_04.webp",
+        "mobile": "/projects/16_samar/samar_gallery_04_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_05.webp",
+        "mobile": "/projects/16_samar/samar_gallery_05_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_06.webp",
+        "mobile": "/projects/16_samar/samar_gallery_06_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_07.webp",
+        "mobile": "/projects/16_samar/samar_gallery_07_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_08.webp",
+        "mobile": "/projects/16_samar/samar_gallery_08_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_09.webp",
+        "mobile": "/projects/16_samar/samar_gallery_09_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_10.webp",
+        "mobile": "/projects/16_samar/samar_gallery_10_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_11.webp",
+        "mobile": "/projects/16_samar/samar_gallery_11_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_12.webp",
+        "mobile": "/projects/16_samar/samar_gallery_12_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      }
+    ],
+    "videos": [
+      {
+        "desktop": "/projects/16_samar/samar_video_01_1080.mp4",
+        "mobile": "/projects/16_samar/samar_video_01_720.mp4",
+        "poster": "/projects/16_samar/samar_video_01_poster.webp",
+        "ar": "9 / 16"
+      }
+    ]
+  },
+  {
     "id": "01_penthouse_dubai",
     "title": "Penthouse Dubai",
     "category": "luxury",

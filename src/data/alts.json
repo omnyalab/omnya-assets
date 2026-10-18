@@ -385,5 +385,61 @@
         "it": "reception con bancone in marmo e parete a cannettatura retroilluminata"
       }
     ]
+  },
+  "16_samar": {
+    "cover": {
+      "en": "curved terraces of the tower above the marina at sunset, Dubai Marina skyline behind",
+      "it": "terrazze curve della torre sopra la marina al tramonto, con lo skyline di Dubai Marina dietro"
+    },
+    "gallery": [
+      {
+        "en": "a man setting two glasses on the terrace table, skyline in the haze",
+        "it": "un uomo prepara due calici sul tavolo della terrazza, skyline nella foschia"
+      },
+      {
+        "en": "the sun low over the skyline, seen past the glass balustrade",
+        "it": "il sole basso sullo skyline, visto oltre il parapetto in vetro"
+      },
+      {
+        "en": "the marina from above, a boat heading out between the yachts",
+        "it": "la marina dall'alto, una barca che esce tra gli yacht"
+      },
+      {
+        "en": "a woman sitting on the bow, the tower behind her",
+        "it": "una donna seduta a prua, con la torre alle spalle"
+      },
+      {
+        "en": "stepping off the boat onto the wooden pier, shoes in hand",
+        "it": "scende dalla barca sul pontile di legno, con le scarpe in mano"
+      },
+      {
+        "en": "walking barefoot along the waterfront promenade",
+        "it": "cammina scalza lungo la passeggiata sull'acqua"
+      },
+      {
+        "en": "the living room with full-height glazing over the marina",
+        "it": "il soggiorno con le vetrate a tutta altezza sulla marina"
+      },
+      {
+        "en": "a sheer curtain moving in front of the open glass wall",
+        "it": "una tenda leggera che si muove davanti alla vetrata aperta"
+      },
+      {
+        "en": "the bedroom facing the skyline",
+        "it": "la camera da letto affacciata sullo skyline"
+      },
+      {
+        "en": "a toast on the terrace at dusk",
+        "it": "un brindisi in terrazza al crepuscolo"
+      },
+      {
+        "en": "two glasses meeting in front of the skyline",
+        "it": "due calici che si toccano davanti allo skyline"
+      },
+      {
+        "en": "the curved terrace edge at blue hour, the marina below",
+        "it": "il bordo curvo della terrazza all'ora blu, con la marina sotto"
+      }
+    ]
   }
 }
