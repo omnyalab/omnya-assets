@@ -35,8 +35,8 @@ const bestRow = P.imagesBest;
           P.imagesRows.map(([q, price, each], i) => (
             <tr class:list={{ 'is-best': i === bestRow }}>
               <th scope="row" class="ptable__q">
-                <span class="ptable__qn">{q}</span>
                 {i === bestRow && <span class="ptable__pill">{P.best}</span>}
+                <span class="ptable__qn">{q}</span>
               </th>
               <td class="ptable__price">{price}</td>
               <td class="ptable__each" data-label={P.imagesCols[2]}>{each}</td>
@@ -62,8 +62,8 @@ const bestRow = P.imagesBest;
           P.filmsRows.map(([len, price, use], i) => (
             <tr class:list={{ 'is-best': i === P.filmsBest }}>
               <th scope="row" class="ptable__q">
-                <span class="ptable__qn">{len}</span>
                 {i === P.filmsBest && <span class="ptable__pill">{P.recommended}</span>}
+                <span class="ptable__qn">{len}</span>
               </th>
               <td class="ptable__price">{price}</td>
               <td class="ptable__each">{use}</td>
@@ -88,8 +88,8 @@ const bestRow = P.imagesBest;
           P.launchRows.map(([name, price, what], i) => (
             <tr class:list={{ 'is-best': i === P.launchBest }}>
               <th scope="row" class="ptable__q">
-                <span class="ptable__qn">{name}</span>
                 {i === P.launchBest && <span class="ptable__pill">{P.recommended}</span>}
+                <span class="ptable__qn">{name}</span>
               </th>
               <td class="ptable__price">{price}</td>
               <td class="ptable__each">{what}</td>

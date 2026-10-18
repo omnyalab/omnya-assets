@@ -1359,10 +1359,13 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
   background: var(--ink); color: var(--bg); font-size: var(--fs-small); line-height: 1;
 }
 /* highlighted row: dark band, white pill */
-.ptable tr.is-best { background: var(--ink); color: #fff; margin-inline: calc(-1 * var(--g)); padding-inline: var(--g); border-top-color: var(--ink); }
+.ptable tr.is-best { background: var(--ink); color: #fff; margin-inline: calc(-1 * var(--g)); padding-inline: var(--g); border-top-color: transparent; }
 .ptable tr.is-best + tr { border-top-color: transparent; }
 .ptable tr.is-best .ptable__each { color: rgba(255, 255, 255, 0.72); }
-.ptable tr.is-best .ptable__pill { background: #fff; color: var(--ink); align-self: center; }
+.ptable tr.is-best .ptable__pill { background: #fff; color: var(--ink); }
+/* pill sits on its own line above the name */
+.ptable tr.is-best .ptable__q { flex-direction: column; align-items: flex-start; gap: 10px; }
+.ptable tr.is-best .ptable__pill { height: 24px; padding: 0 10px; font-size: 12px; letter-spacing: 0.01em; white-space: nowrap; }
 .ptable--films .ptable__each::after { content: none; }
 .ptable--launch .ptable__qn { white-space: nowrap; }
 .prices__volume { margin-top: clamp(32px, 4vw, 56px); max-width: 34ch; color: var(--ink); }
@@ -1386,12 +1389,14 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
   .ptable__each[data-label]::after { content: none !important; }
   .ptable__price { padding-left: var(--g) !important; }
   .ptable tr.is-best { background: none; }
-  .ptable tr.is-best > * { background: var(--ink); border-top-color: var(--ink); }
+  .ptable tr.is-best > * { background: var(--ink); border-top-color: transparent; }
   .ptable tr.is-best + tr > * { border-top-color: transparent; }
   .ptable tr.is-best > :first-child { padding-left: 24px; border-radius: 14px 0 0 14px; }
   .ptable tr.is-best > :last-child { padding-right: 24px; border-radius: 0 14px 14px 0; }
   .ptable tr.is-best .ptable__each { color: #fff; }
-  .ptable__pill { vertical-align: middle; position: relative; top: -0.35em; }
+  .ptable tr.is-best .ptable__pill { display: flex; width: fit-content; margin: 0 0 12px; }
+  .ptable tr.is-best .ptable__q > * + * { margin-left: 0; }
+  .ptable tr.is-best > * { vertical-align: bottom; }
   .ptable--films .ptable__each { text-align: right; }
 }
 
