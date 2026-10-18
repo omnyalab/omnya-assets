@@ -39,6 +39,36 @@
       "source": "/it/work/whitmore-residence/",
       "destination": "/it/work",
       "permanent": true
+    },
+    {
+      "source": "/kit/en/omnya-lab-portfolio-2026-en.pdf",
+      "destination": "/kit/en/omnya-lab-2026-en.pdf",
+      "permanent": false
+    },
+    {
+      "source": "/kit/en/omnya-lab-how-we-work-en.pdf",
+      "destination": "/kit/en/omnya-lab-2026-en.pdf",
+      "permanent": false
+    },
+    {
+      "source": "/kit/en/omnya-lab-price-list-2026-en.pdf",
+      "destination": "/kit/en/omnya-lab-2026-en.pdf",
+      "permanent": false
+    },
+    {
+      "source": "/kit/it/omnya-lab-portfolio-2026-it.pdf",
+      "destination": "/kit/it/omnya-lab-2026-it.pdf",
+      "permanent": false
+    },
+    {
+      "source": "/kit/it/omnya-lab-come-lavoriamo-it.pdf",
+      "destination": "/kit/it/omnya-lab-2026-it.pdf",
+      "permanent": false
+    },
+    {
+      "source": "/kit/it/omnya-lab-listino-2026-it.pdf",
+      "destination": "/kit/it/omnya-lab-2026-it.pdf",
+      "permanent": false
     }
   ]
 }

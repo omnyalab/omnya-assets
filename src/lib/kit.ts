@@ -6,12 +6,10 @@ import { t, type Lang } from '../i18n';
 
 const files: Record<Lang, Array<{ key: 'portfolio' | 'howWeWork' | 'prices'; file: string; cover: string; w: number; h: number }>> = {
   en: [
-    { key: 'portfolio', file: 'omnya-lab-portfolio-2026-en.pdf', cover: 'kit_cover_portfolio_en', w: 1287, h: 911 },
-    { key: 'howWeWork', file: 'omnya-lab-how-we-work-en.pdf', cover: 'kit_cover_howwework_en', w: 1287, h: 911 },
+    { key: 'portfolio', file: 'omnya-lab-2026-en.pdf', cover: 'kit_cover_portfolio_en', w: 1287, h: 911 },
   ],
   it: [
-    { key: 'portfolio', file: 'omnya-lab-portfolio-2026-it.pdf', cover: 'kit_cover_portfolio_it', w: 1287, h: 911 },
-    { key: 'howWeWork', file: 'omnya-lab-come-lavoriamo-it.pdf', cover: 'kit_cover_comelavoriamo_it', w: 1287, h: 911 },
+    { key: 'portfolio', file: 'omnya-lab-2026-it.pdf', cover: 'kit_cover_portfolio_it', w: 1287, h: 911 },
   ],
 };
 

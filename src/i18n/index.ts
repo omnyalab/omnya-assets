@@ -241,7 +241,7 @@ const en = {
     pdf: 'Download the price list',
   },
   kit: {
-    portfolio: 'Portfolio 2026',
+    portfolio: 'Portfolio, prices and how we work',
     howWeWork: 'How we work',
     prices: 'Price list 2026',
   },
@@ -505,7 +505,7 @@ const it: Dict = {
     pdf: 'Scarica il listino',
   },
   kit: {
-    portfolio: 'Portfolio 2026',
+    portfolio: 'Portfolio, listino e come lavoriamo',
     howWeWork: 'Come lavoriamo',
     prices: 'Listino 2026',
   },
