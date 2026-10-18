@@ -98,6 +98,76 @@
         "w": 1340,
         "h": 2400,
         "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_13.webp",
+        "mobile": "/projects/16_samar/samar_gallery_13_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_14.webp",
+        "mobile": "/projects/16_samar/samar_gallery_14_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_15.webp",
+        "mobile": "/projects/16_samar/samar_gallery_15_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_16.webp",
+        "mobile": "/projects/16_samar/samar_gallery_16_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_17.webp",
+        "mobile": "/projects/16_samar/samar_gallery_17_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_18.webp",
+        "mobile": "/projects/16_samar/samar_gallery_18_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_19.webp",
+        "mobile": "/projects/16_samar/samar_gallery_19_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_20.webp",
+        "mobile": "/projects/16_samar/samar_gallery_20_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_21.webp",
+        "mobile": "/projects/16_samar/samar_gallery_21_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/16_samar/samar_gallery_22.webp",
+        "mobile": "/projects/16_samar/samar_gallery_22_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
       }
     ],
     "videos": [
@@ -107,7 +177,8 @@
         "poster": "/projects/16_samar/samar_video_01_poster.webp",
         "ar": "9 / 16"
       }
-    ]
+    ],
+    "autoplay": true
   },
   {
     "id": "01_penthouse_dubai",

@@ -216,13 +216,34 @@ function films(scope: HTMLElement) {
   scope.querySelectorAll<HTMLElement>('[data-film]').forEach((wrap) => {
     const v = wrap.querySelector('video')!;
     const btn = wrap.querySelector<HTMLButtonElement>('.film__play')!;
+    const auto = wrap.hasAttribute('data-film-auto');
+    let io: IntersectionObserver | undefined;
+    // Autoplay films start muted when they scroll into view (browsers allow
+    // nothing else); the button turns the sound on and restarts the film.
+    if (auto && !reduced) {
+      io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (wrap.classList.contains('is-playing')) return;
+            if (e.isIntersecting) {
+              if (!v.src) { v.src = pickSrc(v); v.load(); }
+              v.muted = true;
+              v.play().catch(() => {});
+            } else if (!v.paused) v.pause();
+          });
+        },
+        { threshold: 0.35 }
+      );
+      io.observe(v);
+    }
     btn.addEventListener('click', () => {
       if (!v.src) v.src = pickSrc(v);
+      if (auto) { v.loop = false; v.currentTime = 0; }
       v.muted = false;
       v.controls = true;
       wrap.classList.add('is-playing');
       v.play().catch(() => {});
     });
-    onDestroy(() => v.pause());
+    onDestroy(() => { io?.disconnect(); v.pause(); });
   });
 }

@@ -9,8 +9,10 @@ interface Props {
   film?: boolean;
   /** Line under the film player; defaults to the subtitled-film note. */
   note?: string;
+  /** Film that starts muted when it scrolls into view, with a button to turn the sound on. */
+  autoplay?: boolean;
 }
-const { clip, label, film = false, note } = Astro.props;
+const { clip, label, film = false, note, autoplay = false } = Astro.props;
 const T = t(langFromPath(Astro.url.pathname));
 const filmNote = note ?? T.project.filmNote;
 const ar = clip.ar ?? '16 / 9';
@@ -19,11 +21,13 @@ const vertical = ar === '9 / 16';
 
 {
   film ? (
-    <div class:list={['film', vertical && 'film--vertical']} data-film>
+    <div class:list={['film', vertical && 'film--vertical', autoplay && 'film--auto']} data-film data-film-auto={autoplay ? '' : undefined}>
       <div class="frame" style={`--ar: ${ar}`} data-reveal>
         <div class="frame__in">
           <video
             playsinline
+            muted={autoplay}
+            loop={autoplay}
             preload="none"
             data-poster={clip.poster}
             data-src-d={clip.desktop}
@@ -31,11 +35,17 @@ const vertical = ar === '9 / 16';
             aria-label={label}
           />
         </div>
-        <button type="button" class="film__play" data-cursor={T.cursor.play} aria-label={T.project.playFilm(label)}>
-          <span>{T.project.play[0]}<br />{T.project.play[1]}</span>
-        </button>
+        {autoplay ? (
+          <button type="button" class="film__play film__play--sound" aria-label={T.project.soundOn}>
+            <span>{T.project.soundOn}</span>
+          </button>
+        ) : (
+          <button type="button" class="film__play" data-cursor={T.cursor.play} aria-label={T.project.playFilm(label)}>
+            <span>{T.project.play[0]}<br />{T.project.play[1]}</span>
+          </button>
+        )}
       </div>
-      <p class="film__note">{filmNote}</p>
+      {!autoplay && <p class="film__note">{filmNote}</p>}
     </div>
   ) : (
     <div class="frame" style={`--ar: ${ar}`} data-reveal>

@@ -107,7 +107,7 @@ const stillSizes: Record<string, string> = {
         if (b.kind === 'clip')
           return (
             <div class:list={['pm', 'pm--video', film ? 'pm--inset' : 'pm--bleed']}>
-              <Clip clip={b.clip} label={`${p.title}, ${P.film}`} film={film} note={filmNote} />
+              <Clip clip={b.clip} label={`${p.title}, ${P.film}`} film={film} note={filmNote} autoplay={p.autoplay === true} />
             </div>
           );
         return (

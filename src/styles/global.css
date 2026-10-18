@@ -937,6 +937,12 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab { opacity: 0; visibility: hidden
   .film__play:hover span { transform: scale(1.08); background: #fff; color: var(--ink); }
 }
 .film.is-playing .film__play { display: none; }
+/* Autoplay film: small sound button in the corner instead of the big play disc. */
+.film__play--sound { inset: auto 16px 16px auto; display: block; }
+.film__play--sound span {
+  width: auto; height: auto; padding: 10px 16px; border-radius: 999px;
+  background: rgba(0, 0, 0, 0.28); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
 /* Vertical film: as tall as the screen allows, centred. */
 .film--vertical { width: min(100%, calc(88svh * 9 / 16)); margin-inline: auto; }
 .film__note { margin-top: 12px; font-size: var(--fs-small); color: var(--mute); }

@@ -32,6 +32,8 @@ export interface Project {
   film?: boolean;
   /** false when the film has music only and no subtitles (changes the note under the player). */
   subtitles?: boolean;
+  /** Film starts muted as it scrolls into view; a button turns the sound on. */
+  autoplay?: boolean;
 }
 
 export const projects = raw as Project[];
