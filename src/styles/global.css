@@ -1376,6 +1376,9 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 .ptable--launch .ptable__qn { white-space: nowrap; }
 .prices__note--desk { }
 @media (max-width: 899px) { .prices__note--desk { display: none; } }
+.ptable__unit { display: block; margin-top: 6px; font-size: var(--fs-small); letter-spacing: 0; color: var(--mute); line-height: 1.2; }
+.ptable tr.is-best .ptable__unit { color: rgba(255, 255, 255, 0.7); }
+@media (min-width: 900px) { .ptable__unit { display: none; } }
 .prices__volume { margin-top: clamp(32px, 4vw, 56px); max-width: 34ch; color: var(--ink); }
 .prices__note { margin-top: 22px; max-width: 52ch; color: #3a3936; }
 .prices__star { margin-top: 14px; max-width: 62ch; font-size: var(--fs-small); color: var(--mute); }

@@ -36,7 +36,7 @@ const bestRow = P.imagesBest;
             <tr class:list={{ 'is-best': i === bestRow }}>
               <th scope="row" class="ptable__q">
                 {i === bestRow && <span class="ptable__pill">{P.best}</span>}
-                <span class="ptable__qn">{q}</span>
+                <span class="ptable__qn">{q}<span class="ptable__unit">{q === '1' ? P.imagesUnit[0] : P.imagesUnit[1]}</span></span>
               </th>
               <td class="ptable__price">{price}</td>
               <td class="ptable__each" data-label={P.imagesCols[2]}>{each}</td>
@@ -63,7 +63,7 @@ const bestRow = P.imagesBest;
             <tr class:list={{ 'is-best': i === P.filmsBest }}>
               <th scope="row" class="ptable__q">
                 {i === P.filmsBest && <span class="ptable__pill">{P.recommended}</span>}
-                <span class="ptable__qn">{len}</span>
+                <span class="ptable__qn">{len}<span class="ptable__unit">{P.filmsUnit}</span></span>
               </th>
               <td class="ptable__price">{price}</td>
               <td class="ptable__each">{use}</td>
