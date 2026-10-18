@@ -46,6 +46,7 @@ const bestRow = P.imagesBest;
       </tbody>
     </table>
     <p class="prices__note" data-fade>{P.imagesNote}</p>
+    <p class="prices__star" data-fade>{P.imagesStar}</p>
   </section>
 
   <!-- Films -->
@@ -58,9 +59,12 @@ const bestRow = P.imagesBest;
       </thead>
       <tbody>
         {
-          P.filmsRows.map(([len, price, use]) => (
-            <tr>
-              <th scope="row" class="ptable__q"><span class="ptable__qn">{len}</span></th>
+          P.filmsRows.map(([len, price, use], i) => (
+            <tr class:list={{ 'is-best': i === P.filmsBest }}>
+              <th scope="row" class="ptable__q">
+                <span class="ptable__qn">{len}</span>
+                {i === P.filmsBest && <span class="ptable__pill">{P.recommended}</span>}
+              </th>
               <td class="ptable__price">{price}</td>
               <td class="ptable__each">{use}</td>
             </tr>
@@ -81,9 +85,12 @@ const bestRow = P.imagesBest;
       </thead>
       <tbody>
         {
-          P.launchRows.map(([name, price, what]) => (
-            <tr>
-              <th scope="row" class="ptable__q"><span class="ptable__qn">{name}</span></th>
+          P.launchRows.map(([name, price, what], i) => (
+            <tr class:list={{ 'is-best': i === P.launchBest }}>
+              <th scope="row" class="ptable__q">
+                <span class="ptable__qn">{name}</span>
+                {i === P.launchBest && <span class="ptable__pill">{P.recommended}</span>}
+              </th>
               <td class="ptable__price">{price}</td>
               <td class="ptable__each">{what}</td>
             </tr>
