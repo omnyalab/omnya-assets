@@ -1,13 +1,12 @@
 ---
-// Prices: two tables (images by quantity, films by length), a real project on
-// a dark band, terms, then the free sample and the price list PDF.
+// Prices: three tables (images by quantity, films by length, launch packages),
+// the volume line, a real project on a dark band, terms, then the free sample.
 // On phones each table row becomes one line: quantity left, price large right.
 import Base from '../layouts/Base.astro';
 import Duo from '../components/Duo.astro';
 import Arrow from '../components/Arrow.astro';
 import SampleCta from '../components/SampleCta.astro';
 import { projects, href } from '../lib/data';
-import { kitFile } from '../lib/kit';
 import { srcset } from '../lib/media';
 import { t, langFromPath, localize } from '../i18n';
 
@@ -15,8 +14,7 @@ const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const P = T.pricing;
 const hygeia = projects.find((p) => p.id === '05_corfu_resort')!;
-const prices = kitFile(lang, 'prices');
-const bestRow = P.imagesRows.length - 1;
+const bestRow = P.imagesBest;
 ---
 
 <Base page="pricing" title={P.title} description={P.description}>
@@ -71,6 +69,30 @@ const bestRow = P.imagesRows.length - 1;
       </tbody>
     </table>
     <p class="prices__note" data-fade>{P.filmsNote}</p>
+  </section>
+
+  <!-- Launch packages -->
+  <section class="prices wrap" aria-labelledby="launch-title">
+    <h2 class="t-h3 prices__title" id="launch-title" data-split>{P.launchA}{' '}<span class="mute">{P.launchB}</span></h2>
+    <table class="ptable ptable--films ptable--launch" data-fade>
+      <caption class="sr-only">{P.launchA}, {P.launchB}</caption>
+      <thead>
+        <tr>{P.launchCols.map((c) => <th scope="col">{c}</th>)}</tr>
+      </thead>
+      <tbody>
+        {
+          P.launchRows.map(([name, price, what]) => (
+            <tr>
+              <th scope="row" class="ptable__q"><span class="ptable__qn">{name}</span></th>
+              <td class="ptable__price">{price}</td>
+              <td class="ptable__each">{what}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+    <p class="prices__note" data-fade>{P.launchNote}</p>
+    <p class="t-sub prices__volume" data-fade>{P.volume}</p>
     <p class="prices__star" data-fade>{P.note}</p>
   </section>
 
@@ -107,8 +129,5 @@ const bestRow = P.imagesRows.length - 1;
 
   <section class="pend wrap">
     <SampleCta data-fade />
-    <a class="btn pend__pdf" href={prices.href} download={prices.file} data-fade>
-      {P.pdf} <span class="pend__size">PDF, {prices.size}</span> <Arrow class="btn__arrow btn__arrow--down" />
-    </a>
   </section>
 </Base>

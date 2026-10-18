@@ -1353,7 +1353,7 @@ img[data-stage-src] { visibility: hidden; }
 .ptable__each { grid-column: 2; font-size: var(--fs-small); color: var(--mute); text-align: right !important; }
 .ptable__each[data-label]::after { content: ' / ' attr(data-label); }
 html[lang='en'] .ptable__each[data-label]::after { content: ' each'; }
-html[lang='it'] .ptable__each[data-label]::after { content: ' al pezzo'; }
+html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 .ptable__pill {
   display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 999px;
   background: var(--ink); color: var(--bg); font-size: var(--fs-small); line-height: 1;
@@ -1361,6 +1361,8 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' al pezzo'; }
 /* the only highlighted row on the page */
 .ptable tr.is-best { background: rgba(255, 255, 255, 0.55); margin-inline: calc(-1 * var(--g)); padding-inline: var(--g); border-top-color: var(--ink); }
 .ptable--films .ptable__each::after { content: none; }
+.ptable--launch .ptable__qn { white-space: nowrap; }
+.prices__volume { margin-top: clamp(32px, 4vw, 56px); max-width: 34ch; color: var(--ink); }
 .prices__note { margin-top: 22px; max-width: 52ch; color: #3a3936; }
 .prices__star { margin-top: 14px; max-width: 62ch; font-size: var(--fs-small); color: var(--mute); }
 @media (min-width: 900px) {

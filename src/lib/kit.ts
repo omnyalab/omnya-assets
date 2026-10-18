@@ -8,12 +8,10 @@ const files: Record<Lang, Array<{ key: 'portfolio' | 'howWeWork' | 'prices'; fil
   en: [
     { key: 'portfolio', file: 'omnya-lab-portfolio-2026-en.pdf', cover: 'kit_cover_portfolio_en', w: 1287, h: 911 },
     { key: 'howWeWork', file: 'omnya-lab-how-we-work-en.pdf', cover: 'kit_cover_howwework_en', w: 1287, h: 911 },
-    { key: 'prices', file: 'omnya-lab-price-list-2026-en.pdf', cover: 'kit_cover_pricelist_en', w: 911, h: 1287 },
   ],
   it: [
     { key: 'portfolio', file: 'omnya-lab-portfolio-2026-it.pdf', cover: 'kit_cover_portfolio_it', w: 1287, h: 911 },
     { key: 'howWeWork', file: 'omnya-lab-come-lavoriamo-it.pdf', cover: 'kit_cover_comelavoriamo_it', w: 1287, h: 911 },
-    { key: 'prices', file: 'omnya-lab-listino-2026-it.pdf', cover: 'kit_cover_listino_it', w: 911, h: 1287 },
   ],
 };
 
