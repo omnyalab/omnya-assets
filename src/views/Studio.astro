@@ -44,8 +44,16 @@ const views = [
 const stageSet = (name: string) => srcset(still(name, 2400, 1340));
 const stageSizes = '(min-width: 900px) 62vw, calc(100vw - 32px)';
 
-const pearl = still('studio_05_mother_of_pearl', 2400, 1350);
+const pearl = still('studio_05_rooftop', 2400, 1350);
 const files = kit(lang);
+// The three playbooks sit on the table next to the portfolio, as books; they lead to Learn
+const L = T.learn;
+const books = L.books.map((b) => ({
+  id: b.id,
+  name: `${b.a} ${b.b}`,
+  price: b.price,
+  cover: { src: `/studio/book_${b.id}_${lang}.webp`, mobile: `/studio/book_${b.id}_${lang}_mobile.webp`, w: 900, h: 1200 },
+}));
 const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubject)}`;
 ---
 
@@ -245,6 +253,20 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
               <span class="kit__name">{f.name}</span>
               <span class="kit__size">PDF, {f.size}</span>
               <a class="kit__dl u" href={f.href} download={f.file}>{S.download}<span class="sr-only"> {f.name}, PDF, {f.size}</span> <Arrow /></a>
+            </div>
+          </li>
+        ))
+      }
+      {
+        books.map((b) => (
+          <li class="kit__item kit__item--tall kit__item--book" style={`--ar: ${b.cover.w} / ${b.cover.h}`}>
+            <a class="kit__card" href={`${localize('/learn', lang)}#books`} tabindex="-1" aria-hidden="true">
+              <img data-src={b.cover.mobile} data-srcset={`${b.cover.mobile} 540w, ${b.cover.src} 900w`} sizes="(min-width: 900px) 19vw, 70vw" width={b.cover.w} height={b.cover.h} alt="" decoding="async" />
+            </a>
+            <div class="kit__meta">
+              <span class="kit__name">{b.name}</span>
+              <span class="kit__size">PDF, {b.price}</span>
+              <a class="kit__dl kit__dl--buy u" href={`${localize('/learn', lang)}#books`}>{L.get}<span class="sr-only"> {b.name}, {b.price}</span> <Arrow /></a>
             </div>
           </li>
         ))

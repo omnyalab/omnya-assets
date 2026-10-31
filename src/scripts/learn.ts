@@ -110,4 +110,58 @@ export function learn() {
   });
 
   onDestroy(() => { stopSweep(); wipe?.kill(); ac.abort(); });
+  buyBox();
+}
+
+// Thank-you page: the smaller offer stays hidden until "no thanks", then slides in.
+export function thanksPage() {
+  const down = document.querySelector<HTMLElement>('[data-oto-down]');
+  const no = document.querySelector<HTMLButtonElement>('[data-oto-no]');
+  if (!down || !no) return;
+  down.classList.add('is-hidden');
+  const ac = new AbortController();
+  no.addEventListener('click', () => {
+    down.classList.remove('is-hidden');
+    no.hidden = true;
+    requestAnimationFrame(() => down.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }));
+  }, { signal: ac.signal });
+  onDestroy(() => ac.abort());
+}
+
+// Learn: "Get it" on a playbook opens the order box with one add-on (the other two playbooks
+// for the difference). Without script the link goes straight to the checkout.
+export function buyBox() {
+  const box = document.querySelector<HTMLDialogElement>('[data-buy-box]');
+  if (!box) return;
+  const ac = new AbortController();
+  const opt = { signal: ac.signal };
+  const q = <T extends HTMLElement>(s: string) => box.querySelector<T>(s)!;
+  const check = q<HTMLInputElement>('[data-bump]');
+  const pay = q<HTMLAnchorElement>('[data-pay]');
+  let cur: DOMStringMap | null = null;
+  const sync = () => {
+    if (!cur) return;
+    const on = check.checked;
+    q('[data-total]').textContent = on ? cur.bundlePrice! : cur.price!;
+    pay.href = on ? cur.bundleGo! : cur.go!;
+    box.classList.toggle('is-bumped', on);
+  };
+  document.querySelectorAll<HTMLAnchorElement>('[data-buy]').forEach((a) => {
+    a.addEventListener('click', (e) => {
+      if (typeof box.showModal !== 'function') return;
+      e.preventDefault();
+      cur = a.dataset;
+      q('[data-name]').textContent = cur.name!;
+      q('[data-price]').textContent = cur.price!;
+      q('[data-diff]').textContent = cur.diff!;
+      q<HTMLImageElement>('[data-cover]').src = cur.cover!;
+      check.checked = false;
+      sync();
+      box.showModal();
+    }, opt);
+  });
+  check.addEventListener('change', sync, opt);
+  box.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => box.close(), opt));
+  box.addEventListener('click', (e) => { if (e.target === box) box.close(); }, opt);
+  onDestroy(() => { ac.abort(); if (box.open) box.close(); });
 }

@@ -5,7 +5,7 @@ import { leave, enter, type Mode } from './transition';
 import { initCursor, initSheet, initMenu, initHeaderLoop, initScrollbar, initScrollLinks, collectHeaderZones, initClocks, closeSheet, closeMenu } from './ui';
 import { home, work, project, contactPage } from './pages';
 import { studio } from './studio';
-import { learn } from './learn';
+import { learn, thanksPage } from './learn';
 
 (window as any).__omApp = true;
 // Dev only: lets the browser console inspect live triggers and tweens
@@ -96,4 +96,5 @@ document.addEventListener('astro:page-load', () => {
   if (page === 'contact') contactPage();
   if (page === 'studio') studio(intro);
   if (page === 'learn') learn();
+  if (page === 'thanks') thanksPage();
 });
