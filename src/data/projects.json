@@ -1,253 +1,118 @@
 [
   {
-    "id": "18_residence_77",
-    "title": "Residence 77",
-    "category": "real-estate",
+    "id": "17_the_townhall",
+    "title": "The Townhall",
+    "slug": "the-townhall",
+    "category": "luxury",
+    "film": true,
+    "featured": true,
     "cover": {
-      "src": "/projects/18_residence_77/residence_77_cover.webp",
-      "mobile": "/projects/18_residence_77/residence_77_cover_mobile.webp",
+      "src": "/projects/17_the_townhall/the_townhall_cover.webp",
+      "mobile": "/projects/17_the_townhall/the_townhall_cover_mobile.webp",
       "w": 2400,
-      "h": 1610,
+      "h": 1600,
       "orientation": "horizontal"
     },
     "gallery": [
       {
-        "src": "/projects/18_residence_77/residence_77_gallery_01.webp",
-        "mobile": "/projects/18_residence_77/residence_77_gallery_01_mobile.webp",
+        "src": "/projects/17_the_townhall/the_townhall_gallery_01.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_01_mobile.webp",
+        "w": 2400,
+        "h": 1600,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_02.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_02_mobile.webp",
         "w": 2400,
         "h": 1610,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/18_residence_77/residence_77_gallery_02.webp",
-        "mobile": "/projects/18_residence_77/residence_77_gallery_02_mobile.webp",
+        "src": "/projects/17_the_townhall/the_townhall_gallery_03.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_03_mobile.webp",
         "w": 2400,
         "h": 1610,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/18_residence_77/residence_77_gallery_03.webp",
-        "mobile": "/projects/18_residence_77/residence_77_gallery_03_mobile.webp",
+        "src": "/projects/17_the_townhall/the_townhall_gallery_04.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_04_mobile.webp",
+        "w": 2048,
+        "h": 1360,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_05.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_05_mobile.webp",
+        "w": 2048,
+        "h": 1360,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_06.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_06_mobile.webp",
         "w": 2400,
         "h": 1610,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/18_residence_77/residence_77_gallery_04.webp",
-        "mobile": "/projects/18_residence_77/residence_77_gallery_04_mobile.webp",
+        "src": "/projects/17_the_townhall/the_townhall_gallery_07.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_07_mobile.webp",
         "w": 2400,
         "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_08.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_08_mobile.webp",
+        "w": 2048,
+        "h": 1360,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_09.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_09_mobile.webp",
+        "w": 2048,
+        "h": 1360,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_10.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_10_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_11.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_11_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_12.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_12_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_13.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_13_mobile.webp",
+        "w": 2048,
+        "h": 1360,
         "orientation": "horizontal"
       }
     ],
-    "videos": [],
-    "featured": false
-  },
-  {
-    "id": "19_marjan_beach",
-    "title": "Marjan Beach",
-    "category": "real-estate",
-    "cover": {
-      "src": "/projects/19_marjan_beach/marjan_beach_cover.webp",
-      "mobile": "/projects/19_marjan_beach/marjan_beach_cover_mobile.webp",
-      "w": 2400,
-      "h": 1340,
-      "orientation": "horizontal"
-    },
-    "gallery": [
+    "videos": [
       {
-        "src": "/projects/19_marjan_beach/marjan_beach_gallery_01.webp",
-        "mobile": "/projects/19_marjan_beach/marjan_beach_gallery_01_mobile.webp",
-        "w": 2400,
-        "h": 1792,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/19_marjan_beach/marjan_beach_gallery_02.webp",
-        "mobile": "/projects/19_marjan_beach/marjan_beach_gallery_02_mobile.webp",
-        "w": 2400,
-        "h": 1792,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/19_marjan_beach/marjan_beach_gallery_03.webp",
-        "mobile": "/projects/19_marjan_beach/marjan_beach_gallery_03_mobile.webp",
-        "w": 2400,
-        "h": 1792,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/19_marjan_beach/marjan_beach_gallery_04.webp",
-        "mobile": "/projects/19_marjan_beach/marjan_beach_gallery_04_mobile.webp",
-        "w": 2400,
-        "h": 1792,
-        "orientation": "horizontal"
+        "desktop": "/projects/17_the_townhall/the_townhall_video_01_1080.mp4",
+        "mobile": "/projects/17_the_townhall/the_townhall_video_01_720.mp4",
+        "poster": "/projects/17_the_townhall/the_townhall_video_01_poster.webp"
       }
-    ],
-    "videos": [],
-    "featured": false
-  },
-  {
-    "id": "20_elan_tower",
-    "title": "Elan Tower",
-    "category": "real-estate",
-    "cover": {
-      "src": "/projects/20_elan_tower/elan_tower_cover.webp",
-      "mobile": "/projects/20_elan_tower/elan_tower_cover_mobile.webp",
-      "w": 1933,
-      "h": 2400,
-      "orientation": "vertical"
-    },
-    "gallery": [
-      {
-        "src": "/projects/20_elan_tower/elan_tower_gallery_01.webp",
-        "mobile": "/projects/20_elan_tower/elan_tower_gallery_01_mobile.webp",
-        "w": 1792,
-        "h": 2400,
-        "orientation": "vertical"
-      },
-      {
-        "src": "/projects/20_elan_tower/elan_tower_gallery_02.webp",
-        "mobile": "/projects/20_elan_tower/elan_tower_gallery_02_mobile.webp",
-        "w": 2400,
-        "h": 1340,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/20_elan_tower/elan_tower_gallery_03.webp",
-        "mobile": "/projects/20_elan_tower/elan_tower_gallery_03_mobile.webp",
-        "w": 2400,
-        "h": 1340,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/20_elan_tower/elan_tower_gallery_04.webp",
-        "mobile": "/projects/20_elan_tower/elan_tower_gallery_04_mobile.webp",
-        "w": 2400,
-        "h": 1340,
-        "orientation": "horizontal"
-      }
-    ],
-    "videos": [],
-    "featured": false
-  },
-  {
-    "id": "21_rabdan_avenue",
-    "title": "Rabdan Avenue",
-    "category": "real-estate",
-    "cover": {
-      "src": "/projects/21_rabdan_avenue/rabdan_avenue_cover.webp",
-      "mobile": "/projects/21_rabdan_avenue/rabdan_avenue_cover_mobile.webp",
-      "w": 2400,
-      "h": 1340,
-      "orientation": "horizontal"
-    },
-    "gallery": [
-      {
-        "src": "/projects/21_rabdan_avenue/rabdan_avenue_gallery_01.webp",
-        "mobile": "/projects/21_rabdan_avenue/rabdan_avenue_gallery_01_mobile.webp",
-        "w": 2400,
-        "h": 1340,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/21_rabdan_avenue/rabdan_avenue_gallery_02.webp",
-        "mobile": "/projects/21_rabdan_avenue/rabdan_avenue_gallery_02_mobile.webp",
-        "w": 2400,
-        "h": 1610,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/21_rabdan_avenue/rabdan_avenue_gallery_03.webp",
-        "mobile": "/projects/21_rabdan_avenue/rabdan_avenue_gallery_03_mobile.webp",
-        "w": 2400,
-        "h": 1340,
-        "orientation": "horizontal"
-      }
-    ],
-    "videos": [],
-    "featured": false
-  },
-  {
-    "id": "22_surf_row",
-    "title": "Surf Row",
-    "category": "real-estate",
-    "cover": {
-      "src": "/projects/22_surf_row/surf_row_cover.webp",
-      "mobile": "/projects/22_surf_row/surf_row_cover_mobile.webp",
-      "w": 2400,
-      "h": 1610,
-      "orientation": "horizontal"
-    },
-    "gallery": [
-      {
-        "src": "/projects/22_surf_row/surf_row_gallery_01.webp",
-        "mobile": "/projects/22_surf_row/surf_row_gallery_01_mobile.webp",
-        "w": 2400,
-        "h": 1340,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/22_surf_row/surf_row_gallery_02.webp",
-        "mobile": "/projects/22_surf_row/surf_row_gallery_02_mobile.webp",
-        "w": 2400,
-        "h": 1610,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/22_surf_row/surf_row_gallery_03.webp",
-        "mobile": "/projects/22_surf_row/surf_row_gallery_03_mobile.webp",
-        "w": 2400,
-        "h": 1340,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/22_surf_row/surf_row_gallery_04.webp",
-        "mobile": "/projects/22_surf_row/surf_row_gallery_04_mobile.webp",
-        "w": 2400,
-        "h": 1340,
-        "orientation": "horizontal"
-      }
-    ],
-    "videos": [],
-    "featured": false
-  },
-  {
-    "id": "23_opus_coconut_grove",
-    "title": "OPUS Coconut Grove",
-    "category": "real-estate",
-    "cover": {
-      "src": "/projects/23_opus_coconut_grove/opus_coconut_grove_cover.webp",
-      "mobile": "/projects/23_opus_coconut_grove/opus_coconut_grove_cover_mobile.webp",
-      "w": 2400,
-      "h": 1340,
-      "orientation": "horizontal"
-    },
-    "gallery": [
-      {
-        "src": "/projects/23_opus_coconut_grove/opus_coconut_grove_gallery_01.webp",
-        "mobile": "/projects/23_opus_coconut_grove/opus_coconut_grove_gallery_01_mobile.webp",
-        "w": 1933,
-        "h": 2400,
-        "orientation": "vertical"
-      },
-      {
-        "src": "/projects/23_opus_coconut_grove/opus_coconut_grove_gallery_02.webp",
-        "mobile": "/projects/23_opus_coconut_grove/opus_coconut_grove_gallery_02_mobile.webp",
-        "w": 1933,
-        "h": 2400,
-        "orientation": "vertical"
-      },
-      {
-        "src": "/projects/23_opus_coconut_grove/opus_coconut_grove_gallery_03.webp",
-        "mobile": "/projects/23_opus_coconut_grove/opus_coconut_grove_gallery_03_mobile.webp",
-        "w": 2400,
-        "h": 1610,
-        "orientation": "horizontal"
-      }
-    ],
-    "videos": [],
-    "featured": false
+    ]
   },
   {
     "id": "16_samar",
@@ -431,119 +296,235 @@
     "autoplay": true
   },
   {
-    "id": "17_the_townhall",
-    "title": "The Townhall",
-    "slug": "the-townhall",
+    "id": "24_dana",
+    "title": "DANA Maldives",
     "category": "luxury",
-    "film": true,
-    "featured": true,
     "cover": {
-      "src": "/projects/17_the_townhall/the_townhall_cover.webp",
-      "mobile": "/projects/17_the_townhall/the_townhall_cover_mobile.webp",
+      "src": "/projects/24_dana/dana_cover.webp",
+      "mobile": "/projects/24_dana/dana_cover_mobile.webp",
+      "w": 1340,
+      "h": 2400,
+      "orientation": "vertical"
+    },
+    "gallery": [
+      {
+        "src": "/projects/24_dana/dana_gallery_01.webp",
+        "mobile": "/projects/24_dana/dana_gallery_01_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/24_dana/dana_gallery_02.webp",
+        "mobile": "/projects/24_dana/dana_gallery_02_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/24_dana/dana_gallery_03.webp",
+        "mobile": "/projects/24_dana/dana_gallery_03_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/24_dana/dana_gallery_04.webp",
+        "mobile": "/projects/24_dana/dana_gallery_04_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/24_dana/dana_gallery_05.webp",
+        "mobile": "/projects/24_dana/dana_gallery_05_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/24_dana/dana_gallery_06.webp",
+        "mobile": "/projects/24_dana/dana_gallery_06_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/24_dana/dana_gallery_07.webp",
+        "mobile": "/projects/24_dana/dana_gallery_07_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/24_dana/dana_gallery_08.webp",
+        "mobile": "/projects/24_dana/dana_gallery_08_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/24_dana/dana_gallery_09.webp",
+        "mobile": "/projects/24_dana/dana_gallery_09_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/24_dana/dana_gallery_10.webp",
+        "mobile": "/projects/24_dana/dana_gallery_10_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/24_dana/dana_gallery_11.webp",
+        "mobile": "/projects/24_dana/dana_gallery_11_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/24_dana/dana_gallery_12.webp",
+        "mobile": "/projects/24_dana/dana_gallery_12_mobile.webp",
+        "w": 1340,
+        "h": 2400,
+        "orientation": "vertical"
+      }
+    ],
+    "videos": [],
+    "featured": true
+  },
+  {
+    "id": "25_casa_cresta",
+    "title": "Casa Cresta",
+    "category": "luxury",
+    "cover": {
+      "src": "/projects/25_casa_cresta/casa_cresta_cover.webp",
+      "mobile": "/projects/25_casa_cresta/casa_cresta_cover_mobile.webp",
       "w": 2400,
-      "h": 1600,
+      "h": 1340,
       "orientation": "horizontal"
     },
     "gallery": [
       {
-        "src": "/projects/17_the_townhall/the_townhall_gallery_01.webp",
-        "mobile": "/projects/17_the_townhall/the_townhall_gallery_01_mobile.webp",
+        "src": "/projects/25_casa_cresta/casa_cresta_gallery_01.webp",
+        "mobile": "/projects/25_casa_cresta/casa_cresta_gallery_01_mobile.webp",
         "w": 2400,
-        "h": 1600,
+        "h": 1340,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/17_the_townhall/the_townhall_gallery_02.webp",
-        "mobile": "/projects/17_the_townhall/the_townhall_gallery_02_mobile.webp",
+        "src": "/projects/25_casa_cresta/casa_cresta_gallery_02.webp",
+        "mobile": "/projects/25_casa_cresta/casa_cresta_gallery_02_mobile.webp",
         "w": 2400,
-        "h": 1610,
+        "h": 1340,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/17_the_townhall/the_townhall_gallery_03.webp",
-        "mobile": "/projects/17_the_townhall/the_townhall_gallery_03_mobile.webp",
+        "src": "/projects/25_casa_cresta/casa_cresta_gallery_03.webp",
+        "mobile": "/projects/25_casa_cresta/casa_cresta_gallery_03_mobile.webp",
         "w": 2400,
-        "h": 1610,
+        "h": 1340,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/17_the_townhall/the_townhall_gallery_04.webp",
-        "mobile": "/projects/17_the_townhall/the_townhall_gallery_04_mobile.webp",
-        "w": 2048,
-        "h": 1360,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/17_the_townhall/the_townhall_gallery_05.webp",
-        "mobile": "/projects/17_the_townhall/the_townhall_gallery_05_mobile.webp",
-        "w": 2048,
-        "h": 1360,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/17_the_townhall/the_townhall_gallery_06.webp",
-        "mobile": "/projects/17_the_townhall/the_townhall_gallery_06_mobile.webp",
+        "src": "/projects/25_casa_cresta/casa_cresta_gallery_04.webp",
+        "mobile": "/projects/25_casa_cresta/casa_cresta_gallery_04_mobile.webp",
         "w": 2400,
-        "h": 1610,
+        "h": 1340,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/17_the_townhall/the_townhall_gallery_07.webp",
-        "mobile": "/projects/17_the_townhall/the_townhall_gallery_07_mobile.webp",
+        "src": "/projects/25_casa_cresta/casa_cresta_gallery_05.webp",
+        "mobile": "/projects/25_casa_cresta/casa_cresta_gallery_05_mobile.webp",
         "w": 2400,
-        "h": 1610,
+        "h": 1340,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/17_the_townhall/the_townhall_gallery_08.webp",
-        "mobile": "/projects/17_the_townhall/the_townhall_gallery_08_mobile.webp",
-        "w": 2048,
-        "h": 1360,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/17_the_townhall/the_townhall_gallery_09.webp",
-        "mobile": "/projects/17_the_townhall/the_townhall_gallery_09_mobile.webp",
-        "w": 2048,
-        "h": 1360,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/17_the_townhall/the_townhall_gallery_10.webp",
-        "mobile": "/projects/17_the_townhall/the_townhall_gallery_10_mobile.webp",
+        "src": "/projects/25_casa_cresta/casa_cresta_gallery_06.webp",
+        "mobile": "/projects/25_casa_cresta/casa_cresta_gallery_06_mobile.webp",
         "w": 2400,
-        "h": 1610,
+        "h": 1340,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/17_the_townhall/the_townhall_gallery_11.webp",
-        "mobile": "/projects/17_the_townhall/the_townhall_gallery_11_mobile.webp",
+        "src": "/projects/25_casa_cresta/casa_cresta_gallery_07.webp",
+        "mobile": "/projects/25_casa_cresta/casa_cresta_gallery_07_mobile.webp",
         "w": 2400,
-        "h": 1610,
+        "h": 1340,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/17_the_townhall/the_townhall_gallery_12.webp",
-        "mobile": "/projects/17_the_townhall/the_townhall_gallery_12_mobile.webp",
+        "src": "/projects/25_casa_cresta/casa_cresta_gallery_08.webp",
+        "mobile": "/projects/25_casa_cresta/casa_cresta_gallery_08_mobile.webp",
         "w": 2400,
-        "h": 1610,
+        "h": 1340,
         "orientation": "horizontal"
       },
       {
-        "src": "/projects/17_the_townhall/the_townhall_gallery_13.webp",
-        "mobile": "/projects/17_the_townhall/the_townhall_gallery_13_mobile.webp",
-        "w": 2048,
-        "h": 1360,
+        "src": "/projects/25_casa_cresta/casa_cresta_gallery_09.webp",
+        "mobile": "/projects/25_casa_cresta/casa_cresta_gallery_09_mobile.webp",
+        "w": 2400,
+        "h": 1340,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/25_casa_cresta/casa_cresta_gallery_10.webp",
+        "mobile": "/projects/25_casa_cresta/casa_cresta_gallery_10_mobile.webp",
+        "w": 2400,
+        "h": 1340,
         "orientation": "horizontal"
       }
     ],
-    "videos": [
+    "videos": [],
+    "featured": true
+  },
+  {
+    "id": "18_residence_77",
+    "title": "Burtville",
+    "category": "real-estate",
+    "cover": {
+      "src": "/projects/18_residence_77/residence_77_cover.webp",
+      "mobile": "/projects/18_residence_77/residence_77_cover_mobile.webp",
+      "w": 2400,
+      "h": 1610,
+      "orientation": "horizontal"
+    },
+    "gallery": [
       {
-        "desktop": "/projects/17_the_townhall/the_townhall_video_01_1080.mp4",
-        "mobile": "/projects/17_the_townhall/the_townhall_video_01_720.mp4",
-        "poster": "/projects/17_the_townhall/the_townhall_video_01_poster.webp"
+        "src": "/projects/18_residence_77/residence_77_gallery_01.webp",
+        "mobile": "/projects/18_residence_77/residence_77_gallery_01_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/18_residence_77/residence_77_gallery_02.webp",
+        "mobile": "/projects/18_residence_77/residence_77_gallery_02_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/18_residence_77/residence_77_gallery_03.webp",
+        "mobile": "/projects/18_residence_77/residence_77_gallery_03_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/18_residence_77/residence_77_gallery_04.webp",
+        "mobile": "/projects/18_residence_77/residence_77_gallery_04_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
       }
-    ]
+    ],
+    "videos": [],
+    "featured": false,
+    "slug": "burtville"
   },
   {
     "id": "01_penthouse_dubai",

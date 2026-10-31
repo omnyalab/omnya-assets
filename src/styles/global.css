@@ -2324,3 +2324,17 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 }
 .wend__title { max-width: 14ch; }
 .ptable__each { padding-left: 12px; }
+/* Pricing, round 4: plain paper behind the glass, the pick as tall as the other rows (pill inline), outlined instead of coloured */
+.pband { background: var(--bg); }
+.ptable tr.is-best .ptable__q { flex-direction: row; align-items: baseline; gap: 4px 12px; align-self: auto; }
+.pband .ptable tr.is-best { transform: none; background: #fff; border: 1.5px solid var(--ink); box-shadow: 0 2px 4px rgba(30, 24, 16, 0.06), 0 30px 60px -32px rgba(30, 24, 16, 0.4); }
+.pband .ptable tr.is-best .ptable__pill { order: 2; height: 24px; padding: 0 10px; font-size: 12px; }
+.pband .ptable tr.is-best .ptable__qn { order: 1; }
+.pband .ptable tr.is-best .ptable__save { order: 3; height: 24px; padding: 0 10px; font-size: 12px; }
+@media (min-width: 900px) { .pband .ptable:not(.ptable--films) { --cols: minmax(0, 1fr) 40% 10%; } }
+/* phones: the pick keeps the height of the other rows, pill and saving on one line */
+@media (max-width: 899px) {
+  .pband .ptable tr.is-best .ptable__q { gap: 4px 6px; }
+  .pband .ptable tr.is-best .ptable__pill, .pband .ptable tr.is-best .ptable__save { height: 22px; padding: 0 7px; font-size: 11px; }
+  .pband .ptable tr.is-best .ptable__unit { order: 4; width: 100%; }
+}

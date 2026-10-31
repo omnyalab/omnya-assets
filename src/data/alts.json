@@ -566,115 +566,107 @@
       }
     ]
   },
-  "19_marjan_beach": {
+  "24_dana": {
     "cover": {
-      "en": "the resort from above, curving along the beach and the sea",
-      "it": "il resort dall’alto, curvo lungo la spiaggia e il mare"
+      "en": "the villa on the beach in the Maldives, the curved pool among the palms",
+      "it": "la villa sulla spiaggia alle Maldive, la piscina curva tra le palme"
     },
     "gallery": [
       {
-        "en": "the arrival drive under the stepped terraces at sunset",
-        "it": "il viale d’arrivo sotto le terrazze a gradoni al tramonto"
+        "en": "the villa from above, the pool and the white beach on the lagoon",
+        "it": "la villa dall’alto, la piscina e la spiaggia bianca sulla laguna"
       },
       {
-        "en": "the lobby with a cascade of crystal strands and curved sofas",
-        "it": "la lobby con una cascata di fili di cristallo e divani curvi"
+        "en": "the pool seen from the terrace, palms and the sea",
+        "it": "la piscina vista dalla terrazza, le palme e il mare"
       },
       {
-        "en": "a sunken lounge round a fire, under a starry canopy",
-        "it": "un salotto ribassato intorno al fuoco, sotto una copertura stellata"
+        "en": "a coral stone column and the plunge pool on the terrace",
+        "it": "una colonna in pietra corallina e la vasca sulla terrazza"
       },
       {
-        "en": "the pool with wooden cabanas and palms",
-        "it": "la piscina con le cabine in legno e le palme"
+        "en": "the curved edge of the pool in the sun",
+        "it": "il bordo curvo della piscina al sole"
+      },
+      {
+        "en": "the entrance with a floating staircase under a skylight",
+        "it": "l’ingresso con la scala sospesa sotto un lucernario"
+      },
+      {
+        "en": "the kitchen with a quartzite island and a blue tiled floor",
+        "it": "la cucina con l’isola in quarzite e il pavimento di piastrelle blu"
+      },
+      {
+        "en": "the quartzite worktop and the brass tap",
+        "it": "il piano in quarzite e il rubinetto in ottone"
+      },
+      {
+        "en": "the dining table by the glass, the palms beyond",
+        "it": "il tavolo da pranzo vicino alle vetrate, le palme oltre"
+      },
+      {
+        "en": "the bedroom opening onto the terrace and the sea",
+        "it": "la camera aperta sulla terrazza e sul mare"
+      },
+      {
+        "en": "the walk-in wardrobe under a skylight",
+        "it": "la cabina armadio sotto un lucernario"
+      },
+      {
+        "en": "the coral stone bathroom with two basins",
+        "it": "il bagno in pietra corallina con due lavabi"
+      },
+      {
+        "en": "the stone bathtub by the window",
+        "it": "la vasca in pietra accanto alla finestra"
       }
     ]
   },
-  "20_elan_tower": {
+  "25_casa_cresta": {
     "cover": {
-      "en": "the tower at dusk, every balcony lit",
-      "it": "la torre al tramonto, con ogni balcone acceso"
+      "en": "the house on the hill in Los Angeles, the city in the distance",
+      "it": "la casa sulla collina a Los Angeles, la città in lontananza"
     },
     "gallery": [
       {
-        "en": "the tower from above, the rooftop pool among the gardens",
-        "it": "la torre dall’alto, la piscina sul tetto tra i giardini"
+        "en": "the cantilevered glass volume against the sky",
+        "it": "il volume in vetro a sbalzo contro il cielo"
       },
       {
-        "en": "a studio flat with a round table in the morning light",
-        "it": "un monolocale con il tavolo rotondo nella luce del mattino"
+        "en": "the infinity pool over the dry hills",
+        "it": "la piscina a sfioro sulle colline secche"
       },
       {
-        "en": "a bedroom with a woman reading in the afternoon sun",
-        "it": "una camera con una donna che legge nel sole del pomeriggio"
+        "en": "the entrance with a bronze door and a reflecting pool",
+        "it": "l’ingresso con la porta in bronzo e lo specchio d’acqua"
       },
       {
-        "en": "a bedroom with marble walls and a softly lit bed",
-        "it": "una camera con pareti in marmo e il letto illuminato"
-      }
-    ]
-  },
-  "21_rabdan_avenue": {
-    "cover": {
-      "en": "the stepped residence among gardens at golden hour",
-      "it": "la residenza a gradoni tra i giardini all’ora d’oro"
-    },
-    "gallery": [
-      {
-        "en": "the residence and its pool at night",
-        "it": "la residenza e la sua piscina di notte"
+        "en": "the living room with a long sofa and a ring chandelier, glass on three sides",
+        "it": "il soggiorno con il divano lungo e il lampadario ad anello, vetrate su tre lati"
       },
       {
-        "en": "a curved terrace at sunset facing the Burj Khalifa",
-        "it": "una terrazza curva al tramonto davanti al Burj Khalifa"
+        "en": "the bedroom with glass walls onto the hills",
+        "it": "la camera con le vetrate sulle colline"
       },
       {
-        "en": "the lobby with draped walls and curved sofas",
-        "it": "la lobby con pareti drappeggiate e divani curvi"
-      }
-    ]
-  },
-  "22_surf_row": {
-    "cover": {
-      "en": "the white building from the street, under a clear sky",
-      "it": "l’edificio bianco dalla strada, sotto un cielo limpido"
-    },
-    "gallery": [
-      {
-        "en": "the rooftop pool with sun loungers and palms",
-        "it": "la piscina sul tetto con i lettini e le palme"
+        "en": "a stone bathtub by the window over the hills",
+        "it": "una vasca in pietra davanti alla finestra sulle colline"
       },
       {
-        "en": "an open living room and kitchen in walnut, with the sea beyond",
-        "it": "soggiorno e cucina aperti in noce, con il mare oltre le vetrate"
+        "en": "the house among the hills, seen from the slope",
+        "it": "la casa tra le colline, vista dal pendio"
       },
       {
-        "en": "the lobby lounge with a lit bookcase",
-        "it": "il lounge della lobby con una libreria illuminata"
+        "en": "the games room with a billiard table and a glass wine wall",
+        "it": "la sala giochi con il biliardo e la cantina in vetro"
       },
       {
-        "en": "the spa with a plunge pool and loungers in soft light",
-        "it": "la spa con la vasca e i lettini nella luce morbida"
-      }
-    ]
-  },
-  "23_opus_coconut_grove": {
-    "cover": {
-      "en": "the neighbourhood from above, towers and the sea behind",
-      "it": "il quartiere dall’alto, le torri e il mare dietro"
-    },
-    "gallery": [
-      {
-        "en": "the facade from below, planted terraces against the sky",
-        "it": "la facciata dal basso, terrazze verdi contro il cielo"
+        "en": "the long marble counter and the view",
+        "it": "il lungo bancone in marmo e la vista"
       },
       {
-        "en": "glass floors and planted edges, seen from the street",
-        "it": "piani in vetro e bordi verdi, visti dalla strada"
-      },
-      {
-        "en": "a terrace with a dining table at sunset, the sea in front",
-        "it": "una terrazza con il tavolo da pranzo al tramonto, il mare davanti"
+        "en": "a black sports car in front of the garage",
+        "it": "un’auto sportiva nera davanti al garage"
       }
     ]
   }
