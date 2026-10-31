@@ -481,5 +481,65 @@
         "it": "il bordo curvo della terrazza all'ora blu, con la marina sotto"
       }
     ]
+  },
+  "17_the_townhall": {
+    "cover": {
+      "en": "the restored town hall facade at dusk, with the fountain in the courtyard",
+      "it": "la facciata del municipio restaurata al tramonto, con la fontana nella corte"
+    },
+    "gallery": [
+      {
+        "en": "the iron gate and the front garden",
+        "it": "il cancello in ferro e il giardino d'ingresso"
+      },
+      {
+        "en": "reception with the desk and armchairs",
+        "it": "la reception con il bancone e le poltrone"
+      },
+      {
+        "en": "the main staircase with a striped runner and framed pictures",
+        "it": "lo scalone con la passatoia a righe e i quadri alle pareti"
+      },
+      {
+        "en": "the lounge with a fireplace and guests in the evening",
+        "it": "la lounge con il camino e gli ospiti la sera"
+      },
+      {
+        "en": "the restaurant with green velvet chairs",
+        "it": "il ristorante con le sedie in velluto verde"
+      },
+      {
+        "en": "private dining with a family at the table",
+        "it": "la sala privata con una famiglia a tavola"
+      },
+      {
+        "en": "a suite with a four-poster bed",
+        "it": "una suite con il letto a baldacchino"
+      },
+      {
+        "en": "the pink room",
+        "it": "la camera rosa"
+      },
+      {
+        "en": "the striped room",
+        "it": "la camera a righe"
+      },
+      {
+        "en": "the new pavilion clad in copper-coloured panels",
+        "it": "il nuovo padiglione rivestito di pannelli color rame"
+      },
+      {
+        "en": "the spa pool under warm light",
+        "it": "la piscina della spa con luce calda"
+      },
+      {
+        "en": "the event hall set for a dinner",
+        "it": "la sala eventi preparata per una cena"
+      },
+      {
+        "en": "the rooftop bar over the Prosecco hills",
+        "it": "il rooftop bar sulle colline del Prosecco"
+      }
+    ]
   }
 }

@@ -181,6 +181,121 @@
     "autoplay": true
   },
   {
+    "id": "17_the_townhall",
+    "title": "The Townhall",
+    "slug": "the-townhall",
+    "category": "luxury",
+    "film": true,
+    "featured": true,
+    "cover": {
+      "src": "/projects/17_the_townhall/the_townhall_cover.webp",
+      "mobile": "/projects/17_the_townhall/the_townhall_cover_mobile.webp",
+      "w": 2400,
+      "h": 1600,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_01.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_01_mobile.webp",
+        "w": 2400,
+        "h": 1600,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_02.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_02_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_03.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_03_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_04.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_04_mobile.webp",
+        "w": 2048,
+        "h": 1360,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_05.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_05_mobile.webp",
+        "w": 2048,
+        "h": 1360,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_06.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_06_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_07.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_07_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_08.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_08_mobile.webp",
+        "w": 2048,
+        "h": 1360,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_09.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_09_mobile.webp",
+        "w": 2048,
+        "h": 1360,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_10.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_10_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_11.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_11_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_12.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_12_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/17_the_townhall/the_townhall_gallery_13.webp",
+        "mobile": "/projects/17_the_townhall/the_townhall_gallery_13_mobile.webp",
+        "w": 2048,
+        "h": 1360,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [
+      {
+        "desktop": "/projects/17_the_townhall/the_townhall_video_01_1080.mp4",
+        "mobile": "/projects/17_the_townhall/the_townhall_video_01_720.mp4",
+        "poster": "/projects/17_the_townhall/the_townhall_video_01_poster.webp"
+      }
+    ]
+  },
+  {
     "id": "01_penthouse_dubai",
     "title": "Penthouse Dubai",
     "category": "luxury",

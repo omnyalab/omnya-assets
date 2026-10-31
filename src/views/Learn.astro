@@ -1,6 +1,7 @@
 ---
 // Learn: a full-screen hero where the 3D model and the final image share one camera
-// (the line sweeps once on arrival, then it is yours to drag), what we sell in one line,
+// (on phones the scroll wipes the 3D into the photo under the title; on desktop the line
+// sweeps once on arrival, then it is yours to drag), what we sell in one line,
 // the shelf of playbooks, the private lessons, the ladder from free to done-by-us,
 // the studio band, the community and short answers.
 // /learn/<word> is the same page for people coming from a reel: it names the word they
@@ -50,7 +51,8 @@ const ladderLinks = ['#books', '#books', go('bundle'), go('session'), go('build'
 
 <Base page="learn" title={w ? `${L.heroA} ${L.heroB} · ${w.label}` : `${L.heroA} ${L.heroB}`} description={L.description}>
   <!-- Hero: the 3D model over the final image, full screen -->
-  <section class="lhero" data-header="light" data-header-media aria-labelledby="learn-title">
+  <section class="lhero" data-header="light" data-header-media aria-labelledby="learn-title" data-lhero>
+    <div class="lhero__stick">
     <div class="cmp" data-cmp style="--x: 100%">
       <picture>
         <source media="(max-width: 699px)" srcset={pic('front', 'real').mobile} data-cmp-real-m />
@@ -89,6 +91,7 @@ const ladderLinks = ['#books', '#books', go('bundle'), go('session'), go('build'
       <ul class="lhero__chips" data-fade>
         {L.heroChips.map((c) => <li>{c}</li>)}
       </ul>
+    </div>
     </div>
   </section>
 
@@ -236,7 +239,6 @@ const ladderLinks = ['#books', '#books', go('bundle'), go('session'), go('build'
       <img data-src={capeTown.gallery[2].mobile} data-srcset={srcset(capeTown.gallery[2])} sizes="100vw" alt="" decoding="async" />
     </div>
     <div class="pcase__in wrap">
-      <p class="t-small pcase__label" data-fade>{L.doneLabel}</p>
       <h2 class="t-h1 pcase__title" id="done-title" data-split>{L.doneA}{' '}<span class="mute">{L.doneB}</span></h2>
       <div class="ldone__row">
         <p class="t-sub pcase__text" data-fade>{L.doneText}</p>
@@ -250,7 +252,6 @@ const ladderLinks = ['#books', '#books', go('bundle'), go('session'), go('build'
 
   <!-- Community -->
   <section class="lcomm wrap" aria-labelledby="comm-title">
-    <p class="t-small lcomm__soon" data-fade>Skool</p>
     <h2 class="t-h1" id="comm-title" data-split>{L.communityA}{' '}<span class="mute">{L.communityB}</span></h2>
     <div class="lcomm__row">
       <p class="t-sub lcomm__text" data-fade>{L.communityText}</p>

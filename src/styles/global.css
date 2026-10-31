@@ -1303,6 +1303,21 @@ img[data-stage-src] { visibility: hidden; }
   box-shadow: 0 1px 2px rgba(17, 17, 17, 0.08), 0 18px 40px -18px rgba(17, 17, 17, 0.35);
 }
 .kit__card img { width: 100%; height: 100%; object-fit: cover; }
+/* the kit as a bound book, like the playbooks on Learn: spine on the left, lifted shadow */
+.kit__item { perspective: 1400px; }
+.kit__card {
+  border-radius: 3px 8px 8px 3px; transform-origin: 0% 50%;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08), 0 12px 24px -10px rgba(0, 0, 0, 0.35), 0 34px 60px -30px rgba(0, 0, 0, 0.45);
+  transition: transform 0.9s var(--ease), box-shadow 0.9s var(--ease);
+}
+.kit__card::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.38) 0, rgba(255, 255, 255, 0.16) 7px, rgba(0, 0, 0, 0.12) 11px, rgba(0, 0, 0, 0) 22px);
+}
+@media (hover: hover) and (pointer: fine) {
+  .kit__item:hover .kit__card { transform: rotateY(-9deg) translateX(4px); box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08), 18px 18px 40px -12px rgba(0, 0, 0, 0.4), 30px 44px 70px -30px rgba(0, 0, 0, 0.5); }
+}
+@media (prefers-reduced-motion: reduce) { .kit__card { transition: none; } .kit__item:hover .kit__card { transform: none; } }
 .kit__meta { display: grid; justify-items: start; gap: 2px; margin-top: 16px; font-size: var(--fs-small); }
 .kit__name { font-size: var(--fs-sub); letter-spacing: -0.02em; line-height: 1.2; }
 .kit__size { color: var(--mute); }
@@ -1540,7 +1555,14 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 
 /* ---------- Learn ---------- */
 /* hero: the 3D model over the final image, full screen; only the line moves */
-.lhero { position: relative; height: 100svh; min-height: 620px; color: #fff; background: #1a1917; overflow: hidden; }
+/* On phones the hero is held by position: sticky while the scroll wipes the 3D into the photo,
+   then it finishes, holds a beat, and the page moves on. Desktop: one screen, swept on arrival. */
+.lhero { position: relative; color: #fff; background: #1a1917; }
+.lhero__stick { position: relative; height: 100svh; min-height: 560px; overflow: hidden; }
+@media (max-width: 899px) and (prefers-reduced-motion: no-preference) {
+  .js .lhero { height: 250svh; }
+  .js .lhero__stick { position: sticky; top: 0; }
+}
 .cmp { position: absolute; inset: 0; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
 @media (hover: hover) and (pointer: fine) { .cmp { cursor: ew-resize; } }
 .cmp picture { display: contents; }

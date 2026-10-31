@@ -1,8 +1,10 @@
 // Learn page hero: the 3D model over the final image, same camera.
-// On arrival the line sweeps once from the model to the photo, then it is yours to drag.
+// Phones: you land on the 3D and the scroll wipes it into the photo under the title, all the
+// way, with a short hold before the page moves on. Desktop: the line sweeps once on arrival,
+// then it is yours to drag.
 // The pictures never move; only the line does. Room buttons swap both pictures.
 // Keyboard and screen readers use the range input, kept in sync with the line.
-import { gsap, reduced } from './core';
+import { gsap, ScrollTrigger, reduced } from './core';
 import { onDestroy } from './anim';
 
 export function learn() {
@@ -23,18 +25,34 @@ export function learn() {
     range.value = String(Math.round(state.x));
   };
 
+  const hero = document.querySelector<HTMLElement>('[data-lhero]')!;
+  const phone = window.matchMedia('(max-width: 899px)').matches && !reduced;
+
   // The sweep: model, then the photo wipes in, and the line rests in the middle
   let sweep: gsap.core.Timeline | null = null;
-  const play = () => {
+  const play = (delay = 0.5) => {
     sweep?.kill();
     if (reduced) return set(50);
     set(100);
-    sweep = gsap.timeline({ delay: 0.5 })
-      .to(state, { x: 8, duration: 1.9, ease: 'expo.inOut', onUpdate: () => set(state.x) })
-      .to(state, { x: 50, duration: 1.1, ease: 'expo.out', onUpdate: () => set(state.x) });
+    sweep = phone
+      ? gsap.timeline({ onComplete: () => { sweep = null; } }).to(state, { x: 0, duration: 1.6, ease: 'expo.inOut', onUpdate: () => set(state.x) })
+      : gsap.timeline({ delay })
+        .to(state, { x: 8, duration: 1.9, ease: 'expo.inOut', onUpdate: () => set(state.x) })
+        .to(state, { x: 50, duration: 1.1, ease: 'expo.out', onUpdate: () => set(state.x) });
   };
   const stopSweep = () => { sweep?.kill(); sweep = null; };
-  play();
+
+  let wipe: ScrollTrigger | null = null;
+  if (phone) {
+    // The wipe ends at 82% of the runway: the photo is whole before the page starts to move
+    set(100);
+    wipe = ScrollTrigger.create({
+      trigger: hero,
+      start: 'top top',
+      end: 'bottom bottom',
+      onUpdate: (st) => { if (!sweep) set(100 - Math.min(1, st.progress / 0.82) * 100); },
+    });
+  } else play();
 
   // The other views load quietly once the page has settled, so switching is instant
   const warm = () => document.querySelectorAll<HTMLButtonElement>('[data-room]').forEach((b) => {
@@ -87,9 +105,9 @@ export function learn() {
       real.src = btn.dataset.real!;
       realM.srcset = btn.dataset.realM!;
       real.alt = btn.dataset.alt!;
-      play();
+      play(0);
     }, opt);
   });
 
-  onDestroy(() => { stopSweep(); ac.abort(); });
+  onDestroy(() => { stopSweep(); wipe?.kill(); ac.abort(); });
 }
