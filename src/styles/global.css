@@ -1318,6 +1318,8 @@ img[data-stage-src] { visibility: hidden; }
   .kit__item:hover .kit__card { transform: rotateY(-9deg) translateX(4px); box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08), 18px 18px 40px -12px rgba(0, 0, 0, 0.4), 30px 44px 70px -30px rgba(0, 0, 0, 0.5); }
 }
 @media (prefers-reduced-motion: reduce) { .kit__card { transition: none; } .kit__item:hover .kit__card { transform: none; } }
+/* the vertical book reads small at the landscape height on phones */
+@media (max-width: 899px) { .kit__item--tall .kit__card { height: clamp(320px, 90vw, 520px); } }
 .kit__meta { display: grid; justify-items: start; gap: 2px; margin-top: 16px; font-size: var(--fs-small); }
 .kit__name { font-size: var(--fs-sub); letter-spacing: -0.02em; line-height: 1.2; }
 .kit__size { color: var(--mute); }
