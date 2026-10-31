@@ -1,5 +1,255 @@
 [
   {
+    "id": "18_residence_77",
+    "title": "Residence 77",
+    "category": "real-estate",
+    "cover": {
+      "src": "/projects/18_residence_77/residence_77_cover.webp",
+      "mobile": "/projects/18_residence_77/residence_77_cover_mobile.webp",
+      "w": 2400,
+      "h": 1610,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/18_residence_77/residence_77_gallery_01.webp",
+        "mobile": "/projects/18_residence_77/residence_77_gallery_01_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/18_residence_77/residence_77_gallery_02.webp",
+        "mobile": "/projects/18_residence_77/residence_77_gallery_02_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/18_residence_77/residence_77_gallery_03.webp",
+        "mobile": "/projects/18_residence_77/residence_77_gallery_03_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/18_residence_77/residence_77_gallery_04.webp",
+        "mobile": "/projects/18_residence_77/residence_77_gallery_04_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [],
+    "featured": false
+  },
+  {
+    "id": "19_marjan_beach",
+    "title": "Marjan Beach",
+    "category": "real-estate",
+    "cover": {
+      "src": "/projects/19_marjan_beach/marjan_beach_cover.webp",
+      "mobile": "/projects/19_marjan_beach/marjan_beach_cover_mobile.webp",
+      "w": 2400,
+      "h": 1340,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/19_marjan_beach/marjan_beach_gallery_01.webp",
+        "mobile": "/projects/19_marjan_beach/marjan_beach_gallery_01_mobile.webp",
+        "w": 2400,
+        "h": 1792,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/19_marjan_beach/marjan_beach_gallery_02.webp",
+        "mobile": "/projects/19_marjan_beach/marjan_beach_gallery_02_mobile.webp",
+        "w": 2400,
+        "h": 1792,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/19_marjan_beach/marjan_beach_gallery_03.webp",
+        "mobile": "/projects/19_marjan_beach/marjan_beach_gallery_03_mobile.webp",
+        "w": 2400,
+        "h": 1792,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/19_marjan_beach/marjan_beach_gallery_04.webp",
+        "mobile": "/projects/19_marjan_beach/marjan_beach_gallery_04_mobile.webp",
+        "w": 2400,
+        "h": 1792,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [],
+    "featured": false
+  },
+  {
+    "id": "20_elan_tower",
+    "title": "Elan Tower",
+    "category": "real-estate",
+    "cover": {
+      "src": "/projects/20_elan_tower/elan_tower_cover.webp",
+      "mobile": "/projects/20_elan_tower/elan_tower_cover_mobile.webp",
+      "w": 1933,
+      "h": 2400,
+      "orientation": "vertical"
+    },
+    "gallery": [
+      {
+        "src": "/projects/20_elan_tower/elan_tower_gallery_01.webp",
+        "mobile": "/projects/20_elan_tower/elan_tower_gallery_01_mobile.webp",
+        "w": 1792,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/20_elan_tower/elan_tower_gallery_02.webp",
+        "mobile": "/projects/20_elan_tower/elan_tower_gallery_02_mobile.webp",
+        "w": 2400,
+        "h": 1340,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/20_elan_tower/elan_tower_gallery_03.webp",
+        "mobile": "/projects/20_elan_tower/elan_tower_gallery_03_mobile.webp",
+        "w": 2400,
+        "h": 1340,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/20_elan_tower/elan_tower_gallery_04.webp",
+        "mobile": "/projects/20_elan_tower/elan_tower_gallery_04_mobile.webp",
+        "w": 2400,
+        "h": 1340,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [],
+    "featured": false
+  },
+  {
+    "id": "21_rabdan_avenue",
+    "title": "Rabdan Avenue",
+    "category": "real-estate",
+    "cover": {
+      "src": "/projects/21_rabdan_avenue/rabdan_avenue_cover.webp",
+      "mobile": "/projects/21_rabdan_avenue/rabdan_avenue_cover_mobile.webp",
+      "w": 2400,
+      "h": 1340,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/21_rabdan_avenue/rabdan_avenue_gallery_01.webp",
+        "mobile": "/projects/21_rabdan_avenue/rabdan_avenue_gallery_01_mobile.webp",
+        "w": 2400,
+        "h": 1340,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/21_rabdan_avenue/rabdan_avenue_gallery_02.webp",
+        "mobile": "/projects/21_rabdan_avenue/rabdan_avenue_gallery_02_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/21_rabdan_avenue/rabdan_avenue_gallery_03.webp",
+        "mobile": "/projects/21_rabdan_avenue/rabdan_avenue_gallery_03_mobile.webp",
+        "w": 2400,
+        "h": 1340,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [],
+    "featured": false
+  },
+  {
+    "id": "22_surf_row",
+    "title": "Surf Row",
+    "category": "real-estate",
+    "cover": {
+      "src": "/projects/22_surf_row/surf_row_cover.webp",
+      "mobile": "/projects/22_surf_row/surf_row_cover_mobile.webp",
+      "w": 2400,
+      "h": 1610,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/22_surf_row/surf_row_gallery_01.webp",
+        "mobile": "/projects/22_surf_row/surf_row_gallery_01_mobile.webp",
+        "w": 2400,
+        "h": 1340,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/22_surf_row/surf_row_gallery_02.webp",
+        "mobile": "/projects/22_surf_row/surf_row_gallery_02_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/22_surf_row/surf_row_gallery_03.webp",
+        "mobile": "/projects/22_surf_row/surf_row_gallery_03_mobile.webp",
+        "w": 2400,
+        "h": 1340,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/22_surf_row/surf_row_gallery_04.webp",
+        "mobile": "/projects/22_surf_row/surf_row_gallery_04_mobile.webp",
+        "w": 2400,
+        "h": 1340,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [],
+    "featured": false
+  },
+  {
+    "id": "23_opus_coconut_grove",
+    "title": "OPUS Coconut Grove",
+    "category": "real-estate",
+    "cover": {
+      "src": "/projects/23_opus_coconut_grove/opus_coconut_grove_cover.webp",
+      "mobile": "/projects/23_opus_coconut_grove/opus_coconut_grove_cover_mobile.webp",
+      "w": 2400,
+      "h": 1340,
+      "orientation": "horizontal"
+    },
+    "gallery": [
+      {
+        "src": "/projects/23_opus_coconut_grove/opus_coconut_grove_gallery_01.webp",
+        "mobile": "/projects/23_opus_coconut_grove/opus_coconut_grove_gallery_01_mobile.webp",
+        "w": 1933,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/23_opus_coconut_grove/opus_coconut_grove_gallery_02.webp",
+        "mobile": "/projects/23_opus_coconut_grove/opus_coconut_grove_gallery_02_mobile.webp",
+        "w": 1933,
+        "h": 2400,
+        "orientation": "vertical"
+      },
+      {
+        "src": "/projects/23_opus_coconut_grove/opus_coconut_grove_gallery_03.webp",
+        "mobile": "/projects/23_opus_coconut_grove/opus_coconut_grove_gallery_03_mobile.webp",
+        "w": 2400,
+        "h": 1610,
+        "orientation": "horizontal"
+      }
+    ],
+    "videos": [],
+    "featured": false
+  },
+  {
     "id": "16_samar",
     "title": "Samar Residences",
     "slug": "samar",

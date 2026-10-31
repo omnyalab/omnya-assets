@@ -2,7 +2,6 @@
 import Base from '../layouts/Base.astro';
 import Duo from '../components/Duo.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import Frame from '../components/Frame.astro';
 import Arrow from '../components/Arrow.astro';
 import SampleCta from '../components/SampleCta.astro';
 import { projects, pad } from '../lib/data';
@@ -27,9 +26,9 @@ const sizes = [
   '(min-width: 900px) 42vw, 75vw',
   '(min-width: 900px) 50vw, 92vw',
 ];
-// Studio picture: public/process/studio.webp
-const studioStill = { src: '/process/studio.webp', mobile: '/process/studio.webp', w: 2400, h: 1340, orientation: 'horizontal' as const };
 const featured = projects.filter((p) => p.featured);
+// Learn on the home page (A1): the three playbook covers as a fan, like the bundle on Learn
+const books = ['white-to-real', 'reel', 'before-it-exists'].map((id) => `/studio/book_${id}_${lang}_mobile.webp`);
 // "See all the work": gallery shots from every project. Each row has its own
 // pictures (first and second shot of each project), never repeated across rows.
 const rows = [
@@ -142,6 +141,22 @@ const rows = [
       </div>
     </section>
 
+    <!-- Learn (A1): the three playbooks as a fan, on the warm card of the bundle -->
+    <section class="hlearn wrap" aria-label={`${H.learnA} ${H.learnB}`}>
+      <a class="hlearn__card" href={localize('/learn', lang)}>
+        <span class="hlearn__fan" aria-hidden="true">
+          {books.map((src, i) => <img class={`hlearn__book hlearn__book--${i + 1}`} data-src={src} width="540" height="720" alt="" decoding="async" />)}
+        </span>
+        <span class="hlearn__copy">
+          <span class="t-h1 hlearn__title">{H.learnA} <span class="mute">{H.learnB}</span></span>
+          <span class="t-sub hlearn__text">{H.learnText}</span>
+          <span class="hlearn__chips"><span>{H.learnBooks}</span><span>{H.learnLessons}</span></span>
+          <span class="btn btn--fill hlearn__btn">{H.learnCta} <Arrow /></span>
+        </span>
+      </a>
+    </section>
+
+    <!-- The studio (B1 adapted): the text, and the living room going from our 3D to the final photo -->
     <section class="teaser wrap" aria-label={H.studio}>
       <div class="teaser__grid">
         <div class="teaser__txt">
@@ -149,7 +164,10 @@ const rows = [
           <Duo size="h2" a={H.studioA} b={H.studioB} />
           <a href={localize('/studio', lang)} class="btn" data-fade>{H.aboutStudio} <Arrow /></a>
         </div>
-        <Frame still={studioStill} alt={H.studioImgAlt} sizes="(min-width: 900px) 56vw, 100vw" class="teaser__img" />
+        <span class="hsplit teaser__img" role="img" aria-label={H.studioImgAlt}>
+          <img data-src="/learn/burt_living_white_mobile.webp" data-srcset="/learn/burt_living_white_mobile.webp 760w, /learn/burt_living_white.webp 1920w" sizes="(min-width: 900px) 56vw, 100vw" width="1920" height="1080" alt="" decoding="async" />
+          <img class="hsplit__real" data-src="/learn/burt_living_real_mobile.webp" data-srcset="/learn/burt_living_real_mobile.webp 760w, /learn/burt_living_real.webp 1920w" sizes="(min-width: 900px) 56vw, 100vw" width="1920" height="1080" alt="" decoding="async" />
+        </span>
       </div>
     </section>
   </div>

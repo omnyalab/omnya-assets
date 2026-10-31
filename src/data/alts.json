@@ -541,5 +541,141 @@
         "it": "il rooftop bar sulle colline del Prosecco"
       }
     ]
+  },
+  "18_residence_77": {
+    "cover": {
+      "en": "three stepped towers on the lagoon at sunset, the beach and dune grass in front",
+      "it": "tre torri a gradoni sulla laguna al tramonto, con la spiaggia e l’erba delle dune davanti"
+    },
+    "gallery": [
+      {
+        "en": "the podium entrance from the street, with palms on the terraces above",
+        "it": "l’ingresso del podio dalla strada, con le palme sulle terrazze sopra"
+      },
+      {
+        "en": "the pool terrace at night, the skyline lit across the water",
+        "it": "la terrazza con piscina di notte, lo skyline acceso oltre l’acqua"
+      },
+      {
+        "en": "a living room under an oak coffered ceiling, glass walls onto the sea",
+        "it": "un soggiorno sotto un soffitto a cassettoni in rovere, vetrate sul mare"
+      },
+      {
+        "en": "the rooftop lounge at sunset, with a fire pit and palms",
+        "it": "il lounge sul tetto al tramonto, con il braciere e le palme"
+      }
+    ]
+  },
+  "19_marjan_beach": {
+    "cover": {
+      "en": "the resort from above, curving along the beach and the sea",
+      "it": "il resort dall’alto, curvo lungo la spiaggia e il mare"
+    },
+    "gallery": [
+      {
+        "en": "the arrival drive under the stepped terraces at sunset",
+        "it": "il viale d’arrivo sotto le terrazze a gradoni al tramonto"
+      },
+      {
+        "en": "the lobby with a cascade of crystal strands and curved sofas",
+        "it": "la lobby con una cascata di fili di cristallo e divani curvi"
+      },
+      {
+        "en": "a sunken lounge round a fire, under a starry canopy",
+        "it": "un salotto ribassato intorno al fuoco, sotto una copertura stellata"
+      },
+      {
+        "en": "the pool with wooden cabanas and palms",
+        "it": "la piscina con le cabine in legno e le palme"
+      }
+    ]
+  },
+  "20_elan_tower": {
+    "cover": {
+      "en": "the tower at dusk, every balcony lit",
+      "it": "la torre al tramonto, con ogni balcone acceso"
+    },
+    "gallery": [
+      {
+        "en": "the tower from above, the rooftop pool among the gardens",
+        "it": "la torre dall’alto, la piscina sul tetto tra i giardini"
+      },
+      {
+        "en": "a studio flat with a round table in the morning light",
+        "it": "un monolocale con il tavolo rotondo nella luce del mattino"
+      },
+      {
+        "en": "a bedroom with a woman reading in the afternoon sun",
+        "it": "una camera con una donna che legge nel sole del pomeriggio"
+      },
+      {
+        "en": "a bedroom with marble walls and a softly lit bed",
+        "it": "una camera con pareti in marmo e il letto illuminato"
+      }
+    ]
+  },
+  "21_rabdan_avenue": {
+    "cover": {
+      "en": "the stepped residence among gardens at golden hour",
+      "it": "la residenza a gradoni tra i giardini all’ora d’oro"
+    },
+    "gallery": [
+      {
+        "en": "the residence and its pool at night",
+        "it": "la residenza e la sua piscina di notte"
+      },
+      {
+        "en": "a curved terrace at sunset facing the Burj Khalifa",
+        "it": "una terrazza curva al tramonto davanti al Burj Khalifa"
+      },
+      {
+        "en": "the lobby with draped walls and curved sofas",
+        "it": "la lobby con pareti drappeggiate e divani curvi"
+      }
+    ]
+  },
+  "22_surf_row": {
+    "cover": {
+      "en": "the white building from the street, under a clear sky",
+      "it": "l’edificio bianco dalla strada, sotto un cielo limpido"
+    },
+    "gallery": [
+      {
+        "en": "the rooftop pool with sun loungers and palms",
+        "it": "la piscina sul tetto con i lettini e le palme"
+      },
+      {
+        "en": "an open living room and kitchen in walnut, with the sea beyond",
+        "it": "soggiorno e cucina aperti in noce, con il mare oltre le vetrate"
+      },
+      {
+        "en": "the lobby lounge with a lit bookcase",
+        "it": "il lounge della lobby con una libreria illuminata"
+      },
+      {
+        "en": "the spa with a plunge pool and loungers in soft light",
+        "it": "la spa con la vasca e i lettini nella luce morbida"
+      }
+    ]
+  },
+  "23_opus_coconut_grove": {
+    "cover": {
+      "en": "the neighbourhood from above, towers and the sea behind",
+      "it": "il quartiere dall’alto, le torri e il mare dietro"
+    },
+    "gallery": [
+      {
+        "en": "the facade from below, planted terraces against the sky",
+        "it": "la facciata dal basso, terrazze verdi contro il cielo"
+      },
+      {
+        "en": "glass floors and planted edges, seen from the street",
+        "it": "piani in vetro e bordi verdi, visti dalla strada"
+      },
+      {
+        "en": "a terrace with a dining table at sunset, the sea in front",
+        "it": "una terrazza con il tavolo da pranzo al tramonto, il mare davanti"
+      }
+    ]
   }
 }

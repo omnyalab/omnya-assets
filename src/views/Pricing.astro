@@ -15,6 +15,14 @@ const T = t(lang);
 const P = T.pricing;
 const hygeia = projects.find((p) => p.id === '05_corfu_resort')!;
 const bestRow = P.imagesBest;
+// What a pack saves against single images, from the table itself (1 view = the first row)
+const num = (v: string) => Number(v.replace(/[^\d]/g, ''));
+const single = num(P.imagesRows[0][1]);
+const money = (n: number) => {
+  const g = String(n).replace(/\B(?=(\d{3})+(?!\d))/g, lang === 'it' ? '.' : ',');
+  return lang === 'it' ? `€ ${g}` : `€${g}`;
+};
+const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ? Number(q) * single - num(price) : 0);
 ---
 
 <Base page="pricing" title={P.title} description={P.description}>
@@ -22,11 +30,8 @@ const bestRow = P.imagesBest;
     <Duo as="h1" size="h1" a={P.titleA} b={P.titleB} intro />
   </section>
 
-  <!-- The three price tables sit on one of our photos, each row a single sheet of glass -->
-  <div class="pband" data-header="light">
-  <div class="pband__bg" aria-hidden="true">
-    <img src="/learn/dev_rooftop_mobile.webp" srcset="/learn/dev_rooftop_mobile.webp 960w, /learn/dev_rooftop.webp 1920w" sizes="100vw" alt="" decoding="async" />
-  </div>
+  <!-- The price tables on a warm light band, each row a sheet of white glass; the best one in colour -->
+  <div class="pband">
   <!-- Images -->
   <section class="prices wrap" aria-labelledby="images-title">
     <h2 class="t-h3 prices__title" id="images-title" data-split>{P.imagesA}{' '}<span class="mute">{P.imagesB}</span></h2>
@@ -42,6 +47,7 @@ const bestRow = P.imagesBest;
               <th scope="row" class="ptable__q">
                 {i === bestRow && <span class="ptable__pill">{P.best}</span>}
                 <span class="ptable__qn">{q}<span class="ptable__unit">{q === '1' ? P.imagesUnit[0] : P.imagesUnit[1]}</span></span>
+                {saving(q, price) > 0 && <span class="ptable__save">{P.save} {money(saving(q, price))}</span>}
               </th>
               <td class="ptable__price">{price}</td>
               <td class="ptable__each" data-label={P.imagesCols[2]}>{each}</td>
@@ -52,6 +58,28 @@ const bestRow = P.imagesBest;
     </table>
     <p class="prices__note" data-fade>{P.imagesNote}</p>
     <p class="prices__star" data-fade>{P.imagesStar}</p>
+  </section>
+
+  <!-- Virtual staging -->
+  <section class="prices wrap" aria-labelledby="staging-title">
+    <h2 class="t-h3 prices__title" id="staging-title" data-split>{P.stagingA}{' '}<span class="mute">{P.stagingB}</span></h2>
+    <table class="ptable ptable--films ptable--staging" data-fade>
+      <caption class="sr-only">{P.stagingA}, {P.stagingB}</caption>
+      <thead>
+        <tr>{P.stagingCols.map((c) => <th scope="col">{c}</th>)}</tr>
+      </thead>
+      <tbody>
+        {
+          P.stagingRows.map(([name, price, what]) => (
+            <tr>
+              <th scope="row" class="ptable__q"><span class="ptable__qn">{name}</span></th>
+              <td class="ptable__price">{price}</td>
+              <td class="ptable__each">{what}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
   </section>
 
   <!-- Films -->

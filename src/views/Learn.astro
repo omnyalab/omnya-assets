@@ -9,7 +9,6 @@
 import Base from '../layouts/Base.astro';
 import Duo from '../components/Duo.astro';
 import Arrow from '../components/Arrow.astro';
-import SampleCta from '../components/SampleCta.astro';
 import BookCover from '../components/BookCover.astro';
 import { projects } from '../lib/data';
 import { srcset } from '../lib/media';
@@ -229,23 +228,6 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
         }
       </div>
       <p class="t-small lles__note" data-fade>{L.lessonsNote}</p>
-    </div>
-  </section>
-
-  <!-- Or the studio does it -->
-  <section class="pcase ldone" aria-labelledby="done-title" data-header="light">
-    <div class="pcase__bg" aria-hidden="true">
-      <img data-src="/learn/dev_towers_mobile.webp" data-srcset="/learn/dev_towers_mobile.webp 960w, /learn/dev_towers.webp 1920w" sizes="100vw" alt="" decoding="async" />
-    </div>
-    <div class="pcase__in wrap">
-      <h2 class="t-h1 pcase__title" id="done-title" data-split>{L.doneA}{' '}<span class="mute">{L.doneB}</span></h2>
-      <div class="ldone__row">
-        <p class="t-sub pcase__text" data-fade>{L.doneText}</p>
-        <div class="ldone__ctas" data-fade>
-          <SampleCta light />
-          <a href={localize('/pricing', lang)} class="btn btn--light">{L.donePrices} <Arrow /></a>
-        </div>
-      </div>
     </div>
   </section>
 

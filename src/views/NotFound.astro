@@ -9,10 +9,16 @@ const N = t(lang).notFound;
 ---
 
 <Base page="404" title={N.title} footer={false}>
-  <section class="nf wrap">
-    <Duo as="h1" size="display" a={N.a} b={N.b} intro />
-    <p style="margin-top: 32px" data-fade data-intro>
-      <a class="btn" href={localize('/', lang)}>{N.back} <Arrow /></a>
-    </p>
+  <section class="nf nf--split" data-header="light" data-header-media>
+    <span class="nf__bg" aria-hidden="true">
+      <img src="/learn/cresta_pool_white_mobile.webp" srcset="/learn/cresta_pool_white_mobile.webp 760w, /learn/cresta_pool_white.webp 1920w" sizes="100vw" alt="" decoding="async" />
+      <img class="nf__real" src="/learn/cresta_pool_real_mobile.webp" srcset="/learn/cresta_pool_real_mobile.webp 760w, /learn/cresta_pool_real.webp 1920w" sizes="100vw" alt="" decoding="async" />
+    </span>
+    <div class="nf__in wrap">
+      <Duo as="h1" size="display" a={N.a} b={N.b} intro />
+      <p class="nf__btn" data-fade data-intro>
+        <a class="btn btn--white" href={localize('/', lang)}>{N.back} <Arrow /></a>
+      </p>
+    </div>
   </section>
 </Base>
