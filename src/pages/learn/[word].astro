@@ -1,0 +1,9 @@
+---
+// One page per reel word ("Comment 3D" → /learn/3d): same page, that word's playbook first.
+import View from '../../views/Learn.astro';
+import { words } from '../../lib/learn';
+
+export const getStaticPaths = () => words.map((w) => ({ params: { word: w.word } }));
+---
+
+<View word={Astro.params.word} />

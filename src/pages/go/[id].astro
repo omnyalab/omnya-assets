@@ -1,0 +1,8 @@
+---
+import Go from '../../views/Go.astro';
+import { products } from '../../lib/learn';
+
+export const getStaticPaths = () => products.map((p) => ({ params: { id: p.id } }));
+---
+
+<Go id={Astro.params.id} />

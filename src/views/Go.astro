@@ -1,0 +1,51 @@
+---
+// /go/<id>: a click counter. Vercel Analytics records this page view, then the visitor
+// moves on to the checkout, the booking page or (while those are empty) WhatsApp.
+// The reel word (?k=3d) travels to the checkout as client_reference_id, so every sale
+// in the Stripe dashboard shows which reel brought it.
+import { products, fallback, type ProductId } from '../lib/learn';
+import { t, langFromPath } from '../i18n';
+
+interface Props {
+  id: string;
+}
+const lang = langFromPath(Astro.url.pathname);
+const L = t(lang).learn;
+const id = Astro.props.id as ProductId;
+const product = products.find((p) => p.id === id)!;
+const book = L.books.find((b) => b.id === id);
+const lesson = L.lessons.find((l) => l.id === id);
+const name = book ? `${book.a} ${book.b}` : lesson ? lesson.name : id === 'bundle' ? L.ladder[2][0] : L.communityA;
+const fallbacks = Object.fromEntries(['', '3d', 'ai', 'claude', 'dubai'].map((k) => [k, fallback(id, lang, name, k || undefined)]));
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{name} · Omnya Lab</title>
+    <style>
+      html { background: #edeae4; color: #111; font: 16px/1.5 -apple-system, BlinkMacSystemFont, system-ui, sans-serif; }
+      body { min-height: 100svh; display: grid; place-items: center; margin: 0; padding: 16px; text-align: center; }
+      a { color: inherit; }
+    </style>
+    {import.meta.env.PROD && <script is:inline defer src="/_vercel/insights/script.js"></script>}
+  </head>
+  <body>
+    <p><a href={product.checkout || fallbacks['']} data-go>{name} →</a></p>
+    <script is:inline define:vars={{ checkout: product.checkout, fallbacks }}>
+      const k = (new URLSearchParams(location.search).get('k') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      let to = fallbacks[k] || fallbacks[''];
+      if (checkout) {
+        const u = new URL(checkout);
+        if (k) u.searchParams.set('client_reference_id', k);
+        to = u.toString();
+      }
+      document.querySelector('[data-go]').href = to;
+      // Long enough for the analytics beacon to leave, short enough not to be noticed
+      setTimeout(() => location.replace(to), 450);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,275 @@
+---
+// Learn: a full-screen hero where the 3D model and the final image share one camera
+// (the line sweeps once on arrival, then it is yours to drag), what we sell in one line,
+// the shelf of playbooks, the private lessons, the ladder from free to done-by-us,
+// the studio band, the community and short answers.
+// /learn/<word> is the same page for people coming from a reel: it names the word they
+// commented and puts its playbook first. Every button goes through /go/<id> (lib/learn.ts).
+import Base from '../layouts/Base.astro';
+import Duo from '../components/Duo.astro';
+import Arrow from '../components/Arrow.astro';
+import SampleCta from '../components/SampleCta.astro';
+import { projects } from '../lib/data';
+import { srcset } from '../lib/media';
+import { goHref, words, type ProductId } from '../lib/learn';
+import { t, langFromPath, localize } from '../i18n';
+
+interface Props {
+  word?: string;
+}
+const { word } = Astro.props;
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang);
+const L = T.learn;
+const w = words.find((x) => x.word === word);
+
+const find = (id: string) => projects.find((p) => p.id === id)!;
+const penthouse = find('01_penthouse_dubai');
+const samar = find('16_samar');
+const capeTown = find('02_villa_cape_town');
+
+// One picture per playbook cover: our own work, nothing generated for this page
+const covers: Record<string, { mobile: string; srcset: string; pos?: string }> = {
+  'white-to-real': { mobile: '/learn/cresta_front_real_mobile.webp', srcset: '/learn/cresta_front_real_mobile.webp 760w, /learn/cresta_front_real.webp 1920w', pos: '30% 50%' },
+  reel: { mobile: '/learn/capetown_living_real_mobile.webp', srcset: '/learn/capetown_living_real_mobile.webp 1000w, /learn/capetown_living_real.webp 1920w', pos: '58% 50%' },
+  'before-it-exists': { mobile: samar.cover.mobile, srcset: srcset(samar.cover) },
+};
+
+// The playbook of the commented word goes first
+const books = w ? [...L.books].sort((a, b) => (a.id === w.focus ? -1 : b.id === w.focus ? 1 : 0)) : L.books;
+
+// Casa Cresta: the same camera in the 3D model and in the final image
+const views = ['front', 'pool', 'top'];
+const pic = (v: string, kind: 'white' | 'real') => ({
+  desk: `/learn/cresta_${v}_${kind}.webp`,
+  mobile: `/learn/cresta_${v}_${kind}_mobile.webp`,
+});
+const go = (id: ProductId) => goHref(id, lang, w?.word);
+const ladderLinks = ['#books', '#books', go('bundle'), go('session'), go('build'), localize('/pricing', lang)];
+---
+
+<Base page="learn" title={w ? `${L.heroA} ${L.heroB} · ${w.label}` : `${L.heroA} ${L.heroB}`} description={L.description}>
+  <!-- Hero: the 3D model over the final image, full screen -->
+  <section class="lhero" data-header="light" data-header-media aria-labelledby="learn-title">
+    <div class="cmp" data-cmp style="--x: 100%">
+      <picture>
+        <source media="(max-width: 699px)" srcset={pic('front', 'real').mobile} data-cmp-real-m />
+        <img class="cmp__img" src={pic('front', 'real').desk} width="1920" height="1080" alt={`${L.compareReal}: Casa Cresta, ${L.compareRooms[0]}`} fetchpriority="high" decoding="async" data-cmp-real />
+      </picture>
+      <div class="cmp__top" aria-hidden="true">
+        <picture>
+          <source media="(max-width: 699px)" srcset={pic('front', 'white').mobile} data-cmp-white-m />
+          <img class="cmp__img" src={pic('front', 'white').desk} width="1920" height="1080" alt="" decoding="async" data-cmp-white />
+        </picture>
+      </div>
+      <span class="cmp__shade" aria-hidden="true"></span>
+      <span class="cmp__tag cmp__tag--l" aria-hidden="true">{L.compareWhite}</span>
+      <span class="cmp__tag cmp__tag--r" aria-hidden="true">{L.compareReal}</span>
+      <span class="cmp__line" aria-hidden="true"><span class="cmp__knob"><Arrow /><Arrow /></span></span>
+      <input class="cmp__range" type="range" min="0" max="100" value="50" aria-label={L.compareHandle} data-cmp-range />
+    </div>
+
+    <div class="lhero__in wrap">
+      {
+        w && (
+          <p class="lword" data-fade>
+            <span class="lword__pill">{L.wordA} {w.label}</span>
+            <span class="lword__note">{L.wordNote}</span>
+          </p>
+        )
+      }
+      <h1 class="t-display lhero__title" id="learn-title" data-split="intro">{L.heroA}{' '}<span class="mute">{L.heroB}</span></h1>
+      <div class="lhero__row">
+        <p class="t-sub lhero__sub" data-fade>{L.heroSub}</p>
+        <div class="lhero__ctas" data-fade>
+          <a class="btn btn--fill" href="#books">{L.heroBooks} <Arrow /></a>
+          <a class="btn btn--light" href="#lessons">{L.heroLesson} <Arrow /></a>
+        </div>
+      </div>
+      <ul class="lhero__chips" data-fade>
+        {L.heroChips.map((c) => <li>{c}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <div class="lviews wrap">
+    <p class="t-small lviews__note">{L.compareNote}</p>
+    <div class="cmp__rooms" role="group" aria-label={L.compareHandle}>
+      {
+        views.map((v, i) => (
+          <button
+            type="button"
+            class="cmp__room"
+            aria-pressed={i === 0 ? 'true' : 'false'}
+            data-room={v}
+            data-white={pic(v, 'white').desk}
+            data-white-m={pic(v, 'white').mobile}
+            data-real={pic(v, 'real').desk}
+            data-real-m={pic(v, 'real').mobile}
+            data-alt={`${L.compareReal}: Casa Cresta, ${L.compareRooms[i]}`}
+          >
+            {L.compareRooms[i]}
+          </button>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- What this is, in one sentence -->
+  <section class="lstate wrap" aria-label={L.description}>
+    <Duo as="h2" size="h2" a={L.statementA} b={L.statementB} class="lstate__title" />
+    <ul class="lstate__for">
+      {
+        L.audiences.map((a, i) => (
+          <li data-fade>
+            <span class="lstate__n">0{i + 1}</span>
+            {a}
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <!-- The shelf: three playbooks, then the bundle -->
+  <section class="lbooks wrap" id="books" aria-labelledby="books-title">
+    <div class="lsec__head">
+      <h2 class="t-h2" id="books-title" data-split>{L.booksA}{' '}<span class="mute">{L.booksB}</span></h2>
+    </div>
+    <ul class="lshelf">
+      {
+        books.map((b) => (
+          <li class:list={['lbook', { 'is-focus': w?.focus === b.id }]} data-fade>
+            <a class="lcover" href={go(b.id as ProductId)} aria-label={`${L.get}: ${b.a} ${b.b}, ${b.price}`}>
+              <span class="lcover__page" aria-hidden="true">
+                <img data-src={covers[b.id].mobile} data-srcset={covers[b.id].srcset} sizes="(min-width: 900px) 30vw, 78vw" alt="" decoding="async" style={covers[b.id].pos ? `object-position: ${covers[b.id].pos}` : undefined} />
+                <span class="lcover__shade"></span>
+                <span class="lcover__top">
+                  <span>omnya <span>lab</span></span>
+                  <span>{L.playbook} {b.n}</span>
+                </span>
+                <span class="lcover__title">
+                  {b.a}
+                  <span>{b.b}</span>
+                </span>
+              </span>
+            </a>
+            <div class="lbook__meta">
+              <p class="t-small lbook__for">{b.for}</p>
+              <p class="lbook__price">{b.price}</p>
+            </div>
+            <p class="lbook__lead">{b.lead}</p>
+            <details class="lbook__more">
+              <summary class="t-small">{L.inside}<span aria-hidden="true">+</span></summary>
+              <ul class="lbook__items">
+                {b.items.map((it) => <li>{it}</li>)}
+              </ul>
+            </details>
+            <a class="btn lbook__buy" href={go(b.id as ProductId)}>{L.get} · {b.price} <Arrow /></a>
+            {b.note && <p class="t-small lbook__note">{b.note}</p>}
+          </li>
+        ))
+      }
+    </ul>
+    <div class="lbundle" data-fade>
+      <div>
+        <p class="t-small lbundle__label">{L.best}</p>
+        <p class="t-h2 lbundle__title">{L.bundleA} <span class="mute">{L.bundleB}</span></p>
+        <p class="t-sub lbundle__text">{L.bundleText}</p>
+      </div>
+      <a class="btn btn--fill" href={go('bundle')}>{L.get} <Arrow /></a>
+    </div>
+  </section>
+
+  <!-- Private lessons -->
+  <section class="lles wrap" id="lessons" aria-labelledby="lessons-title">
+    <div class="lsec__head">
+      <h2 class="t-h2" id="lessons-title" data-split>{L.lessonsA}{' '}<span class="mute">{L.lessonsB}</span></h2>
+    </div>
+    <div class="lles__grid">
+      {
+        L.lessons.map((l, i) => (
+          <article class:list={['lles__card', { 'is-dark': i === 1 }]} data-fade>
+            <header class="lles__head">
+              <h3 class="t-h3">{l.name}</h3>
+              <p class="t-small lles__time">{l.time}</p>
+            </header>
+            <p class="lles__price">{l.price}</p>
+            <p class="t-small lles__take">{L.takeHome}</p>
+            <ul class="lbook__items">
+              {l.items.map((it) => <li>{it}</li>)}
+            </ul>
+            <a class:list={['btn', { 'btn--fill': i === 1 }]} href={go(l.id as ProductId)}>{L.book} {l.name} <Arrow /></a>
+          </article>
+        ))
+      }
+    </div>
+    <p class="t-small lles__note" data-fade>{L.lessonsNote}</p>
+  </section>
+
+  <!-- From free to done by us -->
+  <section class="prices lladder wrap" aria-labelledby="ladder-title">
+    <h2 class="t-h3 prices__title" id="ladder-title" data-split>{L.ladderA}{' '}<span class="mute">{L.ladderB}</span></h2>
+    <table class="ptable ptable--films ptable--ladder" data-fade>
+      <caption class="sr-only">{L.ladderA}, {L.ladderB}</caption>
+      <thead>
+        <tr>{L.ladderCols.map((c) => <th scope="col">{c}</th>)}</tr>
+      </thead>
+      <tbody>
+        {
+          L.ladder.map(([name, price, what], i) => (
+            <tr class:list={{ 'is-best': i === L.ladderBest }}>
+              <th scope="row" class="ptable__q">
+                <a class="ptable__qn lstep" href={ladderLinks[i]}><span class="lstep__n">0{i + 1}</span>{name}</a>
+              </th>
+              <td class="ptable__price">{price}</td>
+              <td class="ptable__each">{what}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Or the studio does it -->
+  <section class="pcase ldone" aria-labelledby="done-title" data-header="light">
+    <div class="pcase__bg" aria-hidden="true">
+      <img data-src={capeTown.gallery[2].mobile} data-srcset={srcset(capeTown.gallery[2])} sizes="100vw" alt="" decoding="async" />
+    </div>
+    <div class="pcase__in wrap">
+      <p class="t-small pcase__label" data-fade>{L.doneLabel}</p>
+      <h2 class="t-h1 pcase__title" id="done-title" data-split>{L.doneA}{' '}<span class="mute">{L.doneB}</span></h2>
+      <div class="ldone__row">
+        <p class="t-sub pcase__text" data-fade>{L.doneText}</p>
+        <div class="ldone__ctas" data-fade>
+          <a href={localize('/pricing', lang)} class="btn btn--light">{L.donePrices} <Arrow /></a>
+          <SampleCta light />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Community -->
+  <section class="lcomm wrap" aria-labelledby="comm-title">
+    <p class="t-small lcomm__soon" data-fade>Skool</p>
+    <h2 class="t-h1" id="comm-title" data-split>{L.communityA}{' '}<span class="mute">{L.communityB}</span></h2>
+    <div class="lcomm__row">
+      <p class="t-sub lcomm__text" data-fade>{L.communityText}</p>
+      <a class="btn btn--fill" href={go('community')} data-fade>{L.communityCta} <Arrow /></a>
+    </div>
+  </section>
+
+  <!-- Short answers -->
+  <section class="lfaq wrap" aria-labelledby="faq-title">
+    <h2 class="t-h3 prices__title" id="faq-title" data-split>{L.faqA}{' '}<span class="mute">{L.faqB}</span></h2>
+    <dl class="lfaq__list" data-fade>
+      {
+        L.faq.map(([q, a]) => (
+          <div class="lfaq__item">
+            <dt class="t-sub">{q}</dt>
+            <dd>{a}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+</Base>
