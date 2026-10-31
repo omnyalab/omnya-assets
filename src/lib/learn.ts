@@ -5,7 +5,11 @@
 // until then each button opens WhatsApp with the request already written.
 import type { Lang } from '../i18n';
 
-export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle' | 'session' | 'build' | 'community';
+export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle' | 'session' | 'build' | 'community'
+  // offers shown only after a purchase, on /learn/thanks/<product>
+  | 'session-reader' | 'rest-30' | 'rest-50' | 'build-upgrade' | 'sample'
+  // the free PDF people claim from the reel DM, on /learn/<word>
+  | 'free';
 
 export const products: { id: ProductId; checkout: string }[] = [
   { id: 'white-to-real', checkout: '' },
@@ -15,7 +19,28 @@ export const products: { id: ProductId; checkout: string }[] = [
   { id: 'session', checkout: '' },
   { id: 'build', checkout: '' },
   { id: 'community', checkout: '' },
+  { id: 'session-reader', checkout: '' },
+  { id: 'rest-30', checkout: '' },
+  { id: 'rest-50', checkout: '' },
+  { id: 'build-upgrade', checkout: '' },
+  { id: 'sample', checkout: '' },
+  { id: 'free', checkout: '/learn/free/omnya-lab-blueprint.pdf' },
 ];
+
+/**
+ * After each purchase the checkout returns to /learn/thanks/<product>. That page makes one
+ * offer that exists only there (oto), the most natural next step for that buyer, and if
+ * they pass, a smaller one (down). Every price is real: a lesson for readers, or the
+ * difference to the next tier. No countdowns, no fake scarcity.
+ */
+export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: ProductId; down: ProductId }>> = {
+  'white-to-real': { kind: 'pdf', oto: 'session-reader', down: 'rest-30' },
+  reel: { kind: 'pdf', oto: 'session-reader', down: 'rest-50' },
+  'before-it-exists': { kind: 'pdf', oto: 'sample', down: 'rest-50' },
+  bundle: { kind: 'pdf', oto: 'session-reader', down: 'community' },
+  session: { kind: 'lesson', oto: 'build-upgrade', down: 'sample' },
+  build: { kind: 'lesson', oto: 'sample', down: 'community' },
+};
 
 /** The words used in the reels ("Comment 3D"). Each one has its own page, /learn/<word>, and leads with one playbook. */
 export const words: { word: string; label: string; focus: ProductId }[] = [

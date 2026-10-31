@@ -1772,3 +1772,36 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 @media (min-width: 900px) {
   .lfaq { display: grid; grid-template-columns: 5fr 7fr; column-gap: var(--g); align-items: start; }
 }
+
+.lbundle__math { margin-top: 14px; color: rgba(255, 255, 255, 0.7); font-variant-numeric: tabular-nums; }
+
+/* ---------- Thank-you page: confirmation, the one offer, the smaller one ---------- */
+.thx { padding-top: calc(var(--hdr) + clamp(32px, 6vw, 88px)); padding-bottom: var(--section); }
+.thx__ok { display: inline-flex; align-items: center; gap: 10px; min-height: 36px; padding: 0 16px 0 12px; border-radius: 999px; background: #fff; font-size: var(--fs-small); }
+.thx__ok span { width: 18px; height: 18px; border-radius: 50%; background: var(--ink); position: relative; flex: none; }
+.thx__ok span::after { content: ''; position: absolute; left: 6px; top: 3px; width: 5px; height: 9px; border: solid var(--bg); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
+.thx__grid { display: grid; gap: 32px; margin-top: clamp(28px, 4vw, 56px); }
+@media (min-width: 900px) { .thx__grid { grid-template-columns: 7fr 5fr; column-gap: var(--g); align-items: center; } }
+.thx__only { display: inline-flex; align-items: center; height: 26px; padding: 0 10px; margin-bottom: 18px; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: 12px; }
+.thx__offer h1 { max-width: 14ch; }
+.thx__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; margin-top: clamp(20px, 3vw, 36px); font-size: var(--fs-h1); line-height: 0.9; letter-spacing: -0.045em; font-variant-numeric: tabular-nums; }
+.thx__price span { font-size: var(--fs-small); letter-spacing: 0; color: var(--mute); }
+.thx__text { margin-top: 20px; max-width: 40ch; color: #3a3936; }
+.thx__ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 28px; }
+.thx__no { font-size: var(--fs-small); color: var(--mute); min-height: 44px; display: inline-flex; align-items: center; }
+.thx__pic { margin: 0; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 6px; background: #d9d5ce; }
+.thx__pic img { width: 100%; height: 100%; object-fit: cover; }
+@media (max-width: 899px) { .thx__pic { order: -1; aspect-ratio: 16 / 10; } }
+.thx-down { padding-block: var(--section); border-top: 1px solid var(--line); scroll-margin-top: var(--hdr); }
+.thx-down__or { color: var(--mute); margin-bottom: 14px; }
+.thx-down h2 { max-width: 20ch; }
+.thx-down__row { display: grid; gap: 24px; margin-top: 24px; }
+@media (min-width: 900px) { .thx-down__row { grid-template-columns: 7fr 5fr; column-gap: var(--g); align-items: end; } }
+.thx-down__text { max-width: 46ch; color: #3a3936; }
+.thx-down__buy { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; }
+.thx-down__price { font-size: var(--fs-h3); letter-spacing: -0.035em; font-variant-numeric: tabular-nums; }
+.thx__back { display: inline-block; margin-top: clamp(40px, 5vw, 64px); color: var(--mute); }
+
+/* the free-PDF title on the reel-word pages is longer than "Learn with us" */
+.lhero__title--free { font-size: clamp(3.6rem, 17vw, 11rem); }
+@media (min-width: 700px) { .lhero__title--free { font-size: clamp(3.6rem, 11vw, 11rem); } }

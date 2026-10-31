@@ -1,0 +1,72 @@
+---
+// The page after a purchase: a short confirmation, then one offer that exists only here
+// (the most natural next step for that buyer) and, below it, a smaller one for who passes.
+// Prices are real (a lesson for readers, or the difference to the next tier). See lib/learn.ts.
+import Base from '../layouts/Base.astro';
+import Duo from '../components/Duo.astro';
+import Arrow from '../components/Arrow.astro';
+import { projects } from '../lib/data';
+import { goHref, thanks, type ProductId } from '../lib/learn';
+import { t, langFromPath, localize } from '../i18n';
+
+interface Props {
+  id: string;
+}
+const lang = langFromPath(Astro.url.pathname);
+const L = t(lang).learn;
+const X = L.thanks;
+const flow = thanks[Astro.props.id as ProductId]!;
+type Offer = { a: string; b: string; price: string; was: string; text: string; cta: string };
+const offers = X.offers as Record<string, Offer>;
+const oto = offers[flow.oto];
+const down = offers[flow.down];
+
+// One picture per offer, from our own work
+const townhall = projects.find((p) => p.id === '17_the_townhall')!;
+const pics: Record<string, { mobile: string; src: string }> = {
+  'session-reader': { mobile: '/learn/cresta_front_real_mobile.webp', src: '/learn/cresta_front_real.webp' },
+  'build-upgrade': { mobile: '/learn/cresta_pool_real_mobile.webp', src: '/learn/cresta_pool_real.webp' },
+  sample: { mobile: townhall.cover.mobile, src: townhall.cover.src },
+  community: { mobile: '/learn/cresta_top_real_mobile.webp', src: '/learn/cresta_top_real.webp' },
+  'rest-30': { mobile: '/learn/capetown_living_real_mobile.webp', src: '/learn/capetown_living_real.webp' },
+  'rest-50': { mobile: '/learn/capetown_living_real_mobile.webp', src: '/learn/capetown_living_real.webp' },
+};
+const pic = pics[flow.oto];
+---
+
+<Base page="thanks" title={X.title} noindex>
+  <section class="thx wrap">
+    <p class="thx__ok" data-fade><span aria-hidden="true"></span>{flow.kind === 'pdf' ? X.paidPdf : X.paidLesson}</p>
+    <div class="thx__grid">
+      <div class="thx__offer">
+        <p class="thx__only" data-fade>{X.only}</p>
+        <Duo as="h1" size="h2" a={oto.a} b={oto.b} intro />
+        <p class="thx__price" data-fade>
+          {oto.price}
+          {oto.was && <span>{oto.was}</span>}
+        </p>
+        <p class="t-sub thx__text" data-fade>{oto.text}</p>
+        <div class="thx__ctas" data-fade>
+          <a class="btn btn--fill" href={goHref(flow.oto, lang)}>{oto.cta} <Arrow /></a>
+          <a class="thx__no u" href="#down">{X.no}</a>
+        </div>
+      </div>
+      <figure class="thx__pic" data-fade>
+        <img src={pic.mobile} srcset={`${pic.mobile} 760w, ${pic.src} 1920w`} sizes="(min-width: 900px) 40vw, 100vw" alt="" fetchpriority="high" decoding="async" />
+      </figure>
+    </div>
+  </section>
+
+  <section class="thx-down wrap" id="down" aria-labelledby="down-title">
+    <p class="t-small thx-down__or">{X.or}</p>
+    <h2 class="t-h3" id="down-title">{down.a}{' '}<span class="mute">{down.b}</span></h2>
+    <div class="thx-down__row">
+      <p class="thx-down__text">{down.text}</p>
+      <div class="thx-down__buy">
+        <span class="thx-down__price">{down.price}</span>
+        <a class="btn" href={goHref(flow.down, lang)}>{down.cta} <Arrow /></a>
+      </div>
+    </div>
+    <a class="thx__back u t-small" href={localize('/learn', lang)}>{X.back}</a>
+  </section>
+</Base>

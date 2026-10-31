@@ -15,7 +15,8 @@ const id = Astro.props.id as ProductId;
 const product = products.find((p) => p.id === id)!;
 const book = L.books.find((b) => b.id === id);
 const lesson = L.lessons.find((l) => l.id === id);
-const name = book ? `${book.a} ${book.b}` : lesson ? lesson.name : id === 'bundle' ? L.ladder[2][0] : L.communityA;
+const offer = (L.thanks.offers as Record<string, { a: string; b: string; price: string }>)[id];
+const name = id === 'free' ? 'The Blueprint (PDF)' : book ? `${book.a} ${book.b}` : lesson ? lesson.name : id === 'bundle' ? L.ladder[2][0] : offer && id !== 'community' ? `${offer.a} (${offer.price})` : L.communityA;
 const fallbacks = Object.fromEntries(['', '3d', 'ai', 'claude', 'dubai'].map((k) => [k, fallback(id, lang, name, k || undefined)]));
 ---
 
@@ -39,7 +40,7 @@ const fallbacks = Object.fromEntries(['', '3d', 'ai', 'claude', 'dubai'].map((k)
       const k = (new URLSearchParams(location.search).get('k') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
       let to = fallbacks[k] || fallbacks[''];
       if (checkout) {
-        const u = new URL(checkout);
+        const u = new URL(checkout, location.origin);
         if (k) u.searchParams.set('client_reference_id', k);
         to = u.toString();
       }

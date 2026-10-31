@@ -76,16 +76,27 @@ const ladderLinks = ['#books', '#books', go('bundle'), go('session'), go('build'
         w && (
           <p class="lword" data-fade>
             <span class="lword__pill">{L.wordA} {w.label}</span>
-            <span class="lword__note">{L.wordNote}</span>
           </p>
         )
       }
-      <h1 class="t-display lhero__title" id="learn-title" data-split="intro">{L.heroA}{' '}<span class="mute">{L.heroB}</span></h1>
+      {
+        w ? (
+          <h1 class="t-display lhero__title lhero__title--free" id="learn-title" data-split="intro">{L.freeA}{' '}<span class="mute">{L.freeB}</span></h1>
+        ) : (
+          <h1 class="t-display lhero__title" id="learn-title" data-split="intro">{L.heroA}{' '}<span class="mute">{L.heroB}</span></h1>
+        )
+      }
       <div class="lhero__row">
-        <p class="t-sub lhero__sub" data-fade>{L.heroSub}</p>
+        <p class="t-sub lhero__sub" data-fade>{w ? L.freeSub : L.heroSub}</p>
         <div class="lhero__ctas" data-fade>
-          <a class="btn btn--fill" href="#books">{L.heroBooks} <Arrow /></a>
-          <a class="btn btn--light" href="#lessons">{L.heroLesson} <Arrow /></a>
+          {
+            w ? (
+              <a class="btn btn--fill" href={go('free')}>{L.freeCta} <Arrow /></a>
+            ) : (
+              <a class="btn btn--fill" href="#books">{L.heroBooks} <Arrow /></a>
+            )
+          }
+          <a class="btn btn--light" href={w ? '#books' : '#lessons'}>{w ? L.heroBooks : L.heroLesson} <Arrow /></a>
         </div>
       </div>
       <ul class="lhero__chips" data-fade>
@@ -178,6 +189,7 @@ const ladderLinks = ['#books', '#books', go('bundle'), go('session'), go('build'
         <p class="t-small lbundle__label">{L.best}</p>
         <p class="t-h2 lbundle__title">{L.bundleA} <span class="mute">{L.bundleB}</span></p>
         <p class="t-sub lbundle__text">{L.bundleText}</p>
+        <p class="t-small lbundle__math">{L.bundleMath}</p>
       </div>
       <a class="btn btn--fill" href={go('bundle')}>{L.get} <Arrow /></a>
     </div>

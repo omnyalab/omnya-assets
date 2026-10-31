@@ -18,11 +18,13 @@ interface Props {
   og?: string;
   ogAlt?: string;
   footer?: boolean;
+  /** Pages people reach only after paying (thank-you pages) stay out of search. */
+  noindex?: boolean;
 }
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const defaultOgAlt = `Omnya Lab, ${alt(projects.find((p) => p.id === '01_penthouse_dubai')!, lang)}`;
-const { page, title, description = T.siteDescription, og = '/og/omnya-lab.jpg', ogAlt = defaultOgAlt, footer = true } = Astro.props;
+const { page, title, description = T.siteDescription, og = '/og/omnya-lab.jpg', ogAlt = defaultOgAlt, footer = true, noindex = false } = Astro.props;
 const fullTitle = title ? `${title} | Omnya Lab` : T.siteTitle;
 const path = Astro.url.pathname;
 const canonical = new URL(localize(path, lang), Astro.site);
@@ -34,6 +36,7 @@ const links = sampleLinks(lang);
 <html lang={T.htmlLang} data-page={page} data-lang={lang}>
   <head>
     <meta charset="utf-8" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />

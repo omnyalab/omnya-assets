@@ -1,0 +1,9 @@
+---
+// Where the checkout returns after a purchase: /learn/thanks/<product>
+import View from '../../../views/Thanks.astro';
+import { thanks } from '../../../lib/learn';
+
+export const getStaticPaths = () => Object.keys(thanks).map((id) => ({ params: { id } }));
+---
+
+<View id={Astro.params.id} />
