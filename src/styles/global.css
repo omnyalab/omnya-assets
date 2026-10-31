@@ -2001,3 +2001,149 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
   transition: opacity 0.8s var(--ease), transform 1.2s var(--ease);
 }
 @media (hover: hover) and (pointer: fine) { .kit__item:hover .kit__card::before { transform: translateX(8%); } }
+
+/* ---------- Learn, third pass (Nico's picks: covers T1+T2, B1, S1, L3) ---------- */
+/* the cover: graded picture, spine, white first line, second line in the picture's colours */
+.bk { position: relative; display: block; width: 100%; aspect-ratio: 3 / 4; overflow: hidden; border-radius: 3px 8px 8px 3px; color: #fff; background: #1a1917; }
+.bk__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(1.08) contrast(1.06) brightness(1.02); }
+.bk--fade .bk__real { -webkit-mask-image: linear-gradient(to top right, transparent 28%, #000 72%); mask-image: linear-gradient(to top right, transparent 28%, #000 72%); }
+.bk__grade { position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.36) 0, rgba(255, 255, 255, 0.16) 6px, rgba(0, 0, 0, 0.1) 10px, transparent 20px),
+    linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.1) 48%, transparent 62%),
+    linear-gradient(180deg, rgba(10, 10, 10, 0.42) 0%, rgba(10, 10, 10, 0) 24%, rgba(10, 10, 10, 0) 44%, rgba(10, 10, 10, 0.84) 100%),
+    radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(10, 8, 6, 0.26) 100%); }
+.bk__top { position: absolute; top: 16px; left: 22px; right: 16px; display: flex; justify-content: space-between; font-size: 12px; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35); }
+.bk__top > span:first-child span, .bk__top > span:last-child { opacity: 0.78; }
+.bk__t { position: absolute; left: 22px; right: 16px; bottom: 22px; font-size: clamp(2rem, 8.4vw, 2.9rem); line-height: 0.94; letter-spacing: -0.045em; text-shadow: 0 2px 16px rgba(0, 0, 0, 0.25); }
+@media (min-width: 900px) { .bk__t { font-size: clamp(1.9rem, 2.8vw, 3rem); } }
+.bk__t span { display: block; background: linear-gradient(100deg, #fff 0%, var(--c1) 46%, var(--c2) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.35)); }
+/* the shelf: no white page edges, just a soft shadow; hover lifts the book */
+.lcover { position: relative; border-radius: 3px 8px 8px 3px; box-shadow: 0 34px 50px -26px rgba(30, 24, 16, 0.55), 0 14px 26px -14px rgba(30, 24, 16, 0.32); transition: transform 0.8s var(--ease), box-shadow 0.8s var(--ease); }
+@media (hover: hover) and (pointer: fine) {
+  .lcover:hover { transform: translateY(-10px) scale(1.02); box-shadow: 0 50px 70px -30px rgba(30, 24, 16, 0.55), 0 22px 36px -18px rgba(30, 24, 16, 0.35); }
+}
+@media (prefers-reduced-motion: reduce) { .lcover { transition: none; } .lcover:hover { transform: none; } }
+
+/* the bundle, B1: a big fan of the three books, the real price struck, the saving */
+.lbundle { grid-template-columns: 1fr; gap: clamp(28px, 4vw, 56px); padding: clamp(32px, 5vw, 64px); border-radius: 28px; margin-inline: 0;
+  background:
+    radial-gradient(55% 75% at 12% 30%, rgba(176, 142, 104, 0.28), transparent 70%),
+    radial-gradient(50% 70% at 50% 95%, rgba(255, 160, 120, 0.22), transparent 70%),
+    radial-gradient(55% 80% at 88% 15%, rgba(120, 130, 200, 0.22), transparent 70%), #f4f1eb; }
+@media (min-width: 900px) { .lbundle { grid-template-columns: 1.15fr 1fr; } }
+.lfan { height: clamp(320px, 34vw, 470px); }
+.lfan__book { width: clamp(150px, 16vw, 240px); aspect-ratio: 3 / 4; border-radius: 3px 8px 8px 3px; box-shadow: 0 34px 50px -26px rgba(30, 24, 16, 0.55), 0 14px 26px -14px rgba(30, 24, 16, 0.32); }
+.lfan__book .bk__t { font-size: clamp(1.1rem, 1.9vw, 1.9rem); left: 16px; bottom: 16px; }
+.lfan__book .bk__top { font-size: 10px; left: 16px; top: 12px; }
+.lfan__book--1 { transform: translate(-50%, -50%) translateX(-62%) rotate(-10deg); }
+.lfan__book--2 { transform: translate(-50%, -54%) scale(1.08); }
+.lfan__book--3 { transform: translate(-50%, -50%) translateX(62%) rotate(10deg); }
+.lbundle__copy { display: flex; flex-direction: column; align-items: flex-start; }
+.lbundle__title { margin-top: 16px; }
+.lbundle__price { display: flex; align-items: baseline; gap: 16px; margin-top: 10px; font-variant-numeric: tabular-nums; }
+.lbundle__now { font-size: var(--fs-h1); line-height: 0.9; letter-spacing: -0.05em; }
+.lbundle__was { font-size: var(--fs-h3); color: var(--mute); text-decoration-thickness: 2px; letter-spacing: -0.03em; }
+.lbundle__save { display: inline-flex; align-items: center; height: 32px; padding: 0 14px; margin-top: 10px; border-radius: 999px; background: #e7f2e9; color: #1f6b35; font-size: var(--fs-small); }
+.lbundle__text { margin-top: 16px; max-width: 36ch; color: #3a3936; font-size: var(--fs-sub); line-height: 1.35; letter-spacing: -0.02em; }
+
+/* Skool, S1 with the logo on its own line, tight to the title */
+.lcomm h2 { line-height: 0.9; }
+.lcomm__skool { height: calc(var(--fs-h1) * 0.82); margin-top: calc(var(--fs-h1) * 0.06); }
+
+/* lessons, L3: frosted glass cards over a darkened photo; one continuous glass per card */
+.lles { position: relative; overflow: hidden; color: #fff; padding-block: var(--section); padding-inline: 0; }
+.lles__bg { position: absolute; inset: 0; }
+.lles__bg img { width: 100%; height: 100%; object-fit: cover; }
+.lles__bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 10, 10, 0.55) 0%, rgba(10, 10, 10, 0.38) 45%, rgba(10, 10, 10, 0.58) 100%); }
+.lles__in { position: relative; }
+.lles__title { max-width: 14ch; margin-bottom: clamp(36px, 5vw, 64px); }
+.lles__title .mute { color: rgba(255, 255, 255, 0.62); }
+.lles__grid { display: grid; gap: 18px; }
+@media (min-width: 900px) { .lles__grid { grid-template-columns: 1fr 1fr; gap: var(--g); } }
+.lles__card {
+  display: flex; flex-direction: column; align-items: flex-start; padding: clamp(26px, 3vw, 44px); border-radius: 26px; color: #fff;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.08));
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  -webkit-backdrop-filter: blur(28px) saturate(1.5); backdrop-filter: blur(28px) saturate(1.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 40px 80px -40px rgba(0, 0, 0, 0.55);
+}
+.lles__card.is-dark { background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.08)); }
+.lles__time { color: rgba(255, 255, 255, 0.72); }
+.lles__price { font-size: var(--fs-h1); line-height: 0.9; letter-spacing: -0.045em; margin-top: clamp(16px, 2.4vw, 32px); font-variant-numeric: tabular-nums; }
+.lles__items { list-style: none; margin: clamp(18px, 2.4vw, 28px) 0 28px; padding: 0; width: 100%; }
+.lles__items li { position: relative; padding: 12px 0 12px 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); line-height: 1.4; }
+.lles__items li:last-child { border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+.lles__items li::before { content: ''; position: absolute; left: 0; top: 14px; width: 18px; height: 18px; border-radius: 50%; background: #fff; }
+.lles__items li::after { content: ''; position: absolute; left: 6px; top: 17px; width: 4px; height: 8px; border: solid var(--ink); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
+.lles__card .btn { margin-top: auto; }
+.lles__note { margin-top: 22px; color: rgba(255, 255, 255, 0.75); max-width: 60ch; }
+.btn--white { background: #fff; border-color: #fff; color: var(--ink); }
+.btn--white::before { background: var(--ink); }
+@media (hover: hover) { .btn--white:hover { color: #fff; border-color: #fff; } }
+.btn--glass { color: #fff; border-color: rgba(255, 255, 255, 0.45); background: rgba(255, 255, 255, 0.1); }
+.btn--glass::before { background: #fff; }
+@media (hover: hover) { .btn--glass:hover { color: var(--ink); border-color: #fff; } }
+
+/* ---------- Studio, Nico's picks: kit K1 (a fan like the bundle, price on hover) and W5 titles ---------- */
+.poster__word { color: #3b2a20; mix-blend-mode: multiply; opacity: 0.85; }
+.kit__item { position: relative; }
+.kit__chip {
+  position: absolute; left: 50%; top: 0; z-index: 5; transform: translate(-50%, -120%);
+  padding: 9px 16px; border-radius: 999px; background: var(--ink); color: #fff; font-size: var(--fs-small); white-space: nowrap;
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.5); pointer-events: none;
+}
+.kit__chip::after { content: ''; position: absolute; left: 50%; bottom: -5px; width: 10px; height: 10px; background: inherit; transform: translateX(-50%) rotate(45deg); }
+.kit__chip--free { background: #1f6b35; }
+@media (max-width: 899px) { .kit__chip { position: static; display: inline-block; transform: none; margin-bottom: 14px; } .kit__chip::after { display: none; } }
+@media (min-width: 900px) and (hover: hover) and (pointer: fine) {
+  /* four books fanned out like cards in a hand, overlapping, the middle two in front */
+  .kit__cards { padding-top: 80px; }
+  .kit__item, .kit__item--tall { width: 17vw; }
+  .kit__item + .kit__item { margin-left: -4.5vw; }
+  .kit__card { transform-origin: 50% 220%; }
+  .kit__item:nth-child(1) .kit__card { transform: rotate(-12deg); }
+  .kit__item:nth-child(2) .kit__card { transform: rotate(-4deg); }
+  .kit__item:nth-child(3) .kit__card { transform: rotate(4deg); }
+  .kit__item:nth-child(4) .kit__card { transform: rotate(12deg); }
+  .kit__item:hover .kit__card, .kit__item:focus-within .kit__card { transform: translateY(-26px) rotate(0deg); }
+  .kit__chip { opacity: 0; transform: translate(-50%, -80%); transition: opacity 0.5s var(--ease), transform 0.6s var(--ease); }
+  .kit__item:hover .kit__chip, .kit__item:focus-within .kit__chip { opacity: 1; transform: translate(-50%, -150%); }
+  /* name and link appear under the book you point at */
+  .kit__meta { position: absolute; left: 0; right: 0; top: 100%; padding: 26px 0 0; text-align: center; justify-items: center; opacity: 0; transform: translateY(-8px); transition: opacity 0.5s var(--ease), transform 0.6s var(--ease); pointer-events: none; }
+  .kit__item:first-child .kit__meta { padding-left: 0; }
+  .kit__item:hover .kit__meta, .kit__item:focus-within .kit__meta { opacity: 1; transform: none; pointer-events: auto; }
+  .kit__cards { padding-bottom: 120px; }
+  .kit__web { margin-left: 0; text-align: center; }
+}
+@media (prefers-reduced-motion: reduce) { .kit__chip, .kit__meta { transition: none; } }
+
+/* ---------- Pricing, P3: the tables on a darkened photo, every row one continuous sheet of glass ---------- */
+.pband { position: relative; overflow: hidden; color: #fff; padding-top: clamp(48px, 7vw, 96px); }
+.pband__bg { position: absolute; inset: 0; }
+.pband__bg img { width: 100%; height: 100%; object-fit: cover; }
+.pband__bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 10, 10, 0.55) 0%, rgba(10, 10, 10, 0.45) 50%, rgba(10, 10, 10, 0.6) 100%); }
+.pband > .prices { position: relative; }
+.pband .prices__title .mute { color: rgba(255, 255, 255, 0.62); }
+.pband .prices__note, .pband .prices__volume { color: rgba(255, 255, 255, 0.86); }
+.pband .prices__star { color: rgba(255, 255, 255, 0.66); }
+.pband .ptable { display: block; }
+.pband .ptable tbody { display: grid; gap: 8px; }
+.pband .ptable thead th { color: rgba(255, 255, 255, 0.66); }
+.pband .ptable tbody tr {
+  margin-inline: 0; padding-inline: 20px; border: 1px solid rgba(255, 255, 255, 0.26); border-radius: 16px; color: #fff;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.07));
+  -webkit-backdrop-filter: blur(22px) saturate(1.5); backdrop-filter: blur(22px) saturate(1.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+.pband .ptable tbody tr:last-child { border-bottom: 1px solid rgba(255, 255, 255, 0.26); }
+.pband .ptable tr.is-best + tr { border-top-color: rgba(255, 255, 255, 0.26); }
+.pband .ptable__each, .pband .ptable__unit { color: rgba(255, 255, 255, 0.75); }
+.pband .ptable tr.is-best { background: rgba(255, 255, 255, 0.92); background-image: none; color: var(--ink); border-color: rgba(255, 255, 255, 0.92); }
+.pband .ptable tr.is-best .ptable__each, .pband .ptable tr.is-best .ptable__unit { color: var(--mute); }
+.pband .ptable tr.is-best .ptable__pill { background: var(--ink); color: #fff; }
+@media (min-width: 900px) {
+  .pband .ptable tbody tr { padding-inline: 24px; }
+  .pband .ptable tr.is-best { margin-inline: 0; padding-inline: 24px; }
+  .pband .ptable tr.is-best .ptable__each { color: var(--ink); }
+}

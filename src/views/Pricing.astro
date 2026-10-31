@@ -1,5 +1,5 @@
 ---
-// Prices: three tables (images by quantity, films by length, launch packages),
+// Prices: three tables (images by quantity, films by length, launch packages) on a photo, rows in glass,
 // the volume line, a real project on a dark band, terms, then the free sample.
 // On phones each table row becomes one line: quantity left, price large right.
 import Base from '../layouts/Base.astro';
@@ -22,6 +22,11 @@ const bestRow = P.imagesBest;
     <Duo as="h1" size="h1" a={P.titleA} b={P.titleB} intro />
   </section>
 
+  <!-- The three price tables sit on one of our photos, each row a single sheet of glass -->
+  <div class="pband" data-header="light">
+  <div class="pband__bg" aria-hidden="true">
+    <img src="/learn/dev_rooftop_mobile.webp" srcset="/learn/dev_rooftop_mobile.webp 960w, /learn/dev_rooftop.webp 1920w" sizes="100vw" alt="" decoding="async" />
+  </div>
   <!-- Images -->
   <section class="prices wrap" aria-labelledby="images-title">
     <h2 class="t-h3 prices__title" id="images-title" data-split>{P.imagesA}{' '}<span class="mute">{P.imagesB}</span></h2>
@@ -102,6 +107,7 @@ const bestRow = P.imagesBest;
     <p class="t-sub prices__volume" data-fade>{P.volume}</p>
     <p class="prices__star" data-fade>{P.note}</p>
   </section>
+  </div>
 
   <!-- A real project -->
   <section class="pcase" aria-labelledby="case-title" data-header="light">

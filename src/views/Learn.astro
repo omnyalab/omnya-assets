@@ -10,6 +10,7 @@ import Base from '../layouts/Base.astro';
 import Duo from '../components/Duo.astro';
 import Arrow from '../components/Arrow.astro';
 import SampleCta from '../components/SampleCta.astro';
+import BookCover from '../components/BookCover.astro';
 import { projects } from '../lib/data';
 import { srcset } from '../lib/media';
 import { goHref, words, type ProductId } from '../lib/learn';
@@ -25,21 +26,29 @@ const L = T.learn;
 const w = words.find((x) => x.word === word);
 const samar = projects.find((p) => p.id === '16_samar')!;
 
-// Book covers: our own pictures, and a glass title tinted with each picture's own colour
-const covers: Record<string, { mobile: string; srcset: string; pos?: string; tint: string }> = {
-  'white-to-real': { mobile: '/learn/cresta_front_real_mobile.webp', srcset: '/learn/cresta_front_real_mobile.webp 760w, /learn/cresta_front_real.webp 1920w', pos: '30% 50%', tint: '176, 142, 104' },
-  reel: { mobile: '/learn/dev_rooftop_mobile.webp', srcset: '/learn/dev_rooftop_mobile.webp 960w, /learn/dev_rooftop.webp 1920w', pos: '40% 50%', tint: '96, 150, 186' },
-  'before-it-exists': { mobile: '/learn/dev_elan_mobile.webp', srcset: '/learn/dev_elan_mobile.webp 806w, /learn/dev_elan.webp 1611w', tint: '92, 104, 150' },
+// Book covers: our own pictures with a light grade; Playbook 01 fades from our 3D to the photo
+const covers: Record<string, { real: { mobile: string; srcset: string; pos?: string }; white?: { mobile: string; srcset: string; pos?: string }; c1: string; c2: string }> = {
+  'white-to-real': {
+    real: { mobile: '/learn/burt_towers_real_mobile.webp', srcset: '/learn/burt_towers_real_mobile.webp 760w, /learn/burt_towers_real.webp 1920w', pos: '55% 50%' },
+    white: { mobile: '/learn/burt_towers_white_mobile.webp', srcset: '/learn/burt_towers_white_mobile.webp 760w, /learn/burt_towers_white.webp 1920w', pos: '55% 50%' },
+    c1: '#ffe2c4', c2: '#a9c9ef',
+  },
+  reel: { real: { mobile: '/learn/dev_sunset_mobile.webp', srcset: '/learn/dev_sunset_mobile.webp 960w, /learn/dev_sunset.webp 1920w', pos: '42% 50%' }, c1: '#ffe0b0', c2: '#ff9d7c' },
+  'before-it-exists': { real: { mobile: '/learn/dev_elan_mobile.webp', srcset: '/learn/dev_elan_mobile.webp 806w, /learn/dev_elan.webp 1611w', pos: '50% 40%' }, c1: '#ffd2a6', c2: '#aab8ff' },
 };
 
 // The playbook of the commented word goes first
 const books = w ? [...L.books].sort((a, b) => (a.id === w.focus ? -1 : b.id === w.focus ? 1 : 0)) : L.books;
 
 // Casa Cresta: the same camera in the 3D model and in the final image
-const views = ['front', 'pool', 'living'];
+// /learn opens on Burtville (towers, night, living room); the reel pages keep Casa Cresta
+const set = w ? 'cresta' : 'burt';
+const place = w ? 'Casa Cresta' : 'Burtville';
+const views = w ? ['front', 'pool', 'living'] : ['towers', 'night', 'living'];
+const rooms = w ? L.compareRooms : L.compareRoomsB;
 const pic = (v: string, kind: 'white' | 'real') => ({
-  desk: `/learn/cresta_${v}_${kind}.webp`,
-  mobile: `/learn/cresta_${v}_${kind}_mobile.webp`,
+  desk: `/learn/${set}_${v}_${kind}.webp`,
+  mobile: `/learn/${set}_${v}_${kind}_mobile.webp`,
 });
 const go = (id: ProductId) => goHref(id, lang, w?.word);
 const diff = (price: string) => (price === '€49' ? '€30' : '€50');
@@ -62,13 +71,13 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
     <div class="lhero__stick">
       <div class="cmp" data-cmp style="--x: 100%">
         <picture>
-          <source media="(max-width: 699px)" srcset={pic('front', 'real').mobile} data-cmp-real-m />
-          <img class="cmp__img" src={pic('front', 'real').desk} width="1920" height="1080" alt={`${L.compareReal}: Casa Cresta, ${L.compareRooms[0]}`} fetchpriority="high" decoding="async" data-cmp-real />
+          <source media="(max-width: 699px)" srcset={pic(views[0], 'real').mobile} data-cmp-real-m />
+          <img class="cmp__img" src={pic(views[0], 'real').desk} width="1920" height="1080" alt={`${L.compareReal}: ${place}, ${rooms[0]}`} fetchpriority="high" decoding="async" data-cmp-real />
         </picture>
         <div class="cmp__top" aria-hidden="true">
           <picture>
-            <source media="(max-width: 699px)" srcset={pic('front', 'white').mobile} data-cmp-white-m />
-            <img class="cmp__img" src={pic('front', 'white').desk} width="1920" height="1080" alt="" decoding="async" data-cmp-white />
+            <source media="(max-width: 699px)" srcset={pic(views[0], 'white').mobile} data-cmp-white-m />
+            <img class="cmp__img" src={pic(views[0], 'white').desk} width="1920" height="1080" alt="" decoding="async" data-cmp-white />
           </picture>
         </div>
         <span class="cmp__shade" aria-hidden="true"></span>
@@ -118,9 +127,9 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
                 data-white-m={pic(v, 'white').mobile}
                 data-real={pic(v, 'real').desk}
                 data-real-m={pic(v, 'real').mobile}
-                data-alt={`${L.compareReal}: Casa Cresta, ${L.compareRooms[i]}`}
+                data-alt={`${L.compareReal}: ${place}, ${rooms[i]}`}
               >
-                {L.compareRooms[i]}
+                {rooms[i]}
               </button>
             ))
           }
@@ -153,20 +162,8 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
       {
         books.map((b) => (
           <li class="lbook" data-fade>
-            <a class="lcover" href={go(b.id as ProductId)} aria-label={`${L.get}: ${b.a} ${b.b}, ${b.price}`} style={`--tint: ${covers[b.id].tint}`} {...buyData(b)}>
-              <span class="lcover__page" aria-hidden="true">
-                <img data-src={covers[b.id].mobile} data-srcset={covers[b.id].srcset} sizes="(min-width: 900px) 30vw, 78vw" alt="" decoding="async" style={covers[b.id].pos ? `object-position: ${covers[b.id].pos}` : undefined} />
-                <span class="lcover__top">
-                  <span>omnya <span>lab</span></span>
-                  <span>{L.playbook} {b.n}</span>
-                </span>
-                <span class="lcover__glass">
-                  <span class="lcover__title">
-                    {b.a}
-                    <span>{b.b}</span>
-                  </span>
-                </span>
-              </span>
+            <a class="lcover" href={go(b.id as ProductId)} aria-label={`${L.get}: ${b.a} ${b.b}, ${b.price}`} {...buyData(b)}>
+              <BookCover real={covers[b.id].real} white={covers[b.id].white} label={`${L.playbook} ${b.n}`} a={b.a} b={b.b} c1={covers[b.id].c1} c2={covers[b.id].c2} />
             </a>
             <div class="lbook__meta">
               <p class="t-small lbook__for">{b.for}</p>
@@ -185,63 +182,54 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
       }
     </ul>
 
-    <!-- The bundle: the three books fanned out -->
-    <div class="lbundle" data-fade style={`--t1: ${covers['white-to-real'].tint}; --t2: ${covers.reel.tint}; --t3: ${covers['before-it-exists'].tint}`}>
-      <a class="lfan" href={go('bundle')} aria-label={`${L.get}: ${L.bundleA}, ${L.bundleB}`}>
+    <!-- The bundle: the three books fanned out, the real price struck -->
+    <div class="lbundle" data-fade>
+      <a class="lfan" href={go('bundle')} aria-label={`${L.get}: ${L.bundleTitleA} ${L.bundleTitleB}, €79`}>
         {
           L.books.map((b, i) => (
-            <span class={`lfan__book lfan__book--${i + 1}`} style={`--tint: ${covers[b.id].tint}`} aria-hidden="true">
-              <span class="lcover__page">
-                <img data-src={covers[b.id].mobile} alt="" decoding="async" style={covers[b.id].pos ? `object-position: ${covers[b.id].pos}` : undefined} />
-                <span class="lcover__top">
-                  <span>omnya <span>lab</span></span>
-                  <span>{b.n}</span>
-                </span>
-                <span class="lcover__glass">
-                  <span class="lcover__title">
-                    {b.a}
-                    <span>{b.b}</span>
-                  </span>
-                </span>
-              </span>
+            <span class={`lfan__book lfan__book--${i + 1}`}>
+              <BookCover real={covers[b.id].real} white={covers[b.id].white} label={`${L.playbook} ${b.n}`} a={b.a} b={b.b} c1={covers[b.id].c1} c2={covers[b.id].c2} sizes="(min-width: 900px) 18vw, 40vw" />
             </span>
           ))
         }
       </a>
       <div class="lbundle__copy">
         <p class="t-small lbundle__label">{L.best}</p>
-        <p class="t-h2 lbundle__title">{L.bundleA} <span class="mute">{L.bundleB}</span></p>
-        <p class="t-sub lbundle__text">{L.bundleText}</p>
-        <p class="t-small lbundle__math">{L.bundleMath}</p>
-        <a class="btn btn--fill lbundle__cta" href={go('bundle')}>{L.get} · {L.bundleB} <Arrow /></a>
+        <p class="t-h2 lbundle__title">{L.bundleTitleA} <span class="mute">{L.bundleTitleB}</span></p>
+        <p class="lbundle__price"><span class="lbundle__now">€79</span><s class="lbundle__was">€107</s></p>
+        <p class="lbundle__save">{L.thanks.save} €28</p>
+        <p class="lbundle__text">{L.bundleText}</p>
+        <a class="btn btn--fill lbundle__cta" href={go('bundle')}>{L.bundleCta} <Arrow /></a>
       </div>
     </div>
   </section>
 
-  <!-- Private lessons -->
-  <section class="lles wrap" id="lessons" aria-labelledby="lessons-title">
-    <div class="lsec__head">
-      <h2 class="t-h2" id="lessons-title" data-split>{L.lessonsA}{' '}<span class="mute">{L.lessonsB}</span></h2>
+  <!-- Private lessons: glass cards over one of our photos -->
+  <section class="lles" id="lessons" aria-labelledby="lessons-title" data-header="light">
+    <div class="lles__bg" aria-hidden="true">
+      <img data-src="/learn/burt_living_real_mobile.webp" data-srcset="/learn/burt_living_real_mobile.webp 760w, /learn/burt_living_real.webp 1920w" sizes="100vw" alt="" decoding="async" />
     </div>
-    <div class="lles__grid">
-      {
-        L.lessons.map((l, i) => (
-          <article class:list={['lles__card', { 'is-dark': i === 1 }]} data-fade>
-            <header class="lles__head">
-              <h3 class="t-h3">{l.name}</h3>
-              <p class="t-small lles__time">{l.time}</p>
-            </header>
-            <p class="lles__price">{l.price}</p>
-            <p class="t-small lles__take">{L.takeHome}</p>
-            <ul class="lbook__items">
-              {l.items.map((it) => <li>{it}</li>)}
-            </ul>
-            <a class:list={['btn', { 'btn--fill': i === 1 }]} href={go(l.id as ProductId)}>{L.book} {l.name} <Arrow /></a>
-          </article>
-        ))
-      }
+    <div class="lles__in wrap">
+      <h2 class="t-h2 lles__title" id="lessons-title" data-split>{L.lessonsA}{' '}<span class="mute">{L.lessonsB}</span></h2>
+      <div class="lles__grid">
+        {
+          L.lessons.map((l, i) => (
+            <article class="lles__card" data-fade>
+              <header class="lles__head">
+                <h3 class="t-h3">{l.name}</h3>
+                <p class="t-small lles__time">{l.time}</p>
+              </header>
+              <p class="lles__price">{l.price}</p>
+              <ul class="lles__items">
+                {l.items.map((it) => <li>{it}</li>)}
+              </ul>
+              <a class:list={['btn', i === 1 ? 'btn--white' : 'btn--glass']} href={go(l.id as ProductId)}>{L.book} {l.name} <Arrow /></a>
+            </article>
+          ))
+        }
+      </div>
+      <p class="t-small lles__note" data-fade>{L.lessonsNote}</p>
     </div>
-    <p class="t-small lles__note" data-fade>{L.lessonsNote}</p>
   </section>
 
   <!-- Or the studio does it -->

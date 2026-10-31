@@ -246,12 +246,13 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
       {
         files.map((f) => (
           <li class:list={['kit__item', { 'kit__item--tall': f.cover.h > f.cover.w }]} style={`--ar: ${f.cover.w} / ${f.cover.h}`}>
+            <span class="kit__chip kit__chip--free" aria-hidden="true">{T.kit.free}</span>
             <a class="kit__card" href={f.href} download={f.file} tabindex="-1" aria-hidden="true">
               <img data-src={f.cover.mobile} data-srcset={srcset(f.cover as Still)} sizes="(min-width: 900px) 30vw, 70vw" width={f.cover.w} height={f.cover.h} alt="" decoding="async" />
             </a>
             <div class="kit__meta">
               <span class="kit__name">{f.name}</span>
-              <span class="kit__size">PDF, {f.size}</span>
+              <span class="kit__size">PDF · {T.kit.free}</span>
               <a class="kit__dl u" href={f.href} download={f.file}>{S.download}<span class="sr-only"> {f.name}, PDF, {f.size}</span> <Arrow /></a>
             </div>
           </li>
@@ -260,12 +261,13 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
       {
         books.map((b) => (
           <li class="kit__item kit__item--tall kit__item--book" style={`--ar: ${b.cover.w} / ${b.cover.h}`}>
+            <span class="kit__chip" aria-hidden="true">{b.price}</span>
             <a class="kit__card" href={`${localize('/learn', lang)}#books`} tabindex="-1" aria-hidden="true">
               <img data-src={b.cover.mobile} data-srcset={`${b.cover.mobile} 540w, ${b.cover.src} 900w`} sizes="(min-width: 900px) 19vw, 70vw" width={b.cover.w} height={b.cover.h} alt="" decoding="async" />
             </a>
             <div class="kit__meta">
               <span class="kit__name">{b.name}</span>
-              <span class="kit__size">PDF, {b.price}</span>
+              <span class="kit__size">PDF · {b.price}</span>
               <a class="kit__dl kit__dl--buy u" href={`${localize('/learn', lang)}#books`}>{L.get}<span class="sr-only"> {b.name}, {b.price}</span> <Arrow /></a>
             </div>
           </li>
