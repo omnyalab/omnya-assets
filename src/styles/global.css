@@ -1337,14 +1337,17 @@ img[data-stage-src] { visibility: hidden; }
   .kit__item--tall { width: 19vw; }
   .kit__item + .kit__item { margin-left: -2vw; }
   .kit__card { width: 100%; height: auto; transition: transform 0.8s var(--ease), box-shadow 0.8s var(--ease); }
-  .kit__item:nth-child(1) .kit__card { transform: rotate(-4deg) translateY(10px); }
+  /* four books in an even arc: they turn around a point below the table, the middle two in front */
+  .kit__card { transform-origin: 50% 160%; }
+  .kit__item:nth-child(1) .kit__card { transform: rotate(-10deg); }
   .kit__item:nth-child(2) { z-index: 2; }
-  .kit__item:nth-child(2) .kit__card { transform: rotate(1.5deg); }
-  .kit__item:nth-child(3) .kit__card { transform: rotate(4deg) translateY(18px); }
+  .kit__item:nth-child(2) .kit__card { transform: rotate(-3.4deg); }
+  .kit__item:nth-child(3) { z-index: 2; }
+  .kit__item:nth-child(3) .kit__card { transform: rotate(3.4deg); }
   .kit__item:nth-child(4) { z-index: 1; }
-  .kit__item:nth-child(4) .kit__card { transform: rotate(-2deg) translateY(6px); }
+  .kit__item:nth-child(4) .kit__card { transform: rotate(10deg); }
   .kit__item:hover { z-index: 3; }
-  .kit__item:hover .kit__card { transform: translateY(-18px) rotate(0deg); box-shadow: 0 1px 2px rgba(17, 17, 17, 0.08), 0 40px 70px -28px rgba(17, 17, 17, 0.45); }
+  .kit__item:hover .kit__card { transform: translateY(-22px) rotate(0deg); box-shadow: 0 1px 2px rgba(17, 17, 17, 0.08), 0 40px 70px -28px rgba(17, 17, 17, 0.45); }
   .kit__meta { padding-top: 32px; padding-left: 3vw; }
   /* the covers are centred (27 + 27 + 19vw, minus two 2vw overlaps): start under the first */
   .kit__web { margin-left: calc((100% - 70vw) / 2); }
@@ -1988,3 +1991,13 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 .buy__total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 14px; border-top: 1px solid var(--line); font-size: var(--fs-sub); font-variant-numeric: tabular-nums; }
 .buy__total span:last-child { font-size: var(--fs-h3); letter-spacing: -0.03em; }
 .buy__pay { width: 100%; justify-content: center; min-height: 58px; }
+
+/* the covers look printed: a soft light sweeping across, a touch more depth in the colour */
+.kit__card img { filter: saturate(1.06) contrast(1.04); }
+.kit__card::before {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.16) 45%, rgba(255, 255, 255, 0.04) 55%, rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.1) 100%);
+  transition: opacity 0.8s var(--ease), transform 1.2s var(--ease);
+}
+@media (hover: hover) and (pointer: fine) { .kit__item:hover .kit__card::before { transform: translateX(8%); } }
