@@ -38,7 +38,7 @@ const fallbacks = Object.fromEntries(['', '3d', 'ai', 'claude', 'dubai'].map((k)
   </head>
   <body>
     <p><a href={link || fallbacks['']} data-go>{name} →</a></p>
-    <script is:inline define:vars={{ checkout: link, fallbacks }}>
+    <script is:inline define:vars={{ checkout: link, fallbacks, lang }}>
       const k = (new URLSearchParams(location.search).get('k') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
       let to = fallbacks[k] || fallbacks[''];
       if (checkout) {
@@ -46,6 +46,8 @@ const fallbacks = Object.fromEntries(['', '3d', 'ai', 'claude', 'dubai'].map((k)
         if (k) u.searchParams.set('client_reference_id', k);
         to = u.toString();
       }
+      // the checkout comes back to one English page; this says which language to show it in
+      try { localStorage.setItem('omnya-lang', lang); } catch (e) {}
       document.querySelector('[data-go]').href = to;
       // Long enough for the analytics beacon to leave, short enough not to be noticed
       setTimeout(() => location.replace(to), 450);

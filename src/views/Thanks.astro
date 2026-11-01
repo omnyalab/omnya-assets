@@ -42,6 +42,13 @@ const book = booking[Astro.props.id as ProductId];
 ---
 
 <Base page="thanks" title={X.title} noindex>
+  {
+    lang === 'en' && (
+      <script is:inline>
+        try { if (localStorage.getItem('omnya-lang') === 'it') location.replace('/it' + location.pathname + location.search); } catch (e) {}
+      </script>
+    )
+  }
   <section class="oto wrap">
     <ol class="oto__steps" aria-label={X.title}>
       {X.steps.map((s, i) => <li class:list={{ 'is-done': i === 0, 'is-now': i === 1 }}><span>{i === 0 ? '✓' : i + 1}</span>{s}</li>)}
