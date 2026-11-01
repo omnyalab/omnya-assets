@@ -70,5 +70,16 @@
       "destination": "/kit/it/omnya-lab-2026-it.pdf",
       "permanent": false
     }
+  ],
+  "headers": [
+    {
+      "source": "/learn/files/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    }
   ]
 }
