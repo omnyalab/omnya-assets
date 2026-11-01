@@ -56,8 +56,10 @@ const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ?
         }
       </tbody>
     </table>
-    <p class="prices__note" data-fade>{P.imagesNote}</p>
-    <p class="prices__star" data-fade>{P.imagesStar}</p>
+    <p class="prices__note d-only" data-fade>{P.imagesNote}</p>
+    <p class="prices__star d-only" data-fade>{P.imagesStar}</p>
+    <p class="prices__note m-only" data-fade>{P.imagesNoteShort}</p>
+    <p class="prices__star m-only" data-fade>{P.imagesStarShort}</p>
   </section>
 
   <!-- Virtual staging -->
@@ -106,6 +108,7 @@ const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ?
       </tbody>
     </table>
     <p class="prices__note prices__note--desk" data-fade>{P.filmsNote}</p>
+    <p class="prices__note m-only" data-fade>{P.filmsNoteShort}</p>
   </section>
 
   <!-- Launch packages -->
@@ -132,6 +135,7 @@ const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ?
       </tbody>
     </table>
     <p class="prices__note prices__note--desk" data-fade>{P.launchNote}</p>
+    <p class="prices__note m-only" data-fade>{P.launchNoteShort}</p>
     <p class="t-sub prices__volume" data-fade>{P.volume}</p>
     <p class="prices__star" data-fade>{P.note}</p>
   </section>

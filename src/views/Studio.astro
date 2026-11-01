@@ -9,7 +9,6 @@
 // Animations: src/scripts/studio.ts. Images: public/studio (each with a _mobile copy).
 import Base from '../layouts/Base.astro';
 import Duo from '../components/Duo.astro';
-import Frame from '../components/Frame.astro';
 import Arrow from '../components/Arrow.astro';
 import SampleCta from '../components/SampleCta.astro';
 import { pad, type Still } from '../lib/data';
@@ -36,15 +35,9 @@ const posterSet = (name: string) => `/studio/${name}_mobile.webp 1200w, /studio/
 // cover on a portrait photo: on tall screens the picture is wider than the screen
 const posterSizes = '(max-aspect-ratio: 1493/2000) 75svh, 100vw';
 
-// From model to image: view 1 is 2048x1360, view 2 is 2752x1536
-const views = [
-  { id: 1, w: 2048, h: 1360, stages: ['stage1_model_view1', 'stage2_clay_view1', 'stage4_final_view1', 'stage4_final_view1'] },
-  { id: 2, w: 2752, h: 1536, stages: ['stage1_model_view2', 'stage2_clay_view2', 'stage4_final_view2', 'stage4_final_view2'] },
-];
-const stageSet = (name: string) => srcset(still(name, 2400, 1340));
-const stageSizes = '(min-width: 900px) 62vw, calc(100vw - 32px)';
 
-const pearl = still('studio_05_rooftop', 2400, 1350);
+// From model to image: our white model, the clay with the light, the final image (same camera)
+const steps = ['stage0_model_view1', 'stage2_clay_view1', 'stage4_final_view1'];
 const files = kit(lang);
 // The three playbooks sit on the table next to the portfolio, as books; they lead to Learn
 const L = T.learn;
@@ -73,165 +66,55 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
     <div class="poster__shade" aria-hidden="true"></div>
   </section>
 
-  <!-- 2. Intro -->
+  <!-- 2. Intro: who we are in one line (on phones only the last sentence) -->
   <section class="st-intro wrap">
     <Duo size="h2" class="st-intro__title" a={S.introA} b={S.introB} />
-    <p class="st-intro__txt t-sub" data-fade>{S.introText}</p>
+    <p class="st-intro__txt t-sub d-only" data-fade>{S.introLine}</p>
+    <p class="st-intro__txt t-sub m-only" data-fade>{S.introShort}</p>
   </section>
 
-  <!-- 3. From model to image -->
-  <section class="stages" aria-labelledby="stages-title" data-stages>
-    <div class="stages__head wrap">
-      <p class="t-small mute d-only" data-fade>{S.stagesLabel}</p>
-      <Duo size="h2" class="stages__title" a={S.stagesA} b={S.stagesB} />
-    </div>
-
-    <!-- Live version: one frame, four stages -->
-    <div class="stages__live wrap" data-stages-live data-words={S.status.join('|')}>
-      <div class="stages__grid">
-        <div class="stages__txt" aria-live="polite">
-          {
-            S.stages.map((st, i) => (
-              <div class:list={['stages__block', { 'is-on': i === 0 }]} data-stage-txt={i} aria-hidden={i === 0 ? undefined : 'true'}>
-                <span class="stages__n" data-stage-split>{pad(i + 1)}</span>
-                <h3 class="stages__t t-h3" data-stage-split>{st.title}</h3>
-                <p class="stages__p t-sub" data-stage-split>{st.text}</p>
-              </div>
-            ))
-          }
-        </div>
-
-        <figure class="stages__fig">
-          <div class="stages__views" role="group" aria-label={S.viewsLabel}>
-            {
-              S.views.map((v, i) => (
-                <button type="button" class="chip" aria-pressed={i === 0 ? 'true' : 'false'} data-view={i}>
-                  {v}
-                </button>
-              ))
-            }
-          </div>
-          <div class="stages__frames" data-stages-frames>
-            {
-              views.map((v, vi) => (
-                <div class:list={['stages__frame', { 'is-on': vi === 0 }]} style={`--ar: ${v.w} / ${v.h}`} data-frame={vi} aria-hidden={vi === 0 ? undefined : 'true'}>
-                  {v.stages.map((name, si) => (
-                    <div class={`stage stage--${si + 1}`} data-stage={si}>
-                      <img
-                        data-stage-src={`/studio/${name}_mobile.webp`}
-                        data-stage-srcset={stageSet(name)}
-                        sizes={stageSizes}
-                        width={v.w}
-                        height={v.h}
-                        alt={si === 0 || si === 3 ? S.stageAlts[vi][si] : ''}
-                        decoding="async"
-                      />
-                    </div>
-                  ))}
-                  <div class="stages__ui" aria-hidden="true">
-                    <span class="stages__status" data-status>{S.status[0]}</span>
-                    <span class="stages__bar"><i data-bar></i></span>
-                  </div>
-                  <span class="stages__line" aria-hidden="true" data-line></span>
-                </div>
-              ))
-            }
-          </div>
-          <div class="stages__foot">
-            <figcaption class="t-small mute">{S.caption}</figcaption>
-            <div class="stages__dots" role="group" aria-label={S.stage}>
-              {
-                S.stages.map((st, i) => (
-                  <button type="button" class="stages__dot" aria-label={`${pad(i + 1)} ${st.title}`} aria-pressed={i === 0 ? 'true' : 'false'} data-goto={i}>
-                    <span>{pad(i + 1)}</span>
-                  </button>
-                ))
-              }
-            </div>
-          </div>
-        </figure>
-      </div>
-    </div>
-
-    <!-- Reduced motion: the four stages side by side, nothing moves -->
-    <div class="stages__still wrap" data-stages-still>
-      <div class="stages__views" role="group" aria-label={S.viewsLabel}>
-        {
-          S.views.map((v, i) => (
-            <button type="button" class="chip" aria-pressed={i === 0 ? 'true' : 'false'} data-still-view={i}>
-              {v}
-            </button>
-          ))
-        }
-      </div>
+  <!-- 3. From your model to the final image (C): three pictures of the same room, the step on each -->
+  <section class="sc-steps wrap" aria-labelledby="steps-title">
+    <h2 class="t-h2 sc-title" id="steps-title" data-split>{S.stagesA}{' '}<span class="mute">{S.stagesB}</span></h2>
+    <ol class="sc-steps__row">
       {
-        views.map((v, vi) => (
-          <ol class:list={['stages__list', { 'is-on': vi === 0 }]} data-still-list={vi}>
-            {S.stages.map((st, si) => (
-              <li class="stages__item">
-                <div class:list={['stages__thumb', { 'is-wip': si === 2 }]} style={`--ar: ${v.w} / ${v.h}`}>
-                  <img data-stage-src={`/studio/${v.stages[si]}_mobile.webp`} data-stage-srcset={stageSet(v.stages[si])} sizes="(min-width: 900px) 46vw, calc(100vw - 32px)" width={v.w} height={v.h} alt={S.stageAlts[vi][si]} decoding="async" />
-                  {si === 2 && <span class="stages__status">{S.status[1]}</span>}
-                </div>
-                <p class="stages__item-t"><span class="mute">{pad(si + 1)}</span> {st.title}</p>
-                <p class="t-small stages__item-p">{st.text}</p>
-              </li>
-            ))}
-          </ol>
+        steps.map((name, i) => (
+          <li class="sc-step" data-fade>
+            <img data-src={`/studio/${name}_mobile.webp`} data-srcset={`/studio/${name}_mobile.webp 1200w, /studio/${name}.webp 2048w`} sizes="(min-width: 900px) 31vw, calc(100vw - 32px)" width="2048" height="1360" alt={S.stepsAlt[i]} decoding="async" />
+            <span class="sc-step__tag"><span class="sc-step__n">{pad(i + 1)}</span> {S.stepsC[i]}</span>
+          </li>
         ))
       }
-      <p class="t-small mute">{S.caption}</p>
-    </div>
+    </ol>
   </section>
 
-  <!-- 4–5. What we make and how long it takes, in glass over the pool at night (E1). Prices live on /pricing -->
-  <section class="times times--glass" aria-labelledby="make-title" data-header="light" data-times>
-    <div class="times__bg" aria-hidden="true">
-      <img data-src="/learn/burt_night_real_mobile.webp" data-srcset="/learn/burt_night_real_mobile.webp 760w, /learn/burt_night_real.webp 1920w" sizes="100vw" alt="" decoding="async" />
-    </div>
-    <div class="wrap times__in">
-      <h2 class="t-h2 times__title" id="make-title" data-split>{S.makeA}{' '}<span class="mute">{S.makeB}</span></h2>
-      <ul class="make__cards">
-        {
-          S.services.map((sv) => (
-            <li class="gcard" data-fade>
-              <span class="make__name">{sv.name}</span>
-              <span class="make__text">{sv.text}</span>
-            </li>
-          ))
-        }
-      </ul>
-      <h3 class="times__sub" id="times-title" data-fade>{S.timeA}{' '}<span class="mute">{S.timeB}</span></h3>
-      <ul class="times__list">
-        {
-          S.timings.map((tm) => (
-            <li class="times__item gcard" data-fade>
-              <span class="times__n">
-                <span class="sr-only">{tm.n.join('–')}</span>
-                <span aria-hidden="true" class="times__digits">
-                  {tm.n.map((d, i) => (
-                    <>
-                      {i > 0 && <span class="times__dash" />}
-                      <span data-count={d}>{d}</span>
-                    </>
-                  ))}
-                </span>
-              </span>
-              <span class="times__l">{tm.label}</span>
-            </li>
-          ))
-        }
-      </ul>
-      <p class="times__note" data-fade>{S.timeNote}</p>
-      <a href={localize('/pricing', lang)} class="btn btn--white times__btn" data-fade>{S.seePrices} <Arrow /></a>
-    </div>
-  </section>
-
-  <!-- 6. Made with AI -->
-  <section class="st-ai wrap">
-    <Duo size="h2" class="st-ai__title" a={S.aiA} b={S.aiB} />
-    <p class="t-sub st-ai__p" data-fade>{S.aiText}</p>
-    <Frame still={pearl} alt={S.pearlAlt} sizes="(min-width: 900px) 46vw, 100vw" class="st-ai__img" />
+  <!-- 4. What we make, then how long it takes (C): big words, one line each, the timings in one band -->
+  <section class="sc-make wrap" aria-labelledby="make-title" data-times>
+    <h2 class="t-h2 sc-title" id="make-title" data-split>{S.makeA}</h2>
+    <ul class="sc-make__list">
+      {
+        S.makeList.map((m) => (
+          <li class="sc-make__row" data-fade>
+            <span class="sc-make__name">{m.name}</span>
+            <span class="sc-make__text">{m.text}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <ul class="times__list sc-times" aria-label={`${S.timeA} ${S.timeB}`}>
+      {
+        S.timings.map((tm) => (
+          <li class="sc-times__item" data-fade>
+            <span class="sc-times__n">
+              <span class="sr-only">{tm.n.join('–')}</span>
+              <span aria-hidden="true">{tm.n.map((d, i) => (<>{i > 0 && '–'}<span data-count={d}>{d}</span></>))}</span>
+            </span>
+            <span class="sc-times__l">{tm.label.replace('*', '')}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <a href={localize('/pricing', lang)} class="btn btn--fill sc-make__btn" data-fade>{S.seePrices} <Arrow /></a>
   </section>
 
   <!-- 7. Kit -->
