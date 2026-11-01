@@ -2518,3 +2518,6 @@ html[data-page='thanks'] body {
     radial-gradient(70% 60% at 60% 100%, rgba(190, 150, 210, 0.22), transparent 70%), #f2e7dc;
 }
 html[data-page='thanks'] .oto__card { background: rgba(255, 255, 255, 0.78); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+
+/* page after a purchase: the downloads or the booking button */
+.oto-dl__btns { display: flex; flex-wrap: wrap; gap: 10px; }

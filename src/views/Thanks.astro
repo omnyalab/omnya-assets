@@ -6,7 +6,7 @@
 import Base from '../layouts/Base.astro';
 import Arrow from '../components/Arrow.astro';
 import { projects } from '../lib/data';
-import { goHref, thanks, type ProductId } from '../lib/learn';
+import { goHref, thanks, filesFor, booking, type ProductId } from '../lib/learn';
 import { t, langFromPath, localize } from '../i18n';
 
 interface Props {
@@ -37,6 +37,8 @@ const visual = (id: string) => {
 const v = visual(flow.oto);
 const vd = visual(flow.down);
 const bookIds = ['white-to-real', 'reel', 'before-it-exists'];
+const files = filesFor(Astro.props.id as ProductId, lang);
+const book = booking[Astro.props.id as ProductId];
 ---
 
 <Base page="thanks" title={X.title} noindex>
@@ -112,12 +114,12 @@ const bookIds = ['white-to-real', 'reel', 'before-it-exists'];
     </article>
   </section>
 
-  {
-    flow.kind === 'pdf' && (
-      <section class="oto-dl wrap">
-        <p class="t-sub">{flow.kind === 'pdf' ? X.paidPdf : X.paidLesson}</p>
-        <a class="btn" href={`${localize('/learn', lang)}#books`}>{X.back} <Arrow /></a>
-      </section>
-    )
-  }
+  <!-- What they paid for: the PDFs to download, or the link to pick the time of the lesson -->
+  <section class="oto-dl wrap" id="download">
+    <p class="t-sub">{flow.kind === 'pdf' ? X.paidPdf : X.paidLesson}</p>
+    <div class="oto-dl__btns">
+      {files.map((f) => <a class="btn btn--fill" href={f.href} download>{f.name} <Arrow /></a>)}
+      {book && <a class="btn btn--fill" href={book} target="_blank" rel="noopener">{X.pick} <Arrow /></a>}
+    </div>
+  </section>
 </Base>

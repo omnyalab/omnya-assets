@@ -73,3 +73,37 @@ export function fallback(id: ProductId, lang: Lang, name: string, word?: string)
 /** /go/<id>, with the reel word when the visit came from one. */
 export const goHref = (id: ProductId, lang: Lang, word?: string) =>
   `${lang === 'it' ? '/it' : ''}/go/${id}${word ? `?k=${word}` : ''}`;
+
+/** The paid files: private links, not linked from any page and not indexed (see vercel.json).
+    The page after a purchase is the only place that shows them. */
+const FILES = '/learn/files/61dd51d89913fd69';
+const pdfs = {
+  en: {
+    'white-to-real': ['From 3D to real photo', 'playbook-01-from-3d-to-real-photo.pdf'],
+    reel: ['The reel they comment on', 'playbook-02-the-reel-they-comment-on.pdf'],
+    'before-it-exists': ['Sell it before it exists', 'playbook-03-sell-it-before-it-exists.pdf'],
+    prompts: ['The full prompt files', 'bundle-the-full-prompt-files.pdf'],
+    checklist: ['The checklist before every delivery', 'bundle-the-checklist-before-every-delivery.pdf'],
+  },
+  it: {
+    'white-to-real': ['Dal 3D alla foto vera', 'playbook-01-dal-3d-alla-foto-vera.pdf'],
+    reel: ['Il reel che fa commentare', 'playbook-02-il-reel-che-fa-commentare.pdf'],
+    'before-it-exists': ['Vendilo prima che esista', 'playbook-03-vendilo-prima-che-esista.pdf'],
+    prompts: ['I file di prompt completi', 'pacchetto-i-file-di-prompt-completi.pdf'],
+    checklist: ['Il controllo prima di ogni consegna', 'pacchetto-il-controllo-prima-di-ogni-consegna.pdf'],
+  },
+} as const;
+type FileKey = keyof (typeof pdfs)['en'];
+const bundleFiles: FileKey[] = ['white-to-real', 'reel', 'before-it-exists', 'prompts', 'checklist'];
+
+/** What a buyer downloads after paying for a PDF product (the bundle gets all five files). */
+export function filesFor(id: ProductId, lang: Lang) {
+  const keys: FileKey[] = id === 'bundle' ? bundleFiles : id in pdfs.en ? [id as FileKey] : [];
+  return keys.map((k) => ({ name: pdfs[lang][k][0], href: `${FILES}/${lang}/${pdfs[lang][k][1]}` }));
+}
+
+/** Where a lesson buyer picks the day and time. Replace with the Calendly events of each lesson. */
+export const booking: Partial<Record<ProductId, string>> = {
+  session: 'https://calendly.com/omnyalab-info/30min',
+  build: 'https://calendly.com/omnyalab-info/30min',
+};
