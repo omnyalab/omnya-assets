@@ -50,7 +50,8 @@ const pic = (v: string, kind: 'white' | 'real') => ({
   mobile: `/learn/${set}_${v}_${kind}_mobile.webp`,
 });
 const go = (id: ProductId) => goHref(id, lang, w?.word);
-const diff = (price: string) => (price === '€49' ? '€30' : '€50');
+const eur = (n: number) => (lang === 'it' ? `${n} €` : `€${n}`);
+const diff = (price: string) => eur(price.includes('49') ? 30 : 50);
 const buyData = (b: { id: string; a: string; b: string; price: string }) => ({
   'data-buy': '',
   'data-name': `${b.a} ${b.b}`,
@@ -183,7 +184,7 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
 
     <!-- The bundle: the three books fanned out, the real price struck -->
     <div class="lbundle" data-fade>
-      <a class="lfan" href={go('bundle')} aria-label={`${L.get}: ${L.bundleTitleA} ${L.bundleTitleB}, €79`}>
+      <a class="lfan" href={go('bundle')} aria-label={`${L.get}: ${L.bundleTitleA} ${L.bundleTitleB}, ${eur(79)}`}>
         {
           L.books.map((b, i) => (
             <span class={`lfan__book lfan__book--${i + 1}`}>
@@ -195,8 +196,8 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
       <div class="lbundle__copy">
         <p class="t-small lbundle__label">{L.best}</p>
         <p class="t-h2 lbundle__title">{L.bundleTitleA} <span class="mute">{L.bundleTitleB}</span></p>
-        <p class="lbundle__price"><span class="lbundle__now">€79</span><s class="lbundle__was">€107</s></p>
-        <p class="lbundle__save">{L.thanks.save} €28</p>
+        <p class="lbundle__price"><span class="lbundle__now">{eur(79)}</span><s class="lbundle__was">{eur(107)}</s></p>
+        <p class="lbundle__save">{L.thanks.save} {eur(28)}</p>
         <p class="lbundle__text">{L.bundleText}</p>
         <a class="btn btn--fill lbundle__cta" href={go('bundle')}>{L.bundleCta} <Arrow /></a>
       </div>
@@ -232,8 +233,8 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
   <!-- Community -->
   <section class="lcomm wrap" aria-labelledby="comm-title">
     <div class="lcomm__copy">
-      <h2 class="t-h1" id="comm-title" data-split>{L.communityA}{' '}<span class="mute">{L.communityB}</span></h2>
-      <img class="lcomm__skool" src="/learn/skool-logo.svg" alt="Skool" width="2783" height="905" loading="lazy" />
+      <h2 class="t-h1" id="comm-title" data-split>{L.communityA}</h2>
+      <p class="lcomm__sub" data-fade>{L.communityB} <img class="lcomm__skool" src="/learn/skool-logo.svg" alt="Skool" width="2783" height="905" loading="lazy" /></p>
       <p class="t-sub lcomm__text" data-fade>{L.communityText}</p>
       <a class="btn btn--fill" href={go('community')} data-fade>{L.communityCta} <Arrow /></a>
     </div>
@@ -275,6 +276,14 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
       <a class="btn btn--fill buy__pay" data-pay href="#">{L.bump.pay} <Arrow /></a>
     </div>
   </dialog>
+
+  <!-- Back to the service: we make it, the first image free -->
+  <section class="lwe wrap" aria-labelledby="we-title">
+    <div class="lwe__card" data-fade>
+      <h2 class="t-h2 lwe__title" id="we-title">{L.weA} <span class="mute">{L.weB}</span></h2>
+      <button type="button" class="btn btn--fill" data-sample>{T.cta} <Arrow /></button>
+    </div>
+  </section>
 
   <!-- Before you buy -->
   <section class="lfaq wrap" aria-labelledby="faq-title">

@@ -112,7 +112,9 @@
         "mobile": "/projects/17_the_townhall/the_townhall_video_01_720.mp4",
         "poster": "/projects/17_the_townhall/the_townhall_video_01_poster.webp"
       }
-    ]
+    ],
+    "description": "The old town hall of Vidor, in the Prosecco hills, is becoming a five-star boutique hotel. We made 14 images and a film that show it finished.",
+    "descriptionIt": "L’ex municipio di Vidor, sulle colline del Prosecco, sta diventando un boutique hotel cinque stelle. Abbiamo fatto 14 immagini e un video che lo mostrano già finito."
   },
   {
     "id": "16_samar",
@@ -293,7 +295,9 @@
         "ar": "9 / 16"
       }
     ],
-    "autoplay": true
+    "autoplay": true,
+    "description": "A residential tower in Dubai Marina. We made 23 images and a film of the apartments and the view over the marina.",
+    "descriptionIt": "Una torre residenziale a Dubai Marina. Abbiamo fatto 23 immagini e un video degli appartamenti e della vista sulla marina."
   },
   {
     "id": "24_dana",
@@ -393,7 +397,9 @@
       }
     ],
     "videos": [],
-    "featured": true
+    "featured": true,
+    "description": "A resort we imagined in the Maldives, with villas over the water and among the palms. 13 images to show what our method does with an island project.",
+    "descriptionIt": "Un resort che abbiamo immaginato alle Maldive, con ville sull’acqua e tra le palme. 13 immagini per far vedere cosa fa il nostro metodo con un progetto su un’isola."
   },
   {
     "id": "25_casa_cresta",
@@ -479,7 +485,9 @@
       }
     ],
     "videos": [],
-    "featured": true
+    "featured": true,
+    "description": "A house we imagined on a hillside in Los Angeles. 11 images, from the pool to the living room.",
+    "descriptionIt": "Una casa che abbiamo immaginato su una collina di Los Angeles. 11 immagini, dalla piscina al salotto."
   },
   {
     "id": "18_residence_77",
@@ -524,7 +532,9 @@
     ],
     "videos": [],
     "featured": false,
-    "slug": "burtville"
+    "slug": "burtville",
+    "description": "A residential project we pitched to a developer, starting from a rough 3D. Five images: the towers, the living room and the evening view.",
+    "descriptionIt": "Un progetto residenziale che abbiamo proposto a un developer, partendo da un 3D grezzo. Cinque immagini: le torri, il salotto e la vista di sera."
   },
   {
     "id": "01_penthouse_dubai",
@@ -607,7 +617,9 @@
         "poster": "/projects/01_penthouse_dubai/penthouse_dubai_video_02_poster.webp"
       }
     ],
-    "featured": true
+    "featured": true,
+    "description": "A penthouse in Dubai designed by Davide Algranti. His renders still looked like renders, so in two days we turned them into 9 images and 2 films that look photographed.",
+    "descriptionIt": "Un attico a Dubai progettato da Davide Algranti. I suoi render sembravano ancora render, così in due giorni li abbiamo trasformati in 9 immagini e 2 video che sembrano fotografie."
   },
   {
     "id": "02_villa_cape_town",
@@ -887,6 +899,118 @@
         "w": 1344,
         "h": 752,
         "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_08.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_08_mobile.webp",
+        "w": 1920,
+        "h": 1074,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_09.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_09_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_10.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_10_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_11.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_11_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_12.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_12_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_13.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_13_mobile.webp",
+        "w": 1920,
+        "h": 1072,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_14.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_14_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_15.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_15_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_16.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_16_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_17.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_17_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_18.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_18_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_19.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_19_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_20.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_20_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_21.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_21_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_22.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_22_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
+      },
+      {
+        "src": "/projects/05_corfu_resort/corfu_resort_gallery_23.webp",
+        "mobile": "/projects/05_corfu_resort/corfu_resort_gallery_23_mobile.webp",
+        "w": 1344,
+        "h": 752,
+        "orientation": "horizontal"
       }
     ],
     "videos": [
@@ -896,7 +1020,9 @@
         "poster": "/projects/05_corfu_resort/corfu_resort_video_01_poster.webp"
       }
     ],
-    "featured": true
+    "featured": true,
+    "description": "A resort on Corfu that existed only on paper. With 24 images and a 90-second film the architect presented it before the first stone was laid, and the works have started.",
+    "descriptionIt": "Un resort a Corfù che esisteva solo sulla carta. Con 24 immagini e un video di 90 secondi l’architetto l’ha presentato prima di posare la prima pietra, e il cantiere è partito."
   },
   {
     "id": "11_naoshima_house",
@@ -1115,27 +1241,6 @@
     "featured": false
   },
   {
-    "id": "10_greece_retreat",
-    "title": "Greece Retreat",
-    "category": "luxury",
-    "cover": {
-      "src": "/projects/10_greece_retreat/greece_retreat_cover.webp",
-      "mobile": "/projects/10_greece_retreat/greece_retreat_cover_mobile.webp",
-      "w": 1920,
-      "h": 1080,
-      "orientation": "horizontal"
-    },
-    "gallery": [],
-    "videos": [
-      {
-        "desktop": "/projects/10_greece_retreat/greece_retreat_video_01_1080.mp4",
-        "mobile": "/projects/10_greece_retreat/greece_retreat_video_01_720.mp4",
-        "poster": "/projects/10_greece_retreat/greece_retreat_video_01_poster.webp"
-      }
-    ],
-    "featured": false
-  },
-  {
     "id": "12_seaview_suites",
     "title": "Seaview Suites",
     "category": "luxury",
@@ -1229,71 +1334,5 @@
       }
     ],
     "videos": []
-  },
-  {
-    "id": "14_mountain_hotel",
-    "title": "Mountain Hotel",
-    "category": "luxury",
-    "featured": false,
-    "cover": {
-      "src": "/projects/14_mountain_hotel/mountain_hotel_cover.webp",
-      "mobile": "/projects/14_mountain_hotel/mountain_hotel_cover_mobile.webp",
-      "w": 2048,
-      "h": 1360,
-      "orientation": "horizontal"
-    },
-    "gallery": [
-      {
-        "src": "/projects/14_mountain_hotel/mountain_hotel_gallery_01.webp",
-        "mobile": "/projects/14_mountain_hotel/mountain_hotel_gallery_01_mobile.webp",
-        "w": 2048,
-        "h": 1360,
-        "orientation": "horizontal"
-      }
-    ],
-    "videos": []
-  },
-  {
-    "id": "15_offices",
-    "title": "Offices",
-    "category": "real-estate",
-    "featured": false,
-    "cover": {
-      "src": "/projects/15_offices/offices_cover.webp",
-      "mobile": "/projects/15_offices/offices_cover_mobile.webp",
-      "w": 5504,
-      "h": 3072,
-      "orientation": "horizontal"
-    },
-    "gallery": [
-      {
-        "src": "/projects/15_offices/offices_gallery_01.webp",
-        "mobile": "/projects/15_offices/offices_gallery_01_mobile.webp",
-        "w": 5504,
-        "h": 3072,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/15_offices/offices_gallery_02.webp",
-        "mobile": "/projects/15_offices/offices_gallery_02_mobile.webp",
-        "w": 5504,
-        "h": 3072,
-        "orientation": "horizontal"
-      },
-      {
-        "src": "/projects/15_offices/offices_gallery_03.webp",
-        "mobile": "/projects/15_offices/offices_gallery_03_mobile.webp",
-        "w": 5504,
-        "h": 3072,
-        "orientation": "horizontal"
-      }
-    ],
-    "videos": [
-      {
-        "desktop": "/projects/15_offices/offices_video_01_1080.mp4",
-        "mobile": "/projects/15_offices/offices_video_01_720.mp4",
-        "poster": "/projects/15_offices/offices_video_01_poster.webp"
-      }
-    ]
   }
 ]

@@ -19,6 +19,7 @@ const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const P = T.project;
 const cat = T.categories[p.category];
+const desc = lang === 'it' ? (p.descriptionIt ?? p.description) : p.description;
 const altOf = (s: Still) => alt(p, lang, p.gallery.indexOf(s));
 const idx = projects.indexOf(p);
 const next = projects[(idx + 1) % projects.length];
@@ -83,15 +84,11 @@ const stillSizes: Record<string, string> = {
     </div>
   </section>
 
-  <section class="pinfo wrap">
-    <dl class="pinfo__grid">
-      {p.description && <p class="pinfo__desc t-sub" data-fade>{p.description}</p>}
-      <div class="pinfo__item" data-fade><dt>{P.category}</dt><dd>{cat}</dd></div>
-      <div class="pinfo__item" data-fade="0.06"><dt>{P.stills}</dt><dd><Num value={pad(stills)} /></dd></div>
-      {films > 0 && <div class="pinfo__item" data-fade="0.12"><dt>{P.films}</dt><dd><Num value={pad(films)} /></dd></div>}
-      <div class="pinfo__item" data-fade="0.18"><dt>{P.year}</dt><dd>2026</dd></div>
-    </dl>
-  </section>
+  {desc && (
+    <section class="pinfo wrap">
+      <p class="pinfo__desc t-sub" data-fade>{desc}</p>
+    </section>
+  )}
 
   <section class="pmedia" aria-label={P.media}>
     {

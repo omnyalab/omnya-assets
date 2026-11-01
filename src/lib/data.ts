@@ -24,6 +24,8 @@ export interface Project {
   videos: Clip[];
   /** Optional, max two lines. Add it to projects.json when ready. */
   description?: string;
+  /** The same two lines in Italian. */
+  descriptionIt?: string;
   /** Shown on the home page. */
   featured?: boolean;
   /** Address under /work, when it differs from the id (renamed projects keep their folders). */

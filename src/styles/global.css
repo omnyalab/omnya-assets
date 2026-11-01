@@ -2404,3 +2404,24 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 .frame, .hsplit { border-radius: 8px; }
 .pm--bleed .frame, .seeall .frame { border-radius: 0; }
 .pcard__media, .wcard .frame { border-radius: 8px; box-shadow: 0 44px 70px -42px rgba(0, 0, 0, 0.42), 0 14px 24px -16px rgba(0, 0, 0, 0.22); }
+
+/* Learn, back to the service (19 A): a pastel card like the bundle, the free sample button */
+.lwe { padding-bottom: var(--section); }
+.lwe__card {
+  display: grid; gap: clamp(20px, 3vw, 32px); justify-items: start; padding: clamp(28px, 5vw, 56px); border-radius: 28px;
+  background:
+    radial-gradient(55% 75% at 12% 30%, rgba(176, 142, 104, 0.28), transparent 70%),
+    radial-gradient(50% 70% at 50% 95%, rgba(255, 160, 120, 0.22), transparent 70%),
+    radial-gradient(55% 80% at 88% 15%, rgba(120, 130, 200, 0.22), transparent 70%), #f4f1eb;
+}
+.lwe__title { max-width: 14ch; }
+
+/* community: the quoted name, then one small line with the Skool logo */
+.lcomm__sub { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 16px; color: var(--mute); font-size: var(--fs-small); }
+.lcomm__sub .lcomm__skool { height: 22px; width: auto; margin: 0; }
+
+/* pricing title on two lines, the grey part never split from its words */
+.phead .mute { display: block; }
+
+/* contact: the calendar opens only from "Book a call" */
+.ct__cal.is-closed { display: none; }

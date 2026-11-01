@@ -1,4 +1,4 @@
-import { gsap, ScrollTrigger, Flip, reduced, fine, isMobile } from './core';
+import { gsap, ScrollTrigger, Flip, reduced, fine, isMobile, lenis } from './core';
 import { onDestroy, inPage } from './anim';
 import { hero } from './hero';
 import { contact } from '../lib/contact';
@@ -171,8 +171,21 @@ export function contactPage() {
     },
     { rootMargin: '0px 0px 150px 0px' }
   );
-  io.observe(box);
-  onDestroy(() => io.disconnect());
+  // the calendar stays closed until "Book a call" opens it, right under the photo
+  const open = (scroll: boolean) => {
+    box.classList.remove('is-closed');
+    ScrollTrigger.refresh();
+    lenis?.resize();
+    io.observe(box);
+    if (!scroll) return;
+    if (lenis && !reduced) lenis.scrollTo(box, { duration: 1.2, offset: -80 });
+    else box.scrollIntoView({ behavior: 'auto' });
+  };
+  const btns = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-book-open]'));
+  const onClick = (e: Event) => { e.preventDefault(); e.stopPropagation(); open(true); };
+  btns.forEach((b) => b.addEventListener('click', onClick));
+  if (location.hash === '#book') open(false);
+  onDestroy(() => { io.disconnect(); btns.forEach((b) => b.removeEventListener('click', onClick)); });
 }
 
 let calendlyP: Promise<void> | null = null;

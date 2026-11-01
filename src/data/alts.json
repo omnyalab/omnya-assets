@@ -180,6 +180,70 @@
       {
         "en": "an ancient stone head in an olive grove at sunrise",
         "it": "una testa antica in pietra in un uliveto all'alba"
+      },
+      {
+        "en": "the resort from above, villas and pools among olive groves",
+        "it": "il resort dall'alto, ville e piscine tra gli uliveti"
+      },
+      {
+        "en": "site plan view from above, paths linking the villas",
+        "it": "vista dall'alto, i sentieri che collegano le ville"
+      },
+      {
+        "en": "the resort at night from above, lit villas on the hill",
+        "it": "il resort di notte dall'alto, ville illuminate sulla collina"
+      },
+      {
+        "en": "night view over the pools and the main buildings",
+        "it": "vista notturna sulle piscine e gli edifici principali"
+      },
+      {
+        "en": "sunken fire pit under an old olive tree by day",
+        "it": "braciere incassato sotto un vecchio ulivo di giorno"
+      },
+      {
+        "en": "guests in the sunken lounge between the villas",
+        "it": "ospiti nel salotto incassato tra le ville"
+      },
+      {
+        "en": "evening by the fire on a villa terrace",
+        "it": "sera davanti al fuoco sulla terrazza di una villa"
+      },
+      {
+        "en": "daybed by a private pool in front of a villa",
+        "it": "daybed accanto alla piscina privata di una villa"
+      },
+      {
+        "en": "villa bedroom opening onto the pool",
+        "it": "camera della villa aperta sulla piscina"
+      },
+      {
+        "en": "spa pool with herbs drying on the wall",
+        "it": "piscina della spa con erbe a seccare sul muro"
+      },
+      {
+        "en": "a hand in the herb water of the spa pool",
+        "it": "una mano nell'acqua alle erbe della piscina spa"
+      },
+      {
+        "en": "reading on a daybed under a stone wall",
+        "it": "lettura su un daybed sotto un muro di pietra"
+      },
+      {
+        "en": "walking the stone path under the olive trees",
+        "it": "passeggiata sul sentiero di pietra sotto gli ulivi"
+      },
+      {
+        "en": "a guest walking through lavender and cypresses",
+        "it": "un'ospite tra lavanda e cipressi"
+      },
+      {
+        "en": "a couple walking down to the villas",
+        "it": "una coppia che scende verso le ville"
+      },
+      {
+        "en": "a linen blanket on a rock among wild herbs",
+        "it": "una coperta di lino su una roccia tra le erbe"
       }
     ]
   },
@@ -263,13 +327,6 @@
       }
     ]
   },
-  "10_greece_retreat": {
-    "cover": {
-      "en": "whitewashed boathouses with coloured doors on the water",
-      "it": "rimesse per barche imbiancate a calce con porte colorate sull'acqua"
-    },
-    "gallery": []
-  },
   "11_naoshima_house": {
     "cover": {
       "en": "aerial view of the concrete house on the wooded shore, with its jetty",
@@ -351,38 +408,6 @@
       {
         "en": "stone reception desk with bar stools",
         "it": "bancone reception in pietra con sgabelli"
-      }
-    ]
-  },
-  "14_mountain_hotel": {
-    "cover": {
-      "en": "lounge and bar with wooden beams and a view of the mountains",
-      "it": "lounge e bar con travi in legno e vista sulle montagne"
-    },
-    "gallery": [
-      {
-        "en": "stone reception desk with guests arriving",
-        "it": "reception in pietra con ospiti in arrivo"
-      }
-    ]
-  },
-  "15_offices": {
-    "cover": {
-      "en": "meeting room with a long wooden table and glazing onto the hills",
-      "it": "sala riunioni con lungo tavolo in legno e vetrate sulle colline"
-    },
-    "gallery": [
-      {
-        "en": "open-plan workspace with desks and a dark fluted wall",
-        "it": "open space con scrivanie e parete scura a cannettatura"
-      },
-      {
-        "en": "break area with a coffee machine and high tables",
-        "it": "area relax con macchina del caffè e tavolini alti"
-      },
-      {
-        "en": "reception with a marble desk and a backlit fluted wall",
-        "it": "reception con bancone in marmo e parete a cannettatura retroilluminata"
       }
     ]
   },

@@ -20,7 +20,7 @@ const num = (v: string) => Number(v.replace(/[^\d]/g, ''));
 const single = num(P.imagesRows[0][1]);
 const money = (n: number) => {
   const g = String(n).replace(/\B(?=(\d{3})+(?!\d))/g, lang === 'it' ? '.' : ',');
-  return lang === 'it' ? `€ ${g}` : `€${g}`;
+  return lang === 'it' ? `${g} €` : `€${g}`;
 };
 const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ? Number(q) * single - num(price) : 0);
 ---
@@ -147,7 +147,6 @@ const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ?
       <img data-src={hygeia.gallery[5].mobile} data-srcset={srcset(hygeia.gallery[5])} sizes="100vw" alt="" decoding="async" />
     </div>
     <div class="pcase__in wrap">
-      <p class="t-small pcase__label" data-fade>{P.caseLabel}</p>
       <h2 class="t-h1 pcase__title" id="case-title" data-split>{P.caseA}{' '}<span class="mute">{P.caseB}</span></h2>
       <div class="pcase__row">
         <p class="t-sub pcase__text" data-fade>{P.caseText}</p>

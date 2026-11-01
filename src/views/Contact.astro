@@ -27,21 +27,21 @@ const links = sampleLinks(lang);
         <div class="ctg__pills d-only" data-fade data-intro>
           <a class="btn btn--white" href={links.whatsapp} target="_blank" rel="noopener">WhatsApp <Arrow diag /></a>
           <a class="btn btn--glass" href={links.email}>Email <Arrow diag /></a>
-          <a class="btn btn--glass" href={contact.phoneHref}>{C.call} <Arrow diag /></a>
+          <a class="btn btn--glass" href="#book" data-book-open>{C.book} <Arrow /></a>
         </div>
         <details class="ctg__more m-only" data-fade data-intro>
           <summary class="btn btn--white">{C.message} <span class="ctg__plus" aria-hidden="true">+</span></summary>
           <div class="ctg__pills">
             <a class="btn btn--glass" href={links.whatsapp} target="_blank" rel="noopener">WhatsApp <Arrow diag /></a>
             <a class="btn btn--glass" href={links.email}>Email <Arrow diag /></a>
-            <a class="btn btn--glass" href={contact.phoneHref}>{C.call} <Arrow diag /></a>
+            <a class="btn btn--glass" href="#book" data-book-open>{C.book} <Arrow /></a>
           </div>
         </details>
       </div>
     </div>
   </section>
 
-  <section class="wrap ct__cal" id="book" data-calendly>
+  <section class="wrap ct__cal is-closed" id="book" data-calendly>
     <div class="label ct__calhead" data-fade>
       <h2 class="t-h3">{C.book}</h2>
       <a class="u" href={contact.calendly} target="_blank" rel="noopener">{C.bookNote}</a>
