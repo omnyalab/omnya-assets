@@ -236,7 +236,6 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
 
   <!-- 7. Kit -->
   <section class="kit wrap" id="kit" aria-labelledby="kit-title">
-    <p class="t-small mute" data-fade>{S.kitLabel}</p>
     <h2 class="t-h2 kit__title" id="kit-title" data-split>{S.kitA}{' '}<span class="mute">{S.kitB}</span></h2>
     <ul class="kit__cards" data-kit data-load-group>
       {
@@ -270,8 +269,6 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
         ))
       }
     </ul>
-    <!-- 8. Websites, on request only -->
-    <p class="kit__web t-small" data-fade>{S.webA} <a class="u" href={webMail}>{S.webLink}</a>{S.webB}</p>
   </section>
 
   <!-- 9. Closing poster -->

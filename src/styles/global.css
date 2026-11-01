@@ -2338,3 +2338,24 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
   .pband .ptable tr.is-best .ptable__pill, .pband .ptable tr.is-best .ptable__save { height: 22px; padding: 0 7px; font-size: 11px; }
   .pband .ptable tr.is-best .ptable__unit { order: 4; width: 100%; }
 }
+
+/* ==========================================================================
+   Round 5 (1/11)
+   ========================================================================== */
+/* Learn hero on phones: one screen, the same sweep as desktop, the title and one button only */
+@media (max-width: 899px) {
+  .js .lhero { height: auto; }
+  .js .lhero__stick { position: relative; }
+  .lhero__sub--main, .lhero__second, .lhero .cmp__rooms, .lhero .cmp__tag { display: none; }
+}
+/* Studio kit: on hover the price sits in the white space above the lifted book, never on it */
+@media (min-width: 900px) and (hover: hover) and (pointer: fine) {
+  .kit__cards { padding-top: 120px; }
+  .kit__item:hover .kit__chip, .kit__item:focus-within .kit__chip { transform: translate(-50%, calc(-100% - 64px)); }
+}
+/* Pricing: the column labels line up with the rows of glass */
+@media (min-width: 900px) {
+  .pband .ptable thead { display: block; }
+  .pband .ptable thead tr { display: grid; grid-template-columns: var(--cols); column-gap: 24px; padding: 0 25px 12px; }
+  .pband .ptable thead th { white-space: nowrap; }
+}

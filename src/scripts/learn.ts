@@ -26,7 +26,8 @@ export function learn() {
   };
 
   const hero = document.querySelector<HTMLElement>('[data-lhero]')!;
-  const phone = window.matchMedia('(max-width: 899px)').matches && !reduced;
+  // Phones play the same sweep as desktop (no scroll runway)
+  const phone = false;
 
   // The sweep: model, then the photo wipes in, and the line rests in the middle
   let sweep: gsap.core.Timeline | null = null;

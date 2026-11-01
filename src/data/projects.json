@@ -688,7 +688,7 @@
         "poster": "/projects/02_villa_cape_town/villa_cape_town_video_03_poster.webp"
       }
     ],
-    "featured": true
+    "featured": false
   },
   {
     "id": "03_ca_dei_colli",
@@ -759,7 +759,7 @@
         "poster": "/projects/03_ca_dei_colli/ca_dei_colli_video_01_poster.webp"
       }
     ],
-    "featured": true
+    "featured": false
   },
   {
     "id": "04_forest_house",
@@ -902,7 +902,7 @@
     "id": "11_naoshima_house",
     "title": "Naoshima House",
     "category": "luxury",
-    "featured": true,
+    "featured": false,
     "cover": {
       "src": "/projects/11_naoshima_house/naoshima_house_cover.webp",
       "mobile": "/projects/11_naoshima_house/naoshima_house_cover_mobile.webp",

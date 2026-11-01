@@ -102,7 +102,7 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
           )
         }
         <div class="lhero__row">
-          <p class="t-sub lhero__sub" data-fade>{w ? L.freeSub : L.heroSub}</p>
+          <p class:list={['t-sub lhero__sub', { 'lhero__sub--main': !w }]} data-fade>{w ? L.freeSub : L.heroSub}</p>
           <div class="lhero__ctas" data-fade>
             {
               w ? (
@@ -111,7 +111,7 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
                 <a class="btn btn--fill" href="#books">{L.heroBooks} <Arrow /></a>
               )
             }
-            <a class="btn btn--light" href={w ? '#books' : '#lessons'}>{w ? L.heroBooks : L.heroLesson} <Arrow /></a>
+            <a class="btn btn--light lhero__second" href={w ? '#books' : '#lessons'}>{w ? L.heroBooks : L.heroLesson} <Arrow /></a>
           </div>
         </div>
         <div class="cmp__rooms" role="group" aria-label={L.compareHandle} data-fade>
