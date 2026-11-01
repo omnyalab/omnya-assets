@@ -29,8 +29,8 @@ const townhall = projects.find((p) => p.id === '17_the_townhall')!;
 // What each offer looks like: a lesson on a real project, the books, the studio's work, the community
 const visual = (id: string) => {
   if (id === 'rest-30' || id === 'rest-50') return { kind: 'books' as const };
-  if (id === 'session-reader') return { kind: 'pic' as const, src: '/learn/cresta_living_real_mobile.webp', badge: L.lessons[0].time };
-  if (id === 'build-upgrade') return { kind: 'pic' as const, src: '/learn/cresta_pool_real_mobile.webp', badge: L.lessons[1].time };
+  if (id === 'session-reader') return { kind: 'pic' as const, src: '/learn/dev_rooftop.webp', badge: L.lessons[0].time };
+  if (id === 'build-upgrade') return { kind: 'pic' as const, src: '/learn/burt_night_real_mobile.webp', badge: L.lessons[1].time };
   if (id === 'sample') return { kind: 'pic' as const, src: townhall.cover.mobile, badge: lang === 'it' ? '0 €' : '€0' };
   return { kind: 'skool' as const };
 };
@@ -47,7 +47,8 @@ const bookIds = ['white-to-real', 'reel', 'before-it-exists'];
 
     <header class="oto__head">
       <p class="oto__done" data-fade>{X.headA}</p>
-      <h1 class="t-h1 oto__title" data-split="intro">{X.headB}</h1>
+      <h1 class="t-h2 oto__title" data-split="intro">{X.only} <span class="mute">{X.headB}</span></h1>
+      <span class="oto__down" aria-hidden="true">↓</span>
     </header>
 
     <article class="oto__card" data-fade>
@@ -68,12 +69,10 @@ const bookIds = ['white-to-real', 'reel', 'before-it-exists'];
         }
       </div>
       <div class="oto__body">
-        <p class="oto__only">{X.only}</p>
         <h2 class="t-h2 oto__name">{oto.a} <span class="mute">{oto.b}</span></h2>
         <p class="oto__price">
           <span class="oto__now">{oto.price}</span>
           {otoX.strike && <s class="oto__was">{otoX.strike}</s>}
-          {otoX.save && <span class="oto__save">{X.save} {otoX.save}</span>}
         </p>
         <ul class="oto__items">{otoX.items.map((it) => <li>{it}</li>)}</ul>
         <a class="btn btn--fill oto__yes" href={goHref(flow.oto, lang)}>{oto.cta} <Arrow /></a>

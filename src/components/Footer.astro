@@ -1,48 +1,54 @@
 ---
-import { contact } from '../lib/contact';
+// F2 (1/11): the offer as the title, the address under it, four columns of links, no downloads.
+import { contact, sampleLinks } from '../lib/contact';
 import SampleCta from './SampleCta.astro';
 import { t, langFromPath, localize } from '../i18n';
-import { kit } from '../lib/kit';
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
-const files = kit(lang);
+const F = T.footer;
+const wa = sampleLinks(lang).whatsapp;
 const year = new Date().getFullYear();
+const pages = [
+  ['/work', T.nav.work],
+  ['/studio', T.nav.studio],
+  ['/pricing', T.nav.pricing],
+  ['/learn', T.nav.learn],
+  ['/contact', T.nav.contact],
+] as const;
 ---
 
 <footer class="ftr" data-header="light">
   <div class="ftr__in" data-ftr>
-    <p class="ftr__kicker t-sub"><span>{T.footer.kickerA}</span> <span>{T.footer.kickerB}</span></p>
+    <p class="ftr__kicker"><span>{F.kickerA}</span> <span>{F.kickerB}</span></p>
     <a class="ftr__mail" href={`mailto:${contact.email}`}><span class="u">{contact.email}</span></a>
 
     <div class="ftr__grid">
       <div>
-        <h2>{T.footer.call}</h2>
+        <h2>{F.pages}</h2>
+        <ul>{pages.map(([h, n]) => <li><a class="u" href={localize(h, lang)}>{n}</a></li>)}</ul>
+      </div>
+      <div>
+        <h2>{F.learn}</h2>
         <ul>
-          <li><a class="u" href={contact.phoneHref}>{contact.phone}</a></li>
-          <li class="ftr__note">{T.phoneNote}</li>
+          <li><a class="u" href={`${localize('/learn', lang)}#books`}>{F.playbooks}</a></li>
+          <li><a class="u" href={`${localize('/learn', lang)}#lessons`}>{F.lessons}</a></li>
+          <li><a class="u" href={`${localize('/learn', lang)}#comm-title`}>{F.community}</a></li>
         </ul>
       </div>
       <div>
-        <h2>{T.footer.studio}</h2>
+        <h2>{F.contact}</h2>
+        <ul>
+          <li><a class="u" href={`mailto:${contact.email}`}>{contact.email}</a></li>
+          <li><a class="u" href={wa} target="_blank" rel="noopener">WhatsApp</a></li>
+          <li><a class="u" href={`${localize('/contact', lang)}#book`}>{F.book}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>{F.studio}</h2>
         <ul>
           <li>{T.places}</li>
-          <li class="ftr__note" data-clocks>
-            <span data-tz="Europe/Rome" data-city={T.venice}>{T.venice} --:--</span> · <span data-tz="Asia/Dubai" data-city={T.dubai}>{T.dubai} --:--</span>
-          </li>
-        </ul>
-      </div>
-      <div>
-        <h2>{T.footer.follow}</h2>
-        <ul>
           <li><a class="u" href={contact.instagram} target="_blank" rel="noopener">Instagram</a></li>
           <li><a class="u" href={contact.linkedin} target="_blank" rel="noopener">LinkedIn</a></li>
-          <li><a class="u" href={contact.calendly} target="_blank" rel="noopener">{T.footer.book}</a></li>
-        </ul>
-      </div>
-      <div>
-        <h2>{T.footer.kit}</h2>
-        <ul>
-          {files.map((f) => <li><a class="u" href={f.href} download={f.file}>{f.name}</a> <span class="ftr__note">PDF, {f.size}</span></li>)}
         </ul>
       </div>
       <div class="ftr__cta">

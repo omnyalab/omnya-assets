@@ -22,6 +22,8 @@ const money = (n: number) => {
   const g = String(n).replace(/\B(?=(\d{3})+(?!\d))/g, lang === 'it' ? '.' : ',');
   return lang === 'it' ? `${g} €` : `€${g}`;
 };
+// the same views at the single price, struck through next to the real one (also the monthly plan)
+const perUnit = (q: string) => Number(q.match(/^\d+/)?.[0] ?? 0);
 const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ? Number(q) * single - num(price) : 0);
 ---
 
@@ -35,7 +37,7 @@ const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ?
   <!-- Images -->
   <section class="prices wrap" aria-labelledby="images-title">
     <h2 class="t-h3 prices__title" id="images-title" data-split>{P.imagesA}{' '}<span class="mute">{P.imagesB}</span></h2>
-    <table class="ptable" data-fade>
+    <table class="ptable ptable--images" data-fade>
       <caption class="sr-only">{P.imagesA}, {P.imagesB}</caption>
       <thead>
         <tr>{P.imagesCols.map((c) => <th scope="col">{c}</th>)}</tr>
@@ -47,9 +49,13 @@ const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ?
               <th scope="row" class="ptable__q">
                 {i === bestRow && <span class="ptable__pill">{P.best}</span>}
                 <span class="ptable__qn">{q}<span class="ptable__unit">{q === '1' ? P.imagesUnit[0] : P.imagesUnit[1]}</span></span>
-                {saving(q, price) > 0 && <span class="ptable__save">{P.save} {money(saving(q, price))}</span>}
+                {saving(q, price) > 0 && <span class="ptable__save d-only">{P.save} {money(saving(q, price))}</span>}
               </th>
-              <td class="ptable__price">{price}</td>
+              <td class="ptable__price">
+                {perUnit(q) > 1 && <s class="ptable__was">{money(perUnit(q) * single)}</s>}
+                {price}
+                {saving(q, price) > 0 && <span class="ptable__save m-only">{P.save} {money(saving(q, price))}</span>}
+              </td>
               <td class="ptable__each" data-label={P.imagesCols[2]}>{each}</td>
             </tr>
           ))

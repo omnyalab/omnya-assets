@@ -2298,7 +2298,7 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 @media (max-width: 899px) { .ctg { align-items: end; } .ctg__bg::after { background: linear-gradient(180deg, rgba(10, 10, 10, 0.3), rgba(10, 10, 10, 0.78) 50%, rgba(10, 10, 10, 0.9)); } }
 /* C3: no card, the words sit straight on the photo */
 .ctg__card { max-width: 900px; }
-.ctg__title { max-width: 16ch; }
+.ctg__title { max-width: 24ch; }
 .ctg__title .mute { color: rgba(255, 255, 255, 0.7); }
 .ctg__mail { display: block; margin-top: clamp(18px, 3vw, 28px); font-size: clamp(1.7rem, 6.4vw, 4rem); line-height: 1; letter-spacing: -0.045em; overflow-wrap: anywhere; }
 .ctg__pills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: clamp(22px, 3vw, 32px); }
@@ -2425,3 +2425,96 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 
 /* contact: the calendar opens only from "Book a call" */
 .ct__cal.is-closed { display: none; }
+
+/* ==========================================================================
+   Buttons (1/11): terracotta for every main button, soft light like Apple,
+   no outline; the others white and frosted; the arrow goes up and right
+   ========================================================================== */
+:root { --cta: #b8613c; --cta-hi: #c56b44; --cta-glow: rgba(169, 84, 47, 0.5); }
+.btn {
+  border-color: transparent; background: rgba(255, 255, 255, 0.72);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
+  box-shadow: 0 1px 1px rgba(30, 24, 16, 0.06), 0 8px 18px -10px rgba(30, 24, 16, 0.3);
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease), background-color 0.5s var(--ease), color 0.5s var(--ease);
+}
+.btn::before { display: none; }
+.btn:active { transform: scale(0.97); }
+@media (hover: hover) {
+  .btn:hover { transform: translateY(-1px); color: var(--ink); border-color: transparent; background-color: #fff; box-shadow: 0 2px 4px rgba(30, 24, 16, 0.08), 0 14px 26px -12px rgba(30, 24, 16, 0.38); }
+  .btn:hover .btn__arrow { transform: translate(2px, -2px); }
+}
+.btn--fill, .btn--white, .btn[data-sample],
+.lhero .btn--fill, .lbundle .btn--fill, .lles__card .btn--fill, .hdr .btn[data-sample] {
+  color: #fff !important; border-color: transparent !important;
+  background: radial-gradient(120% 160% at 50% -30%, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 55%), var(--cta) !important;
+  box-shadow: 0 1px 1px rgba(90, 35, 12, 0.2), 0 10px 22px -10px var(--cta-glow) !important;
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+}
+@media (hover: hover) {
+  .btn--fill:hover, .btn--white:hover, .btn[data-sample]:hover, .lles__card .btn--fill:hover, .lbundle .btn--fill:hover, .lhero .btn--fill:hover {
+    color: #fff !important;
+    background: radial-gradient(120% 160% at 50% -30%, rgba(255, 255, 255, 0.36), rgba(255, 255, 255, 0) 55%), var(--cta-hi) !important;
+    box-shadow: 0 2px 4px rgba(90, 35, 12, 0.22), 0 16px 30px -12px var(--cta-glow) !important;
+  }
+}
+/* on photos and dark bands: frosted, no outline */
+.btn--glass, .btn--light, .hdr.is-light .btn:not([data-sample]) {
+  color: #fff; border-color: transparent; background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 8px 18px -10px rgba(0, 0, 0, 0.4);
+}
+@media (hover: hover) { .btn--glass:hover, .btn--light:hover { color: #fff; background-color: rgba(255, 255, 255, 0.26); } }
+
+/* pricing, P6 (1/11): no price per view; the real price of the same views struck through;
+   the best row in the warm gradient, the others as they were; on phones "You save" under the price */
+.ptable--images th:nth-child(3), .ptable--images .ptable__each { display: none !important; }
+.ptable__was { display: block; font-size: 0.36em; line-height: 1; color: var(--mute); text-decoration-thickness: 1.5px; margin-bottom: 6px; letter-spacing: -0.01em; }
+@media (min-width: 900px) { .ptable__was { display: inline; margin: 0 0.5em 0 0; vertical-align: 0.5em; } }
+.ptable__price .ptable__save { display: inline-flex; margin-top: 8px; font-size: 12px; }
+@media (max-width: 899px) { .ptable__price { display: flex; flex-direction: column; align-items: flex-end; } }
+.pband .ptable tr.is-best, .ptable tr.is-best {
+  color: var(--ink); border-color: transparent;
+  background:
+    radial-gradient(60% 80% at 15% 20%, rgba(214, 150, 96, 0.34), transparent 70%),
+    radial-gradient(55% 70% at 60% 100%, rgba(255, 140, 110, 0.26), transparent 70%),
+    radial-gradient(55% 80% at 92% 10%, rgba(150, 120, 210, 0.26), transparent 70%), #f6eee6;
+  box-shadow: 0 30px 60px -34px rgba(120, 80, 60, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* the one offer after a purchase, O3 lighter (1/11): heading on the left, the card in the light warm gradient,
+   the saving in full green, "Only on this page" in the button colour, the time label dark so it reads */
+.oto__head { text-align: left; }
+.oto__title { margin: 8px 0 0; max-width: none; font-size: var(--fs-h2); }
+.oto__card {
+  background:
+    radial-gradient(55% 75% at 12% 30%, rgba(176, 142, 104, 0.22), transparent 70%),
+    radial-gradient(50% 70% at 50% 95%, rgba(255, 160, 120, 0.18), transparent 70%),
+    radial-gradient(55% 80% at 88% 15%, rgba(120, 130, 200, 0.18), transparent 70%), #f6f2ec;
+  box-shadow: 0 40px 70px -44px rgba(120, 80, 60, 0.45);
+}
+.oto__body { background: transparent; }
+.oto__save { height: 36px; padding: 0 16px; font-size: 1rem; background: #1f6b35; color: #fff; }
+.oto__only { background: var(--cta); color: #fff; }
+.oto__badge { background: rgba(17, 17, 17, 0.62); border-color: transparent; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+
+/* footer F2 (1/11): the offer is the title, the address smaller under it */
+.ftr__kicker { font-size: var(--fs-h1); line-height: 0.92; letter-spacing: -0.045em; color: rgba(255, 255, 255, 0.5); margin-bottom: 0; }
+.ftr__mail { font-size: clamp(1.5rem, 3vw, 2.6rem); margin-top: clamp(18px, 2.4vw, 28px); white-space: normal; }
+.ftr a.u { display: inline-flex; align-items: center; min-height: 44px; }
+@media (min-width: 900px) { .ftr a.u { min-height: 30px; } }
+
+/* contact title: two lines, the grey one under the black one */
+.ctg__title .mute { display: block; }
+
+/* one offer page (1/11 late): "Only on this page" is the title with an arrow that pulls you down,
+   no saving pill; the page itself in a warm sunset light so it invites to buy */
+.oto__title .mute { display: block; }
+.oto__down { display: inline-grid; place-items: center; width: 44px; height: 44px; margin-top: 18px; border-radius: 50%; background: var(--cta); color: #fff; font-size: 20px; animation: otoDown 1.8s var(--ease) infinite; }
+@keyframes otoDown { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .oto__down { animation: none; } }
+html[data-page='thanks'] body {
+  background:
+    radial-gradient(70% 50% at 85% 0%, rgba(232, 150, 110, 0.32), transparent 70%),
+    radial-gradient(60% 50% at 0% 40%, rgba(214, 170, 120, 0.28), transparent 70%),
+    radial-gradient(70% 60% at 60% 100%, rgba(190, 150, 210, 0.22), transparent 70%), #f2e7dc;
+}
+html[data-page='thanks'] .oto__card { background: rgba(255, 255, 255, 0.78); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }

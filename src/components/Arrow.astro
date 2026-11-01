@@ -1,19 +1,12 @@
 ---
+// The button arrow: always up and to the right (Nico, 1/11). `diag` stays for older calls.
 interface Props {
   diag?: boolean;
   class?: string;
 }
-const { diag = false, class: cls = 'btn__arrow' } = Astro.props;
+const { class: cls = 'btn__arrow' } = Astro.props;
 ---
 
-{
-  diag ? (
-    <svg class={cls} viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path d="M2 12L12 2M4.5 2H12v7.5" stroke="currentColor" />
-    </svg>
-  ) : (
-    <svg class={cls} viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" />
-    </svg>
-  )
-}
+<svg class={cls} viewBox="0 0 14 14" fill="none" aria-hidden="true">
+  <path d="M2 12L12 2M4.5 2H12v7.5" stroke="currentColor" />
+</svg>
