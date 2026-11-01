@@ -40,10 +40,10 @@ const links = sampleLinks(lang);
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {page !== '404' && <link rel="canonical" href={canonical} />}
     <meta name="theme-color" content="#EDEAE4" />
-    {langs.map((l) => <link rel="alternate" hreflang={l} href={new URL(localize(path, l), Astro.site)} />)}
-    <link rel="alternate" hreflang="x-default" href={new URL(localize(path, 'en'), Astro.site)} />
+    {page !== '404' && langs.map((l) => <link rel="alternate" hreflang={l} href={new URL(localize(path, l), Astro.site)} />)}
+    {page !== '404' && <link rel="alternate" hreflang="x-default" href={new URL(localize(path, 'en'), Astro.site)} />}
     <!-- browsers take the last icon that fits: SVG after PNG, the dark tab variant last -->
     <link rel="shortcut icon" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />

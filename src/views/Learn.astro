@@ -64,7 +64,7 @@ const buyData = (b: { id: string; a: string; b: string; price: string }) => ({
 const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mobile.webp', '/learn/dev_dusk_mobile.webp'];
 ---
 
-<Base page="learn" title={w ? `${L.heroA} ${L.heroB} · ${w.label}` : `${L.heroA} ${L.heroB}`} description={L.description}>
+<Base page="learn" title={w ? `${L.heroA} ${L.heroB} · ${w.label}` : `${L.heroA} ${L.heroB}`} description={L.description} noindex={!!w}>
   <!-- Hero: the 3D model over the final image, full screen -->
   <section class="lhero" data-header="light" data-header-media aria-labelledby="learn-title" data-lhero>
     <div class="lhero__stick">

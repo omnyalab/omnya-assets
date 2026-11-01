@@ -21,4 +21,14 @@ const N = t(lang).notFound;
       </p>
     </div>
   </section>
+  <!-- Vercel serves this one page for every missing address: under /it/ it speaks Italian -->
+  <script is:inline define:vars={{ it: { a: 'Questa pagina', b: 'non esiste ancora', back: 'Torna alla home' } }}>
+    if (location.pathname.startsWith('/it/') && document.documentElement.lang !== 'it') {
+      document.documentElement.lang = 'it';
+      const h = document.querySelector('.nf h1');
+      if (h) h.innerHTML = it.a + ' <span class="mute">' + it.b + '</span>';
+      const a = document.querySelector('.nf__btn a');
+      if (a) { a.setAttribute('href', '/it'); a.firstChild.nodeValue = it.back + ' '; }
+    }
+  </script>
 </Base>
