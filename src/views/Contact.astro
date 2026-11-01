@@ -24,11 +24,19 @@ const links = sampleLinks(lang);
       <div class="ctg__card">
         <h1 class="t-h2 ctg__title" data-fade data-intro>{C.titleA} <span class="mute">{C.titleB}</span></h1>
         <a class="ctg__mail" href={`mailto:${contact.email}`} data-fade data-intro><span class="u">{contact.email}</span></a>
-        <div class="ctg__pills" data-fade data-intro>
+        <div class="ctg__pills d-only" data-fade data-intro>
           <a class="btn btn--white" href={links.whatsapp} target="_blank" rel="noopener">WhatsApp <Arrow diag /></a>
           <a class="btn btn--glass" href={links.email}>Email <Arrow diag /></a>
           <a class="btn btn--glass" href={contact.phoneHref}>{C.call} <Arrow diag /></a>
         </div>
+        <details class="ctg__more m-only" data-fade data-intro>
+          <summary class="btn btn--white">{C.message} <span class="ctg__plus" aria-hidden="true">+</span></summary>
+          <div class="ctg__pills">
+            <a class="btn btn--glass" href={links.whatsapp} target="_blank" rel="noopener">WhatsApp <Arrow diag /></a>
+            <a class="btn btn--glass" href={links.email}>Email <Arrow diag /></a>
+            <a class="btn btn--glass" href={contact.phoneHref}>{C.call} <Arrow diag /></a>
+          </div>
+        </details>
       </div>
     </div>
   </section>

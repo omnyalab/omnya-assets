@@ -2051,7 +2051,7 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 .lcomm h2 { line-height: 0.9; }
 .lcomm__skool { height: calc(var(--fs-h1) * 0.82); margin-top: calc(var(--fs-h1) * 0.06); }
 
-/* lessons, L1: two pastel cards on paper like the bundle; Build, our pick, warmer and outlined like the best price row */
+/* lessons, L1: two pastel cards on paper like the bundle; Build, our pick, in warmer colours */
 .lles { padding-block: var(--section); }
 .lles__title { max-width: 14ch; margin-bottom: clamp(36px, 5vw, 64px); }
 .lles__grid { display: grid; gap: 16px; }
@@ -2065,7 +2065,6 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
   box-shadow: 0 30px 60px -40px rgba(30, 24, 16, 0.35);
 }
 .lles__card.is-pick {
-  border-color: var(--ink);
   background:
     radial-gradient(60% 80% at 15% 20%, rgba(214, 150, 96, 0.42), transparent 70%),
     radial-gradient(55% 70% at 60% 100%, rgba(255, 140, 110, 0.34), transparent 70%),
@@ -2081,7 +2080,6 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 .lles__items li::before { content: ''; position: absolute; left: 0; top: 14px; width: 18px; height: 18px; border-radius: 50%; background: var(--ink); }
 .lles__items li::after { content: ''; position: absolute; left: 6px; top: 17px; width: 4px; height: 8px; border: solid #fff; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
 .lles__card .btn { margin-top: auto; }
-.lles__card:not(.is-pick) .btn { border-color: var(--ink); }
 .lles__note { margin-top: 22px; color: var(--mute); max-width: 60ch; }
 .btn--white { background: #fff; border-color: #fff; color: var(--ink); }
 .btn--white::before { background: var(--ink); }
@@ -2296,14 +2294,24 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 .ctg { position: relative; min-height: 100svh; display: grid; align-items: center; overflow: hidden; isolation: isolate; color: #fff; padding-block: 120px 64px; }
 .ctg__bg { position: absolute; inset: 0; z-index: -1; }
 .ctg__bg img { width: 100%; height: 100%; object-fit: cover; }
-.ctg__bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10, 10, 10, 0.7), rgba(10, 10, 10, 0.35) 60%, rgba(10, 10, 10, 0.12)); }
-@media (max-width: 899px) { .ctg { align-items: end; } .ctg__bg::after { background: linear-gradient(180deg, rgba(10, 10, 10, 0.2), rgba(10, 10, 10, 0.65) 55%, rgba(10, 10, 10, 0.8)); } }
+.ctg__bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10, 10, 10, 0.82), rgba(10, 10, 10, 0.55) 55%, rgba(10, 10, 10, 0.3)), rgba(10, 10, 10, 0.12); }
+@media (max-width: 899px) { .ctg { align-items: end; } .ctg__bg::after { background: linear-gradient(180deg, rgba(10, 10, 10, 0.3), rgba(10, 10, 10, 0.78) 50%, rgba(10, 10, 10, 0.9)); } }
 /* C3: no card, the words sit straight on the photo */
 .ctg__card { max-width: 900px; }
 .ctg__title { max-width: 16ch; }
 .ctg__title .mute { color: rgba(255, 255, 255, 0.7); }
 .ctg__mail { display: block; margin-top: clamp(18px, 3vw, 28px); font-size: clamp(1.7rem, 6.4vw, 4rem); line-height: 1; letter-spacing: -0.045em; overflow-wrap: anywhere; }
 .ctg__pills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: clamp(22px, 3vw, 32px); }
+/* phones: one button, the three ways open under it */
+.ctg__more { margin-top: 24px; }
+.ctg__more summary { list-style: none; cursor: pointer; }
+.ctg__more summary::-webkit-details-marker { display: none; }
+.ctg__more summary .ctg__plus { font-size: 1.25rem; line-height: 1; transition: transform 0.5s var(--ease); }
+.ctg__more[open] summary .ctg__plus { transform: rotate(45deg); }
+.ctg__more .ctg__pills { margin-top: 12px; flex-direction: column; align-items: stretch; }
+.ctg__more .ctg__pills .btn { justify-content: space-between; }
+.ctg__more[open] .ctg__pills { animation: ctgOpen 0.5s var(--ease) both; }
+@keyframes ctgOpen { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 .ct__cal { padding-top: var(--section); }
 
 /* ---------- 404 (G2): half our 3D, half the photo ---------- */
