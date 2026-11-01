@@ -2051,33 +2051,38 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 .lcomm h2 { line-height: 0.9; }
 .lcomm__skool { height: calc(var(--fs-h1) * 0.82); margin-top: calc(var(--fs-h1) * 0.06); }
 
-/* lessons, L3: frosted glass cards over a darkened photo; one continuous glass per card */
-.lles { position: relative; overflow: hidden; color: #fff; padding-block: var(--section); padding-inline: 0; }
-.lles__bg { position: absolute; inset: 0; }
-.lles__bg img { width: 100%; height: 100%; object-fit: cover; }
-.lles__bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 10, 10, 0.55) 0%, rgba(10, 10, 10, 0.38) 45%, rgba(10, 10, 10, 0.58) 100%); }
-.lles__in { position: relative; }
+/* lessons, L1: two pastel cards on paper like the bundle; Build, our pick, warmer and outlined like the best price row */
+.lles { padding-block: var(--section); }
 .lles__title { max-width: 14ch; margin-bottom: clamp(36px, 5vw, 64px); }
-.lles__title .mute { color: rgba(255, 255, 255, 0.62); }
-.lles__grid { display: grid; gap: 18px; }
+.lles__grid { display: grid; gap: 16px; }
 @media (min-width: 900px) { .lles__grid { grid-template-columns: 1fr 1fr; gap: var(--g); } }
 .lles__card {
-  display: flex; flex-direction: column; align-items: flex-start; padding: clamp(26px, 3vw, 44px); border-radius: 26px; color: #fff;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.08));
-  border: 1px solid rgba(255, 255, 255, 0.34);
-  -webkit-backdrop-filter: blur(28px) saturate(1.5); backdrop-filter: blur(28px) saturate(1.5);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 40px 80px -40px rgba(0, 0, 0, 0.55);
+  display: flex; flex-direction: column; align-items: flex-start; padding: clamp(26px, 3vw, 44px); border-radius: 28px; border: 1.5px solid transparent;
+  background:
+    radial-gradient(55% 75% at 12% 30%, rgba(176, 142, 104, 0.22), transparent 70%),
+    radial-gradient(50% 70% at 50% 95%, rgba(255, 160, 120, 0.16), transparent 70%),
+    radial-gradient(55% 80% at 88% 15%, rgba(120, 130, 200, 0.16), transparent 70%), #f4f1eb;
+  box-shadow: 0 30px 60px -40px rgba(30, 24, 16, 0.35);
 }
-.lles__card.is-dark { background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.08)); }
-.lles__time { color: rgba(255, 255, 255, 0.72); }
+.lles__card.is-pick {
+  border-color: var(--ink);
+  background:
+    radial-gradient(60% 80% at 15% 20%, rgba(214, 150, 96, 0.42), transparent 70%),
+    radial-gradient(55% 70% at 60% 100%, rgba(255, 140, 110, 0.34), transparent 70%),
+    radial-gradient(55% 80% at 92% 10%, rgba(150, 120, 210, 0.32), transparent 70%), #f6eee6;
+  box-shadow: 0 44px 80px -42px rgba(30, 24, 16, 0.5);
+}
+.lles__pick { display: inline-flex; align-items: center; height: 28px; padding: 0 12px; margin-bottom: 16px; border-radius: 999px; background: var(--ink); color: var(--bg); }
+.lles__time { color: var(--mute); }
 .lles__price { font-size: var(--fs-h1); line-height: 0.9; letter-spacing: -0.045em; margin-top: clamp(16px, 2.4vw, 32px); font-variant-numeric: tabular-nums; }
 .lles__items { list-style: none; margin: clamp(18px, 2.4vw, 28px) 0 28px; padding: 0; width: 100%; }
-.lles__items li { position: relative; padding: 12px 0 12px 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); line-height: 1.4; }
-.lles__items li:last-child { border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
-.lles__items li::before { content: ''; position: absolute; left: 0; top: 14px; width: 18px; height: 18px; border-radius: 50%; background: #fff; }
-.lles__items li::after { content: ''; position: absolute; left: 6px; top: 17px; width: 4px; height: 8px; border: solid var(--ink); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
+.lles__items li { position: relative; padding: 12px 0 12px 30px; border-top: 1px solid rgba(17, 17, 17, 0.12); line-height: 1.4; }
+.lles__items li:last-child { border-bottom: 1px solid rgba(17, 17, 17, 0.12); }
+.lles__items li::before { content: ''; position: absolute; left: 0; top: 14px; width: 18px; height: 18px; border-radius: 50%; background: var(--ink); }
+.lles__items li::after { content: ''; position: absolute; left: 6px; top: 17px; width: 4px; height: 8px; border: solid #fff; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
 .lles__card .btn { margin-top: auto; }
-.lles__note { margin-top: 22px; color: rgba(255, 255, 255, 0.75); max-width: 60ch; }
+.lles__card:not(.is-pick) .btn { border-color: var(--ink); }
+.lles__note { margin-top: 22px; color: var(--mute); max-width: 60ch; }
 .btn--white { background: #fff; border-color: #fff; color: var(--ink); }
 .btn--white::before { background: var(--ink); }
 @media (hover: hover) { .btn--white:hover { color: #fff; border-color: #fff; } }
@@ -2291,15 +2296,11 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 .ctg { position: relative; min-height: 100svh; display: grid; align-items: center; overflow: hidden; isolation: isolate; color: #fff; padding-block: 120px 64px; }
 .ctg__bg { position: absolute; inset: 0; z-index: -1; }
 .ctg__bg img { width: 100%; height: 100%; object-fit: cover; }
-.ctg__bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10, 10, 10, 0.6), rgba(10, 10, 10, 0.25) 60%, rgba(10, 10, 10, 0.1)); }
-.ctg__card {
-  max-width: 760px; border-radius: 28px; padding: clamp(26px, 4vw, 48px);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.08));
-  border: 1px solid rgba(255, 255, 255, 0.34);
-  -webkit-backdrop-filter: blur(28px) saturate(1.5); backdrop-filter: blur(28px) saturate(1.5);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 40px 80px -40px rgba(0, 0, 0, 0.55);
-}
-.ctg__title { max-width: 22ch; }
+.ctg__bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10, 10, 10, 0.7), rgba(10, 10, 10, 0.35) 60%, rgba(10, 10, 10, 0.12)); }
+@media (max-width: 899px) { .ctg { align-items: end; } .ctg__bg::after { background: linear-gradient(180deg, rgba(10, 10, 10, 0.2), rgba(10, 10, 10, 0.65) 55%, rgba(10, 10, 10, 0.8)); } }
+/* C3: no card, the words sit straight on the photo */
+.ctg__card { max-width: 900px; }
+.ctg__title { max-width: 16ch; }
 .ctg__title .mute { color: rgba(255, 255, 255, 0.7); }
 .ctg__mail { display: block; margin-top: clamp(18px, 3vw, 28px); font-size: clamp(1.7rem, 6.4vw, 4rem); line-height: 1; letter-spacing: -0.045em; overflow-wrap: anywhere; }
 .ctg__pills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: clamp(22px, 3vw, 32px); }

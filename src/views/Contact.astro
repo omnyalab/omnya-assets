@@ -15,14 +15,14 @@ const links = sampleLinks(lang);
     <link rel="preconnect" href="https://assets.calendly.com" />
   </Fragment>
 
-  <!-- F1: one of our photos edge to edge, a sheet of glass with the ways to reach us -->
+  <!-- C3: one of our photos edge to edge, the ways to reach us written straight on it -->
   <section class="ctg" data-header="light" data-header-media>
     <div class="ctg__bg" aria-hidden="true">
       <img src="/learn/dev_sunset_mobile.webp" srcset="/learn/dev_sunset_mobile.webp 960w, /learn/dev_sunset.webp 1920w" sizes="100vw" alt="" fetchpriority="high" decoding="async" />
     </div>
     <div class="ctg__in wrap">
       <div class="ctg__card">
-        <h1 class="t-h3 ctg__title" data-fade data-intro>{C.titleA} <span class="mute">{C.titleB}</span></h1>
+        <h1 class="t-h2 ctg__title" data-fade data-intro>{C.titleA} <span class="mute">{C.titleB}</span></h1>
         <a class="ctg__mail" href={`mailto:${contact.email}`} data-fade data-intro><span class="u">{contact.email}</span></a>
         <div class="ctg__pills" data-fade data-intro>
           <a class="btn btn--white" href={links.whatsapp} target="_blank" rel="noopener">WhatsApp <Arrow diag /></a>

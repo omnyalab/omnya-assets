@@ -203,17 +203,15 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
     </div>
   </section>
 
-  <!-- Private lessons: glass cards over one of our photos -->
-  <section class="lles" id="lessons" aria-labelledby="lessons-title" data-header="light">
-    <div class="lles__bg" aria-hidden="true">
-      <img data-src="/learn/burt_living_real_mobile.webp" data-srcset="/learn/burt_living_real_mobile.webp 760w, /learn/burt_living_real.webp 1920w" sizes="100vw" alt="" decoding="async" />
-    </div>
+  <!-- Private lessons: two pastel cards on paper, Build marked as our pick -->
+  <section class="lles" id="lessons" aria-labelledby="lessons-title">
     <div class="lles__in wrap">
       <h2 class="t-h2 lles__title" id="lessons-title" data-split>{L.lessonsA}{' '}<span class="mute">{L.lessonsB}</span></h2>
       <div class="lles__grid">
         {
           L.lessons.map((l, i) => (
-            <article class="lles__card" data-fade>
+            <article class:list={['lles__card', { 'is-pick': i === 1 }]} data-fade>
+              {i === 1 && <p class="t-small lles__pick">{T.pricing.recommended}</p>}
               <header class="lles__head">
                 <h3 class="t-h3">{l.name}</h3>
                 <p class="t-small lles__time">{l.time}</p>
@@ -222,7 +220,7 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
               <ul class="lles__items">
                 {l.items.map((it) => <li>{it}</li>)}
               </ul>
-              <a class:list={['btn', i === 1 ? 'btn--white' : 'btn--glass']} href={go(l.id as ProductId)}>{L.book} {l.name} <Arrow /></a>
+              <a class:list={['btn', { 'btn--fill': i === 1 }]} href={go(l.id as ProductId)}>{L.book} {l.name} <Arrow /></a>
             </article>
           ))
         }
