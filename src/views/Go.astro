@@ -13,6 +13,8 @@ const lang = langFromPath(Astro.url.pathname);
 const L = t(lang).learn;
 const id = Astro.props.id as ProductId;
 const product = products.find((p) => p.id === id)!;
+// The Blueprint has its own Italian file.
+const link = id === 'free' && lang === 'it' ? product.checkout.replace('.pdf', '-it.pdf') : product.checkout;
 const book = L.books.find((b) => b.id === id);
 const lesson = L.lessons.find((l) => l.id === id);
 const offer = (L.thanks.offers as Record<string, { a: string; b: string; price: string }>)[id];
@@ -35,8 +37,8 @@ const fallbacks = Object.fromEntries(['', '3d', 'ai', 'claude', 'dubai'].map((k)
     {import.meta.env.PROD && <script is:inline defer src="/_vercel/insights/script.js"></script>}
   </head>
   <body>
-    <p><a href={product.checkout || fallbacks['']} data-go>{name} →</a></p>
-    <script is:inline define:vars={{ checkout: product.checkout, fallbacks }}>
+    <p><a href={link || fallbacks['']} data-go>{name} →</a></p>
+    <script is:inline define:vars={{ checkout: link, fallbacks }}>
       const k = (new URLSearchParams(location.search).get('k') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
       let to = fallbacks[k] || fallbacks[''];
       if (checkout) {
