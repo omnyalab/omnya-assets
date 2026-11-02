@@ -27,6 +27,9 @@ export const BUFFER = 0;
 export const NOTICE_HOURS = 12;
 /** Latest bookable day: this many days from today. */
 export const HORIZON_DAYS = 30;
+/** Share of the 30-minute blocks kept busy on purpose (always the same ones), so the diary looks
+    as full as it is. 0 turns it off. Nico, 2/11: "more people see I'm busy, more they trust". */
+export const HOLD_SHARE = 0.15;
 
 export const host = {
   name: 'Nicola Ghizzo · Omnya Lab',

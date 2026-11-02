@@ -2697,10 +2697,14 @@ html[data-page='thanks'] .oto__card { background: rgba(255, 255, 255, 0.78); -we
   transition: background-color 0.4s var(--ease), color 0.4s var(--ease), transform 0.4s var(--ease);
 }
 @media (hover: hover) {
-  .bkg__day:hover, .bkg__time:hover { transform: translateY(-1px); }
-  .bkg__time:hover { background: var(--cta); color: #fff; }
+  .bkg__day:not(:disabled):hover, .bkg__time:not(:disabled):hover { transform: translateY(-1px); }
+  .bkg__time:not(:disabled):hover { background: var(--cta); color: #fff; }
 }
-.bkg__day:active, .bkg__time:active { transform: scale(0.97); }
+.bkg__day:not(:disabled):active, .bkg__time:not(:disabled):active { transform: scale(0.97); }
+/* taken times and full days stay visible, faded and struck */
+.bkg__time.is-busy, .bkg__day.is-full { cursor: default; box-shadow: none; background: rgba(255, 255, 255, 0.28); color: var(--mute-lg); transform: none; }
+.bkg__time.is-busy { text-decoration: line-through; text-decoration-color: rgba(184, 97, 60, 0.55); text-decoration-thickness: 1.5px; }
+.bkg__day.is-full b { color: var(--mute-lg); text-decoration: line-through; text-decoration-color: rgba(184, 97, 60, 0.55); text-decoration-thickness: 1.5px; }
 .bkg__day:focus-visible, .bkg__time:focus-visible { outline: 2px solid var(--cta); outline-offset: 2px; }
 .bkg__picks { display: grid; border-top: 1px solid var(--line); }
 .bkg__pick { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }

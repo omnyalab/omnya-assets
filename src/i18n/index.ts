@@ -486,6 +486,8 @@ const en = {
   },
   book: {
     tz: 'Times in your time zone',
+    busy: 'busy',
+    full: 'Fully booked',
     loading: 'Loading the free times…',
     none: 'No free times in the next weeks. Write to us and we’ll find one.',
     error: 'The calendar didn’t load.',
@@ -1018,6 +1020,8 @@ const it: Dict = {
   },
   book: {
     tz: 'Orari nel tuo fuso orario',
+    busy: 'occupato',
+    full: 'Tutto occupato',
     loading: 'Sto caricando gli orari liberi…',
     none: 'Nessun orario libero nelle prossime settimane. Scrivici e lo troviamo.',
     error: 'Il calendario non si è caricato.',

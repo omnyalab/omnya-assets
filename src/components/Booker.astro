@@ -11,7 +11,7 @@ interface Props {
 const { type } = Astro.props;
 const lang = langFromPath(Astro.url.pathname);
 const B = t(lang).book;
-const strings = { nth: B.nth, second: B.second, change: B.change, none: B.none, error: B.error, retry: B.retry, sending: B.sending, confirm: B.confirm, taken: B.taken, failed: B.failed, bad: B.bad };
+const strings = { busy: B.busy, full: B.full, nth: B.nth, second: B.second, change: B.change, none: B.none, error: B.error, retry: B.retry, sending: B.sending, confirm: B.confirm, taken: B.taken, failed: B.failed, bad: B.bad };
 ---
 
 <div class="bkg" data-booker data-type={type} data-lang={lang} data-t={JSON.stringify(strings)}>

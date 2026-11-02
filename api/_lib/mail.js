@@ -14,13 +14,13 @@ const transport = process.env.RESEND_API_KEY
   ? nodemailer.createTransport({ host: 'smtp.resend.com', port: 465, secure: true, auth: { user: 'resend', pass: process.env.RESEND_API_KEY } })
   : nodemailer.createTransport({ jsonTransport: true }); // local preview: nothing leaves the computer
 
-const esc = (s) => String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
+export const esc = (s) => String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n');
 // a CN goes in quotes, so a · or a comma in a name can't break the line
 const cn = (s) => `"${String(s).replace(/["\r\n]/g, '')}"`;
 const html = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 // .ics lines stay under 75 bytes
-function fold(line) {
+export function fold(line) {
   const out = [];
   let cur = '';
   for (const ch of line) {

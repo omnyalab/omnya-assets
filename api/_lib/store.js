@@ -9,7 +9,7 @@ const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 const P = 'omnya:';
 
-const mem = { holds: new Map(), booked: [] };
+const mem = { holds: new Map(), booked: [], details: new Map() };
 
 async function redis(...cmd) {
   const res = await fetch(URL_, {
@@ -74,9 +74,21 @@ export async function record(ranges, id, details) {
   const rows = ranges.map(([s, e]) => `${s}|${e}|${id}`);
   if (!hasStore()) {
     mem.booked.push(...rows);
+    mem.details.set(id, details);
     return;
   }
   for (const [i, r] of rows.entries()) await redis('ZADD', `${P}booked`, ranges[i][0], r);
   await redis('SET', `${P}booking:${id}`, JSON.stringify(details), 'EX', 120 * 86_400);
-  await redis('ZREMRANGEBYSCORE', `${P}booked`, '-inf', Date.now() - 2 * 86_400_000);
+  await redis('ZREMRANGEBYSCORE', `${P}booked`, '-inf', Date.now() - 35 * 86_400_000);
+}
+
+/** Every booking from `from` on, one row per call, with its details: for Nico's calendar feed. */
+export async function bookingsSince(from) {
+  const rows = hasStore() ? await redis('ZRANGEBYSCORE', `${P}booked`, from, '+inf') : mem.booked;
+  const list = rows.map((r) => r.split('|')).map(([s, e, id]) => ({ s: +s, e: +e, id })).filter((b) => b.e > from);
+  const ids = [...new Set(list.map((b) => b.id))];
+  let details = [];
+  if (ids.length) details = hasStore() ? (await redis('MGET', ...ids.map((id) => `${P}booking:${id}`))).map((d) => (d ? JSON.parse(d) : null)) : ids.map((id) => mem.details.get(id) || null);
+  const byId = new Map(ids.map((id, i) => [id, details[i]]));
+  return list.map((b) => ({ ...b, details: byId.get(b.id) }));
 }

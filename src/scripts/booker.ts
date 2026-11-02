@@ -3,7 +3,7 @@
 
 import { lenis, reduced } from './core';
 
-type Strings = Record<'nth' | 'second' | 'change' | 'none' | 'error' | 'retry' | 'sending' | 'confirm' | 'taken' | 'failed' | 'bad', string>;
+type Strings = Record<'busy' | 'full' | 'nth' | 'second' | 'change' | 'none' | 'error' | 'retry' | 'sending' | 'confirm' | 'taken' | 'failed' | 'bad', string>;
 
 const goTo = (el: HTMLElement, offset = -100) => {
   if (lenis && !reduced) lenis.scrollTo(el, { duration: 1, offset });
@@ -46,6 +46,7 @@ function init(root: HTMLElement) {
   let minutes = 30;
   let calls = 1;
   let slots: number[] = [];
+  let busy: number[] = [];
   let picks: number[] = [];
   let day = '';
 
@@ -64,6 +65,7 @@ function init(root: HTMLElement) {
       minutes = j.minutes;
       calls = j.calls;
       slots = j.slots;
+      busy = j.busy || [];
     } catch {
       status.innerHTML = '';
       const b = document.createElement('button');
@@ -96,13 +98,17 @@ function init(root: HTMLElement) {
     }
     status.hidden = true;
     cal.hidden = false;
+    // busy times stay on the page, struck through: a diary that fills up is part of the trust
+    const freeSet = new Set(free);
+    const all = [...new Set([...slots, ...busy])].sort((a, b) => a - b);
     const byDay = new Map<string, number[]>();
-    for (const s of free) {
+    for (const s of all) {
       const k = dayKey.format(s);
       if (!byDay.has(k)) byDay.set(k, []);
       byDay.get(k)!.push(s);
     }
-    if (!byDay.has(day)) day = byDay.keys().next().value!;
+    const hasFree = (k: string) => byDay.get(k)!.some((s) => freeSet.has(s));
+    if (!byDay.has(day) || !hasFree(day)) day = [...byDay.keys()].find(hasFree)!;
     daysEl.replaceChildren(
       ...[...byDay.entries()].map(([k, list]) => {
         const b = document.createElement('button');
@@ -110,6 +116,11 @@ function init(root: HTMLElement) {
         b.className = 'bkg__day';
         b.setAttribute('aria-pressed', String(k === day));
         b.innerHTML = `<span>${fWeek.format(list[0])}</span><b>${fDay.format(list[0])}</b><span>${fMonth.format(list[0])}</span>`;
+        if (!hasFree(k)) {
+          b.disabled = true;
+          b.classList.add('is-full');
+          b.title = T.full;
+        }
         b.onclick = () => {
           day = k;
           render();
@@ -124,6 +135,13 @@ function init(root: HTMLElement) {
         b.type = 'button';
         b.className = 'bkg__time';
         b.textContent = fTime.format(s);
+        if (!freeSet.has(s)) {
+          b.disabled = true;
+          b.classList.add('is-busy');
+          b.setAttribute('aria-label', `${fTime.format(s)}, ${T.busy}`);
+          b.title = T.busy;
+          return b;
+        }
         b.onclick = () => {
           picks.push(s);
           render();
