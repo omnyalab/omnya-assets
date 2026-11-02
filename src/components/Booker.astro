@@ -1,0 +1,52 @@
+---
+// Our own booking widget (it replaced Calendly): the free days, the free times in the visitor's
+// time zone, then name and email. The times come from /api/slots (Nico's hours minus his Outlook
+// calendar minus what was booked here); /api/book books and sends the invites. See scripts/booker.ts.
+import Arrow from './Arrow.astro';
+import { t, langFromPath } from '../i18n';
+
+interface Props {
+  type: 'call' | 'session' | 'build';
+}
+const { type } = Astro.props;
+const lang = langFromPath(Astro.url.pathname);
+const B = t(lang).book;
+const strings = { busy: B.busy, full: B.full, nth: B.nth, second: B.second, change: B.change, none: B.none, error: B.error, retry: B.retry, sending: B.sending, confirm: B.confirm, taken: B.taken, failed: B.failed, bad: B.bad };
+---
+
+<div class="bkg" data-booker data-type={type} data-lang={lang} data-t={JSON.stringify(strings)}>
+  <div class="bkg__picks" data-picks hidden></div>
+  <p class="bkg__status" data-status role="status">{B.loading}</p>
+
+  <div class="bkg__cal" data-cal hidden>
+    <div class="bkg__days" data-days data-lenis-prevent></div>
+    <p class="bkg__tz" data-bkg-tz>{B.tz}</p>
+    <div class="bkg__times" data-times></div>
+  </div>
+
+  <form class="bkg__form" data-form hidden novalidate>
+    <label class="bkg__field">
+      <span>{B.name}</span>
+      <input name="name" autocomplete="name" required maxlength="100" />
+    </label>
+    <label class="bkg__field">
+      <span>{B.email}</span>
+      <input name="email" type="email" autocomplete="email" inputmode="email" required maxlength="200" />
+    </label>
+    <label class="bkg__field bkg__field--wide">
+      <span>{B.note}</span>
+      <textarea name="note" rows="3" maxlength="1500" placeholder={B.notePh}></textarea>
+    </label>
+    <label class="bkg__hp" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off" /></label>
+    <div class="bkg__send">
+      <button class="btn btn--fill" type="submit" data-submit><span data-submit-label>{B.confirm}</span> <Arrow /></button>
+      <p class="bkg__err" data-err role="alert"></p>
+    </div>
+  </form>
+
+  <div class="bkg__done" data-done hidden>
+    <p class="t-h3">{B.doneA} <span class="mute">{B.doneB}</span></p>
+    <ul class="bkg__when" data-when></ul>
+    <p class="bkg__note">{B.doneText}</p>
+  </div>
+</div>

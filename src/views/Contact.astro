@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Arrow from '../components/Arrow.astro';
 import { contact, sampleLinks } from '../lib/contact';
+import Booker from '../components/Booker.astro';
 import { t, langFromPath } from '../i18n';
 
 const lang = langFromPath(Astro.url.pathname);
@@ -11,10 +12,6 @@ const links = sampleLinks(lang);
 ---
 
 <Base page="contact" title={C.title} description={C.description}>
-  <Fragment slot="head">
-    <link rel="preconnect" href="https://assets.calendly.com" />
-  </Fragment>
-
   <!-- C3: one of our photos edge to edge, the ways to reach us written straight on it -->
   <section class="ctg" data-header="light" data-header-media>
     <div class="ctg__bg" aria-hidden="true">
@@ -41,14 +38,11 @@ const links = sampleLinks(lang);
     </div>
   </section>
 
-  <section class="wrap ct__cal is-closed" id="book" data-calendly>
-    <div class="label ct__calhead" data-fade>
+  <section class="wrap ct__cal is-closed" id="book" data-book-box>
+    <div class="label ct__calhead">
       <h2 class="t-h3">{C.book}</h2>
-      <a class="u" href={contact.calendly} target="_blank" rel="noopener">{C.bookNote}</a>
+      <span class="mute">{C.bookNote}</span>
     </div>
-    <div class="cal">
-      <div class="cal__ph">{C.loading}</div>
-      <div data-calendly-mount style="min-width: min(300px, 100%); height: 700px"></div>
-    </div>
+    <Booker type="call" />
   </section>
 </Base>

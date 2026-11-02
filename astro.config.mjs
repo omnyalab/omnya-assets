@@ -1,5 +1,33 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import { loadEnv } from 'vite';
+
+/** Local preview only: serves the Vercel functions in /api (slots, book) from the dev server. */
+const devApi = () => ({
+  name: 'omnya-dev-api',
+  /** @param {import('vite').ViteDevServer} server */
+  configureServer(server) {
+    for (const [k, v] of Object.entries(loadEnv('development', server.config.root, ''))) process.env[k] ??= v;
+    server.middlewares.use('/api', async (req, res, next) => {
+      const name = (req.url || '').split('?')[0].replace(/^\/+|\/+$/g, '');
+      if (!/^[a-z]+$/.test(name)) return next();
+      try {
+        const mod = await server.ssrLoadModule(`/api/${name}.js`);
+        const fn = mod[req.method || 'GET'];
+        if (!fn) return next();
+        const chunks = [];
+        for await (const c of req) chunks.push(c);
+        const body = chunks.length ? Buffer.concat(chunks) : undefined;
+        const r = await fn(new Request(`http://localhost${req.originalUrl}`, { method: req.method, headers: /** @type {any} */ (req.headers), body }));
+        res.statusCode = r.status;
+        r.headers.forEach((v, k) => res.setHeader(k, v));
+        res.end(Buffer.from(await r.arrayBuffer()));
+      } catch (e) {
+        next(e);
+      }
+    });
+  },
+});
 
 export default defineConfig({
   site: 'https://www.omnyalab.com',
@@ -13,5 +41,5 @@ export default defineConfig({
   },
   prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
   // three.js is a separate chunk, loaded only on desktop for the home WebGL
-  vite: { build: { chunkSizeWarningLimit: 600 } },
+  vite: { build: { chunkSizeWarningLimit: 600 }, plugins: [devApi()] },
 });

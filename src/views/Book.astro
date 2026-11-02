@@ -1,0 +1,23 @@
+---
+// /book/<type>: the free call (from the site) and the lessons (after the payment, from /learn/thanks).
+import Base from '../layouts/Base.astro';
+import Booker from '../components/Booker.astro';
+import { t, langFromPath } from '../i18n';
+
+interface Props {
+  type: 'call' | 'session' | 'build';
+}
+const { type } = Astro.props;
+const lang = langFromPath(Astro.url.pathname);
+const P = t(lang).book.types[type];
+---
+
+<Base page="book" title={P.title} noindex>
+  <section class="bkgp wrap">
+    <header class="bkgp__head">
+      <h1 class="t-h2" data-split="intro">{P.a} <span class="mute">{P.b}</span></h1>
+      <p class="bkgp__text" data-fade>{P.text}</p>
+    </header>
+    <Booker type={type} />
+  </section>
+</Base>

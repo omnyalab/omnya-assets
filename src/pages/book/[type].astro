@@ -1,0 +1,8 @@
+---
+// Our booking pages: /book/call, /book/session, /book/build
+import View from '../../views/Book.astro';
+
+export const getStaticPaths = () => ['call', 'session', 'build'].map((type) => ({ params: { type } }));
+---
+
+<View type={Astro.params.type as 'call' | 'session' | 'build'} />

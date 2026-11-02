@@ -1,7 +1,6 @@
 import { gsap, ScrollTrigger, Flip, reduced, fine, isMobile, lenis } from './core';
 import { onDestroy, inPage } from './anim';
 import { hero } from './hero';
-import { contact } from '../lib/contact';
 
 /* ---------- Project cards on touch screens ----------
    No cursor to say "View": the same circle appears on the picture while the
@@ -191,29 +190,14 @@ export function project() {
   });
 }
 
-/* ---------- Contact: Calendly inline, loaded only when near ---------- */
+/* ---------- Contact: the booking box stays closed until "Book a call" opens it ---------- */
 export function contactPage() {
-  const box = document.querySelector<HTMLElement>('[data-calendly]');
+  const box = document.querySelector<HTMLElement>('[data-book-box]');
   if (!box) return;
-  const url = `${contact.calendly}?hide_gdpr_banner=1&background_color=edeae4&text_color=111111&primary_color=111111`;
-  const io = new IntersectionObserver(
-    (entries) => {
-      if (!entries.some((e) => e.isIntersecting)) return;
-      io.disconnect();
-      loadCalendly().then(() => {
-        const w = window as any;
-        if (!box.isConnected || !w.Calendly) return;
-        w.Calendly.initInlineWidget({ url, parentElement: box.querySelector('[data-calendly-mount]') });
-      });
-    },
-    { rootMargin: '0px 0px 150px 0px' }
-  );
-  // the calendar stays closed until "Book a call" opens it, right under the photo
   const open = (scroll: boolean) => {
     box.classList.remove('is-closed');
     ScrollTrigger.refresh();
     lenis?.resize();
-    io.observe(box);
     if (!scroll) return;
     if (lenis && !reduced) lenis.scrollTo(box, { duration: 1.2, offset: -80 });
     else box.scrollIntoView({ behavior: 'auto' });
@@ -222,19 +206,5 @@ export function contactPage() {
   const onClick = (e: Event) => { e.preventDefault(); e.stopPropagation(); open(true); };
   btns.forEach((b) => b.addEventListener('click', onClick));
   if (location.hash === '#book') open(false);
-  onDestroy(() => { io.disconnect(); btns.forEach((b) => b.removeEventListener('click', onClick)); });
-}
-
-let calendlyP: Promise<void> | null = null;
-function loadCalendly() {
-  if (calendlyP) return calendlyP;
-  calendlyP = new Promise((res, rej) => {
-    const s = document.createElement('script');
-    s.src = 'https://assets.calendly.com/assets/external/widget.js';
-    s.async = true;
-    s.onload = () => res();
-    s.onerror = () => rej();
-    document.head.append(s);
-  });
-  return calendlyP;
+  onDestroy(() => btns.forEach((b) => b.removeEventListener('click', onClick)));
 }
