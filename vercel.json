@@ -1,6 +1,116 @@
 {
   "redirects": [
     {
+      "source": "/learn/3D",
+      "destination": "/learn/3d",
+      "permanent": true
+    },
+    {
+      "source": "/learn/Ai",
+      "destination": "/learn/ai",
+      "permanent": true
+    },
+    {
+      "source": "/learn/AI",
+      "destination": "/learn/ai",
+      "permanent": true
+    },
+    {
+      "source": "/learn/Claude",
+      "destination": "/learn/claude",
+      "permanent": true
+    },
+    {
+      "source": "/learn/CLAUDE",
+      "destination": "/learn/claude",
+      "permanent": true
+    },
+    {
+      "source": "/learn/Dubai",
+      "destination": "/learn/dubai",
+      "permanent": true
+    },
+    {
+      "source": "/learn/DUBAI",
+      "destination": "/learn/dubai",
+      "permanent": true
+    },
+    {
+      "source": "/learn/WORD",
+      "destination": "/learn",
+      "permanent": false
+    },
+    {
+      "source": "/learn/word",
+      "destination": "/learn",
+      "permanent": false
+    },
+    {
+      "source": "/learn/PAROLA",
+      "destination": "/learn",
+      "permanent": false
+    },
+    {
+      "source": "/learn/parola",
+      "destination": "/learn",
+      "permanent": false
+    },
+    {
+      "source": "/it/learn/3D",
+      "destination": "/it/learn/3d",
+      "permanent": true
+    },
+    {
+      "source": "/it/learn/Ai",
+      "destination": "/it/learn/ai",
+      "permanent": true
+    },
+    {
+      "source": "/it/learn/AI",
+      "destination": "/it/learn/ai",
+      "permanent": true
+    },
+    {
+      "source": "/it/learn/Claude",
+      "destination": "/it/learn/claude",
+      "permanent": true
+    },
+    {
+      "source": "/it/learn/CLAUDE",
+      "destination": "/it/learn/claude",
+      "permanent": true
+    },
+    {
+      "source": "/it/learn/Dubai",
+      "destination": "/it/learn/dubai",
+      "permanent": true
+    },
+    {
+      "source": "/it/learn/DUBAI",
+      "destination": "/it/learn/dubai",
+      "permanent": true
+    },
+    {
+      "source": "/it/learn/WORD",
+      "destination": "/it/learn",
+      "permanent": false
+    },
+    {
+      "source": "/it/learn/word",
+      "destination": "/it/learn",
+      "permanent": false
+    },
+    {
+      "source": "/it/learn/PAROLA",
+      "destination": "/it/learn",
+      "permanent": false
+    },
+    {
+      "source": "/it/learn/parola",
+      "destination": "/it/learn",
+      "permanent": false
+    },
+    {
       "source": "/work/corfu-resort",
       "destination": "/work/hygeia-grove",
       "permanent": true
