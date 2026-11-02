@@ -6,6 +6,7 @@ import { initCursor, initSheet, initMenu, initHeaderLoop, initScrollbar, initScr
 import { home, work, project, contactPage, playOnView, hbars } from './pages';
 import { studio } from './studio';
 import { learn, thanksPage } from './learn';
+import { booker } from './booker';
 
 (window as any).__omApp = true;
 // Dev only: lets the browser console inspect live triggers and tweens
@@ -99,4 +100,5 @@ document.addEventListener('astro:page-load', () => {
   if (page === 'studio') studio(intro);
   if (page === 'learn') learn();
   if (page === 'thanks') thanksPage();
+  booker();
 });

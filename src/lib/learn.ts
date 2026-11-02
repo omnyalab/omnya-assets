@@ -102,8 +102,8 @@ export function filesFor(id: ProductId, lang: Lang) {
   return keys.map((k) => ({ name: pdfs[lang][k][0], href: `${FILES}/${lang}/${pdfs[lang][k][1]}` }));
 }
 
-/** Where a lesson buyer picks the day and time. Replace with the Calendly events of each lesson. */
+/** Where a lesson buyer picks the day and time: our booking pages (Session 60 min, Build two calls of 90). */
 export const booking: Partial<Record<ProductId, string>> = {
-  session: 'https://calendly.com/omnyalab-info/30min',
-  build: 'https://calendly.com/omnyalab-info/30min',
+  session: '/book/session',
+  build: '/book/build',
 };

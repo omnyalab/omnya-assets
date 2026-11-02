@@ -126,7 +126,7 @@ const book = booking[Astro.props.id as ProductId];
     <p class="t-sub">{flow.kind === 'pdf' ? X.paidPdf : X.paidLesson}</p>
     <div class="oto-dl__btns">
       {files.map((f) => <a class="btn btn--fill" href={f.href} download>{f.name} <Arrow /></a>)}
-      {book && <a class="btn btn--fill" href={book} target="_blank" rel="noopener">{X.pick} <Arrow /></a>}
+      {book && <a class="btn btn--fill" href={localize(book, lang)}>{X.pick} <Arrow /></a>}
     </div>
   </section>
 </Base>

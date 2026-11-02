@@ -10,7 +10,8 @@ export const contact = {
   instagram: 'https://www.instagram.com/omnyalab/',
   linkedin: 'https://www.linkedin.com/in/nicolaghizzo',
   vat: '05578770264',
-  calendly: 'https://calendly.com/omnyalab-info/30min',
+  /** The free 30-minute call, booked on our own page (it replaced Calendly). */
+  bookCall: '/book/call',
   whatsappSample:
     'https://wa.me/393792220465?text=Hi%20Omnya%20team%2C%20I%E2%80%99d%20like%20to%20request%20a%20free%20sample.',
   emailSample:

@@ -2661,3 +2661,74 @@ html[data-page='thanks'] .oto__card { background: rgba(255, 255, 255, 0.78); -we
 .hbar i { position: absolute; left: 0; top: 0; height: 4px; border-radius: 4px; background: var(--cta); opacity: 0.85; will-change: transform; }
 .hbar.is-off { display: none; }
 @media (min-width: 900px) { .hbar { display: none; } }
+
+/* ==========================================================================
+   Booking (2/11): our calendar instead of Calendly. Days in a row that scrolls,
+   times as pills, the chosen one terracotta; then name, email, one button.
+   ========================================================================== */
+.bkgp { padding-top: calc(var(--hdr) + clamp(24px, 4vw, 56px)); padding-bottom: var(--section); }
+.bkgp__head { max-width: 900px; margin-bottom: clamp(28px, 4vw, 48px); }
+.bkgp__text { margin-top: 18px; max-width: 560px; font-size: var(--fs-sub); line-height: 1.33; letter-spacing: -0.02em; color: var(--mute); }
+.bkg { display: grid; gap: 20px; max-width: 900px; padding-top: 8px; }
+.bkg [hidden] { display: none !important; }
+.bkg__status { color: var(--mute); font-size: var(--fs-small); min-height: 24px; }
+.bkg__status .u { color: var(--ink); }
+.bkg__cal { display: grid; gap: 16px; }
+.bkg__tz { font-size: var(--fs-small); color: var(--mute); }
+.bkg__days {
+  display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-inline: var(--g); scrollbar-width: none;
+  margin-inline: calc(var(--g) * -1); padding: 4px var(--g) 12px;
+}
+.bkg__days::-webkit-scrollbar { display: none; }
+.bkg__day {
+  flex: 0 0 auto; scroll-snap-align: start; display: grid; justify-items: center; gap: 2px;
+  width: 68px; padding: 12px 0; border-radius: 18px; background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 1px 1px rgba(30, 24, 16, 0.06), 0 8px 18px -12px rgba(30, 24, 16, 0.3);
+  font-size: var(--fs-small); color: var(--mute); text-transform: capitalize;
+  transition: background-color 0.4s var(--ease), color 0.4s var(--ease), transform 0.4s var(--ease);
+}
+.bkg__day b { font-size: 1.5rem; font-weight: 500; letter-spacing: -0.02em; color: var(--ink); line-height: 1.1; }
+.bkg__day[aria-pressed='true'] { background: var(--ink); color: rgba(237, 234, 228, 0.7); }
+.bkg__day[aria-pressed='true'] b { color: var(--bg); }
+.bkg__times { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.bkg__time {
+  min-height: 48px; border-radius: 999px; background: rgba(255, 255, 255, 0.72); font-size: var(--fs-body);
+  box-shadow: 0 1px 1px rgba(30, 24, 16, 0.06), 0 8px 18px -12px rgba(30, 24, 16, 0.3);
+  transition: background-color 0.4s var(--ease), color 0.4s var(--ease), transform 0.4s var(--ease);
+}
+@media (hover: hover) {
+  .bkg__day:hover, .bkg__time:hover { transform: translateY(-1px); }
+  .bkg__time:hover { background: var(--cta); color: #fff; }
+}
+.bkg__day:active, .bkg__time:active { transform: scale(0.97); }
+.bkg__day:focus-visible, .bkg__time:focus-visible { outline: 2px solid var(--cta); outline-offset: 2px; }
+.bkg__picks { display: grid; border-top: 1px solid var(--line); }
+.bkg__pick { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.bkg__pickn { font-size: var(--fs-small); color: var(--mute); min-width: 84px; }
+.bkg__pickn:empty { display: none; }
+.bkg__pickt { flex: 1; font-size: var(--fs-sub); letter-spacing: -0.02em; text-transform: none; }
+.bkg__pick.is-next .bkg__pickt { color: var(--mute-lg); }
+.bkg__pick.is-now .bkg__pickt { color: var(--cta); }
+.bkg__change { font-size: var(--fs-small); color: var(--mute); }
+.bkg__form { display: grid; gap: 16px; }
+.bkg__field { display: grid; gap: 6px; font-size: var(--fs-small); color: var(--mute); }
+.bkg__field input, .bkg__field textarea {
+  width: 100%; padding: 14px 18px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255, 255, 255, 0.72);
+  font: inherit; font-size: 16px; color: var(--ink); resize: vertical;
+  transition: border-color 0.3s var(--ease), background-color 0.3s var(--ease);
+}
+.bkg__field input:focus, .bkg__field textarea:focus { outline: none; border-color: var(--cta); background: #fff; }
+.bkg__field textarea::placeholder { color: var(--mute-lg); }
+.bkg__hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.bkg__send { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 4px; }
+.bkg__send .btn[disabled] { opacity: 0.6; pointer-events: none; }
+.bkg__err { font-size: var(--fs-small); color: #9c3d1c; }
+.bkg__done { display: grid; gap: 16px; padding: clamp(24px, 4vw, 40px); border-radius: 24px; background: rgba(255, 255, 255, 0.72); }
+.bkg__when { margin: 0; padding: 0; list-style: none; font-size: var(--fs-sub); letter-spacing: -0.02em; }
+.bkg__note { color: var(--mute); max-width: 520px; }
+@media (min-width: 900px) {
+  .bkg__form { grid-template-columns: 1fr 1fr; column-gap: 16px; }
+  .bkg__field--wide, .bkg__send { grid-column: 1 / -1; }
+  .bkg__days { margin-inline: 0; padding-inline: 0; flex-wrap: wrap; overflow: visible; }
+}
+.ct__cal .bkg { padding-top: 24px; }
