@@ -2867,3 +2867,5 @@ html[data-page='pricing'] .pband { padding-top: clamp(24px, 3vw, 48px); }
   .lhero__in { bottom: 20svh; }
   .lhero__stick::after { height: 36%; }
 }
+/* space between sections (2/11): about the gap between the last card and the footer, never double */
+@media (min-width: 900px) { :root { --section: clamp(72px, 7vw, 104px); } }
