@@ -2807,8 +2807,8 @@ html[data-page='pricing'] .pband { padding-top: clamp(24px, 3vw, 48px); }
 
 /* project pages (F2): the next project's photo runs on under its name and fades into the footer;
    name and arrow sit higher, on the clear part of the photo, so only the picture goes dark */
-.next .frame { --ar: 3 / 5; }
-@media (min-width: 900px) { .next .frame { --ar: 16 / 10.5; } }
+.next .frame { --ar: 3 / 4.6; }
+@media (min-width: 900px) { .next .frame { --ar: 16 / 9.7; } }
 .next .frame::after { background: linear-gradient(180deg, rgba(11, 11, 11, 0) 0%, rgba(11, 11, 11, 0.14) 34%, rgba(11, 11, 11, 0.32) 52%, rgba(11, 11, 11, 0.337) 56.8%, rgba(11, 11, 11, 0.385) 61.6%, rgba(11, 11, 11, 0.460) 66.4%, rgba(11, 11, 11, 0.555) 71.2%, rgba(11, 11, 11, 0.660) 76.0%, rgba(11, 11, 11, 0.765) 80.8%, rgba(11, 11, 11, 0.860) 85.6%, rgba(11, 11, 11, 0.935) 90.4%, rgba(11, 11, 11, 0.983) 95.2%, rgba(11, 11, 11, 1.000) 100.0%); }
-.next__txt { bottom: 38%; }
+.next__txt { bottom: 34%; }
 .next .frame { border-radius: 0; }
