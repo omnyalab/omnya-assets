@@ -2823,3 +2823,36 @@ html[data-page='pricing'] .pband { padding-top: clamp(24px, 3vw, 48px); }
   background: var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5.2 9.3l2.5 2.5 5.1-5.3' fill='none' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 18px 18px no-repeat;
 }
 .lles__items li::after { display: none; }
+
+/* ==========================================================================
+   Round 9 (2/11, afternoon): Nico's picks and the phone pass
+   ========================================================================== */
+/* best value (B4): the other prices a little smaller, the pick's price in medium weight */
+.pband .ptable tr:not(.is-best) .ptable__price { font-size: calc(var(--fs-h3) * 0.86); }
+.pband .ptable tr.is-best .ptable__price { font-weight: 500; }
+/* the page you are on (N1): a terracotta dot in the menu */
+@media (min-width: 900px) { .hdr__nav a[aria-current='page']::before { background: var(--cta); } }
+/* "View" on a work: terracotta, faded, the photo still showing through; the same on phones */
+.cursor__bub { color: #fff; }
+.cursor__bub::before { background: rgba(184, 97, 60, 0.34); -webkit-backdrop-filter: blur(4px) saturate(1.2); backdrop-filter: blur(4px) saturate(1.2); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28); }
+.pcard__view { color: #fff; background: rgba(184, 97, 60, 0.34); -webkit-backdrop-filter: blur(4px) saturate(1.2); backdrop-filter: blur(4px) saturate(1.2); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28); }
+
+/* nothing cut: the warm veil of the page runs behind the price tables, and their shadows are not clipped */
+.pband { background: transparent; overflow: visible; }
+/* carousels: room under the books so their shadows fade out instead of stopping on a line */
+.lshelf { padding-bottom: 48px; margin-bottom: -40px; }
+@media (max-width: 899px) { .kit__cards { padding-bottom: 40px; margin-bottom: -32px; } }
+
+/* Learn: the hero photo melts into the page instead of ending on a line */
+.lhero__stick::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 12%; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgba(237, 234, 228, 0), var(--bg)); }
+.lhero__in { z-index: 2; }
+@media (max-width: 899px) { .lhero__stick::after { height: 16%; } }
+
+/* phones: the menu's button sits higher, in the middle of the space between the list and the contacts */
+@media (max-width: 899px) {
+  .menu__foot { flex: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 22px; padding-top: clamp(24px, 6vh, 56px); }
+  .menu__foot > .menu__cta, .menu__foot > .cta { margin-block: auto; }
+}
+
+/* phones: less white between sections, still clearly a new part */
+@media (max-width: 899px) { :root { --section: 76px; } }

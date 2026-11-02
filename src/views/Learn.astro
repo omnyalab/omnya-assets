@@ -140,20 +140,6 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
   </section>
 
   <!-- Who it is for -->
-  <section class="lstate wrap" aria-label={L.description}>
-    <Duo as="h2" size="h2" a={L.statementA} b={L.statementB} class="lstate__title" />
-    <ul class="lstate__for">
-      {
-        L.audiences.map((a, i) => (
-          <li data-fade>
-            <span class="lstate__n">0{i + 1}</span>
-            {a}
-          </li>
-        ))
-      }
-    </ul>
-  </section>
-
   <!-- The shelf: three playbooks as book covers -->
   <section class="lbooks wrap" id="books" aria-labelledby="books-title">
     <div class="lsec__head">

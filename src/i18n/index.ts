@@ -33,12 +33,12 @@ const en = {
   navNotes: { work: '2026', studio: 'How we work', pricing: 'First image free', learn: 'PDFs and private lessons', contact: 'Same-day answer' },
   cursor: { view: 'View', next: 'Next', play: 'Play' },
   transitions: {
-    home: ['Home', 'Omnya Lab'],
+    home: ['Omnya', 'Lab'],
     work: ['Latest', 'work'],
-    studio: ['Studio', 'Omnya Lab'],
-    pricing: ['Pricing', 'Omnya Lab'],
+    studio: ['Two studios', 'one team'],
+    pricing: ['Our', 'prices'],
     learn: ['Learn with', 'Omnya Lab'],
-    contact: ['Contact', 'Omnya Lab'],
+    contact: ['Talk', 'to us'],
     privacy: ['Privacy', 'policy'],
   } as Record<string, [string, string]>,
   footer: {
@@ -569,12 +569,12 @@ const it: Dict = {
   navNotes: { work: '2026', studio: 'Come lavoriamo', pricing: 'Prima immagine gratis', learn: 'PDF e lezioni private', contact: 'Rispondiamo in giornata' },
   cursor: { view: 'Guarda', next: 'Avanti', play: 'Play' },
   transitions: {
-    home: ['Home', 'Omnya Lab'],
+    home: ['Omnya', 'Lab'],
     work: ['Ultimi', 'lavori'],
-    studio: ['Studio', 'Omnya Lab'],
-    pricing: ['Prezzi', 'Omnya Lab'],
+    studio: ['Due studi', 'un solo team'],
+    pricing: ['I nostri', 'prezzi'],
     learn: ['Impara con', 'Omnya Lab'],
-    contact: ['Contatti', 'Omnya Lab'],
+    contact: ['Parla', 'con noi'],
     privacy: ['Privacy', 'policy'],
   },
   footer: {
