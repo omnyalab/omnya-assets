@@ -142,8 +142,8 @@ def titleblock(x, y, sc=1.0):
     t = []
     T = lambda xx, yy, s_, size, anchor='start', fill=INK, w=400, ls=0.6: t.append(
         f'<text x="{xx}" y="{yy}" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="{size}" font-weight="{w}" letter-spacing="{ls}" text-anchor="{anchor}" fill="{fill}">{s_}</text>')
-    T(x, y, 'BURTVILLE', 22 * sc, w=600, ls=3)
-    T(x, y + 26 * sc, 'Penthouse · Living room', 16 * sc, fill=MID)
+    T(x, y, 'LIVING ROOM', 22 * sc, w=600, ls=3)
+    T(x, y + 26 * sc, 'Penthouse by the sea', 16 * sc, fill=MID)
     T(x, y + 50 * sc, 'Floor plan  ·  1:50  ·  cm', 14 * sc, fill=MID)
     return ''.join(t)
 

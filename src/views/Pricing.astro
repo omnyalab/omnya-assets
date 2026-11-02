@@ -38,6 +38,7 @@ const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packPa
       <h1 class="t-display work__title" data-split="intro">{P.titleA}{' '}<span class="mute">{P.titleB}</span></h1>
       <span class="pill" data-fade="0.2" data-intro>{P.pill}</span>
     </div>
+    <p class="t-sub phead__lead" data-fade="0.3" data-intro>{P.lead}</p>
   </section>
 
   <!-- The price tables on a warm light band, each row a sheet of white glass; the best one in colour -->
@@ -111,10 +112,10 @@ const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packPa
   <!-- Launch packages -->
   <section class="prices wrap" aria-labelledby="launch-title">
     <h2 class="t-h3 prices__title" id="launch-title" data-split>{P.launchA}{' '}<span class="mute">{P.launchB}</span></h2>
-    <table class="ptable ptable--films ptable--launch" data-fade>
+    <table class="ptable ptable--films ptable--launch ptable--desc" data-fade>
       <caption class="sr-only">{P.launchA}, {P.launchB}</caption>
       <thead>
-        <tr>{P.launchCols.map((c) => <th scope="col">{c}</th>)}</tr>
+        <tr>{P.launchCols.slice(0, 2).map((c) => <th scope="col">{c}</th>)}</tr>
       </thead>
       <tbody>
         {
@@ -144,10 +145,10 @@ const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packPa
   <!-- Virtual staging -->
   <section class="prices wrap" aria-labelledby="staging-title">
     <h2 class="t-h3 prices__title" id="staging-title" data-split>{P.stagingA}{' '}<span class="mute">{P.stagingB}</span></h2>
-    <table class="ptable ptable--films ptable--staging" data-fade>
+    <table class="ptable ptable--films ptable--staging ptable--desc" data-fade>
       <caption class="sr-only">{P.stagingA}, {P.stagingB}</caption>
       <thead>
-        <tr>{P.stagingCols.map((c) => <th scope="col">{c}</th>)}</tr>
+        <tr>{P.stagingCols.slice(0, 2).map((c) => <th scope="col">{c}</th>)}</tr>
       </thead>
       <tbody>
         {

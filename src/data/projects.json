@@ -113,8 +113,8 @@
         "poster": "/projects/17_the_townhall/the_townhall_video_01_poster.webp"
       }
     ],
-    "description": "The old town hall of Vidor, in the Prosecco hills, is becoming a five-star boutique hotel. We made 14 images and a film that show it finished.",
-    "descriptionIt": "L’ex municipio di Vidor, sulle colline del Prosecco, sta diventando un boutique hotel cinque stelle. Abbiamo fatto 14 immagini e un video che lo mostrano già finito."
+    "description": "The old town hall of Vidor, in the Prosecco hills, is becoming a five-star boutique hotel, and we made 14 images and a film that show it already finished.",
+    "descriptionIt": "L’ex municipio di Vidor, sulle colline del Prosecco, sta diventando un boutique hotel cinque stelle, e abbiamo fatto 14 immagini e un video che lo mostrano già finito."
   },
   {
     "id": "16_samar",
@@ -296,8 +296,8 @@
       }
     ],
     "autoplay": true,
-    "description": "A residential tower in Dubai Marina. We made 23 images and a film of the apartments and the view over the marina.",
-    "descriptionIt": "Una torre residenziale a Dubai Marina. Abbiamo fatto 23 immagini e un video degli appartamenti e della vista sulla marina."
+    "description": "A residential tower in Dubai Marina, where we made 23 images and a film of the apartments and the view over the marina.",
+    "descriptionIt": "Una torre residenziale a Dubai Marina, dove abbiamo fatto 23 immagini e un video degli appartamenti e della vista sulla marina."
   },
   {
     "id": "24_dana",
@@ -398,8 +398,8 @@
     ],
     "videos": [],
     "featured": true,
-    "description": "A resort we imagined in the Maldives, with villas over the water and among the palms. 13 images to show what our method does with an island project.",
-    "descriptionIt": "Un resort che abbiamo immaginato alle Maldive, con ville sull’acqua e tra le palme. 13 immagini per far vedere cosa fa il nostro metodo con un progetto su un’isola."
+    "description": "A resort we imagined in the Maldives, with villas over the water and among the palms, in 13 images that show what our method does with an island project.",
+    "descriptionIt": "Un resort che abbiamo immaginato alle Maldive, con ville sull’acqua e tra le palme, in 13 immagini che fanno vedere cosa fa il nostro metodo con un progetto su un’isola."
   },
   {
     "id": "25_casa_cresta",
@@ -486,8 +486,8 @@
     ],
     "videos": [],
     "featured": true,
-    "description": "A house we imagined on a hillside in Los Angeles. 11 images, from the pool to the living room.",
-    "descriptionIt": "Una casa che abbiamo immaginato su una collina di Los Angeles. 11 immagini, dalla piscina al salotto."
+    "description": "A house we imagined on a hillside in Los Angeles, in 11 images that go from the pool to the living room.",
+    "descriptionIt": "Una casa che abbiamo immaginato su una collina di Los Angeles, in 11 immagini che vanno dalla piscina al salotto."
   },
   {
     "id": "18_residence_77",
@@ -533,8 +533,8 @@
     "videos": [],
     "featured": false,
     "slug": "burtville",
-    "description": "A residential project we pitched to a developer, starting from a rough 3D. Five images: the towers, the living room and the evening view.",
-    "descriptionIt": "Un progetto residenziale che abbiamo proposto a un developer, partendo da un 3D grezzo. Cinque immagini: le torri, il salotto e la vista di sera."
+    "description": "A residential project we pitched to a developer starting from a rough 3D, in five images of the towers, the living room and the evening view.",
+    "descriptionIt": "Un progetto residenziale che abbiamo proposto a un developer partendo da un 3D grezzo, in cinque immagini delle torri, del salotto e della vista di sera."
   },
   {
     "id": "01_penthouse_dubai",
@@ -618,8 +618,8 @@
       }
     ],
     "featured": true,
-    "description": "A penthouse in Dubai designed by Davide Algranti. His renders still looked like renders, so in two days we turned them into 9 images and 2 films that look photographed.",
-    "descriptionIt": "Un attico a Dubai progettato da Davide Algranti. I suoi render sembravano ancora render, così in due giorni li abbiamo trasformati in 9 immagini e 2 video che sembrano fotografie."
+    "description": "A penthouse in Dubai designed by Davide Algranti, whose renders still looked like renders, so in two days we turned them into 9 images and 2 films that look photographed.",
+    "descriptionIt": "Un attico a Dubai progettato da Davide Algranti, i cui render sembravano ancora render, così in due giorni li abbiamo trasformati in 9 immagini e 2 video che sembrano fotografie."
   },
   {
     "id": "02_villa_cape_town",
@@ -1021,8 +1021,8 @@
       }
     ],
     "featured": true,
-    "description": "A resort on Corfu that existed only on paper. With 24 images and a 90-second film the architect presented it before the first stone was laid, and the works have started.",
-    "descriptionIt": "Un resort a Corfù che esisteva solo sulla carta. Con 24 immagini e un video di 90 secondi l’architetto l’ha presentato prima di posare la prima pietra, e il cantiere è partito."
+    "description": "A resort on Corfu that existed only on paper, which the architect presented with 24 images and a 90-second film before the first stone was laid, and now the works have started.",
+    "descriptionIt": "Un resort a Corfù che esisteva solo sulla carta, che l’architetto ha presentato con 24 immagini e un video di 90 secondi prima di posare la prima pietra, e ora il cantiere è partito."
   },
   {
     "id": "11_naoshima_house",

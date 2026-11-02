@@ -37,10 +37,28 @@ function globe() {
   const venice = face(12.33), dubai = face(55.27);
   const mid = (venice + dubai) / 2, swing = (venice - dubai) / 2 + 0.12;
   let width = 0, drag = 0, offset = 0, down: number | null = null, t = 0;
+  // the two names sit as pills on their dots: each frame we turn the point like cobe turns the globe
+  const pins = [
+    { el: box.querySelector<HTMLElement>('[data-pin="venice"]'), lat: 45.44, lng: 12.33 },
+    { el: box.querySelector<HTMLElement>('[data-pin="dubai"]'), lat: 25.2, lng: 55.27 },
+  ];
+  const theta = 0.5;
+  const place = (phi: number) => {
+    const r = width * 0.4; // cobe draws the sphere at 80% of the canvas
+    pins.forEach(({ el, lat, lng }) => {
+      if (!el) return;
+      const a = (lat * Math.PI) / 180, b = (lng * Math.PI) / 180 - Math.PI, c = Math.cos(a);
+      const x = -c * Math.cos(b), y = Math.sin(a), z = c * Math.sin(b);
+      const x1 = x * Math.cos(phi) + z * Math.sin(phi), z1 = -x * Math.sin(phi) + z * Math.cos(phi);
+      const y2 = y * Math.cos(theta) - z1 * Math.sin(theta), z2 = y * Math.sin(theta) + z1 * Math.cos(theta);
+      el.style.transform = `translate(${width / 2 + x1 * r}px, ${width / 2 - y2 * r}px)`;
+      el.style.opacity = z2 > 0.15 ? '1' : '0';
+    });
+  };
   const size = () => (width = canvas.offsetWidth);
   size();
   const g = createGlobe(canvas, {
-    devicePixelRatio: 2, width: width * 2, height: width * 2, phi: mid, theta: 0.5,
+    devicePixelRatio: 2, width: width * 2, height: width * 2, phi: mid, theta,
     dark: 0, diffuse: 1.2, mapSamples: 22000, mapBrightness: 6, mapBaseBrightness: 0.05,
     baseColor: [0.93, 0.8, 0.72], markerColor: [0.72, 0.38, 0.24], glowColor: [0.98, 0.93, 0.88],
     markers: [{ location: [45.44, 12.33], size: 0.06 }, { location: [25.2, 55.27], size: 0.06 }],
@@ -49,6 +67,7 @@ function globe() {
       if (down === null) offset *= 0.97; // after a drag, back between the two studios
       st.phi = mid + Math.sin(t) * swing + offset + drag;
       st.width = width * 2; st.height = width * 2;
+      place(st.phi);
     },
   });
   canvas.style.cursor = 'grab';

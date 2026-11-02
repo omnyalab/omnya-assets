@@ -2622,7 +2622,7 @@ html[data-page='thanks'] .oto__card { background: rgba(255, 255, 255, 0.78); -we
 .kit__btn { margin-top: 28px; }
 @media (max-width: 899px) { .kit__cards { margin-top: 48px; } }
 @media (min-width: 900px) {
-  .kit { display: grid; grid-template-columns: 0.85fr 1.15fr; align-items: center; column-gap: var(--g); }
+  .kit { display: grid; grid-template-columns: 1fr 1fr; align-items: center; column-gap: var(--g); }
   .kit__cards { justify-content: center; }
 }
 @media (min-width: 900px) and (hover: hover) and (pointer: fine) {
@@ -2661,3 +2661,53 @@ html[data-page='thanks'] .oto__card { background: rgba(255, 255, 255, 0.78); -we
 .hbar i { position: absolute; left: 0; top: 0; height: 4px; border-radius: 4px; background: var(--cta); opacity: 0.85; will-change: transform; }
 .hbar.is-off { display: none; }
 @media (min-width: 900px) { .hbar { display: none; } }
+
+/* ==========================================================================
+   Round 8 (2/11, evening)
+   ========================================================================== */
+/* the coloured pick, a touch lighter */
+.pband .ptable tr.is-best, .ptable tr.is-best {
+  background:
+    radial-gradient(60% 80% at 15% 20%, rgba(214, 150, 96, 0.26), transparent 70%),
+    radial-gradient(55% 70% at 60% 100%, rgba(255, 140, 110, 0.2), transparent 70%),
+    radial-gradient(55% 80% at 92% 10%, rgba(150, 120, 210, 0.2), transparent 70%), #f8f3ee;
+}
+/* packs and virtual staging: the description under the name, on desktop too; no "What you get" column */
+@media (min-width: 900px) {
+  .pband .ptable--desc { --cols: minmax(0, 1fr) auto !important; }
+  .pband .ptable--desc tbody tr { row-gap: 8px; align-items: start; }
+  .pband .ptable--desc .ptable__q { grid-column: 1; grid-row: 1; }
+  .pband .ptable--desc .ptable__price { grid-column: 2; grid-row: 1 / 3; align-self: center; }
+  .pband .ptable--desc .ptable__each { grid-column: 1; grid-row: 2; text-align: left !important; padding-left: 0; max-width: 44ch; font-size: var(--fs-body, 1rem); color: #3a3936; line-height: 1.4; }
+  .pband .ptable--launch .ptable__q { flex-direction: row !important; align-items: center !important; gap: 12px; }
+}
+/* phones: staging laid out like the packs (description across the card, under name and price) */
+@media (max-width: 899px) {
+  .pband .ptable--desc .ptable__each { grid-column: 1 / -1; text-align: left !important; padding-left: 0; font-size: var(--fs-small); color: #3a3936; }
+  .pband .ptable--staging .ptable__q { grid-row: auto; }
+  .pband .ptable--staging .ptable__qn { font-size: var(--fs-sub); }
+  /* the pick of images and films: a bigger price, centred in the card */
+  .pband .ptable:not(.ptable--desc) tr.is-best .ptable__price { grid-row: 1 / 3; align-self: center; font-size: calc(var(--fs-h3) * 1.3); }
+  .pband .ptable--launch tr.is-best .ptable__price { font-size: calc(var(--fs-h3) * 1.3); }
+}
+/* pricing: the tables start right under the title; one line under it; on phones the table titles are one word */
+.phead__lead { max-width: 34ch; margin-top: clamp(20px, 2.4vw, 32px); color: #3a3936; }
+@media (min-width: 900px) { .phead__lead { margin-left: 41.6%; } }
+html[data-page='pricing'] .phead { padding-bottom: clamp(12px, 2vw, 32px); }
+html[data-page='pricing'] .pband { padding-top: clamp(24px, 3vw, 48px); }
+@media (max-width: 899px) { .prices__title .mute { display: none; } }
+/* globe: the names as light pills on their dots */
+.st-globe__ball { position: relative; width: min(560px, 88vw); }
+.st-globe__ball canvas { width: 100%; }
+.st-globe__pin {
+  position: absolute; left: 0; top: 0; margin: -38px 0 0 0; translate: -50% 0;
+  padding: 6px 12px; border-radius: 999px; font-size: var(--fs-small); line-height: 1; white-space: nowrap; pointer-events: none;
+  background: rgba(255, 255, 255, 0.62); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  box-shadow: 0 6px 16px -10px rgba(30, 24, 16, 0.4); transition: opacity 0.5s var(--ease);
+}
+/* no lines between sections anywhere: the page flows from one part to the next */
+.teaser, .make, .kit, .lcomm, .wend, .pcta { border-top: 0; border-bottom: 0; }
+/* studio timings, like the payment steps: the line with terracotta dots, playing once by itself */
+.sc-times.pfig { grid-template-columns: 1fr; background: none; border-radius: 0; padding: 0 0 0 34px; margin-top: clamp(40px, 5vw, 64px); }
+@media (min-width: 900px) { .sc-times.pfig { grid-template-columns: repeat(4, 1fr); padding: 34px 0 0; } }
+.js .pfig[data-play].is-play li:nth-child(4), .js .pfig[data-play].is-play li:nth-child(4)::before, .js .pfig[data-play].is-play li:nth-child(4) .pfig__n { transition-delay: 2.1s; animation-delay: 2.1s; }

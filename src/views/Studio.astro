@@ -54,8 +54,11 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
   <section class="st-intro st-globe wrap">
     <Duo as="h1" size="h1" class="st-intro__title" a={S.introA} b={S.introB} intro />
     <div class="st-globe__box" data-globe>
-      <canvas aria-label={S.globeAlt}></canvas>
-      <p class="st-globe__labs"><span>{T.venice}</span><span>{T.dubai}</span></p>
+      <div class="st-globe__ball">
+        <canvas aria-label={S.globeAlt}></canvas>
+        <span class="st-globe__pin" data-pin="venice">{T.venice}</span>
+        <span class="st-globe__pin" data-pin="dubai">{T.dubai}</span>
+      </div>
     </div>
     <p class="st-intro__txt t-sub" data-fade>{S.introLine}</p>
   </section>
@@ -91,15 +94,15 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
         ))
       }
     </ul>
-    <ul class="times__list sc-times" aria-label={`${S.timeA} ${S.timeB}`}>
+    <ul class="times__list sc-times pfig" data-play aria-label={`${S.timeA} ${S.timeB}`}>
       {
         S.timings.map((tm) => (
-          <li class="sc-times__item" data-fade>
-            <span class="sc-times__n">
+          <li class="sc-times__item">
+            <span class="sc-times__n pfig__n">
               <span class="sr-only">{tm.n.join('–')}</span>
               <span aria-hidden="true">{tm.n.map((d, i) => (<>{i > 0 && '–'}<span data-count={d}>{d}</span></>))}</span>
             </span>
-            <span class="sc-times__l">{tm.label.replace('*', '')}</span>
+            <span class="sc-times__l pfig__l">{tm.label.replace('*', '')}</span>
           </li>
         ))
       }
