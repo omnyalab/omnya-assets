@@ -18,12 +18,15 @@ import { t, langFromPath, localize } from '../i18n';
 
 interface Props {
   word?: string;
+  /** /the-blueprint (2/11): the free PDF first, one page for every reel */
+  blueprint?: boolean;
 }
-const { word } = Astro.props;
+const { word, blueprint = false } = Astro.props;
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const L = T.learn;
 const w = words.find((x) => x.word === word);
+const free = !!w || blueprint;
 const samar = projects.find((p) => p.id === '16_samar')!;
 
 // Book covers: our own pictures with a light grade; Playbook 01 fades from our 3D to the photo
@@ -42,10 +45,10 @@ const books = w ? [...L.books].sort((a, b) => (a.id === w.focus ? -1 : b.id === 
 
 // Casa Cresta: the same camera in the 3D model and in the final image
 // /learn opens on Burtville (towers, night, living room); the reel pages keep Casa Cresta
-const set = w ? 'cresta' : 'burt';
-const place = w ? 'Casa Cresta' : 'Burtville';
-const views = w ? ['front', 'pool', 'living'] : ['towers', 'night', 'living'];
-const rooms = w ? L.compareRooms : L.compareRoomsB;
+const set = free ? 'cresta' : 'burt';
+const place = free ? 'Casa Cresta' : 'Burtville';
+const views = free ? ['front', 'pool', 'living'] : ['towers', 'night', 'living'];
+const rooms = free ? L.compareRooms : L.compareRoomsB;
 const pic = (v: string, kind: 'white' | 'real') => ({
   desk: `/learn/${set}_${v}_${kind}.webp`,
   mobile: `/learn/${set}_${v}_${kind}_mobile.webp`,
@@ -66,7 +69,7 @@ const buyData = (b: { id: string; a: string; b: string; price: string }) => ({
 const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mobile.webp', '/learn/dev_dusk_mobile.webp'];
 ---
 
-<Base page="learn" title={w ? `${L.heroA} ${L.heroB} · ${w.label}` : `${L.heroA} ${L.heroB}`} description={L.description} noindex={!!w}>
+<Base page="learn" title={blueprint ? L.freeA : w ? `${L.heroA} ${L.heroB} · ${w.label}` : `${L.heroA} ${L.heroB}`} description={L.description} noindex={!!w}>
   <!-- Hero: the 3D model over the final image, full screen -->
   <section class="lhero" data-header="light" data-header-media aria-labelledby="learn-title" data-lhero>
     <div class="lhero__stick">
@@ -97,23 +100,23 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
           )
         }
         {
-          w ? (
+          free ? (
             <h1 class="t-display lhero__title lhero__title--free" id="learn-title" data-split="intro">{L.freeA}{' '}<span class="mute">{L.freeB}</span></h1>
           ) : (
             <h1 class="t-display lhero__title" id="learn-title" data-split="intro">{L.heroA}{' '}<span class="mute">{L.heroB}</span></h1>
           )
         }
         <div class="lhero__row">
-          <p class:list={['t-sub lhero__sub', { 'lhero__sub--main': !w }]} data-fade>{w ? L.freeSub : L.heroSub}</p>
+          <p class:list={['t-sub lhero__sub', { 'lhero__sub--main': !free }]} data-fade>{free ? L.freeSub : L.heroSub}</p>
           <div class="lhero__ctas" data-fade>
             {
-              w ? (
+              free ? (
                 <a class="btn btn--fill" href={go('free')}>{L.freeCta} <Arrow /></a>
               ) : (
                 <a class="btn btn--fill" href="#books">{L.heroBooks} <Arrow /></a>
               )
             }
-            <a class="btn btn--light lhero__second" href={w ? '#books' : '#lessons'}>{w ? L.heroBooks : L.heroLesson} <Arrow /></a>
+            <a class="btn btn--light lhero__second" href={free ? '#books' : '#lessons'}>{free ? L.heroBooks : L.heroLesson} <Arrow /></a>
           </div>
         </div>
         <div class="cmp__rooms" role="group" aria-label={L.compareHandle} data-fade>

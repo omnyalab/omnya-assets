@@ -1,8 +1,0 @@
----
-import View from '../../../views/Learn.astro';
-import { words } from '../../../lib/learn';
-
-export const getStaticPaths = () => words.map((w) => ({ params: { word: w.word } }));
----
-
-<View word={Astro.params.word} />

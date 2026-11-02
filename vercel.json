@@ -2,113 +2,163 @@
   "redirects": [
     {
       "source": "/learn/3D",
-      "destination": "/learn/3d",
+      "destination": "/the-blueprint",
       "permanent": true
     },
     {
-      "source": "/learn/Ai",
-      "destination": "/learn/ai",
+      "source": "/learn/3d",
+      "destination": "/the-blueprint",
       "permanent": true
     },
     {
       "source": "/learn/AI",
-      "destination": "/learn/ai",
+      "destination": "/the-blueprint",
       "permanent": true
     },
     {
-      "source": "/learn/Claude",
-      "destination": "/learn/claude",
+      "source": "/learn/Ai",
+      "destination": "/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/learn/ai",
+      "destination": "/the-blueprint",
       "permanent": true
     },
     {
       "source": "/learn/CLAUDE",
-      "destination": "/learn/claude",
+      "destination": "/the-blueprint",
       "permanent": true
     },
     {
-      "source": "/learn/Dubai",
-      "destination": "/learn/dubai",
+      "source": "/learn/Claude",
+      "destination": "/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/learn/claude",
+      "destination": "/the-blueprint",
       "permanent": true
     },
     {
       "source": "/learn/DUBAI",
-      "destination": "/learn/dubai",
+      "destination": "/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/learn/Dubai",
+      "destination": "/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/learn/dubai",
+      "destination": "/the-blueprint",
       "permanent": true
     },
     {
       "source": "/learn/WORD",
-      "destination": "/learn",
-      "permanent": false
-    },
-    {
-      "source": "/learn/word",
-      "destination": "/learn",
-      "permanent": false
-    },
-    {
-      "source": "/learn/PAROLA",
-      "destination": "/learn",
-      "permanent": false
-    },
-    {
-      "source": "/learn/parola",
-      "destination": "/learn",
-      "permanent": false
-    },
-    {
-      "source": "/it/learn/3D",
-      "destination": "/it/learn/3d",
+      "destination": "/the-blueprint",
       "permanent": true
     },
     {
-      "source": "/it/learn/Ai",
-      "destination": "/it/learn/ai",
+      "source": "/learn/word",
+      "destination": "/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/learn/PAROLA",
+      "destination": "/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/learn/parola",
+      "destination": "/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/blueprint",
+      "destination": "/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/it/learn/3D",
+      "destination": "/it/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/it/learn/3d",
+      "destination": "/it/the-blueprint",
       "permanent": true
     },
     {
       "source": "/it/learn/AI",
-      "destination": "/it/learn/ai",
+      "destination": "/it/the-blueprint",
       "permanent": true
     },
     {
-      "source": "/it/learn/Claude",
-      "destination": "/it/learn/claude",
+      "source": "/it/learn/Ai",
+      "destination": "/it/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/it/learn/ai",
+      "destination": "/it/the-blueprint",
       "permanent": true
     },
     {
       "source": "/it/learn/CLAUDE",
-      "destination": "/it/learn/claude",
+      "destination": "/it/the-blueprint",
       "permanent": true
     },
     {
-      "source": "/it/learn/Dubai",
-      "destination": "/it/learn/dubai",
+      "source": "/it/learn/Claude",
+      "destination": "/it/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/it/learn/claude",
+      "destination": "/it/the-blueprint",
       "permanent": true
     },
     {
       "source": "/it/learn/DUBAI",
-      "destination": "/it/learn/dubai",
+      "destination": "/it/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/it/learn/Dubai",
+      "destination": "/it/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/it/learn/dubai",
+      "destination": "/it/the-blueprint",
       "permanent": true
     },
     {
       "source": "/it/learn/WORD",
-      "destination": "/it/learn",
-      "permanent": false
+      "destination": "/it/the-blueprint",
+      "permanent": true
     },
     {
       "source": "/it/learn/word",
-      "destination": "/it/learn",
-      "permanent": false
+      "destination": "/it/the-blueprint",
+      "permanent": true
     },
     {
       "source": "/it/learn/PAROLA",
-      "destination": "/it/learn",
-      "permanent": false
+      "destination": "/it/the-blueprint",
+      "permanent": true
     },
     {
       "source": "/it/learn/parola",
-      "destination": "/it/learn",
-      "permanent": false
+      "destination": "/it/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/it/blueprint",
+      "destination": "/it/the-blueprint",
+      "permanent": true
     },
     {
       "source": "/work/corfu-resort",
