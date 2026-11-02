@@ -12,17 +12,17 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'free';
 
 export const products: { id: ProductId; checkout: string }[] = [
-  { id: 'white-to-real', checkout: '' },
-  { id: 'reel', checkout: '' },
-  { id: 'before-it-exists', checkout: '' },
-  { id: 'bundle', checkout: '' },
-  { id: 'session', checkout: '' },
-  { id: 'build', checkout: '' },
+  { id: 'white-to-real', checkout: 'https://buy.stripe.com/9B66oGet7bIs3hAeyN8so00' },
+  { id: 'reel', checkout: 'https://buy.stripe.com/6oUbJ084J4g06tMfCR8so01' },
+  { id: 'before-it-exists', checkout: 'https://buy.stripe.com/9B66oGacReUE2dwfCR8so02' },
+  { id: 'bundle', checkout: 'https://buy.stripe.com/14A8wO5WB6o82dwfCR8so03' },
+  { id: 'session', checkout: 'https://buy.stripe.com/7sY14m2KpfYI19s2Q58so04' },
+  { id: 'build', checkout: 'https://buy.stripe.com/00w5kCacR27SbO6bmB8so05' },
   { id: 'community', checkout: '' },
-  { id: 'session-reader', checkout: '' },
-  { id: 'rest-30', checkout: '' },
-  { id: 'rest-50', checkout: '' },
-  { id: 'build-upgrade', checkout: '' },
+  { id: 'session-reader', checkout: 'https://buy.stripe.com/00w7sKet74g03hA62h8so06' },
+  { id: 'rest-30', checkout: 'https://buy.stripe.com/9B66oGbgVaEo9FYgGV8so07' },
+  { id: 'rest-50', checkout: 'https://buy.stripe.com/bJedR870F9Ak5pI0HX8so08' },
+  { id: 'build-upgrade', checkout: 'https://buy.stripe.com/8x23cufxbcMw4lE76l8so09' },
   { id: 'sample', checkout: '' },
   { id: 'free', checkout: '/learn/free/omnya-lab-blueprint.pdf' },
 ];
