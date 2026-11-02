@@ -2795,7 +2795,12 @@ html[data-page='pricing'] .pband { padding-top: clamp(24px, 3vw, 48px); }
 }
 .ct__cal .bkg { padding-top: 24px; }
 /* the cursor dot turns white on terracotta buttons, so you see it there too */
-.cursor.is-cta .cursor__dot::after { background: rgba(255, 255, 255, 0.95); }
+.cursor.is-cta .cursor__dot::after {
+  /* a negative of what is under it: the terracotta turns almost white, the white letters turn black, only inside the dot */
+  background: transparent;
+  -webkit-backdrop-filter: grayscale(1) invert(1) brightness(1.55) contrast(1.15);
+  backdrop-filter: grayscale(1) invert(1) brightness(1.55) contrast(1.15);
+}
 /* the line under the page name in the transition, terracotta */
 .curtain__line { background: var(--cta); }
 /* studio kit: "Get it" and "Download" in terracotta */
@@ -2812,3 +2817,9 @@ html[data-page='pricing'] .pband { padding-top: clamp(24px, 3vw, 48px); }
 .next .frame::after { background: linear-gradient(180deg, rgba(11, 11, 11, 0) 0%, rgba(11, 11, 11, 0.14) 34%, rgba(11, 11, 11, 0.32) 52%, rgba(11, 11, 11, 0.337) 56.8%, rgba(11, 11, 11, 0.385) 61.6%, rgba(11, 11, 11, 0.460) 66.4%, rgba(11, 11, 11, 0.555) 71.2%, rgba(11, 11, 11, 0.660) 76.0%, rgba(11, 11, 11, 0.765) 80.8%, rgba(11, 11, 11, 0.860) 85.6%, rgba(11, 11, 11, 0.935) 90.4%, rgba(11, 11, 11, 0.983) 95.2%, rgba(11, 11, 11, 1.000) 100.0%); }
 .next__txt { bottom: 34%; }
 .next .frame { border-radius: 0; }
+/* lesson checks: one drawn icon, the tick exactly in the middle of the circle and the circle on the first line of text */
+.lles__items li::before {
+  top: 50%; margin-top: -9px; width: 18px; height: 18px;
+  background: var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5.2 9.3l2.5 2.5 5.1-5.3' fill='none' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 18px 18px no-repeat;
+}
+.lles__items li::after { display: none; }
