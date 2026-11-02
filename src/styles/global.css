@@ -2856,3 +2856,14 @@ html[data-page='pricing'] .pband { padding-top: clamp(24px, 3vw, 48px); }
 
 /* phones: less white between sections, still clearly a new part */
 @media (max-width: 899px) { :root { --section: 76px; } }
+
+/* one soft shadow (P, the bundle's) under every big card of the site */
+.wend__card, .hlearn__card, .lbundle, .lles__card, .oto__card { box-shadow: 0 30px 60px -40px rgba(30, 24, 16, 0.35); }
+.lles__card.is-pick { box-shadow: 0 30px 60px -40px rgba(30, 24, 16, 0.35); }
+/* Learn (L3): the photo melts into the page slowly; on phones it runs on under the button and only that part fades, like Next project */
+.lhero__stick::after { height: 34%; background: linear-gradient(180deg, rgba(237, 234, 228, 0.000) 0.0%, rgba(237, 234, 228, 0.013) 7.1%, rgba(237, 234, 228, 0.050) 14.3%, rgba(237, 234, 228, 0.109) 21.4%, rgba(237, 234, 228, 0.188) 28.6%, rgba(237, 234, 228, 0.283) 35.7%, rgba(237, 234, 228, 0.389) 42.9%, rgba(237, 234, 228, 0.500) 50.0%, rgba(237, 234, 228, 0.611) 57.1%, rgba(237, 234, 228, 0.717) 64.3%, rgba(237, 234, 228, 0.812) 71.4%, rgba(237, 234, 228, 0.891) 78.6%, rgba(237, 234, 228, 0.950) 85.7%, rgba(237, 234, 228, 0.987) 92.9%, rgba(237, 234, 228, 1.000) 100.0%); }
+@media (max-width: 899px) {
+  .lhero__stick { height: calc(100svh + 20svh); }
+  .lhero__in { bottom: 20svh; }
+  .lhero__stick::after { height: 36%; }
+}
