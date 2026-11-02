@@ -1,4 +1,5 @@
 ---
+import EndCta from '../components/EndCta.astro';
 // Learn: a full-screen hero where the 3D model and the final image share one camera
 // (on phones the scroll wipes the 3D into the photo under the title; on desktop the line
 // sweeps once on arrival, then it is yours to drag; the views sit in the hero), who it is for,
@@ -158,7 +159,7 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
     <div class="lsec__head">
       <h2 class="t-h2" id="books-title" data-split>{L.booksA}{' '}<span class="mute">{L.booksB}</span></h2>
     </div>
-    <ul class="lshelf">
+    <ul class="lshelf" data-hbar>
       {
         books.map((b) => (
           <li class="lbook" data-fade>
@@ -278,13 +279,6 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
   </dialog>
 
   <!-- Back to the service: we make it, the first image free -->
-  <section class="lwe wrap" aria-labelledby="we-title">
-    <div class="lwe__card" data-fade>
-      <h2 class="t-h2 lwe__title" id="we-title">{L.weA} <span class="mute">{L.weB}</span></h2>
-      <button type="button" class="btn btn--fill" data-sample>{T.cta} <Arrow /></button>
-    </div>
-  </section>
-
   <!-- Before you buy -->
   <section class="lfaq wrap" aria-labelledby="faq-title">
     <h2 class="t-h2 lfaq__title" id="faq-title" data-split>{L.faqA}{' '}<span class="mute">{L.faqB}</span></h2>
@@ -303,4 +297,6 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
     </div>
     <a class="btn btn--fill lfaq__cta" href="#books">{L.heroBooks} <Arrow /></a>
   </section>
+
+  <EndCta />
 </Base>

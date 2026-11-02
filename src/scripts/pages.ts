@@ -18,6 +18,43 @@ function cardHints() {
   onDestroy(() => io.disconnect());
 }
 
+/* ---------- [data-hbar]: under a carousel that scrolls sideways (phones), a hairline with a
+   terracotta capsule that shows how much you see and where you are ---------- */
+export function hbars() {
+  document.querySelectorAll<HTMLElement>('[data-hbar]').forEach((list) => {
+    const bar = document.createElement('div');
+    bar.className = 'hbar';
+    bar.setAttribute('aria-hidden', 'true');
+    bar.innerHTML = '<i></i>';
+    list.after(bar);
+    const cap = bar.firstElementChild as HTMLElement;
+    const upd = () => {
+      const max = list.scrollWidth - list.clientWidth;
+      bar.classList.toggle('is-off', max < 4);
+      const w = list.clientWidth / Math.max(1, list.scrollWidth);
+      cap.style.width = `${w * 100}%`;
+      cap.style.transform = `translateX(${(max > 0 ? list.scrollLeft / max : 0) * ((1 - w) / w) * 100}%)`;
+    };
+    list.addEventListener('scroll', upd, { passive: true });
+    window.addEventListener('resize', upd);
+    upd();
+    onDestroy(() => window.removeEventListener('resize', upd));
+  });
+}
+
+/* ---------- [data-play]: plays once by itself when it comes into view (not tied to the scroll) ---------- */
+export function playOnView() {
+  const els = document.querySelectorAll<HTMLElement>('[data-play]');
+  if (!els.length) return;
+  if (reduced) { els.forEach((el) => el.classList.add('is-play')); return; }
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-play'); io.unobserve(e.target); } }),
+    { threshold: 0.45 }
+  );
+  els.forEach((el) => io.observe(el));
+  onDestroy(() => io.disconnect());
+}
+
 /* ---------- Home ---------- */
 export function home(intro: Promise<void>) {
   seeAll();

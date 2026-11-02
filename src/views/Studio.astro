@@ -1,16 +1,15 @@
 ---
 // Studio: how we work, told with our own pictures.
-// 1. poster: the word sits behind the travertine volume (photo / word / cut-out photo)
-// 2. intro
+// 1. opening: two studios, one team, the globe (drag it)
 // 3. from model to image: one frame, four stages (pinned and scrubbed on desktop,
 //    self-running on touch, a still grid with reduced motion)
 // 4. what we make, 5. timings (dark), 6. made with AI, 7. kit, 8. websites line
-// 9. closing poster: "try it free" behind the wall
+// 9. the closing card shared by every page
 // Animations: src/scripts/studio.ts. Images: public/studio (each with a _mobile copy).
 import Base from '../layouts/Base.astro';
 import Duo from '../components/Duo.astro';
 import Arrow from '../components/Arrow.astro';
-import SampleCta from '../components/SampleCta.astro';
+import EndCta from '../components/EndCta.astro';
 import { pad, type Still } from '../lib/data';
 import { srcset } from '../lib/media';
 import { kit } from '../lib/kit';
@@ -29,15 +28,15 @@ const still = (name: string, w: number, h: number, dir = 'studio'): Still => ({
   orientation: w >= h ? 'horizontal' : 'vertical',
 });
 
-// Posters: the photo, then the word, then the same photo with the sky cut out.
-// Both files share size, object-fit and object-position, so they always line up.
-const posterSet = (name: string) => `/studio/${name}_mobile.webp 1200w, /studio/${name}.webp 1493w`;
-// cover on a portrait photo: on tall screens the picture is wider than the screen
-const posterSizes = '(max-aspect-ratio: 1493/2000) 75svh, 100vw';
 
 
-// From model to image: our white model, the clay with the light, the final image (same camera)
-const steps = ['stage0_model_view1', 'stage2_clay_view1', 'stage4_final_view1'];
+// From the plan to the final image (2/11): Burtville's living room, the designer's plan, our 3D, the final photo.
+// Portrait pictures on desktop (4:5 cards), landscape on phones (16:10). The plan: scripts/plan-burtville.py
+const steps = [
+  { p: '/studio/plan_burt_living_p.webp', l: '/studio/plan_burt_living.webp' },
+  { p: '/learn/burt_living_white_mobile.webp', l: '/learn/burt_living_white.webp' },
+  { p: '/learn/burt_living_real_mobile.webp', l: '/learn/burt_living_real.webp' },
+];
 const files = kit(lang);
 // The three playbooks sit on the table next to the portfolio, as books; they lead to Learn
 const L = T.learn;
@@ -51,26 +50,14 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
 ---
 
 <Base page="studio" title={S.title} description={S.description}>
-  <Fragment slot="head">
-    <link rel="preload" as="image" imagesrcset={posterSet('studio_poster_bg')} imagesizes={posterSizes} fetchpriority="high" />
-    <link rel="preload" as="image" imagesrcset={posterSet('studio_poster_fg')} imagesizes={posterSizes} fetchpriority="high" />
-  </Fragment>
-
-  <!-- 1. Opening poster -->
-  <section class="poster poster--studio" data-poster="intro" data-header="light" data-header-media>
-    <img class="poster__img" srcset={posterSet('studio_poster_bg')} sizes={posterSizes} src="/studio/studio_poster_bg_mobile.webp" width="1493" height="2000" alt={S.posterAlt} fetchpriority="high" decoding="async" />
-    <h1 class="poster__word" aria-label={S.title}>
-      <span class="poster__mask" aria-hidden="true"><span class="poster__w">{S.word}</span></span>
-    </h1>
-    <img class="poster__img poster__fg" srcset={posterSet('studio_poster_fg')} sizes={posterSizes} src="/studio/studio_poster_fg_mobile.webp" width="1493" height="2000" alt="" fetchpriority="high" decoding="async" />
-    <div class="poster__shade" aria-hidden="true"></div>
-  </section>
-
-  <!-- 2. Intro: who we are in one line (on phones only the last sentence) -->
-  <section class="st-intro wrap">
-    <Duo size="h2" class="st-intro__title" a={S.introA} b={S.introB} />
-    <p class="st-intro__txt t-sub d-only" data-fade>{S.introLine}</p>
-    <p class="st-intro__txt t-sub m-only" data-fade>{S.introShort}</p>
+  <!-- 1. Opening (2/11): two studios, one team, the globe between Venice and Dubai -->
+  <section class="st-intro st-globe wrap">
+    <Duo as="h1" size="h1" class="st-intro__title" a={S.introA} b={S.introB} intro />
+    <div class="st-globe__box" data-globe>
+      <canvas aria-label={S.globeAlt}></canvas>
+      <p class="st-globe__labs"><span>{T.venice}</span><span>{T.dubai}</span></p>
+    </div>
+    <p class="st-intro__txt t-sub" data-fade>{S.introLine}</p>
   </section>
 
   <!-- 3. From your model to the final image (C): three pictures of the same room, the step on each -->
@@ -78,9 +65,12 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
     <h2 class="t-h2 sc-title" id="steps-title" data-split>{S.stagesA}{' '}<span class="mute">{S.stagesB}</span></h2>
     <ol class="sc-steps__row">
       {
-        steps.map((name, i) => (
+        steps.map((st, i) => (
           <li class="sc-step" data-fade>
-            <img data-src={`/studio/${name}_mobile.webp`} data-srcset={`/studio/${name}_mobile.webp 1200w, /studio/${name}.webp 2048w`} sizes="(min-width: 900px) 31vw, calc(100vw - 32px)" width="2048" height="1360" alt={S.stepsAlt[i]} decoding="async" />
+            <picture>
+              <source media="(min-width: 900px)" data-srcset={st.p} />
+              <img data-src={st.l} width="1600" height="1000" alt={S.stepsAlt[i]} decoding="async" />
+            </picture>
             <span class="sc-step__tag"><span class="sc-step__n">{pad(i + 1)}</span> {S.stepsC[i]}</span>
           </li>
         ))
@@ -119,8 +109,12 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
 
   <!-- 7. Kit -->
   <section class="kit wrap" id="kit" aria-labelledby="kit-title">
-    <h2 class="t-h2 kit__title" id="kit-title" data-split>{S.kitA}{' '}<span class="mute">{S.kitB}</span></h2>
-    <ul class="kit__cards" data-kit data-load-group>
+    <div class="kit__copy">
+      <h2 class="t-h2 kit__title" id="kit-title" data-split>{S.kitA}{' '}<span class="mute">{S.kitB}</span></h2>
+      <p class="t-sub kit__text" data-fade>{S.kitText}</p>
+      <a class="btn btn--fill kit__btn" href={`${localize('/learn', lang)}#books`} data-fade>{L.heroBooks} <Arrow /></a>
+    </div>
+    <ul class="kit__cards" data-kit data-load-group data-hbar>
       {
         files.map((f) => (
           <li class:list={['kit__item', { 'kit__item--tall': f.cover.h > f.cover.w }]} style={`--ar: ${f.cover.w} / ${f.cover.h}`}>
@@ -130,7 +124,6 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
             </a>
             <div class="kit__meta">
               <span class="kit__name">{f.name}</span>
-              <span class="kit__size">PDF · {T.kit.free}</span>
               <a class="kit__dl u" href={f.href} download={f.file}>{S.download}<span class="sr-only"> {f.name}, PDF, {f.size}</span> <Arrow /></a>
             </div>
           </li>
@@ -145,7 +138,6 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
             </a>
             <div class="kit__meta">
               <span class="kit__name">{b.name}</span>
-              <span class="kit__size">PDF · {b.price}</span>
               <a class="kit__dl kit__dl--buy u" href={`${localize('/learn', lang)}#books`}>{L.get}<span class="sr-only"> {b.name}, {b.price}</span> <Arrow /></a>
             </div>
           </li>
@@ -154,21 +146,6 @@ const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubje
     </ul>
   </section>
 
-  <!-- 9. Closing poster -->
-  <section class="poster poster--try" data-poster data-header="light" data-header-media>
-    <img class="poster__img" data-src="/studio/tryfree_poster_bg_mobile.webp" data-srcset={posterSet('tryfree_poster_bg')} sizes={posterSizes} width="1493" height="2000" alt={S.tryAlt} decoding="async" />
-    <h2 class="poster__word poster__word--two" aria-label={`${S.tryA} ${S.tryB}`}>
-      <span class="poster__mask" aria-hidden="true"><span class="poster__w">{S.tryA}</span></span>
-      <span class="poster__mask" aria-hidden="true"><span class="poster__w">{S.tryB}</span></span>
-    </h2>
-    <img class="poster__img poster__fg" data-src="/studio/tryfree_poster_fg_mobile.webp" data-srcset={posterSet('tryfree_poster_fg')} sizes={posterSizes} width="1493" height="2000" alt="" decoding="async" />
-    <div class="poster__shade" aria-hidden="true"></div>
-    <div class="poster__top wrap" data-fade>
-      <p><a class="u" href={`mailto:${contact.email}`}>{contact.email}</a><span class="poster__soft">omnyalab.com · <a class="u" href={contact.instagram} target="_blank" rel="noopener">@omnyalab</a></span></p>
-      <p class="poster__note d-only">{S.tryNote}</p>
-    </div>
-    <div class="poster__cta wrap">
-      <SampleCta class="cta--poster" />
-    </div>
-  </section>
+  <!-- 9. The standard closing card -->
+  <EndCta />
 </Base>

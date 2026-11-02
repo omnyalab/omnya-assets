@@ -1,5 +1,5 @@
 ---
-// "Get a free sample" with the one-line explanation underneath.
+// "Get a free sample" (2/11: no line under it).
 import Arrow from './Arrow.astro';
 import { t, langFromPath } from '../i18n';
 
@@ -15,5 +15,4 @@ const T = t(langFromPath(Astro.url.pathname));
 
 <div class:list={['cta', cls]} {...rest}>
   <button type="button" class:list={['btn', { 'btn--light': light }]} data-sample>{T.cta} <Arrow /></button>
-  <p class="cta__note">{T.ctaNote}</p>
 </div>

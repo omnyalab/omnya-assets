@@ -1,0 +1,32 @@
+---
+// The closing card of every page, before the footer (2/11): the free sample, a second way on, three works fanned out.
+import Duo from './Duo.astro';
+import Arrow from './Arrow.astro';
+import { projects } from '../lib/data';
+import { t, langFromPath, localize } from '../i18n';
+
+interface Props {
+  /** The second button: the price list, or the work on the pricing page. */
+  second?: 'pricing' | 'work';
+}
+const { second = 'pricing' } = Astro.props;
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang);
+const fan = projects.slice(0, 3).map((p) => p.cover.mobile);
+const link = second === 'work' ? { href: '/work', label: T.work.seeWork } : { href: '/pricing', label: T.work.prices };
+---
+
+<section class="wend wrap">
+  <div class="wend__card">
+    <div class="wend__copy">
+      <Duo size="h2" class="wend__title" a={T.work.endA} b={T.work.endB} />
+      <div class="wend__btns" data-fade>
+        <button type="button" class="btn btn--fill" data-sample>{T.cta} <Arrow /></button>
+        <a href={localize(link.href, lang)} class="btn">{link.label} <Arrow /></a>
+      </div>
+    </div>
+    <span class="wend__fan" aria-hidden="true">
+      {fan.map((src, i) => <img class={`wend__pic wend__pic--${i + 1}`} data-src={src} width="760" height="1000" alt="" decoding="async" />)}
+    </span>
+  </div>
+</section>

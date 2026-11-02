@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import Duo from '../components/Duo.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import Arrow from '../components/Arrow.astro';
-import SampleCta from '../components/SampleCta.astro';
+import EndCta from '../components/EndCta.astro';
 import { projects, pad } from '../lib/data';
 import { sizes as dims } from '../lib/media';
 import { t, langFromPath, localize } from '../i18n';
@@ -87,11 +87,11 @@ const rows = [
       <div class="statement__row">
         <div class="statement__txt">
           <p class="statement__line" data-fade>{H.line}</p>
-          <ul class="facts" data-fade>
-            {H.facts.map((f) => <li>{f}</li>)}
-          </ul>
+          <div class="statement__btns" data-fade>
+            <button type="button" class="btn btn--fill" data-sample>{T.cta} <Arrow /></button>
+            <a class="btn" href={localize('/work', lang)}>{T.work.seeWork} <Arrow /></a>
+          </div>
         </div>
-        <SampleCta data-fade />
       </div>
     </section>
 
@@ -155,5 +155,6 @@ const rows = [
       </a>
     </section>
 
+    <EndCta />
   </div>
 </Base>

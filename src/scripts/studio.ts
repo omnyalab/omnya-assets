@@ -13,15 +13,55 @@
 // The pictures never move with the scroll: only the stage changes.
 import { gsap, ScrollTrigger, SplitText, reduced, lenis } from './core';
 import { onDestroy, inPage, onIntro } from './anim';
+import createGlobe from 'cobe';
 
 const EASE = 'expo.out';
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const seg = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
 
 export function studio(intro: Promise<void>) {
+  globe();
   posters(intro);
   stages();
   times();
+}
+
+/* ---------- The globe (2/11): Venice and Dubai, swinging gently between the two;
+   drag it with the mouse or a finger, and it settles back between the studios ---------- */
+function globe() {
+  const box = document.querySelector<HTMLElement>('[data-globe]');
+  const canvas = box?.querySelector('canvas');
+  if (!box || !canvas) return;
+  // the angle that turns a longitude to face us (cobe's own formula)
+  const face = (lng: number) => Math.PI - ((lng * Math.PI) / 180 - Math.PI / 2);
+  const venice = face(12.33), dubai = face(55.27);
+  const mid = (venice + dubai) / 2, swing = (venice - dubai) / 2 + 0.12;
+  let width = 0, drag = 0, offset = 0, down: number | null = null, t = 0;
+  const size = () => (width = canvas.offsetWidth);
+  size();
+  const g = createGlobe(canvas, {
+    devicePixelRatio: 2, width: width * 2, height: width * 2, phi: mid, theta: 0.5,
+    dark: 0, diffuse: 1.2, mapSamples: 22000, mapBrightness: 6, mapBaseBrightness: 0.05,
+    baseColor: [0.93, 0.8, 0.72], markerColor: [0.72, 0.38, 0.24], glowColor: [0.98, 0.93, 0.88],
+    markers: [{ location: [45.44, 12.33], size: 0.06 }, { location: [25.2, 55.27], size: 0.06 }],
+    onRender: (st) => {
+      if (!reduced && down === null) t += 0.006;
+      if (down === null) offset *= 0.97; // after a drag, back between the two studios
+      st.phi = mid + Math.sin(t) * swing + offset + drag;
+      st.width = width * 2; st.height = width * 2;
+    },
+  });
+  canvas.style.cursor = 'grab';
+  const start = (x: number) => { down = x; canvas.style.cursor = 'grabbing'; };
+  const move = (x: number) => { if (down !== null) drag = (x - down) / 160; };
+  const end = () => { if (down === null) return; offset += drag; drag = 0; down = null; canvas.style.cursor = 'grab'; };
+  canvas.addEventListener('pointerdown', (e) => start(e.clientX));
+  window.addEventListener('pointermove', (e) => move(e.clientX));
+  window.addEventListener('pointerup', end);
+  canvas.addEventListener('touchmove', (e) => move(e.touches[0].clientX), { passive: true });
+  window.addEventListener('resize', size);
+  requestAnimationFrame(() => box.classList.add('is-on'));
+  onDestroy(() => { g.destroy(); window.removeEventListener('resize', size); window.removeEventListener('pointerup', end); });
 }
 
 /* ---------- Posters ---------- */

@@ -4,15 +4,13 @@ import ProjectCard from '../components/ProjectCard.astro';
 import { projects } from '../lib/data';
 import { t, langFromPath, localize } from '../i18n';
 import Duo from '../components/Duo.astro';
-import Arrow from '../components/Arrow.astro';
+import EndCta from '../components/EndCta.astro';
 
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const filters = [{ key: 'all', label: T.work.all }, ...Object.entries(T.categories).map(([key, label]) => ({ key, label }))];
 const shape = (i: number, o: string) => (o === 'vertical' || i % 4 === 1 || i % 4 === 2 ? 'tall' : i % 4 === 3 ? 'wide' : '');
 const ar = (s: string) => (s === 'tall' ? '4 / 5' : s === 'wide' ? '3 / 2' : '16 / 10');
-// three covers for the closing card: the newest work
-const fan = projects.slice(0, 3).map((p) => p.cover.mobile);
 const sizes = ['(min-width: 900px) 58vw, calc(100vw - 32px)', '(min-width: 900px) 34vw, 84vw', '(min-width: 900px) 34vw, 84vw', '(min-width: 900px) 50vw, calc(100vw - 32px)'];
 ---
 
@@ -20,7 +18,7 @@ const sizes = ['(min-width: 900px) 58vw, calc(100vw - 32px)', '(min-width: 900px
   <section class="phead wrap">
     <div class="work__head">
       <h1 class="t-display work__title" data-split="intro">{T.work.titleA}{' '}<span class="mute">{T.work.titleB}</span></h1>
-      <span class="pill" data-fade="0.2" data-intro>2026</span>
+      <span class="pill" data-fade="0.2" data-intro>{T.work.pill}</span>
     </div>
     <div class="phead__meta">
       <div class="filters" role="group" aria-label={T.work.filterLabel} data-fade data-intro>
@@ -32,7 +30,6 @@ const sizes = ['(min-width: 900px) 58vw, calc(100vw - 32px)', '(min-width: 900px
           ))
         }
       </div>
-      <span class="t-small mute phead__note" data-fade="0.1" data-intro>{T.work.note}</span>
     </div>
   </section>
 
@@ -47,20 +44,5 @@ const sizes = ['(min-width: 900px) 58vw, calc(100vw - 32px)', '(min-width: 900px
     </div>
   </section>
 
-  <!-- After the last project (C2): a light card, three works fanned out, the free sample -->
-  <section class="wend wrap">
-    <div class="wend__card">
-      <div class="wend__copy">
-        <Duo size="h2" class="wend__title" a={T.work.endA} b={T.work.endB} />
-        <div class="wend__btns" data-fade>
-          <button type="button" class="btn btn--fill" data-sample>{T.cta} <Arrow /></button>
-          <a href={localize('/pricing', lang)} class="btn">{T.work.prices} <Arrow /></a>
-        </div>
-        <p class="cta__note wend__note" data-fade>{T.ctaNote}</p>
-      </div>
-      <span class="wend__fan" aria-hidden="true">
-        {fan.map((src, i) => <img class={`wend__pic wend__pic--${i + 1}`} data-src={src} width="760" height="1000" alt="" decoding="async" />)}
-      </span>
-    </div>
-  </section>
+  <EndCta />
 </Base>

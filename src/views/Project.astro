@@ -1,4 +1,5 @@
 ---
+import EndCta from '../components/EndCta.astro';
 import Base from '../layouts/Base.astro';
 import Frame from '../components/Frame.astro';
 import Clip from '../components/Clip.astro';
@@ -116,13 +117,7 @@ const stillSizes: Record<string, string> = {
     }
   </section>
 
-  <section class="pcta wrap">
-    <Duo size="h2" a={P.ctaA} b={P.ctaB} />
-    <div class="pcta__row">
-      <p class="t-sub" data-fade style="max-width: 26ch">{P.ctaLine}</p>
-      <SampleCta data-fade />
-    </div>
-  </section>
+  <EndCta />
 
   <a href={localize(href(next), lang)} class="next" data-plink data-cursor={T.cursor.view} aria-label={`${P.next}: ${next.title}`}>
     <div class="frame" data-cover data-reveal>

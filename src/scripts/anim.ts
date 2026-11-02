@@ -156,6 +156,11 @@ function releaseMedia(scope: HTMLElement) {
   const imgs = Array.from(scope.querySelectorAll<HTMLImageElement>('img[data-src]'));
   const load = (img: HTMLImageElement) => {
     if (!img.dataset.src) return;
+    // a <picture> with art direction: its <source data-srcset> get their files at the same moment
+    img.parentElement?.querySelectorAll<HTMLSourceElement>('source[data-srcset]').forEach((so) => {
+      so.srcset = so.dataset.srcset!;
+      so.removeAttribute('data-srcset');
+    });
     if (img.dataset.srcset) img.srcset = img.dataset.srcset;
     img.src = img.dataset.src;
     img.removeAttribute('data-src');

@@ -240,9 +240,10 @@ export function initClocks() {
   onDestroy(() => clearInterval(id));
 }
 
-/* ---------- Custom scrollbar (desktop, lusion-style) ----------
-   A thin pill on the right, driven by Lenis: drag it, click the track to jump,
-   it widens on hover and fades when you stop scrolling. Touch keeps the native one. */
+/* ---------- Custom scrollbar (desktop) ----------
+   2/11, like seralba.it: a short hairline in the middle of the right edge and a terracotta dot
+   that follows the page, driven by Lenis. Drag the dot or click the line to jump; on hover the
+   dot grows to be easier to grab; it dims when you stop scrolling. Touch keeps the native one. */
 export function initScrollbar() {
   if (!fine || !lenis) return;
   const bar = document.querySelector<HTMLElement>('[data-sbar]');
@@ -265,9 +266,8 @@ export function initScrollbar() {
     const trackH = bar.clientHeight;
     bar.classList.toggle('is-off', limit < 4);
     if (limit < 4) return;
-    th = Math.max(48, (trackH * window.innerHeight) / (limit + window.innerHeight));
+    th = thumb.offsetHeight; // the dot (2/11): its size comes from the CSS, it never stretches
     const y = (trackH - th) * Math.min(1, Math.max(0, l.scroll / limit));
-    thumb.style.height = `${th}px`;
     thumb.style.transform = `translate3d(0, ${y}px, 0)`;
     // light pill over dark sections (reel, covers, footer)
     bar.classList.toggle('is-light', isDarkAt(bar.getBoundingClientRect().top + y + th / 2));

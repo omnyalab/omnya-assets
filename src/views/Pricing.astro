@@ -3,9 +3,8 @@
 // the volume line, a real project on a dark band, terms, then the free sample.
 // On phones each table row becomes one line: quantity left, price large right.
 import Base from '../layouts/Base.astro';
-import Duo from '../components/Duo.astro';
 import Arrow from '../components/Arrow.astro';
-import SampleCta from '../components/SampleCta.astro';
+import EndCta from '../components/EndCta.astro';
 import { projects, href } from '../lib/data';
 import { srcset } from '../lib/media';
 import { t, langFromPath, localize } from '../i18n';
@@ -25,11 +24,20 @@ const money = (n: number) => {
 // the same views at the single price, struck through next to the real one (also the monthly plan)
 const perUnit = (q: string) => Number(q.match(/^\d+/)?.[0] ?? 0);
 const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ? Number(q) * single - num(price) : 0);
+// Films: the same seconds bought as 30-second films (60 s = two, 90–120 s = four), struck through
+const film30 = num(P.filmsRows[0][1]);
+const filmUnits = [1, 2, 4];
+// Packs: the same images at the single price plus the film of the same length, struck through
+const packParts = [[8, 0], [15, 1], [25, 2]];
+const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packParts[i][1]][1]);
 ---
 
 <Base page="pricing" title={P.title} description={P.description}>
   <section class="phead wrap">
-    <Duo as="h1" size="h1" a={P.titleA} b={P.titleB} intro />
+    <div class="work__head">
+      <h1 class="t-display work__title" data-split="intro">{P.titleA}{' '}<span class="mute">{P.titleB}</span></h1>
+      <span class="pill" data-fade="0.2" data-intro>{P.pill}</span>
+    </div>
   </section>
 
   <!-- The price tables on a warm light band, each row a sheet of white glass; the best one in colour -->
@@ -48,7 +56,7 @@ const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ?
             <tr class:list={{ 'is-best': i === bestRow }}>
               <th scope="row" class="ptable__q">
                 {i === bestRow && <span class="ptable__pill">{P.best}</span>}
-                <span class="ptable__qn">{q}<span class="ptable__unit">{q === '1' ? P.imagesUnit[0] : P.imagesUnit[1]}</span></span>
+                <span class="ptable__qn">{q}{/^\d+$/.test(q) && <span class="ptable__unit">{q === '1' ? P.imagesUnit[0] : P.imagesUnit[1]}</span>}</span>
                 {saving(q, price) > 0 && <span class="ptable__save d-only">{P.save} {money(saving(q, price))}</span>}
               </th>
               <td class="ptable__price">
@@ -68,28 +76,6 @@ const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ?
     <p class="prices__star m-only" data-fade>{P.imagesStarShort}</p>
   </section>
 
-  <!-- Virtual staging -->
-  <section class="prices wrap" aria-labelledby="staging-title">
-    <h2 class="t-h3 prices__title" id="staging-title" data-split>{P.stagingA}{' '}<span class="mute">{P.stagingB}</span></h2>
-    <table class="ptable ptable--films ptable--staging" data-fade>
-      <caption class="sr-only">{P.stagingA}, {P.stagingB}</caption>
-      <thead>
-        <tr>{P.stagingCols.map((c) => <th scope="col">{c}</th>)}</tr>
-      </thead>
-      <tbody>
-        {
-          P.stagingRows.map(([name, price, what]) => (
-            <tr>
-              <th scope="row" class="ptable__q"><span class="ptable__qn">{name}</span></th>
-              <td class="ptable__price">{price}</td>
-              <td class="ptable__each">{what}</td>
-            </tr>
-          ))
-        }
-      </tbody>
-    </table>
-  </section>
-
   <!-- Films -->
   <section class="prices wrap" aria-labelledby="films-title">
     <h2 class="t-h3 prices__title" id="films-title" data-split>{P.filmsA}{' '}<span class="mute">{P.filmsB}</span></h2>
@@ -105,8 +91,13 @@ const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ?
               <th scope="row" class="ptable__q">
                 {i === P.filmsBest && <span class="ptable__pill">{P.recommended}</span>}
                 <span class="ptable__qn">{len}<span class="ptable__unit">{P.filmsUnit}</span></span>
+                {filmUnits[i] > 1 && <span class="ptable__save d-only">{P.save} {money(filmUnits[i] * film30 - num(price))}</span>}
               </th>
-              <td class="ptable__price">{price}</td>
+              <td class="ptable__price">
+                {filmUnits[i] > 1 && <s class="ptable__was">{money(filmUnits[i] * film30)}</s>}
+                {price}
+                {filmUnits[i] > 1 && <span class="ptable__save m-only">{P.save} {money(filmUnits[i] * film30 - num(price))}</span>}
+              </td>
               <td class="ptable__each">{use}</td>
             </tr>
           ))
@@ -132,8 +123,13 @@ const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ?
               <th scope="row" class="ptable__q">
                 {i === P.launchBest && <span class="ptable__pill">{P.recommended}</span>}
                 <span class="ptable__qn">{name}</span>
+                <span class="ptable__save d-only">{P.save} {money(packWas(i) - num(price))}</span>
               </th>
-              <td class="ptable__price">{price}</td>
+              <td class="ptable__price">
+                <s class="ptable__was">{money(packWas(i))}</s>
+                {price}
+                <span class="ptable__save m-only">{P.save} {money(packWas(i) - num(price))}</span>
+              </td>
               <td class="ptable__each">{what}</td>
             </tr>
           ))
@@ -145,6 +141,28 @@ const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ?
     <p class="t-sub prices__volume" data-fade>{P.volume}</p>
     <p class="prices__star" data-fade>{P.note}</p>
   </section>
+  <!-- Virtual staging -->
+  <section class="prices wrap" aria-labelledby="staging-title">
+    <h2 class="t-h3 prices__title" id="staging-title" data-split>{P.stagingA}{' '}<span class="mute">{P.stagingB}</span></h2>
+    <table class="ptable ptable--films ptable--staging" data-fade>
+      <caption class="sr-only">{P.stagingA}, {P.stagingB}</caption>
+      <thead>
+        <tr>{P.stagingCols.map((c) => <th scope="col">{c}</th>)}</tr>
+      </thead>
+      <tbody>
+        {
+          P.stagingRows.map(([name, price, what]) => (
+            <tr>
+              <th scope="row" class="ptable__q"><span class="ptable__qn">{name}</span></th>
+              <td class="ptable__price">{price}</td>
+              <td class="ptable__each">{what}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </section>
+
   </div>
 
   <!-- A real project -->
@@ -175,9 +193,10 @@ const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ?
   <section class="pterms wrap" aria-labelledby="terms-title">
     <h2 class="t-h3 pterms__title" id="terms-title" data-split>{P.termsA}{' '}<span class="mute">{P.termsB}</span></h2>
     <p class="t-sub pterms__text" data-fade>{P.terms}</p>
+    <ol class="pfig" data-play>
+      {P.termsFigs.map(([n, l]) => <li><span class="pfig__n">{n}</span><span class="pfig__l">{l}</span></li>)}
+    </ol>
   </section>
 
-  <section class="pend wrap">
-    <SampleCta data-fade />
-  </section>
+  <EndCta second="work" />
 </Base>
