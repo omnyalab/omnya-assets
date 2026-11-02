@@ -48,9 +48,11 @@ export function initCursor() {
     }
     root.classList.remove('is-view');
     root.classList.toggle('is-link', !!t.closest('a, button'));
+    // on a terracotta button the terracotta dot would vanish: there it turns white
+    root.classList.toggle('is-cta', !!t.closest('.btn--fill, .btn--white, .btn[data-sample]'));
   }
   document.documentElement.addEventListener('mouseleave', () => { root.classList.add('is-hidden'); shown = false; });
-  document.addEventListener('astro:after-swap', () => root.classList.remove('is-view', 'is-link'));
+  document.addEventListener('astro:after-swap', () => root.classList.remove('is-view', 'is-link', 'is-cta'));
 }
 
 /* ---------- In-page links that scroll smoothly ([data-scroll-to], e.g. the home "Scroll" cue) ---------- */

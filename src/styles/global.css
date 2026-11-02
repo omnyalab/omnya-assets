@@ -2794,3 +2794,13 @@ html[data-page='pricing'] .pband { padding-top: clamp(24px, 3vw, 48px); }
   .bkg__days { margin-inline: 0; padding-inline: 0; flex-wrap: wrap; overflow: visible; }
 }
 .ct__cal .bkg { padding-top: 24px; }
+/* the cursor dot turns white on terracotta buttons, so you see it there too */
+.cursor.is-cta .cursor__dot::after { background: rgba(255, 255, 255, 0.95); }
+/* the line under the page name in the transition, terracotta */
+.curtain__line { background: var(--cta); }
+/* studio kit: "Get it" and "Download" in terracotta */
+.kit__dl { color: var(--cta); }
+/* pricing: the line under the title starts where the price cards start */
+@media (min-width: 900px) { html[data-page='pricing'] .phead__lead { margin-left: calc((100% - var(--g)) * 5 / 12 + var(--g)); } }
+/* home hero: the canvas takes over from the first photo with a fade, never a hard switch */
+.hero__frames { transition: opacity 0.8s var(--ease); }

@@ -214,9 +214,9 @@ type Pic = (ImageBitmap | HTMLImageElement) & { __i?: number };
 function sequence(canvas: HTMLCanvasElement, first: HTMLImageElement, set: Frames) {
   const ctx = canvas.getContext('2d')!;
   const touch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
-  // Smoothing per 16.7ms: a little quicker on desktop, where Lenis already
-  // smooths the wheel before it gets here
-  const LERP = fine ? 0.25 : 0.18;
+  // Smoothing per 16.7ms. 2/11: softer on desktop too (was 0.25), so the drone
+  // glides after the wheel like seralba.it's scrub instead of following it step by step
+  const LERP = fine ? 0.11 : 0.18;
   // Decoded window around the position (a 1600px frame is ~5.7MB decoded: all
   // 144 would be ~820MB, so a window; a little narrower on touch screens)
   const AHEAD = touch ? 20 : 40;
