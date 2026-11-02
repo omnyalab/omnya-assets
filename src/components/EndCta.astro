@@ -12,14 +12,14 @@ interface Props {
 const { second = 'pricing' } = Astro.props;
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
-// Three pictures of our work fanned out, different on every page and never the covers used on the books (2/11).
+// Three pictures of our work fanned out, different on every page, only from the new projects and never the covers used on the books (2/11).
 // Project pages use three more pictures of the same project.
 const pic = (id: string, i: number) => projects.find((p) => p.id === id)?.gallery[i]?.mobile;
 const sets: Record<string, Array<string | undefined>> = {
   '/': [pic('24_dana', 1), pic('17_the_townhall', 2), pic('25_casa_cresta', 1)],
-  '/work': [pic('16_samar', 4), pic('04_forest_house', 1), pic('01_penthouse_dubai', 2)],
-  '/studio': [pic('05_corfu_resort', 5), pic('08_cavista_dubai', 4), pic('24_dana', 3)],
-  '/pricing': [pic('17_the_townhall', 5), pic('02_villa_cape_town', 4), pic('04_forest_house', 4)],
+  '/work': [pic('16_samar', 4), pic('25_casa_cresta', 6), pic('01_penthouse_dubai', 2)],
+  '/studio': [pic('05_corfu_resort', 5), pic('17_the_townhall', 3), pic('24_dana', 3)],
+  '/pricing': [pic('17_the_townhall', 5), pic('01_penthouse_dubai', 1), pic('05_corfu_resort', 1)],
   '/learn': [pic('05_corfu_resort', 2), pic('25_casa_cresta', 3), pic('24_dana', 5)],
 };
 const path = stripLang(Astro.url.pathname).replace(/\/$/, '') || '/';
