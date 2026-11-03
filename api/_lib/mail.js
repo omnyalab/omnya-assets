@@ -146,3 +146,6 @@ export async function sendBooking(b) {
     if (!process.env.RESEND_API_KEY) console.log('[booking] mail (not sent, no RESEND_API_KEY):', m.to, '·', m.subject);
   }
 }
+
+/** Any other email (the Instagram bot uses it to tell Nico about leads). */
+export const sendMail = (m) => transport.sendMail({ from: FROM, ...m });

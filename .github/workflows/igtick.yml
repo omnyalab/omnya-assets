@@ -1,0 +1,13 @@
+# Wakes the Instagram bot every half hour, so the "check Requests" reminders and the
+# follow-ups go out on time even when nobody is commenting.
+name: Instagram bot tick
+on:
+  schedule:
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - run: curl -fsS --max-time 60 https://www.omnyalab.com/api/igtick
