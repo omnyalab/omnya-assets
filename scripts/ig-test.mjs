@@ -7,6 +7,7 @@ import { createHmac } from 'node:crypto';
 for (const k of ['KV_REST_API_URL', 'UPSTASH_REDIS_REST_URL', 'RESEND_API_KEY', 'VERCEL']) delete process.env[k];
 
 // ---- fake graph.instagram.com ----
+const OWN = '999';
 const calls = [];
 const state = { follows: {}, commentUser: {}, refuseTemplate: false, refuseDm: new Set() };
 let mid = 0;
@@ -18,6 +19,9 @@ const server = http.createServer(async (req, res) => {
   const j = body ? JSON.parse(body) : null;
   calls.push({ method: req.method, path, query: Object.fromEntries(url.searchParams), body: j });
   const out = (o, s = 200) => { res.writeHead(s, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(o)); };
+  if (path === 'me/accounts') return out({ data: [{ id: 'page1', name: 'Omnya Lab', access_token: 'pagetoken', instagram_business_account: { id: OWN } }] });
+  if (url.searchParams.get('access_token') !== 'pagetoken') return out({ error: { message: 'wrong token' } }, 401);
+  if (path === 'page1/subscribed_apps') return out({ success: true });
   if (path === 'me/messages') {
     if (state.refuseTemplate && j.message.attachment) return out({ error: { message: 'template not allowed' } }, 400);
     const cid = j.recipient.comment_id;
@@ -39,7 +43,6 @@ const hook = await import('../api/instagram.js');
 const leadsPage = await import('../api/leads.js');
 const T = await import('../api/_lib/ig-texts.js');
 
-const OWN = '999';
 const post = async (entry, headers = {}) => {
   const r = await hook.POST(new Request('http://x/api/instagram', { method: 'POST', body: JSON.stringify({ object: 'instagram', entry: [{ id: OWN, time: 1, ...entry }] }), headers }));
   return r.status === 200 ? (await r.json()).results : r.status;
@@ -213,6 +216,9 @@ await step('leads page: private, lists everyone', async () => {
   const html = await (await leadsPage.GET(new Request('http://x/api/leads?key=k'))).text();
   assert.match(html, /@name_u1/);
   assert.match(html, /Ha un progetto/);
+  const sub = await (await leadsPage.GET(new Request('http://x/api/leads?key=k&action=subscribe'))).json();
+  assert.equal(sub.success, true);
+  assert.equal(sub.instagram, OWN);
 });
 
 server.close();

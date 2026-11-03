@@ -1,5 +1,5 @@
-// The Instagram bot of @omnyalab, in place of ManyChat. Instagram API with Instagram Login
-// (graph.instagram.com): it only ever works on Omnya's own account, so no App Review.
+// The Instagram bot of @omnyalab, in place of ManyChat. Instagram Messaging and comments
+// through the Facebook Page linked to @omnyalab (graph.facebook.com, Meta's "unified login" for new apps).
 //
 // The way it goes (decided with Nico, 3/11/2026):
 // comment with the word → public reply + one DM with a button (Instagram only allows one DM
@@ -16,7 +16,7 @@ import { sendMail } from './mail.js';
 import { host } from './config.js';
 import * as T from './ig-texts.js';
 
-const GRAPH = process.env.IG_GRAPH_URL || 'https://graph.instagram.com';
+const GRAPH = process.env.IG_GRAPH_URL || 'https://graph.facebook.com';
 const V = process.env.IG_API_VERSION || 'v24.0';
 const P = 'omnya:ig:';
 const H = 3_600_000;
@@ -96,37 +96,33 @@ export async function listLeads(n = 300) {
 
 // ---------- Instagram ----------
 
-/** The token in Redis (refreshed by the bot) unless Nico has put a new one on Vercel. */
-async function token() {
-  const t = await kv.get('token');
-  return t && t.src === process.env.IG_TOKEN ? t.value : process.env.IG_TOKEN;
-}
-
-/** Long-lived tokens last 60 days: renewed every 20. */
-export async function refreshToken() {
+/**
+ * IG_TOKEN is the system user token of the Omnya Lab business portfolio (never expires). Instagram
+ * DMs go out as the Facebook Page linked to @omnyalab, so the bot swaps it for that Page's token
+ * (also never expiring) and keeps it in Redis. A Page token put straight into IG_TOKEN works too.
+ */
+export async function page() {
   const env = process.env.IG_TOKEN;
-  if (!env) return;
-  const t = await kv.get('token');
-  if (t && t.src === env && Date.now() - t.at < 20 * DAY) return;
-  const cur = await token();
-  try {
-    const r = await fetch(`${GRAPH}/refresh_access_token?grant_type=ig_refresh_token&access_token=${encodeURIComponent(cur)}`);
-    const j = await r.json();
-    if (!j.access_token) throw new Error(j.error?.message || r.status);
-    await kv.set('token', { value: j.access_token, src: env, at: Date.now() }, 90 * 86_400);
-  } catch (e) {
-    console.error('[ig] token refresh', e.message);
-    // try again in about 12 hours
-    await kv.set('token', { value: cur, src: env, at: Date.now() - 19.5 * DAY }, 90 * 86_400);
-  }
+  const t = await kv.get('page');
+  if (t && t.src === env) return t;
+  const url = new URL(`${GRAPH}/${V}/me/accounts`);
+  url.searchParams.set('fields', 'id,name,access_token,instagram_business_account');
+  url.searchParams.set('access_token', env);
+  const j = await (await fetch(url)).json().catch(() => ({}));
+  const p = (j.data || []).find((x) => x.instagram_business_account);
+  if (!p) return { token: env };
+  const out = { src: env, token: p.access_token, id: p.id, name: p.name, ig: p.instagram_business_account.id };
+  await kv.set('page', out, 30 * 86_400);
+  return out;
 }
 
 export async function api(path, { method = 'GET', body, query } = {}) {
   const url = new URL(`${GRAPH}/${V}/${path}`);
   for (const [k, v] of Object.entries(query || {})) url.searchParams.set(k, v);
+  url.searchParams.set('access_token', (await page()).token);
   const res = await fetch(url, {
     method,
-    headers: { Authorization: `Bearer ${await token()}`, ...(body && { 'Content-Type': 'application/json' }) },
+    headers: body ? { 'Content-Type': 'application/json' } : {},
     body: body && JSON.stringify(body),
   });
   const j = await res.json().catch(() => ({}));

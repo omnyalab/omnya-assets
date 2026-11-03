@@ -1,7 +1,7 @@
 // GET /api/leads?key=… → Nico's private list of the people the Instagram bot talked to.
 // The key lives only in the Vercel env var IG_ADMIN_KEY.
 // &action=subscribe switches the webhook on for @omnyalab (once, after the token is set).
-import { listLeads, api } from './_lib/ig.js';
+import { listLeads, api, page } from './_lib/ig.js';
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -24,7 +24,9 @@ export async function GET(request) {
 
   if (q.get('action') === 'subscribe') {
     try {
-      const r = await api('me/subscribed_apps', { method: 'POST', query: { subscribed_fields: 'comments,messages,messaging_postbacks,messaging_seen' } });
+      const p = await page();
+      if (!p.id) throw new Error('no Facebook Page with an Instagram account found for IG_TOKEN');
+      const r = { page: p.name, instagram: p.ig, ...(await api(`${p.id}/subscribed_apps`, { method: 'POST', query: { subscribed_fields: 'feed,messages,messaging_postbacks' } })) };
       return new Response(JSON.stringify(r), { headers: { 'Content-Type': 'application/json' } });
     } catch (e) {
       return new Response(JSON.stringify({ error: e.message }), { status: 502, headers: { 'Content-Type': 'application/json' } });
