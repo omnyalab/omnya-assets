@@ -29,6 +29,7 @@ const server = http.createServer(async (req, res) => {
     return out({ recipient_id: cid ? state.commentUser[cid] : j.recipient.id, message_id: `m${++mid}` });
   }
   if (path.endsWith('/replies')) return out({ id: `r${++mid}` });
+  if (path === 'client') return out({ caption: 'DANA, full house teaser for our client', permalink: 'https://www.instagram.com/reel/dana/' });
   if (path.startsWith('media')) return out({ caption: 'From rough 3D to final photo ✨ Comment “PROJECT” below and I’ll send you The Blueprint', permalink: 'https://www.instagram.com/reel/abc/' });
   if (path.startsWith('u')) return out({ username: `name_${path}`, is_user_follow_business: !!state.follows[path] });
   out({ error: { message: 'unknown ' + path } }, 404);
@@ -74,6 +75,11 @@ await step('caption words', () => {
 
 await step('comment without the word: nothing', async () => {
   assert.deepEqual(await comment('u1', 'wow amazing').res, ['no word']);
+  assert.equal(sent().filter((c) => c.method === 'POST').length, 0);
+});
+
+await step('client teaser without a word in the caption: nothing, even for AI', async () => {
+  assert.deepEqual(await comment('u1', 'AI?', 'client').res, ['no word']);
   assert.equal(sent().filter((c) => c.method === 'POST').length, 0);
 });
 

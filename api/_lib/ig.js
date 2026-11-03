@@ -26,7 +26,7 @@ const KEEP = 180 * 86_400; // seconds a lead is kept
 export const REMIND_AFTER = 3 * H;
 export const NUDGE_AFTER = 20 * H;
 
-/** Words used when the caption has no "Comment WORD". */
+/** Words that start the flow in a DM sent out of nowhere (comments use the word in the caption). */
 const DEFAULT_WORDS = (process.env.IG_WORDS || 'BLUEPRINT,PROJECT,3D,AI,CLAUDE,DUBAI').split(',').map((w) => w.trim().toUpperCase()).filter(Boolean);
 // words that follow "comment" in a caption without being the keyword
 const NOT_WORDS = new Set(['BELOW', 'DOWN', 'HERE', 'THE', 'AND', 'FOR', 'TO', 'IF', 'YOUR', 'ME', 'US', 'SOTTO', 'QUI', 'LA', 'IL', 'WITH', 'NOW']);
@@ -252,7 +252,8 @@ export async function onComment(ownId, v) {
   if (!from.id || from.id === ownId || !v.id) return 'skip';
   const mediaId = v.media?.id;
   const reel = mediaId ? await reelInfo(mediaId) : { words: [], permalink: '' };
-  const word = matchWord(v.text || '', reel.words.length ? reel.words : DEFAULT_WORDS);
+  // only under posts whose caption asks for a word: client teasers and the rest are left alone
+  const word = matchWord(v.text || '', reel.words);
   if (!word) return 'no word';
   if (!(await kv.once(`once:${mediaId}:${from.id}`))) return 'already';
 

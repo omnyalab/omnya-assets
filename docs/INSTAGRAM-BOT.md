@@ -4,7 +4,7 @@ Gira sul sito, su Vercel, senza Mac acceso. File: `api/instagram.js` (riceve gli
 
 ## Il giro
 
-1. Commento con la parola. La parola la legge da sola dalla caption ("Comment PROJECT", "Commenta 3D", "comment the word AI"). Se la caption non ne ha, valgono BLUEPRINT, PROJECT, 3D, AI, CLAUDE, DUBAI (variabile `IG_WORDS` su Vercel). Maiuscole, emoji e un errore di battitura non contano.
+1. Commento con la parola. La parola la legge da sola dalla caption ("Comment PROJECT", "Commenta 3D", "comment the word AI"): sotto i post senza "Comment PAROLA" in caption (teaser per i clienti, ecc.) il bot non risponde. Maiuscole, emoji e un errore di battitura non contano. Le parole in `IG_WORDS` (BLUEPRINT, PROJECT, 3D, AI, CLAUDE, DUBAI) valgono solo per chi le scrive direttamente in DM.
 2. Risposta sotto il commento, una a caso tra sei, e DM con il tasto **Get the Blueprint**. Ogni persona lo riceve una volta sola per reel.
 3. Tocca il tasto:
    - se ci segue, riceve il messaggio "se ci segue e commenta" di Nico;
