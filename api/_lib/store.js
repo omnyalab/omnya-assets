@@ -11,7 +11,7 @@ const P = 'omnya:';
 
 const mem = { holds: new Map(), booked: [], details: new Map() };
 
-async function redis(...cmd) {
+export async function redis(...cmd) {
   const res = await fetch(URL_, {
     method: 'POST',
     headers: { Authorization: `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
