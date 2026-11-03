@@ -217,20 +217,20 @@ export function matchWord(comment, words) {
   return null;
 }
 
+/** The caption's words, kept 6 hours; a caption Instagram didn't give us is asked again next time. */
 async function reelInfo(mediaId) {
-  const key = `reel:${mediaId}`;
-  let c = await kv.get(key);
-  if (!c) {
-    try {
-      const m = await api(mediaId, { query: { fields: 'caption,permalink' } });
-      c = { words: captionWords(m.caption || ''), permalink: m.permalink || '' };
-    } catch (e) {
-      console.warn('[ig] caption', e.message);
-      c = { words: [], permalink: '' };
-    }
+  const key = `caption:${mediaId}`;
+  const cached = await kv.get(key);
+  if (cached) return cached;
+  try {
+    const m = await api(mediaId, { query: { fields: 'caption,permalink' } });
+    const c = { words: captionWords(m.caption || ''), permalink: m.permalink || '' };
     await kv.set(key, c, 6 * 3600);
+    return c;
+  } catch (e) {
+    console.warn('[ig] caption', e.message);
+    return { words: [], permalink: '' };
   }
-  return c;
 }
 
 // ---------- Nico ----------
