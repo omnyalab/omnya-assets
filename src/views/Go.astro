@@ -13,12 +13,12 @@ const lang = langFromPath(Astro.url.pathname);
 const L = t(lang).learn;
 const id = Astro.props.id as ProductId;
 const product = products.find((p) => p.id === id)!;
-// The Blueprint has its own Italian file.
-const link = id === 'free' && lang === 'it' ? product.checkout.replace('.pdf', '-it.pdf') : product.checkout;
+// The Blueprints have their own Italian file.
+const link = (id === 'free' || id === 'free-tower') && lang === 'it' ? product.checkout.replace('.pdf', '-it.pdf') : product.checkout;
 const book = L.books.find((b) => b.id === id);
 const lesson = L.lessons.find((l) => l.id === id);
 const offer = (L.thanks.offers as Record<string, { a: string; b: string; price: string }>)[id];
-const name = id === 'free' ? 'The Blueprint (PDF)' : book ? `${book.a} ${book.b}` : lesson ? lesson.name : id === 'bundle' ? L.ladder[2][0] : offer && id !== 'community' ? `${offer.a} (${offer.price})` : L.communityA;
+const name = id === 'free' ? 'The Blueprint (PDF)' : id === 'free-tower' ? 'The Tower Blueprint (PDF)' : book ? `${book.a} ${book.b}` : lesson ? lesson.name : id === 'bundle' ? L.ladder[2][0] : offer && id !== 'community' ? `${offer.a} (${offer.price})` : L.communityA;
 const fallbacks = Object.fromEntries(['', '3d', 'ai', 'claude', 'dubai'].map((k) => [k, fallback(id, lang, name, k || undefined)]));
 ---
 

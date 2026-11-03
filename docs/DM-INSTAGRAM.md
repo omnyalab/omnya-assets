@@ -11,3 +11,11 @@ I vecchi link con la parola (/learn/3d, /learn/ai, /learn/claude, /learn/dubai, 
 Here you go 👇🏻 The Blueprint is free on this page, and right under it there's the full method we use for our reels: https://omnyalab.com/the-blueprint
 
 (and if you'd rather have us do it on your project, the first image is free, it's on the same page)
+
+## Reel delle torri (dal 3/11)
+
+Per i reel delle torri c'è il Tower Blueprint, gratis, sulla sua pagina: https://omnyalab.com/the-tower-blueprint (corto: omnyalab.com/tower). Stessa pagina del Blueprint, con Burtville in alto e il Playbook 03 per primo.
+
+Here you go 👇🏻 The Tower Blueprint is free on this page, and right under it there's the full method we use for our towers: https://omnyalab.com/the-tower-blueprint
+
+(and if you'd rather have us do it on your tower, the first image is free, it's on the same page)

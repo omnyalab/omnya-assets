@@ -81,6 +81,11 @@
       "permanent": true
     },
     {
+      "source": "/tower",
+      "destination": "/the-tower-blueprint",
+      "permanent": true
+    },
+    {
       "source": "/it/learn/3D",
       "destination": "/it/the-blueprint",
       "permanent": true
@@ -158,6 +163,11 @@
     {
       "source": "/it/blueprint",
       "destination": "/it/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/it/tower",
+      "destination": "/it/the-tower-blueprint",
       "permanent": true
     },
     {

@@ -9,7 +9,9 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   // offers shown only after a purchase, on /learn/thanks/<product>
   | 'session-reader' | 'rest-30' | 'rest-50' | 'build-upgrade' | 'sample'
   // the free PDF people claim from the reel DM, on /learn/<word>
-  | 'free';
+  | 'free'
+  // the free tower PDF, on /the-tower-blueprint (3/11)
+  | 'free-tower';
 
 export const products: { id: ProductId; checkout: string }[] = [
   { id: 'white-to-real', checkout: 'https://buy.stripe.com/9B66oGet7bIs3hAeyN8so00' },
@@ -25,6 +27,7 @@ export const products: { id: ProductId; checkout: string }[] = [
   { id: 'build-upgrade', checkout: 'https://buy.stripe.com/8x23cufxbcMw4lE76l8so09' },
   { id: 'sample', checkout: '' },
   { id: 'free', checkout: '/learn/free/omnya-lab-blueprint.pdf' },
+  { id: 'free-tower', checkout: '/learn/free/omnya-lab-tower-blueprint.pdf' },
 ];
 
 /**
