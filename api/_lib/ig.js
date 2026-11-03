@@ -178,18 +178,41 @@ export function captionWords(caption) {
   return [...out];
 }
 
+/** Typing distance, with two swapped letters counting as one mistake (CALDUE → CLAUDE = 2). */
 function lev(a, b) {
   const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
   for (let j = 1; j <= b.length; j++) d[0][j] = j;
   for (let i = 1; i <= a.length; i++)
-    for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    for (let j = 1; j <= b.length; j++) {
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + 1);
+    }
   return d[a.length][b.length];
 }
 
-/** The keyword in a comment: capitals, emoji and spaces don't matter, one typo is fine on long words. */
+/** Mistakes allowed: none on short words (3D, AI), one on 4–5 letters, two from 6 letters up. */
+const slack = (w) => (w.length <= 3 ? 0 : w.length <= 5 ? 1 : 2);
+
+/** How many letters one word has that the other hasn't (CALDUE vs CLAUDE: 0, CLOUD vs CLAUDE: 3). */
+function letterGap(a, b) {
+  const n = {};
+  for (const c of a) n[c] = (n[c] || 0) + 1;
+  for (const c of b) n[c] = (n[c] || 0) - 1;
+  return Object.values(n).reduce((s, v) => s + Math.abs(v), 0);
+}
+
+/** One typo is always fine; two only when the letters are (almost) the same, just shuffled: Caldue yes, Cloud no. */
+function close(t, w) {
+  const max = slack(w);
+  if (!max || Math.abs(t.length - w.length) > max) return false;
+  const d = lev(t, w);
+  return d <= 1 || (d <= max && letterGap(t, w) <= 1);
+}
+
+/** The keyword in a comment: capitals, accents, emoji and spaces don't matter, nor small typos (Claude, Caldue, Cluade, Claudee). */
 export function matchWord(comment, words) {
   const tokens = String(comment).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toUpperCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
-  for (const w of words) for (const t of tokens) if (t === w || (w.length >= 5 && Math.abs(t.length - w.length) <= 1 && lev(t, w) <= 1)) return w;
+  for (const w of words) for (const t of tokens) if (t === w || close(t, w)) return w;
   return null;
 }
 

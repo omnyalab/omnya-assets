@@ -71,6 +71,9 @@ await step('caption words', () => {
   assert.equal(ig.matchWord('Project 🔥🔥', ['PROJECT']), 'PROJECT');
   assert.equal(ig.matchWord('projet!', ['PROJECT']), 'PROJECT');
   assert.equal(ig.matchWord('so beautiful', ['PROJECT']), null);
+  for (const c of ['Claude', 'claude 🔥', 'Caldue', 'Cluade', 'Claudee', 'CLAUD', 'Clade', 'Clàude']) assert.equal(ig.matchWord(c, ['CLAUDE']), 'CLAUDE', c);
+  for (const c of ['Cloud', 'clouds', 'amazing', 'collab']) assert.equal(ig.matchWord(c, ['CLAUDE']), null, c);
+  assert.equal(ig.matchWord('A1', ['AI']), null);
 });
 
 await step('comment without the word: nothing', async () => {
