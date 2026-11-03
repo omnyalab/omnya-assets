@@ -102,7 +102,8 @@ export async function listLeads(n = 300) {
  * (also never expiring) and keeps it in Redis. A Page token put straight into IG_TOKEN works too.
  */
 export async function page() {
-  const env = process.env.IG_TOKEN;
+  // Meta tokens are letters and digits only: a stray space, newline or ù from pasting is dropped
+  const env = String(process.env.IG_TOKEN || '').replace(/[^A-Za-z0-9]/g, '');
   const t = await kv.get('page');
   if (t && t.src === env) return t;
   const url = new URL(`${GRAPH}/${V}/me/accounts`);
