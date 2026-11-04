@@ -12,7 +12,7 @@ let think = realThink;
 export const _setThink = (fn) => (think = fn); // local tests only
 
 const GRAPH = process.env.WA_GRAPH_URL || 'https://graph.facebook.com';
-const V = process.env.WA_API_VERSION || 'v24.0';
+const V = process.env.WA_API_VERSION || 'v25.0';
 const TOKEN = () => process.env.WA_TOKEN;
 const PHONE_ID = () => process.env.WA_PHONE_ID;
 const P = 'omnya:wa:';
