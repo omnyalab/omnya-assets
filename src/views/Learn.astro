@@ -87,7 +87,7 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
           <img class="twhero__img" src="/learn/samar_tower.webp" width="1920" height="1071" alt="SAMAR, Dubai Marina: the tower at sunset over the marina" fetchpriority="high" decoding="async" />
         </picture>
         <div class="twhero__in wrap">
-          <h1 class="t-display twhero__title" id="learn-title" data-split="intro">{X.heroA}{' '}<span class="mute">{X.heroB}</span></h1>
+          <h1 class="t-display twhero__title" id="learn-title" data-split="intro">{X.heroA}</h1>
           <p class="t-sub twhero__sub" data-fade>{X.sub}</p>
           <div class="twhero__ctas" data-fade>
             <a class="twbtn twbtn--white" href={go('free-tower')} target="_blank" rel="noopener" data-tw-dl>{X.download} <Arrow /></a>
@@ -175,7 +175,10 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
 
   <!-- Who it is for -->
   <!-- The shelf: three playbooks as book covers -->
-  <section class="lbooks wrap" id="books" aria-labelledby="books-title">
+  <section class="lbooks wrap" id="books" aria-labelledby={tower ? undefined : "books-title"} aria-label={tower ? L.bundleTitleA + " " + L.bundleTitleB : undefined}>
+    {
+      !tower && (
+        <>
     <div class="lsec__head">
       <h2 class="t-h2" id="books-title" data-split>{L.booksA}{' '}<span class="mute">{L.booksB}</span></h2>
     </div>
@@ -203,6 +206,9 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
       }
     </ul>
 
+        </>
+      )
+    }
     <!-- The bundle: the three books fanned out, the real price struck -->
     <div class="lbundle" data-fade>
       <a class="lfan" href={go('bundle')} aria-label={`${L.get}: ${L.bundleTitleA} ${L.bundleTitleB}, ${eur(79)}`}>

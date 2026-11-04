@@ -2912,3 +2912,10 @@ html[data-page='pricing'] .pband { padding-top: clamp(24px, 3vw, 48px); }
    with tight tracking for every title on this page, like the board */
 .twhero__title, main:has(.twhero) .t-display, main:has(.twhero) .t-h1, main:has(.twhero) .t-h2, main:has(.twhero) .t-h3 { font-weight: 600; letter-spacing: -0.042em; }
 main:has(.twhero) .t-h2 { line-height: 1; }
+
+/* 4/11 round 2 from Nico's phone: darker fade under the title, more room after the offer,
+   the "500 followers offer!" button in bold */
+.twhero::after { background: linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0) 20%, rgba(0, 0, 0, 0) 36%, rgba(0, 0, 0, 0.55) 62%, rgba(0, 0, 0, 0.88) 100%); }
+.twbtn--blue { font-weight: 600; }
+main:has(.twhero) .lbooks { padding-top: clamp(72px, 10vw, 140px); }
+main:has(.twhero) .lbundle { margin-top: 0; }

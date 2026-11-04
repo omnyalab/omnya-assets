@@ -25,7 +25,7 @@ const afterB = top ? X.upAfterB : X.endAfterB;
 
 <section class:list={['twoffer', `twoffer--${variant}`]} id={top ? 'full' : 'full-end'} aria-label={X.bookAlt} data-tw-offer>
   <div class="twoffer__card">
-    {top && <span class="twoffer__tab tw-shine" data-deal>{X.tab} <i aria-hidden="true">↓</i></span>}
+    {top && <span class="twoffer__tab tw-shine" data-deal>{X.tab}</span>}
     <div class="twoffer__book"><Book3D a={X.bookA} b={X.bookB} band={X.bookBand} alt={X.bookAlt} /></div>
     <div class="twoffer__copy">
       {top && <p class="twoffer__ok" data-tw-ok hidden>✓ {X.ok}</p>}
@@ -83,7 +83,7 @@ const afterB = top ? X.upAfterB : X.endAfterB;
     box-shadow: 0 40px 80px -48px rgba(30, 24, 16, 0.45);
   }
   @media (min-width: 800px) { .twoffer__card { grid-template-columns: minmax(220px, 0.8fr) 2fr; } }
-  .twoffer__tab { position: absolute; left: 50%; top: 0; transform: translate(-50%, -50%); z-index: 4; display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 8px 0 20px; border-radius: 999px; background: #0071e3; color: #fff; font-weight: 600; font-size: 17px; letter-spacing: -0.022em; white-space: nowrap; box-shadow: 0 16px 34px -16px rgba(0, 113, 227, 0.9); }
+  .twoffer__tab { position: absolute; left: 50%; top: 0; transform: translate(-50%, -50%); z-index: 4; display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px; border-radius: 999px; background: #0071e3; color: #fff; font-weight: 600; font-size: 17px; letter-spacing: -0.022em; white-space: nowrap; box-shadow: 0 16px 34px -16px rgba(0, 113, 227, 0.9); }
   .twoffer__tab i { font-style: normal; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.22); animation: tw-nudge 1.6s ease-in-out infinite; }
   @keyframes tw-nudge { 50% { transform: translateY(4px); } }
   .twoffer__book { font-size: clamp(17px, 2.1vw, 26px); }
