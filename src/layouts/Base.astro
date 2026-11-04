@@ -18,13 +18,15 @@ interface Props {
   og?: string;
   ogAlt?: string;
   footer?: boolean;
+  /** The funnel pages from the reels (5/11: /the-tower-blueprint) open without the site header. */
+  header?: boolean;
   /** Pages people reach only after paying (thank-you pages) stay out of search. */
   noindex?: boolean;
 }
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const defaultOgAlt = `Omnya Lab, ${alt(projects.find((p) => p.id === '01_penthouse_dubai')!, lang)}`;
-const { page, title, description = T.siteDescription, og = '/og/omnya-lab.jpg', ogAlt = defaultOgAlt, footer = true, noindex = false } = Astro.props;
+const { page, title, description = T.siteDescription, og = '/og/omnya-lab.jpg', ogAlt = defaultOgAlt, footer = true, header = true, noindex = false } = Astro.props;
 const fullTitle = title ? `${title} | Omnya Lab` : T.siteTitle;
 const path = Astro.url.pathname;
 const canonical = new URL(localize(path, lang), Astro.site);
@@ -87,7 +89,7 @@ const links = sampleLinks(lang);
     <Preloader />
     <div class="grain" aria-hidden="true" transition:persist="grain"></div>
 
-    <Header page={page} />
+    {header && <Header page={page} />}
     <main id="main">
       <slot />
     </main>
