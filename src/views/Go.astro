@@ -3,7 +3,7 @@
 // moves on to the checkout, the booking page or (while those are empty) WhatsApp.
 // The reel word (?k=3d) travels to the checkout as client_reference_id, so every sale
 // in the Stripe dashboard shows which reel brought it.
-import { products, fallback, fullTowerDeal, type ProductId } from '../lib/learn';
+import { products, fallback, fullTowerDeal, full3dDeal, type ProductId } from '../lib/learn';
 import { t, langFromPath } from '../i18n';
 
 interface Props {
@@ -18,7 +18,7 @@ const link = (id === 'free' || id === 'free-tower') && lang === 'it' ? product.c
 const book = L.books.find((b) => b.id === id);
 const lesson = L.lessons.find((l) => l.id === id);
 const offer = (L.thanks.offers as Record<string, { a: string; b: string; price: string }>)[id];
-const name = id === 'free' ? 'The Blueprint (PDF)' : id === 'free-tower' ? 'The Tower Blueprint (PDF)' : id === 'full-tower' ? 'The Full Tower Blueprint (PDF)' : book ? `${book.a} ${book.b}` : lesson ? lesson.name : id === 'bundle' ? L.ladder[2][0] : offer && id !== 'community' ? `${offer.a} (${offer.price})` : L.communityA;
+const name = id === 'free' ? 'The Blueprint (PDF)' : id === 'free-tower' ? 'The Tower Blueprint (PDF)' : id === 'full-tower' ? 'The Full Tower Blueprint (PDF)' : id === 'free-3d' ? 'the free 3D to film blueprint (PDF)' : id === 'full-3d' ? 'the Full Blueprint, How to make a 3D that sells with AI (PDF)' : book ? `${book.a} ${book.b}` : lesson ? lesson.name : id === 'bundle' ? L.ladder[2][0] : offer && id !== 'community' ? `${offer.a} (${offer.price})` : L.communityA;
 // The WhatsApp message for a thanks-page offer (4/11, Nico): the free image is just "a free image",
 // the paid ones keep "title (price)" with the title in lower case, as it reads inside a sentence.
 const said = offer && id !== 'community' ? offerName() : name;
@@ -28,7 +28,7 @@ function offerName() {
   return `${a} (${offer.price})`;
 }
 // The Full Tower Blueprint: the launch link until Sunday 8 November, then the €19 one (4/11)
-const deal = id === 'full-tower' ? { link: fullTowerDeal.checkout, until: fullTowerDeal.until } : null;
+const deal = id === 'full-tower' ? { link: fullTowerDeal.checkout, until: fullTowerDeal.until } : id === 'full-3d' ? { link: full3dDeal.checkout, until: full3dDeal.until } : null;
 const fallbacks = Object.fromEntries(['', '3d', 'ai', 'claude', 'dubai'].map((k) => [k, fallback(id, lang, said, k || undefined)]));
 ---
 
