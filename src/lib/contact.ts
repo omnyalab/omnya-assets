@@ -9,6 +9,8 @@ export const contact = {
   places: 'Venice · Dubai',
   instagram: 'https://www.instagram.com/omnyalab/',
   linkedin: 'https://www.linkedin.com/in/nicolaghizzo',
+  /** Legal name of the business (sole trader): Meta checks it on the site. */
+  legal: 'Nicola Ghizzo',
   vat: '05578770264',
   /** The free 30-minute call, booked on our own page (it replaced Calendly). */
   bookCall: '/book/call',
