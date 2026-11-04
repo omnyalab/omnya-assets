@@ -11,6 +11,7 @@ import Base from '../layouts/Base.astro';
 import Duo from '../components/Duo.astro';
 import Arrow from '../components/Arrow.astro';
 import BookCover from '../components/BookCover.astro';
+import TowerOffer from '../components/TowerOffer.astro';
 import { projects } from '../lib/data';
 import { srcset } from '../lib/media';
 import { goHref, words, type ProductId } from '../lib/learn';
@@ -29,6 +30,7 @@ const { word, blueprint = false, tower = false, cresta: crestaPage = false } = A
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const L = T.learn;
+const X = L.tw;
 const w = words.find((x) => x.word === word);
 const free = !!w || blueprint || tower || crestaPage;
 const samar = projects.find((p) => p.id === '16_samar')!;
@@ -77,7 +79,28 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
 
 <Base page="learn" title={tower ? L.towerA : crestaPage ? `${L.crestaA} ${L.crestaB}` : blueprint ? L.freeA : w ? `${L.heroA} ${L.heroB} · ${w.label}` : `${L.heroA} ${L.heroB}`} description={L.description} noindex={!!w}>
   <!-- Hero: the 3D model over the final image, full screen -->
-  <section class="lhero" data-header="light" data-header-media aria-labelledby="learn-title" data-lhero>
+    {
+    tower && (
+      <section class="twhero" data-header="light" data-header-media aria-labelledby="learn-title">
+        <picture>
+          <source media="(max-width: 699px)" srcset="/learn/samar_tower_mobile.webp" />
+          <img class="twhero__img" src="/learn/samar_tower.webp" width="1920" height="1071" alt="SAMAR, Dubai Marina: the tower at sunset over the marina" fetchpriority="high" decoding="async" />
+        </picture>
+        <div class="twhero__in wrap">
+          <h1 class="t-display twhero__title" id="learn-title" data-split="intro">{X.heroA}{' '}<span class="mute">{X.heroB}</span></h1>
+          <p class="t-sub twhero__sub" data-fade>{X.sub}</p>
+          <div class="twhero__ctas" data-fade>
+            <a class="twbtn twbtn--white" href={go('free-tower')} target="_blank" rel="noopener" data-tw-dl>{X.download} <Arrow /></a>
+            <a class="twbtn twbtn--blue tw-shine" href="#full"><span data-tw-deal>{X.offer}</span><span data-tw-after hidden>{X.bookAlt.split(',')[0]}</span> <Arrow /></a>
+          </div>
+        </div>
+      </section>
+    )
+  }
+  {tower && <TowerOffer variant="top" />}
+  {
+    !tower && (
+<section class="lhero" data-header="light" data-header-media aria-labelledby="learn-title" data-lhero>
     <div class="lhero__stick">
       <div class="cmp" data-cmp style="--x: 100%">
         <picture>
@@ -147,6 +170,8 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
       </div>
     </div>
   </section>
+    )
+  }
 
   <!-- Who it is for -->
   <!-- The shelf: three playbooks as book covers -->
@@ -292,6 +317,8 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
     </div>
     <a class="btn btn--fill lfaq__cta" href="#books">{L.heroBooks} <Arrow /></a>
   </section>
+
+  {tower && <TowerOffer variant="end" />}
 
   <EndCta />
 </Base>

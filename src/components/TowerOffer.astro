@@ -1,0 +1,114 @@
+---
+// The Full Tower Blueprint offer on /the-tower-blueprint (4/11, board rounds 1-11, chosen by Nico):
+// right under the hero, peeking at the bottom of the first screen with the "74% OFF till Sunday" tab,
+// and again before the closing card. Apple blue, pastel card between C-1 and C-2, the book with
+// the blue band. The launch price shows until Sunday 8 November; after that a small script swaps
+// to the €19 version without a new deploy, so the offer really ends.
+import Book3D from './Book3D.astro';
+import Arrow from './Arrow.astro';
+import { goHref, fullTowerDeal } from '../lib/learn';
+import { t, langFromPath } from '../i18n';
+
+interface Props {
+  variant: 'top' | 'end';
+}
+const { variant } = Astro.props;
+const lang = langFromPath(Astro.url.pathname);
+const X = t(lang).learn.tw;
+const money = (n: number) => (lang === 'it' ? `${String(n).replace('.', ',')} €` : `€${n}`);
+const top = variant === 'top';
+const titleA = top ? X.upA : X.endA;
+const titleB = top ? X.upB : X.endB;
+const afterA = top ? X.upAfterA : X.endAfterA;
+const afterB = top ? X.upAfterB : X.endAfterB;
+---
+
+<section class:list={['twoffer', `twoffer--${variant}`]} id={top ? 'full' : 'full-end'} aria-label={X.bookAlt} data-tw-offer>
+  <div class="twoffer__card">
+    {top && <span class="twoffer__tab tw-shine" data-deal>{X.tab} <i aria-hidden="true">↓</i></span>}
+    <div class="twoffer__book"><Book3D a={X.bookA} b={X.bookB} band={X.bookBand} alt={X.bookAlt} /></div>
+    <div class="twoffer__copy">
+      {top && <p class="twoffer__ok" data-tw-ok hidden>✓ {X.ok}</p>}
+      {top && <p class="twoffer__thanks" data-deal>{X.thanks}</p>}
+      <h2 class="twoffer__title">
+        <span data-deal>{titleA} <span class="twoffer__acc">{titleB}</span></span>
+        <span data-after hidden>{afterA} <span class="mute">{afterB}</span></span>
+      </h2>
+      {!top && <p class="twoffer__text">{X.endText}</p>}
+      <p class="twoffer__price">
+        <span data-deal><b>{money(fullTowerDeal.price)}</b> <s>{money(fullTowerDeal.was)}</s> <span class="twoffer__off">−{fullTowerDeal.off}%</span></span>
+        <span data-after hidden><b>{money(fullTowerDeal.was)}</b></span>
+      </p>
+      <p class="twoffer__why" data-deal>{X.why[0]} <b>{X.why[1]}</b>, {X.why[2]} <b>{X.why[3]}</b>.</p>
+      <div class="twoffer__ctas">
+        <a class="twbtn twbtn--blue twoffer__buy" href={goHref('full-tower', lang)}>{X.cta} <Arrow /></a>
+        {top && <a class="twoffer__no" href="#books">{X.no}</a>}
+      </div>
+    </div>
+  </div>
+</section>
+
+{
+  top && (
+    <script is:inline define:vars={{ until: fullTowerDeal.until }}>
+      // After Sunday the €19 version shows by itself
+      if (Date.now() >= Date.parse(until)) {
+        document.querySelectorAll('[data-tw-offer] [data-deal], [data-tw-deal]').forEach((el) => (el.hidden = true));
+        document.querySelectorAll('[data-tw-offer] [data-after], [data-tw-after]').forEach((el) => (el.hidden = false));
+      }
+      // The free PDF opens in a new tab; this page stays and says it is on its way
+      document.querySelectorAll('[data-tw-dl]').forEach((a) =>
+        a.addEventListener('click', () => {
+          const ok = document.querySelector('[data-tw-ok]');
+          if (ok) ok.hidden = false;
+          const card = document.getElementById('full');
+          if (card) setTimeout(() => card.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' }), 250);
+        })
+      );
+    </script>
+  )
+}
+
+<style>
+  .twoffer { position: relative; z-index: 3; padding-inline: max(16px, var(--pad, 4vw)); }
+  .twoffer--top { margin-top: -56px; }
+  .twoffer--end { padding-block: var(--section, 96px) 0; }
+  .twoffer__card {
+    position: relative; max-width: 1180px; margin: 0 auto; display: grid; gap: clamp(20px, 3vw, 48px); align-items: center;
+    padding: clamp(30px, 3.6vw, 56px) clamp(22px, 3.4vw, 52px) clamp(22px, 3.4vw, 52px); border-radius: 28px;
+    background:
+      radial-gradient(60% 80% at 15% 20%, rgba(214, 150, 96, 0.28), transparent 70%),
+      radial-gradient(55% 70% at 60% 100%, rgba(255, 140, 110, 0.21), transparent 70%),
+      radial-gradient(55% 80% at 92% 10%, rgba(150, 120, 210, 0.2), transparent 70%), #f8f2ec;
+    box-shadow: 0 40px 80px -48px rgba(30, 24, 16, 0.45);
+  }
+  @media (min-width: 800px) { .twoffer__card { grid-template-columns: minmax(220px, 0.8fr) 2fr; } }
+  .twoffer__tab { position: absolute; left: 50%; top: 0; transform: translate(-50%, -50%); z-index: 4; display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 8px 0 20px; border-radius: 999px; background: #0071e3; color: #fff; font-weight: 600; font-size: 17px; letter-spacing: -0.022em; white-space: nowrap; box-shadow: 0 16px 34px -16px rgba(0, 113, 227, 0.9); }
+  .twoffer__tab i { font-style: normal; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.22); animation: tw-nudge 1.6s ease-in-out infinite; }
+  @keyframes tw-nudge { 50% { transform: translateY(4px); } }
+  .twoffer__book { font-size: clamp(17px, 2.1vw, 26px); }
+  @media (max-width: 799px) { .twoffer__book { font-size: clamp(18px, 5.4vw, 24px); } }
+  .twoffer__ok { margin: 0 0 10px; color: #2f7a3d; font-weight: 600; font-size: var(--fs-small, 14px); }
+  .twoffer__thanks { margin: 0 0 12px; color: #5a3a22; font-size: 17px; letter-spacing: -0.01em; max-width: 46ch; }
+  .twoffer__title { margin: 0; text-wrap: balance; font-size: clamp(1.9rem, 3.4vw, 3.1rem); line-height: 1.04; letter-spacing: -0.04em; font-weight: 600; }
+  .twoffer__acc { color: #0071e3; }
+  .twoffer__text { margin: 14px 0 0; max-width: 52ch; }
+  .twoffer__price { margin: 22px 0 0; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .twoffer__price > span { display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .twoffer__price b { font-size: clamp(2.6rem, 6vw, 4rem); letter-spacing: -0.04em; font-weight: 600; line-height: 1; }
+  .twoffer__price s { font-size: clamp(1.2rem, 2.4vw, 1.6rem); color: var(--mute); }
+  .twoffer__off { display: inline-flex; align-items: center; min-height: 30px; padding: 0 12px; border-radius: 999px; background: #0071e3; color: #fff; font-weight: 700; font-size: 15px; }
+  .twoffer__why { margin: 10px 0 0; color: #5a3a22; font-size: var(--fs-small, 14px); }
+  .twoffer__ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; margin-top: 26px; }
+  .twoffer__no { display: inline-flex; align-items: center; min-height: 44px; color: var(--mute); }
+  @media (max-width: 799px) {
+    .twoffer--top { margin-top: -40px; }
+    .twoffer__card { padding-top: 40px; }
+    .twoffer__tab { font-size: 15px; min-height: 44px; }
+    .twoffer__thanks { font-size: 15px; }
+    .twoffer__buy { width: 100%; justify-content: center; }
+    .twoffer__ctas { justify-content: center; }
+  }
+  @media (prefers-reduced-motion: reduce) { .twoffer__tab i { animation: none; } }
+  [hidden] { display: none !important; }
+</style>

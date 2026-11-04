@@ -3,7 +3,7 @@
 // moves on to the checkout, the booking page or (while those are empty) WhatsApp.
 // The reel word (?k=3d) travels to the checkout as client_reference_id, so every sale
 // in the Stripe dashboard shows which reel brought it.
-import { products, fallback, type ProductId } from '../lib/learn';
+import { products, fallback, fullTowerDeal, type ProductId } from '../lib/learn';
 import { t, langFromPath } from '../i18n';
 
 interface Props {
@@ -18,7 +18,9 @@ const link = (id === 'free' || id === 'free-tower') && lang === 'it' ? product.c
 const book = L.books.find((b) => b.id === id);
 const lesson = L.lessons.find((l) => l.id === id);
 const offer = (L.thanks.offers as Record<string, { a: string; b: string; price: string }>)[id];
-const name = id === 'free' ? 'The Blueprint (PDF)' : id === 'free-tower' ? 'The Tower Blueprint (PDF)' : book ? `${book.a} ${book.b}` : lesson ? lesson.name : id === 'bundle' ? L.ladder[2][0] : offer && id !== 'community' ? `${offer.a} (${offer.price})` : L.communityA;
+const name = id === 'free' ? 'The Blueprint (PDF)' : id === 'free-tower' ? 'The Tower Blueprint (PDF)' : id === 'full-tower' ? 'The Full Tower Blueprint (PDF)' : book ? `${book.a} ${book.b}` : lesson ? lesson.name : id === 'bundle' ? L.ladder[2][0] : offer && id !== 'community' ? `${offer.a} (${offer.price})` : L.communityA;
+// The Full Tower Blueprint: the launch link until Sunday 8 November, then the €19 one (4/11)
+const deal = id === 'full-tower' ? { link: fullTowerDeal.checkout, until: fullTowerDeal.until } : null;
 const fallbacks = Object.fromEntries(['', '3d', 'ai', 'claude', 'dubai'].map((k) => [k, fallback(id, lang, name, k || undefined)]));
 ---
 
@@ -38,11 +40,12 @@ const fallbacks = Object.fromEntries(['', '3d', 'ai', 'claude', 'dubai'].map((k)
   </head>
   <body>
     <p><a href={link || fallbacks['']} data-go>{name} →</a></p>
-    <script is:inline define:vars={{ checkout: link, fallbacks, lang }}>
+    <script is:inline define:vars={{ checkout: link, deal, fallbacks, lang }}>
       const k = (new URLSearchParams(location.search).get('k') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
       let to = fallbacks[k] || fallbacks[''];
-      if (checkout) {
-        const u = new URL(checkout, location.origin);
+      const pay = deal && deal.link && Date.now() < Date.parse(deal.until) ? deal.link : checkout;
+      if (pay) {
+        const u = new URL(pay, location.origin);
         if (k) u.searchParams.set('client_reference_id', k);
         to = u.toString();
       }

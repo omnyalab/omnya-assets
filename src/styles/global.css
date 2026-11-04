@@ -2869,3 +2869,46 @@ html[data-page='pricing'] .pband { padding-top: clamp(24px, 3vw, 48px); }
 }
 /* space between sections (2/11): about the gap between the last card and the footer, never double */
 @media (min-width: 900px) { :root { --section: clamp(72px, 7vw, 104px); } }
+
+/* /the-tower-blueprint (4/11, board L1): SAMAR full screen, 16:9 on desktop and 9:16 on the tower on
+   phones, the title a little higher, the Full offer peeking at the bottom of the first screen */
+.twhero { position: relative; height: calc(100svh - 36px); min-height: 540px; color: #fff; background: #1d2a36; overflow: hidden; display: flex; align-items: flex-end; }
+.twhero picture, .twhero__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
+.twhero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0) 22%, rgba(0, 0, 0, 0) 42%, rgba(8, 10, 14, 0.66) 100%); pointer-events: none; }
+.twhero__in { position: relative; z-index: 1; padding-bottom: clamp(96px, 12vh, 150px); }
+.twhero__title { font-size: clamp(3rem, 5.4vw, 5.8rem); line-height: 0.95; max-width: 16ch; text-wrap: balance; }
+.twhero__title .mute { color: rgba(255, 255, 255, 0.6); }
+.twhero__sub { margin-top: 16px; max-width: 44ch; color: rgba(255, 255, 255, 0.9); }
+.twhero__ctas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.twhero__ctas .btn { min-height: 52px; }
+.twhero .twhero__full { color: #fff; border-color: rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.14); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.twhero__full s { opacity: 0.6; margin-left: 4px; }
+@media (max-width: 699px) {
+  .twhero { height: calc(100svh - 28px); }
+  .twhero__img { object-position: 50% 50%; }
+  .twhero__title { font-size: clamp(2.6rem, 11vw, 3.6rem); }
+  .twhero__in { padding-bottom: 80px; }
+  .twhero__ctas { flex-direction: column; align-items: stretch; }
+  .twhero__ctas .btn { justify-content: center; }
+}
+.twhero [hidden] { display: none !important; }
+
+/* Tower Blueprint buttons (4/11, board D3): Apple-style pills, white and Apple blue, the same arrow;
+   the blue one gets a light sweep every three seconds */
+.twbtn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 26px; border-radius: 980px; font-size: 17px; font-weight: 400; letter-spacing: -0.022em; text-decoration: none; white-space: nowrap; transition: transform 0.2s ease, background-color 0.2s ease; }
+.twbtn:active { transform: scale(0.97); }
+.twbtn--white { background: #fff; color: #1d1d1f; }
+.twbtn--blue { background: #0071e3; color: #fff; }
+@media (hover: hover) { .twbtn--white:hover { background: #f2f2f4; } .twbtn--blue:hover { background: #0077ed; } }
+.twbtn .btn__arrow, .twbtn svg { width: 0.9em; height: 0.9em; }
+.tw-shine { overflow: hidden; isolation: isolate; }
+.tw-shine::after { content: ''; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.5), transparent); transform: skewX(-20deg); animation: tw-shine 3.2s ease-in-out infinite; pointer-events: none; }
+@keyframes tw-shine { 0%, 55% { left: -60%; } 85%, 100% { left: 130%; } }
+@media (prefers-reduced-motion: reduce) { .tw-shine::after { animation: none; display: none; } }
+@media (max-width: 699px) { .twhero__ctas .twbtn { width: 100%; } }
+.twoffer__tab.tw-shine { overflow: hidden; }
+
+/* /the-tower-blueprint only (4/11, Nico: "the board fonts had more character"): SF Pro semibold
+   with tight tracking for every title on this page, like the board */
+.twhero__title, main:has(.twhero) .t-display, main:has(.twhero) .t-h1, main:has(.twhero) .t-h2, main:has(.twhero) .t-h3 { font-weight: 600; letter-spacing: -0.042em; }
+main:has(.twhero) .t-h2 { line-height: 1; }

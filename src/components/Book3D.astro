@@ -1,0 +1,46 @@
+---
+// The Full Tower Blueprint as a real book (4/11, board round 3-5): SAMAR on the cover with a dark
+// grade at the bottom, only our small logo on top, the page block on the right and a soft shadow.
+// It turns a little by itself; still for people who ask for less motion.
+interface Props {
+  a: string;
+  b: string;
+  band?: string;
+  alt: string;
+}
+const { a, b, band, alt } = Astro.props;
+---
+
+<div class="b3d" role="img" aria-label={alt}>
+  <div class="b3d__book">
+    <span class="b3d__back"></span>
+    <span class="b3d__top"></span>
+    <span class="b3d__pages"></span>
+    <span class="b3d__front">
+      <img class="b3d__pic" src="/learn/full_tower_cover.webp" alt="" width="800" height="1099" loading="lazy" decoding="async" />
+      <img class="b3d__logo" src="/learn/omnya-logo-white.svg" alt="" width="831" height="175" />
+      <span class:list={['b3d__title', { 'has-band': band }]}>{a} <span>{b}</span></span>
+      {band && <span class="b3d__band">▶&nbsp; {band}</span>}
+    </span>
+  </div>
+</div>
+
+<style>
+  .b3d { --w: 10em; --h: 13.75em; --t: 1.15em; position: relative; display: grid; place-items: center; padding: 0.6em 0 1.6em; perspective: 60em; }
+  .b3d::after { content: ''; position: absolute; left: 16%; right: 10%; bottom: 0.4em; height: 1.4em; background: radial-gradient(closest-side, rgba(40, 24, 10, 0.42), transparent); filter: blur(0.3em); }
+  .b3d__book { position: relative; z-index: 1; width: var(--w); height: var(--h); transform-style: preserve-3d; transform: rotateY(-30deg) rotateX(5deg); animation: b3d-turn 7s ease-in-out infinite; }
+  @keyframes b3d-turn { 50% { transform: rotateY(-20deg) rotateX(3deg) translateY(-0.25em); } }
+  @media (prefers-reduced-motion: reduce) { .b3d__book { animation: none; } }
+  .b3d__book > span { position: absolute; display: block; backface-visibility: hidden; }
+  .b3d__front { inset: 0; transform: translateZ(calc(var(--t) / 2)); border-radius: 0.12em 0.3em 0.3em 0.12em; overflow: hidden; background: #2a1a10; color: #fff; }
+  .b3d__front::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10, 14, 24, 0.35) 0%, rgba(10, 14, 24, 0) 18%, rgba(0, 0, 0, 0) 50%, rgba(26, 14, 6, 0.55) 70%, rgba(26, 14, 6, 0.95) 100%), linear-gradient(90deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0) 6%, rgba(255, 255, 255, 0.08) 7%, rgba(0, 0, 0, 0) 9%); }
+  .b3d__pic { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+  .b3d__logo { position: absolute; z-index: 1; top: 0.75em; left: 0.8em; width: 2.6em; height: auto; }
+  .b3d__title { position: absolute; z-index: 1; left: 0.8em; right: 0.8em; bottom: 0.85em; font-size: 1.06em; line-height: 1; letter-spacing: -0.045em; font-weight: 600; text-wrap: balance; }
+  .b3d__title span { color: #2997ff; }
+  .b3d__title.has-band { bottom: 2em; }
+  .b3d__band { position: absolute; z-index: 1; left: 0; right: 0; bottom: 0; padding: 0.5em 0.8em; background: #0071e3; color: #fff; font-size: 0.36em; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .b3d__pages { top: 0.9%; height: 98.2%; width: var(--t); left: calc(var(--w) - var(--t) / 2 - 0.08em); transform: rotateY(90deg); background: repeating-linear-gradient(90deg, #f6f1e8 0 0.04em, #d9d0c1 0.04em 0.07em), #eee; box-shadow: inset 0 0 0.4em rgba(0, 0, 0, 0.18); }
+  .b3d__back { inset: 0; transform: translateZ(calc(var(--t) / -2)) rotateY(180deg); background: #24160c; border-radius: 0.3em 0.12em 0.12em 0.3em; }
+  .b3d__top { left: 0; width: calc(var(--w) - 0.1em); height: var(--t); top: calc(var(--t) / -2); transform: rotateX(90deg); background: #e9e1d4; }
+</style>

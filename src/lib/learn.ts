@@ -11,7 +11,9 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   // the free PDF people claim from the reel DM, on /learn/<word>
   | 'free'
   // the free tower PDF, on /the-tower-blueprint (3/11)
-  | 'free-tower';
+  | 'free-tower'
+  // the paid tower PDF, offered right under the free one on /the-tower-blueprint (4/11)
+  | 'full-tower';
 
 export const products: { id: ProductId; checkout: string }[] = [
   { id: 'white-to-real', checkout: 'https://buy.stripe.com/9B66oGet7bIs3hAeyN8so00' },
@@ -28,7 +30,22 @@ export const products: { id: ProductId; checkout: string }[] = [
   { id: 'sample', checkout: '' },
   { id: 'free', checkout: '/learn/free/omnya-lab-blueprint.pdf' },
   { id: 'free-tower', checkout: '/learn/free/omnya-lab-tower-blueprint.pdf' },
+  { id: 'full-tower', checkout: 'https://buy.stripe.com/aFa4gyckZh2M7xQ8ap8so0b' },
 ];
+
+/**
+ * The Full Tower Blueprint launch price (4/11): €4.99 instead of €19 because we hit 500 followers,
+ * until Sunday 8 November at midnight, Rome time. After that the page shows €19 and /go/full-tower
+ * sends to the €19 link by itself, so the offer really ends.
+ */
+export const fullTowerDeal = {
+  until: '2026-11-08T23:59:59+01:00',
+  checkout: 'https://buy.stripe.com/9B6fZg4Sx13O8BUfCR8so0a',
+  price: 4.99,
+  was: 19,
+  off: 74,
+};
+export const dealOn = (now = Date.now()) => now < Date.parse(fullTowerDeal.until);
 
 /**
  * After each purchase the checkout returns to /learn/thanks/<product>. That page makes one
@@ -43,6 +60,7 @@ export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: Pr
   bundle: { kind: 'pdf', oto: 'session-reader', down: 'community' },
   session: { kind: 'lesson', oto: 'build-upgrade', down: 'sample' },
   build: { kind: 'lesson', oto: 'sample', down: 'community' },
+  'full-tower': { kind: 'pdf', oto: 'sample', down: 'community' },
 };
 
 /** The words used in the reels ("Comment 3D"). Each one has its own page, /learn/<word>, and leads with one playbook. */
@@ -87,6 +105,7 @@ const pdfs = {
     'before-it-exists': ['Sell it before it exists', 'playbook-03-sell-it-before-it-exists.pdf'],
     prompts: ['The full prompt files', 'bundle-the-full-prompt-files.pdf'],
     checklist: ['The checklist before every delivery', 'bundle-the-checklist-before-every-delivery.pdf'],
+    'full-tower': ['The Full Tower Blueprint', 'full-tower-blueprint.pdf'],
   },
   it: {
     'white-to-real': ['Dal 3D alla foto vera', 'playbook-01-dal-3d-alla-foto-vera.pdf'],
@@ -94,6 +113,8 @@ const pdfs = {
     'before-it-exists': ['Vendilo prima che esista', 'playbook-03-vendilo-prima-che-esista.pdf'],
     prompts: ['I file di prompt completi', 'pacchetto-i-file-di-prompt-completi.pdf'],
     checklist: ['Il controllo prima di ogni consegna', 'pacchetto-il-controllo-prima-di-ogni-consegna.pdf'],
+    // only in English: the Italian page gives the English file
+    'full-tower': ['The Full Tower Blueprint (EN)', '../en/full-tower-blueprint.pdf'],
   },
 } as const;
 type FileKey = keyof (typeof pdfs)['en'];
