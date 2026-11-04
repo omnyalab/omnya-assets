@@ -4,7 +4,7 @@
 // the Full Tower Blueprint ("How to build a tower that sells with AI") right under it, then the 3D/photo pairs,
 // the five steps, who it is for, questions and the last call. Montserrat, Apple blue and black.
 // On phones the opening is built like the free cover. The launch price ends by itself (fullTowerDeal).
-// The Italian page (/it/the-tower-blueprint) still uses the old Learn view.
+// The Italian page (/it/the-tower-blueprint) still uses the old Learn view. No site header here (Nico, 5/11).
 import Base from '../layouts/Base.astro';
 import { goHref, fullTowerDeal } from '../lib/learn';
 
@@ -13,7 +13,7 @@ const full = goHref('full-tower', 'en');
 const sample = goHref('sample', 'en');
 ---
 
-<Base page="learn" title="How to build a tower that sells with AI" description="Steal our tower method: the free blueprint in five steps, and the Full Tower Blueprint with every prompt, word for word.">
+<Base page="learn" header={false} title="How to build a tower that sells with AI" description="Steal our tower method: the free blueprint in five steps, and the Full Tower Blueprint with every prompt, word for word.">
 <div class="x3">
 <section class="x3-hero" id="top">
   <picture class="x3-hero__bg"><source media="(max-width:899px)" srcset="/learn/tw_hero_mobile.webp"><img src="/learn/tw_hero.webp" width="2400" height="1339" fetchpriority="high" alt="SAMAR, the tower at sunset over the marina"></picture>
@@ -21,7 +21,7 @@ const sample = goHref('sample', 'en');
     <div>
       <p class="x3-kick">Free blueprint</p>
       <h1 class="x3-T">Steal our<br><span class="x3-box">tower</span><br>method</h1>
-      <p class="x3-lead"><b>From a plan to the floor they buy, in five steps.</b> Free.</p>
+      <p class="x3-lead"><b>From one photo to the floor they buy, in five steps.</b> Free.</p>
       <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={free} target="_blank" rel="noopener">Download the free blueprint →</a><a class="x3-btn x3-btn--line" href="#full">Get the Full one</a></div>
     </div>
     <img class="x3-hero__cover" src="/learn/tw_cover_free.webp" width="700" height="1244" alt="The free blueprint cover">
@@ -37,7 +37,7 @@ const sample = goHref('sample', 'en');
   </div>
   <div class="x3-in">
     <p class="x3-mhero__pb">5 steps, free</p>
-    <p class="x3-mhero__for">From the plan to the floor they buy</p>
+    <p class="x3-mhero__for">From the tower to the floor they buy</p>
     <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={free} target="_blank" rel="noopener">Download the free blueprint →</a><a class="x3-btn x3-btn--line" href="#full">Get the Full one</a></div>
   </div>
 </section>
@@ -69,13 +69,13 @@ const sample = goHref('sample', 'en');
 
 <section class="x3-sec">
   <div class="x3-in">
-    <p class="x3-kick">Same camera, same frame</p>
-    <h2 class="x3-T">Left the 3D,<br>right<br><span class="x3-box">the photo</span></h2>
-    <p class="x3-lead">The 3D sets the floors, the heights and the camera, the prompt sets the glass, the stone and the light, and the photo keeps both.</p>
+    <p class="x3-kick">Start frame, end frame</p>
+    <h2 class="x3-T">One visit,<br><span class="x3-box">one shot</span></h2>
+    <p class="x3-lead">The tower is where the flight starts and the terrace is where it lands. Every room after it starts on the exact last frame of the clip before, so the whole visit plays like a single shot.</p>
     <div class="x3-pairs">
-      <figure class="x3-pair"><div class="x3-pair__ab"><img src="/learn/burt_towers_white.webp" loading="lazy" alt=""><img src="/learn/burt_towers_real.webp" loading="lazy" alt=""><span class="x3-tag x3-tag--a">3D</span><span class="x3-tag x3-tag--b">Photo</span></div><figcaption>The towers</figcaption></figure>
-      <figure class="x3-pair"><div class="x3-pair__ab"><img src="/learn/burt_night_white.webp" loading="lazy" alt=""><img src="/learn/burt_night_real.webp" loading="lazy" alt=""><span class="x3-tag x3-tag--a">3D</span><span class="x3-tag x3-tag--b">Photo</span></div><figcaption>The pool terrace</figcaption></figure>
-      <figure class="x3-pair"><div class="x3-pair__ab"><img src="/learn/burt_living_white.webp" loading="lazy" alt=""><img src="/learn/burt_living_real.webp" loading="lazy" alt=""><span class="x3-tag x3-tag--a">3D</span><span class="x3-tag x3-tag--b">Photo</span></div><figcaption>The living room</figcaption></figure>
+      <figure class="x3-pair"><div class="x3-pair__ab"><img src="/learn/tw_tower.webp" alt="" loading="lazy"><img src="/learn/tw_terrace_living.webp" alt="" loading="lazy"><span class="x3-tag x3-tag--a">Start</span><span class="x3-tag x3-tag--b">End</span></div><figcaption>The flight · Seedance</figcaption></figure>
+      <figure class="x3-pair"><div class="x3-pair__ab"><img src="/learn/tw_terrace_living.webp" alt="" loading="lazy"><img src="/learn/tw_living_in.webp" alt="" loading="lazy"><span class="x3-tag x3-tag--a">Start</span><span class="x3-tag x3-tag--b">End</span></div><figcaption>Into the living room · Kling</figcaption></figure>
+      <figure class="x3-pair"><div class="x3-pair__ab"><img src="/learn/tw_living_in.webp" alt="" loading="lazy"><img src="/learn/tw_bath.webp" alt="" loading="lazy"><span class="x3-tag x3-tag--a">Start</span><span class="x3-tag x3-tag--b">End</span></div><figcaption>To the bathroom · Kling</figcaption></figure>
     </div>
   </div>
 </section>
@@ -86,11 +86,11 @@ const sample = goHref('sample', 'en');
       <p class="x3-kick">The free blueprint</p>
       <h2 class="x3-T">The five steps<br><span class="x3-box">in between</span></h2>
       <ol class="x3-steps">
-        <li class="x3-step"><img src="/learn/tw_plan_L10.webp" loading="lazy" alt=""><div><b><i>01</i>The plan</b><span>Lines and a few room measurements, the drawing every developer already has on the desk.</span></div></li>
-        <li class="x3-step"><img src="/learn/tw_model_L10.webp" loading="lazy" alt=""><div><b><i>02</i>The 3D in the browser</b><span>Claude builds the tower from that plan in three.js, floor by floor and in real metres.</span></div></li>
-        <li class="x3-step"><img src="/learn/tw_tower_wide.webp" loading="lazy" alt=""><div><b><i>03</i>The photo</b><span>The same 3D and the same camera, with the glass, the slabs and the marina written in one prompt.</span></div></li>
-        <li class="x3-step"><img src="/learn/tw_terrace.webp" loading="lazy" alt=""><div><b><i>04</i>Four checks</b><span>The height from the floor count, a far and low camera, crown, body and podium, and every floor counted before it goes out.</span></div></li>
-        <li class="x3-step"><img src="/learn/tw_living.webp" loading="lazy" alt=""><div><b><i>05</i>They pick the floor</b><span>On the site the buyer chooses floor 15, flies in through the glass and walks from the terrace to the bathroom.</span></div></li>
+        <li class="x3-step"><img src="/learn/tw_tower.webp" alt="" loading="lazy"><div><b><i>01</i>The tower photo</b><span>Nano Banana Pro with two references: a photo of the building, and a photo taken from the height you want the camera at.</span></div></li>
+        <li class="x3-step"><img src="/learn/tw_terrace_living.webp" alt="" loading="lazy"><div><b><i>02</i>The end frame</b><span>The living room seen from the terrace at 45 degrees, at the same blue hour, before any video exists.</span></div></li>
+        <li class="x3-step"><img src="/learn/tw_fly.webp" alt="" loading="lazy"><div><b><i>03</i>The flight</b><span>Seedance, the tower as start frame and the terrace as end frame: one slow drone move, no cuts.</span></div></li>
+        <li class="x3-step"><img src="/learn/tw_living_in.webp" alt="" loading="lazy"><div><b><i>04</i>Room by room</b><span>On Kling, every clip starts on the exact last frame of the one before, from the terrace to the bathroom.</span></div></li>
+        <li class="x3-step"><img src="/learn/tw_site.webp" alt="" loading="lazy"><div><b><i>05</i>They pick the floor</b><span>On the site the buyer moves over the tower, chooses a floor and flies in through the glass.</span></div></li>
       </ol>
       <div class="x3-ctas"><a class="x3-btn x3-btn--white" href={free} target="_blank" rel="noopener">Download the free blueprint →</a></div>
     </div>
@@ -113,7 +113,7 @@ const sample = goHref('sample', 'en');
       <p class="x3-kick">Questions</p>
       <h2 class="x3-T">Before<br><span class="x3-box">you start</span></h2>
       <div class="x3-faq">
-        <details><summary>Do I need SketchUp or 3ds Max?</summary><p>No. Claude writes the 3D in code and it runs in the browser. You give it the plan and the heights.</p></details>
+        <details><summary>Do I need SketchUp or 3ds Max?</summary><p>No. The tower starts from a photo and two references on Nano Banana Pro, and Claude writes the site with you.</p></details>
         <details><summary>What tools does it use?</summary><p>Claude for the 3D and the site, Nano Banana Pro for the tower photo, Seedance and Kling for the flight and the rooms.</p></details>
         <details><summary>Is it a video course?</summary><p>No, it's a PDF with every step and every prompt, made to follow next to your screen.</p></details>
         <details><summary>When do I get it?</summary><p>Right after payment, on the next page.</p></details>
@@ -323,7 +323,7 @@ const sample = goHref('sample', 'en');
 .x3-mhero{display:none}
 @media (max-width:899px){
   .x3-hero{display:none}
-  .x3-mhero{display:block;text-align:center;padding-top:64px}
+  .x3-mhero{display:block;text-align:center}
   .x3-mhero__strap{background:var(--blue);color:#fff;font-weight:800;font-size:13px;letter-spacing:.2em;text-transform:uppercase;padding:12px 16px}
   .x3-mhero__ph{position:relative;min-height:540px;padding:30px 16px 0;background:url(/learn/tw_hero_mobile.webp) center 60%/cover;overflow:hidden}
   .x3-mhero__ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,7,10,.95) 0%,rgba(5,7,10,.6) 30%,rgba(5,7,10,0) 48%,rgba(5,7,10,0) 72%,rgba(5,7,10,.85) 92%,var(--bg) 100%)}
