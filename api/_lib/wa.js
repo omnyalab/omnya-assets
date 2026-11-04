@@ -180,6 +180,9 @@ export async function blocked(n) {
   const allow = (process.env.WA_ALLOW || '').split(',').map(digits).filter(Boolean);
   if (allow.length && !allow.includes(n)) return 'not-in-test-list';
   if (!(await isEnabled())) return 'bot-off';
+  // Italian numbers are Nico's: he answers them himself (the test number list wins, for his own phone)
+  const skip = (process.env.WA_SKIP_PREFIXES ?? '39').split(',').map(digits).filter(Boolean);
+  if (!allow.includes(n) && skip.some((p) => n.startsWith(p))) return 'italian-number';
   if (await sismember('excluded', n)) return 'excluded';
   if (await sismember('known', n)) return 'existing-chat';
   return null;
