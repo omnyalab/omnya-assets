@@ -12,6 +12,8 @@
     "hero:frames": "node scripts/hero-frames.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.4.0",
+    "@vercel/functions": "^3.10.6",
     "astro": "^7.3.5",
     "cobe": "^0.6.3",
     "gsap": "^3.15.0",

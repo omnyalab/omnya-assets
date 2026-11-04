@@ -275,5 +275,10 @@
         }
       ]
     }
-  ]
+  ],
+  "functions": {
+    "api/whatsapp.js": {
+      "maxDuration": 120
+    }
+  }
 }
