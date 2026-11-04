@@ -86,6 +86,21 @@
       "permanent": true
     },
     {
+      "source": "/cresta",
+      "destination": "/casa-cresta-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/it/casa-cresta-blueprint",
+      "destination": "/it/the-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/it/cresta",
+      "destination": "/it/the-blueprint",
+      "permanent": true
+    },
+    {
       "source": "/it/learn/3D",
       "destination": "/it/the-blueprint",
       "permanent": true

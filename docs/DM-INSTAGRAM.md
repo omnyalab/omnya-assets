@@ -19,3 +19,11 @@ Per i reel delle torri c'è il Tower Blueprint, gratis, sulla sua pagina: https:
 Here you go 👇🏻 The Tower Blueprint is free on this page, and right under it there's the full method we use for our towers: https://omnyalab.com/the-tower-blueprint
 
 (and if you'd rather have us do it on your tower, the first image is free, it's on the same page)
+
+## Reel di Casa Cresta (dal 4/11)
+
+Stesso PDF del Blueprint, su una pagina col nome di Casa Cresta, solo in inglese: https://omnyalab.com/casa-cresta-blueprint (corto: omnyalab.com/cresta).
+
+Here you go 👇🏻 The Casa Cresta Blueprint is free on this page, and right under it there's the full method we used for this house: https://omnyalab.com/casa-cresta-blueprint
+
+(and if you'd rather have us do it on your project, the first image is free, it's on the same page)

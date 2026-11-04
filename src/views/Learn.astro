@@ -22,13 +22,15 @@ interface Props {
   blueprint?: boolean;
   /** /the-tower-blueprint (3/11): the same page for the tower reels, Burtville in the hero, Playbook 03 first */
   tower?: boolean;
+  /** /casa-cresta-blueprint (4/11): the Blueprint for the Casa Cresta reels, English only */
+  cresta?: boolean;
 }
-const { word, blueprint = false, tower = false } = Astro.props;
+const { word, blueprint = false, tower = false, cresta: crestaPage = false } = Astro.props;
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const L = T.learn;
 const w = words.find((x) => x.word === word);
-const free = !!w || blueprint || tower;
+const free = !!w || blueprint || tower || crestaPage;
 const samar = projects.find((p) => p.id === '16_samar')!;
 
 // Book covers: our own pictures with a light grade; Playbook 01 fades from our 3D to the photo
@@ -73,7 +75,7 @@ const buyData = (b: { id: string; a: string; b: string; price: string }) => ({
 const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mobile.webp', '/learn/dev_dusk_mobile.webp'];
 ---
 
-<Base page="learn" title={tower ? L.towerA : blueprint ? L.freeA : w ? `${L.heroA} ${L.heroB} · ${w.label}` : `${L.heroA} ${L.heroB}`} description={L.description} noindex={!!w}>
+<Base page="learn" title={tower ? L.towerA : crestaPage ? `${L.crestaA} ${L.crestaB}` : blueprint ? L.freeA : w ? `${L.heroA} ${L.heroB} · ${w.label}` : `${L.heroA} ${L.heroB}`} description={L.description} noindex={!!w}>
   <!-- Hero: the 3D model over the final image, full screen -->
   <section class="lhero" data-header="light" data-header-media aria-labelledby="learn-title" data-lhero>
     <div class="lhero__stick">
@@ -105,17 +107,17 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
         }
         {
           free ? (
-            <h1 class="t-display lhero__title lhero__title--free" id="learn-title" data-split="intro">{tower ? L.towerA : L.freeA}{' '}<span class="mute">{L.freeB}</span></h1>
+            <h1 class="t-display lhero__title lhero__title--free" id="learn-title" data-split="intro">{tower ? L.towerA : crestaPage ? L.crestaA : L.freeA}{' '}<span class="mute">{crestaPage ? L.crestaB : L.freeB}</span></h1>
           ) : (
             <h1 class="t-display lhero__title" id="learn-title" data-split="intro">{L.heroA}{' '}<span class="mute">{L.heroB}</span></h1>
           )
         }
         <div class="lhero__row">
-          <p class:list={['t-sub lhero__sub', { 'lhero__sub--main': !free }]} data-fade>{free ? (tower ? L.towerSub : L.freeSub) : L.heroSub}</p>
+          <p class:list={['t-sub lhero__sub', { 'lhero__sub--main': !free }]} data-fade>{free ? (tower ? L.towerSub : crestaPage ? L.crestaSub : L.freeSub) : L.heroSub}</p>
           <div class="lhero__ctas" data-fade>
             {
               free ? (
-                <a class="btn btn--fill" href={go(tower ? 'free-tower' : 'free')}>{tower ? L.towerCta : L.freeCta} <Arrow /></a>
+                <a class="btn btn--fill" href={go(tower ? 'free-tower' : 'free')}>{tower ? L.towerCta : crestaPage ? L.crestaCta : L.freeCta} <Arrow /></a>
               ) : (
                 <a class="btn btn--fill" href="#books">{L.heroBooks} <Arrow /></a>
               )
