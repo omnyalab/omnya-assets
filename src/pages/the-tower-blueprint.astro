@@ -1,6 +1,339 @@
 ---
-// The Tower Blueprint (3/11): the free tower PDF first, then everything on Learn, Playbook 03 first.
-import View from '../views/Learn.astro';
+// /the-tower-blueprint (5/11, board rounds 1-2 chosen by Nico): the funnel for the tower reels (SAMAR, word AI),
+// rebuilt like /3d-to-film. Free blueprint first ("Steal our tower method", cover 1 with the Full book small),
+// the Full Tower Blueprint ("How to build a tower that sells with AI") right under it, then the 3D/photo pairs,
+// the five steps, who it is for, questions and the last call. Montserrat, Apple blue and black.
+// On phones the opening is built like the free cover. The launch price ends by itself (fullTowerDeal).
+// The Italian page (/it/the-tower-blueprint) still uses the old Learn view.
+import Base from '../layouts/Base.astro';
+import { goHref, fullTowerDeal } from '../lib/learn';
+
+const free = goHref('free-tower', 'en');
+const full = goHref('full-tower', 'en');
+const sample = goHref('sample', 'en');
 ---
 
-<View tower />
+<Base page="learn" title="How to build a tower that sells with AI" description="Steal our tower method: the free blueprint in five steps, and the Full Tower Blueprint with every prompt, word for word.">
+<div class="x3">
+<section class="x3-hero" id="top">
+  <picture class="x3-hero__bg"><source media="(max-width:899px)" srcset="/learn/tw_hero_mobile.webp"><img src="/learn/tw_hero.webp" width="2400" height="1339" fetchpriority="high" alt="SAMAR, the tower at sunset over the marina"></picture>
+  <div class="x3-in">
+    <div>
+      <p class="x3-kick">Free blueprint</p>
+      <h1 class="x3-T">Steal our<br><span class="x3-box">tower</span><br>method</h1>
+      <p class="x3-lead"><b>From a plan to the floor they buy, in five steps.</b> Free.</p>
+      <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={free} target="_blank" rel="noopener">Download the free blueprint →</a><a class="x3-btn x3-btn--line" href="#full">Get the Full one</a></div>
+    </div>
+    <img class="x3-hero__cover" src="/learn/tw_cover_free.webp" width="700" height="1244" alt="The free blueprint cover">
+  </div>
+</section>
+
+<section class="x3-mhero" aria-label="Free blueprint">
+  <div class="x3-mhero__strap">Free blueprint</div>
+  <div class="x3-mhero__ph">
+    <p class="x3-mhero__how">Steal our</p>
+    <p class="x3-T" aria-hidden="true"><span class="x3-box">tower</span><br>method</p>
+    <img class="x3-mhero__book" src="/learn/tw_book.webp" width="526" height="731" alt="The Full Tower Blueprint">
+  </div>
+  <div class="x3-in">
+    <p class="x3-mhero__pb">5 steps, free</p>
+    <p class="x3-mhero__for">From the plan to the floor they buy</p>
+    <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={free} target="_blank" rel="noopener">Download the free blueprint →</a><a class="x3-btn x3-btn--line" href="#full">Get the Full one</a></div>
+  </div>
+</section>
+<section class="x3-deal" id="full">
+  <div class="x3-deal__glow" aria-hidden="true"></div>
+  <div class="x3-in">
+    <div class="x3-card">
+      <span class="x3-card__tab" data-deal>500 followers offer · 74% off</span>
+      <div class="x3-card__book"><div class="x3-card__halo" aria-hidden="true"></div><img src="/learn/tw_book.webp" width="526" height="731" alt="The Full Tower Blueprint, the book"></div>
+      <div class="x3-card__body">
+        <p class="x3-kick">Everything you get</p>
+        <h2 class="x3-T">How to build<br>a tower<br><span class="x3-box">that sells</span><br>with AI</h2>
+        <ul class="x3-vs">
+          <li><i></i><div><b>The Full Tower Blueprint</b><span>thirteen chapters, from the tower photo to the site you send buyers</span></div><em>Included</em></li>
+          <li><i></i><div><b>Every prompt, word for word</b><span>for the tower photo, the flight into the floor and the rooms</span></div><em>Included</em></li>
+          <li><i></i><div><b>The fast way</b><span>a prompt that hands the whole PDF to Claude Code</span></div><em>Included</em></li>
+          <li><i></i><div><b>The floor picker</b><span>trace the floors on the video, hover, click and fly in</span></div><em>Included</em></li>
+          <li><i></i><div><b>Phones and delivery</b><span>how it opens on a phone, how it goes online and what to charge</span></div><em>Included</em></li>
+        </ul>
+        <div class="x3-pay">
+          <div class="x3-pay__price" data-deal><small>Today</small><b>€4.99</b><s>€19</s><span>−74%</span></div><div class="x3-pay__price" data-after hidden><b>€19</b></div>
+          <a class="x3-cta" href={full}><span>Get the Full Blueprint</span><i>→</i></a>
+        </div>
+        <p class="x3-pay__note"><span data-deal>Until Sunday 8 November at midnight, then it goes back to €19. </span>The PDF arrives right after payment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="x3-sec">
+  <div class="x3-in">
+    <p class="x3-kick">Same camera, same frame</p>
+    <h2 class="x3-T">Left the 3D,<br>right<br><span class="x3-box">the photo</span></h2>
+    <p class="x3-lead">The 3D sets the floors, the heights and the camera, the prompt sets the glass, the stone and the light, and the photo keeps both.</p>
+    <div class="x3-pairs">
+      <figure class="x3-pair"><div class="x3-pair__ab"><img src="/learn/burt_towers_white.webp" loading="lazy" alt=""><img src="/learn/burt_towers_real.webp" loading="lazy" alt=""><span class="x3-tag x3-tag--a">3D</span><span class="x3-tag x3-tag--b">Photo</span></div><figcaption>The towers</figcaption></figure>
+      <figure class="x3-pair"><div class="x3-pair__ab"><img src="/learn/burt_night_white.webp" loading="lazy" alt=""><img src="/learn/burt_night_real.webp" loading="lazy" alt=""><span class="x3-tag x3-tag--a">3D</span><span class="x3-tag x3-tag--b">Photo</span></div><figcaption>The pool terrace</figcaption></figure>
+      <figure class="x3-pair"><div class="x3-pair__ab"><img src="/learn/burt_living_white.webp" loading="lazy" alt=""><img src="/learn/burt_living_real.webp" loading="lazy" alt=""><span class="x3-tag x3-tag--a">3D</span><span class="x3-tag x3-tag--b">Photo</span></div><figcaption>The living room</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="x3-sec" id="free">
+  <div class="x3-in x3-free">
+    <div>
+      <p class="x3-kick">The free blueprint</p>
+      <h2 class="x3-T">The five steps<br><span class="x3-box">in between</span></h2>
+      <ol class="x3-steps">
+        <li class="x3-step"><img src="/learn/tw_plan_L10.webp" loading="lazy" alt=""><div><b><i>01</i>The plan</b><span>Lines and a few room measurements, the drawing every developer already has on the desk.</span></div></li>
+        <li class="x3-step"><img src="/learn/tw_model_L10.webp" loading="lazy" alt=""><div><b><i>02</i>The 3D in the browser</b><span>Claude builds the tower from that plan in three.js, floor by floor and in real metres.</span></div></li>
+        <li class="x3-step"><img src="/learn/tw_tower_wide.webp" loading="lazy" alt=""><div><b><i>03</i>The photo</b><span>The same 3D and the same camera, with the glass, the slabs and the marina written in one prompt.</span></div></li>
+        <li class="x3-step"><img src="/learn/tw_terrace.webp" loading="lazy" alt=""><div><b><i>04</i>Four checks</b><span>The height from the floor count, a far and low camera, crown, body and podium, and every floor counted before it goes out.</span></div></li>
+        <li class="x3-step"><img src="/learn/tw_living.webp" loading="lazy" alt=""><div><b><i>05</i>They pick the floor</b><span>On the site the buyer chooses floor 15, flies in through the glass and walks from the terrace to the bathroom.</span></div></li>
+      </ol>
+      <div class="x3-ctas"><a class="x3-btn x3-btn--white" href={free} target="_blank" rel="noopener">Download the free blueprint →</a></div>
+    </div>
+    <img class="x3-free__cover" src="/learn/tw_cover_free.webp" width="700" height="1244" alt="The free blueprint cover">
+  </div>
+</section>
+
+<section class="x3-sec">
+  <div class="x3-in x3-two">
+    <div>
+      <p class="x3-kick">It's for you if</p>
+      <h2 class="x3-T">Your tower is still<br><span class="x3-box">a drawing</span></h2>
+      <ul class="x3-ticks">
+        <li>You sell or present towers that aren't built yet.</li>
+        <li>You want buyers to choose a floor and walk in, without a 3D studio.</li>
+        <li>You already use Claude or Higgsfield and want the whole method in one place.</li>
+      </ul>
+    </div>
+    <div>
+      <p class="x3-kick">Questions</p>
+      <h2 class="x3-T">Before<br><span class="x3-box">you start</span></h2>
+      <div class="x3-faq">
+        <details><summary>Do I need SketchUp or 3ds Max?</summary><p>No. Claude writes the 3D in code and it runs in the browser. You give it the plan and the heights.</p></details>
+        <details><summary>What tools does it use?</summary><p>Claude for the 3D and the site, Nano Banana Pro for the tower photo, Seedance and Kling for the flight and the rooms.</p></details>
+        <details><summary>Is it a video course?</summary><p>No, it's a PDF with every step and every prompt, made to follow next to your screen.</p></details>
+        <details><summary>When do I get it?</summary><p>Right after payment, on the next page.</p></details>
+        <details><summary>Can you make it for my project?</summary><p>Yes. Send us the plans or a model, and the first image is free.</p></details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="x3-sec x3-end">
+  <div class="x3-in">
+    <p class="x3-kick">Still a drawing on your screen?</p>
+    <h2 class="x3-T">Sell<br><span class="x3-box">every floor</span></h2>
+    <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={full}>Get the Full Blueprint<span data-deal> · €4.99</span> →</a><a class="x3-btn x3-btn--line" href={free} target="_blank" rel="noopener">Start with the free one</a></div>
+    <p class="x3-small">Or send us your tower, <a href={sample}>the first image is free</a>.</p>
+  </div>
+</section>
+<p class="x3-foot">OMNYA LAB</p>
+</div>
+<script is:inline define:vars={{ until: fullTowerDeal.until }}>
+  // After Sunday the €19 version shows by itself
+  if (Date.now() >= Date.parse(until)) {
+    document.querySelectorAll('.x3 [data-deal]').forEach((el) => (el.hidden = true));
+    document.querySelectorAll('.x3 [data-after]').forEach((el) => (el.hidden = false));
+  }
+</script>
+</Base>
+
+<style is:global>
+@font-face{font-family:Montserrat;src:url(/fonts/montserrat-latin.woff2) format("woff2");font-weight:500 900;font-display:swap}
+.x3{--bg:#05070a;--bg2:#0d1117;--ink:#fff;--mute:rgba(255,255,255,.66);--line:rgba(255,255,255,.14);--blue:#2997ff;--blue2:#0071e3;background:var(--bg);color:var(--ink);font-family:Montserrat,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+:where(.x3) *{box-sizing:border-box}
+:where(.x3) img,:where(.x3) video{display:block;max-width:100%;height:auto}
+:where(.x3) a{color:inherit}
+.x3-in{max-width:1180px;margin:0 auto;padding:0 max(16px,4vw)}
+
+/* strap */
+.x3-strap{position:relative;z-index:20;display:block;text-decoration:none;background:var(--blue);color:#fff;text-align:center;font-weight:800;font-size:13px;letter-spacing:.18em;text-transform:uppercase;padding:13px 16px}
+.x3-strap a{text-decoration:none}
+
+/* big titles, the cover language */
+.x3-T{margin:0;font-weight:900;text-transform:uppercase;line-height:.92;letter-spacing:-.01em;text-wrap:balance}
+.x3-T .x3-box{display:inline-block;white-space:nowrap;font-size:.72em;margin-top:.16em;border:.075em solid #fff;padding:.1em .32em .04em;font-weight:700;letter-spacing:.14em;text-indent:.14em;line-height:1}
+.x3-T .b{color:var(--blue)}
+.x3-kick{margin:0 0 14px;font-weight:800;font-size:clamp(14px,1.3vw,17px);letter-spacing:.2em;text-transform:uppercase;color:var(--blue)}
+.x3-lead{margin:22px 0 0;font-weight:500;font-size:clamp(17px,1.5vw,20px);line-height:1.5;color:var(--mute);max-width:620px}
+.x3-lead b{color:#fff;font-weight:700}
+
+/* buttons */
+.x3-ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.x3-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:58px;padding:0 28px;border-radius:999px;font-weight:800;font-size:16px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none}
+.x3-btn--blue{background:var(--blue);color:#fff;box-shadow:0 18px 40px -18px rgba(41,151,255,.9)}
+.x3-btn--white{background:#fff;color:#05070a}
+.x3-btn--line{border:2px solid rgba(255,255,255,.5);color:#fff}
+.x3-small{margin:14px 0 0;font-weight:600;font-size:14px;color:var(--mute)}
+.x3-small a{color:#fff}
+
+/* hero */
+.x3-hero{position:relative;min-height:min(92vh,900px);display:flex;align-items:flex-end;overflow:hidden}
+.x3-hero__bg,.x3-hero__bg img{position:absolute;inset:0;width:100%;height:100%}
+.x3-hero__bg img{object-fit:cover;object-position:55% 50%}
+.x3-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,7,10,.82) 0%,rgba(5,7,10,.45) 45%,rgba(5,7,10,0) 70%),linear-gradient(180deg,rgba(5,7,10,.6) 0%,rgba(5,7,10,0) 30%,rgba(5,7,10,0) 60%,rgba(5,7,10,.9) 88%,var(--bg) 100%)}
+@media (max-width:899px){.x3-hero::after{background:linear-gradient(180deg,rgba(5,7,10,.55) 0%,rgba(5,7,10,.1) 25%,rgba(5,7,10,.35) 45%,rgba(5,7,10,.92) 75%,var(--bg) 100%)}}
+.x3-hero .x3-in{position:relative;z-index:2;width:100%;padding-top:120px;padding-bottom:64px;display:grid;grid-template-columns:1fr auto;gap:40px;align-items:end}
+.x3-hero .x3-kick{display:inline-block;background:var(--blue);color:#fff;padding:8px 14px;border-radius:999px;margin-bottom:20px}
+.x3-hero .x3-T{font-size:clamp(58px,7.2vw,112px)}
+.x3-hero__cover{width:230px;transform:rotate(3deg);border-radius:6px;box-shadow:0 40px 80px -20px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.08)}
+.labels{position:absolute;z-index:2;top:22%;left:0;right:0;display:flex;justify-content:space-between;padding:0 max(16px,4vw);pointer-events:none}
+.labels span{background:rgba(5,7,10,.6);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-weight:700;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+
+/* sections */
+.x3-sec{padding:clamp(72px,10vw,130px) 0;border-top:1px solid var(--line)}
+.x3-sec .x3-T{font-size:clamp(40px,5.4vw,78px)}
+.sec--blue{background:var(--blue2)}
+.sec--blue .x3-kick{color:#fff;opacity:.8}
+
+/* pairs */
+.x3-pairs{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
+.x3-pair{margin:0}
+.x3-pair__ab{position:relative;aspect-ratio:4/5;border-radius:18px;overflow:hidden;background:#111}
+.x3-pair__ab img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.x3-pair__ab img+img{clip-path:inset(0 0 0 50%)}
+.x3-pair__ab::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:3px;margin-left:-1.5px;background:#fff}
+.x3-tag{position:absolute;z-index:2;bottom:14px;background:rgba(5,7,10,.65);backdrop-filter:blur(8px);border-radius:999px;padding:6px 12px;font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.x3-tag--a{left:14px}.x3-tag--b{right:14px}
+.x3-pair figcaption{margin-top:12px;font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+
+/* free block */
+.x3-free{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:clamp(32px,6vw,90px);align-items:center}
+.x3-free__cover{width:100%;max-width:360px;border-radius:8px;box-shadow:0 50px 90px -30px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.08);transform:rotate(-2deg)}
+.x3-steps{list-style:none;margin:40px 0 0;padding:0;display:grid;gap:14px}
+.x3-step{display:grid;grid-template-columns:120px 1fr;gap:18px;align-items:center;background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:12px}
+.x3-step img{width:120px;height:90px;object-fit:cover;border-radius:10px}
+.x3-step b{display:block;font-weight:800;font-size:17px;text-transform:uppercase;letter-spacing:.02em}
+.x3-step b i{font-style:normal;color:var(--blue);margin-right:8px}
+.x3-step span{display:block;margin-top:6px;font-weight:500;font-size:15px;line-height:1.45;color:var(--mute)}
+
+/* offer */
+.offer{display:grid;grid-template-columns:420px minmax(0,1fr);gap:clamp(32px,6vw,90px);align-items:center}
+.book{position:relative;width:100%;max-width:420px;perspective:1600px}
+.book__f{position:relative;transform:rotateY(-18deg) rotateX(2deg);transform-style:preserve-3d;border-radius:4px 8px 8px 4px;box-shadow:30px 50px 80px -20px rgba(0,0,0,.95)}
+.book__f img{border-radius:4px 8px 8px 4px}
+.book__f::before{content:"";position:absolute;top:1%;bottom:1%;right:-18px;width:20px;background:repeating-linear-gradient(90deg,#f1efe9 0 2px,#d9d5cc 2px 3px);transform:rotateY(70deg);transform-origin:left;border-radius:0 3px 3px 0}
+.stack{list-style:none;margin:32px 0 0;padding:0;border-top:1px solid rgba(255,255,255,.3)}
+.stack li{display:grid;grid-template-columns:28px 1fr;gap:12px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.3)}
+.stack li::before{content:"✓";font-weight:900;font-size:18px}
+.stack b{display:block;font-weight:800;font-size:17px;text-transform:uppercase;letter-spacing:.02em}
+.stack span{display:block;margin-top:4px;font-weight:500;font-size:15px;opacity:.82}
+.price{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-top:30px}
+.price b{font-weight:900;font-size:clamp(52px,6vw,72px);letter-spacing:-.02em;line-height:1}
+.price s{font-weight:700;font-size:26px;opacity:.6}
+.price i{font-style:normal;background:#fff;color:var(--blue2);font-weight:900;font-size:15px;letter-spacing:.08em;padding:7px 12px;border-radius:999px}
+.x3-deal{margin:10px 0 0;font-weight:700;font-size:15px;letter-spacing:.02em}
+
+/* for you, faq */
+.x3-two{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,90px)}
+.x3-ticks{list-style:none;margin:36px 0 0;padding:0}
+.x3-ticks li{position:relative;padding:18px 0 18px 40px;border-bottom:1px solid var(--line);font-weight:600;font-size:18px;line-height:1.4}
+.x3-ticks li::before{content:"";position:absolute;left:0;top:22px;width:22px;height:22px;border-radius:50%;background:var(--blue)}
+.x3-faq{margin-top:36px}
+.x3-faq details{border-bottom:1px solid var(--line)}
+.x3-faq summary{cursor:pointer;list-style:none;padding:20px 40px 20px 0;position:relative;font-weight:800;font-size:17px;text-transform:uppercase;letter-spacing:.02em}
+.x3-faq summary::-webkit-details-marker{display:none}
+.x3-faq summary::after{content:"+";position:absolute;right:4px;top:14px;font-size:28px;color:var(--blue)}
+.x3-faq details[open] summary::after{content:"−"}
+.x3-faq p{margin:0 0 22px;font-weight:500;font-size:16px;line-height:1.55;color:var(--mute)}
+
+/* offer card, funnel style */
+.x3-deal{position:relative;padding:clamp(56px,6vw,90px) 0 clamp(80px,10vw,130px);overflow:hidden}
+.x3-deal__glow{position:absolute;inset:0;background:radial-gradient(60% 50% at 25% 40%,rgba(41,151,255,.35),rgba(41,151,255,0) 70%),radial-gradient(40% 40% at 85% 80%,rgba(0,113,227,.28),rgba(0,113,227,0) 70%);pointer-events:none}
+.x3-card{position:relative;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(24px,4vw,64px);align-items:center;padding:clamp(28px,4vw,64px);border-radius:36px;background:linear-gradient(155deg,rgba(18,40,78,.92) 0%,rgba(8,14,26,.96) 45%,rgba(5,7,10,.98) 100%);box-shadow:0 60px 120px -40px rgba(41,151,255,.45),inset 0 1px 0 rgba(255,255,255,.12)}
+.x3-card::before{content:"";position:absolute;inset:0;border-radius:36px;padding:1.5px;background:linear-gradient(135deg,#2997ff,rgba(41,151,255,.1) 40%,rgba(255,255,255,.05) 70%,#2997ff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.x3-card__tab{position:absolute;left:50%;top:0;transform:translate(-50%,-50%);white-space:nowrap;background:linear-gradient(90deg,#0071e3,#2997ff);color:#fff;font-weight:800;font-size:14px;letter-spacing:.14em;text-transform:uppercase;padding:14px 24px;border-radius:999px;box-shadow:0 14px 34px -10px rgba(41,151,255,.9)}
+.x3-card__book{position:relative;display:grid;place-items:center}
+.x3-card__book img{position:relative;width:100%;max-width:460px;filter:drop-shadow(0 40px 50px rgba(0,0,0,.7))}
+.x3-card__halo{position:absolute;width:80%;aspect-ratio:1;border-radius:50%;background:radial-gradient(rgba(41,151,255,.55),rgba(41,151,255,0) 65%);filter:blur(20px)}
+.x3-card .x3-T{font-size:clamp(34px,3.8vw,58px)}
+.x3-vs{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:10px}
+.x3-vs li{display:grid;grid-template-columns:30px 1fr auto;gap:14px;align-items:center;padding:14px 16px;border-radius:16px;background:linear-gradient(90deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08)}
+.x3-vs i{width:30px;height:30px;border-radius:50%;background:#2997ff;display:grid;place-items:center;box-shadow:0 0 18px rgba(41,151,255,.7)}
+.x3-vs i::after{content:"";width:12px;height:7px;border-left:3px solid #fff;border-bottom:3px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+.x3-vs b{display:block;font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:.02em}
+.x3-vs span{display:block;margin-top:3px;font-weight:500;font-size:14px;color:var(--mute)}
+.x3-vs em{font-style:normal;font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#2997ff;background:rgba(41,151,255,.12);border:1px solid rgba(41,151,255,.35);padding:6px 10px;border-radius:999px}
+.x3-pay{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:28px;padding:22px 24px;border-radius:22px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1)}
+.x3-pay__price{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.x3-pay__price small{font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);align-self:center}
+.x3-pay__price b{font-weight:900;font-size:clamp(48px,5vw,66px);line-height:1;letter-spacing:-.02em;background:linear-gradient(180deg,#fff 30%,#8cc8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.x3-pay__price s{font-weight:700;font-size:24px;color:rgba(255,255,255,.45)}
+.x3-pay__price span{font-weight:900;font-size:14px;letter-spacing:.06em;color:#05070a;background:#fff;padding:6px 11px;border-radius:999px;align-self:center}
+.x3-cta{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:14px;min-height:64px;padding:0 30px;border-radius:999px;background:linear-gradient(180deg,#45a6ff,#0071e3);color:#fff;text-decoration:none;font-weight:900;font-size:16px;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 20px 44px -14px rgba(41,151,255,.95),inset 0 1px 0 rgba(255,255,255,.4)}
+.x3-cta i{font-style:normal;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.22)}
+.x3-cta::after{content:"";position:absolute;top:0;bottom:0;width:60px;left:-80px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.45),rgba(255,255,255,0));transform:skewX(-20deg);animation:shine 3.2s ease-in-out infinite}
+@keyframes shine{0%,55%{left:-80px}100%{left:110%}}
+.x3-pay__note{margin:14px 4px 0;font-weight:600;font-size:14px;line-height:1.5;color:var(--mute)}
+@media (max-width:899px){
+  .x3-card{grid-template-columns:1fr;padding:44px 18px 24px;border-radius:28px}
+  .x3-card::before{border-radius:28px}
+  .x3-card__tab{font-size:11px;letter-spacing:.1em;padding:12px 18px}
+  .x3-card__book img{max-width:240px}
+  .x3-vs li{grid-template-columns:26px 1fr;padding:12px}
+  .x3-vs i{width:26px;height:26px}
+  .x3-vs em{display:none}
+  .x3-pay{flex-direction:column;align-items:stretch;padding:18px}
+  .x3-cta{justify-content:center;font-size:13px;letter-spacing:.04em;padding:0 14px;gap:10px}
+  .x3-card__body,.x3-card__book{min-width:0}
+  .x3-pay__price{flex-wrap:nowrap;gap:8px}
+  .x3-pay__price small{font-size:10px}
+  .x3-pay__price b{font-size:36px}
+  .x3-pay__price s{font-size:17px}
+  .x3-pay__price span{font-size:12px;padding:5px 9px}
+}
+@media (prefers-reduced-motion:reduce){.x3-cta::after{animation:none}}
+
+.x3-end{text-align:center}
+.x3-end .x3-T{font-size:clamp(46px,7vw,100px)}
+.x3-end .x3-ctas{justify-content:center}
+.x3-end .x3-small{text-align:center}
+.x3-foot{padding:40px 0 60px;text-align:center;font-weight:800;letter-spacing:.24em;font-size:14px;color:var(--mute)}
+
+@media (max-width:899px){
+  .x3-hero{min-height:92vh;align-items:flex-end}
+  .x3-hero .x3-in{grid-template-columns:1fr;padding-bottom:40px;padding-left:28px;padding-right:28px}
+  .x3-hero .x3-T{font-size:44px}
+  .x3-hero .x3-kick{font-size:12px;padding:7px 12px;margin-bottom:14px}
+  .x3-hero .x3-lead{font-size:15px;line-height:1.5;margin-top:16px;text-wrap:pretty}
+  .x3-hero .x3-ctas{margin-top:22px;gap:10px}
+  .x3-hero .x3-btn{min-height:52px}
+  .x3-hero__cover{display:none}
+  .labels{top:16%}
+  .x3-pairs{grid-template-columns:1fr;gap:26px}
+  .x3-free,.offer,.x3-two{grid-template-columns:1fr}
+  .x3-free__cover{max-width:250px;margin:0 auto;order:-1}
+  .book{max-width:280px;margin:0 auto}
+  .x3-ctas{flex-direction:column;align-items:stretch}
+  .x3-btn{width:100%;font-size:14px;letter-spacing:.04em;padding:0 18px}
+  .x3-strap{font-size:11px;letter-spacing:.12em}
+  .x3-step{grid-template-columns:92px 1fr;gap:14px}
+  .x3-step img{width:92px;height:80px}
+  .x3-pair__ab{aspect-ratio:16/11}
+  .x3-pairs{gap:18px}
+}
+.x3 [hidden]{display:none !important}
+
+/* tower page (5/11): the cover straight on PC, the phone opening like the free cover */
+.x3-hero__cover{transform:none}
+.x3-mhero{display:none}
+@media (max-width:899px){
+  .x3-hero{display:none}
+  .x3-mhero{display:block;text-align:center;padding-top:64px}
+  .x3-mhero__strap{background:var(--blue);color:#fff;font-weight:800;font-size:13px;letter-spacing:.2em;text-transform:uppercase;padding:12px 16px}
+  .x3-mhero__ph{position:relative;min-height:540px;padding:30px 16px 0;background:url(/learn/tw_hero_mobile.webp) center 60%/cover;overflow:hidden}
+  .x3-mhero__ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,7,10,.95) 0%,rgba(5,7,10,.6) 30%,rgba(5,7,10,0) 48%,rgba(5,7,10,0) 72%,rgba(5,7,10,.85) 92%,var(--bg) 100%)}
+  .x3-mhero__how,.x3-mhero .x3-T,.x3-mhero__book{position:relative;z-index:2}
+  .x3-mhero__how{margin:0;font-weight:800;font-size:30px;letter-spacing:.1em;line-height:1;text-transform:uppercase;color:var(--blue);text-shadow:0 3px 18px rgba(0,0,0,.5)}
+  .x3-mhero .x3-T{margin-top:10px;font-size:62px;text-shadow:0 4px 22px rgba(0,0,0,.5)}
+  .x3-mhero .x3-T .x3-box{font-size:.74em;margin:0 0 .1em;background:rgba(5,7,10,.35)}
+  .x3-mhero__book{position:absolute;right:14px;bottom:6px;width:38%;max-width:170px;height:auto;filter:drop-shadow(0 20px 26px rgba(0,0,0,.7))}
+  .x3-mhero__pb{margin:6px 0 0;font-weight:900;font-size:32px;line-height:1;text-transform:uppercase;color:var(--blue)}
+  .x3-mhero__for{margin:12px 0 0;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+  .x3-mhero .x3-ctas{margin-top:22px;padding-bottom:36px}
+}
+</style>
