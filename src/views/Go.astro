@@ -19,9 +19,17 @@ const book = L.books.find((b) => b.id === id);
 const lesson = L.lessons.find((l) => l.id === id);
 const offer = (L.thanks.offers as Record<string, { a: string; b: string; price: string }>)[id];
 const name = id === 'free' ? 'The Blueprint (PDF)' : id === 'free-tower' ? 'The Tower Blueprint (PDF)' : id === 'full-tower' ? 'The Full Tower Blueprint (PDF)' : book ? `${book.a} ${book.b}` : lesson ? lesson.name : id === 'bundle' ? L.ladder[2][0] : offer && id !== 'community' ? `${offer.a} (${offer.price})` : L.communityA;
+// The WhatsApp message for a thanks-page offer (4/11, Nico): the free image is just "a free image",
+// the paid ones keep "title (price)" with the title in lower case, as it reads inside a sentence.
+const said = offer && id !== 'community' ? offerName() : name;
+function offerName() {
+  if (id === 'sample') return lang === 'it' ? 'un’immagine gratis' : 'a free image';
+  const a = offer.a.charAt(0).toLowerCase() + offer.a.slice(1);
+  return `${a} (${offer.price})`;
+}
 // The Full Tower Blueprint: the launch link until Sunday 8 November, then the €19 one (4/11)
 const deal = id === 'full-tower' ? { link: fullTowerDeal.checkout, until: fullTowerDeal.until } : null;
-const fallbacks = Object.fromEntries(['', '3d', 'ai', 'claude', 'dubai'].map((k) => [k, fallback(id, lang, name, k || undefined)]));
+const fallbacks = Object.fromEntries(['', '3d', 'ai', 'claude', 'dubai'].map((k) => [k, fallback(id, lang, said, k || undefined)]));
 ---
 
 <!doctype html>
