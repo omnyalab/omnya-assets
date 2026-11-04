@@ -2,6 +2,8 @@
 
 Gira sul sito, su Vercel, senza Mac acceso. File: `api/instagram.js` (riceve gli eventi da Meta), `api/_lib/ig.js` (il giro), `api/_lib/ig-texts.js` (tutte le frasi), `api/igtick.js` (promemoria e follow-up, chiamato ogni mezz'ora da `.github/workflows/igtick.yml`), `api/leads.js` (elenco contatti). Prove: `node scripts/ig-test.mjs`.
 
+Post delle torri: se la caption parla di una torre (tower, towers, torre, torri) il bot usa i testi e il link della Tower Blueprint (omnyalab.com/the-tower-blueprint), negli altri post il Blueprint normale. I testi torre sono in fondo a `ig-texts.js`.
+
 ## Il giro
 
 1. Commento con la parola. La parola la legge da sola dalla caption ("Comment PROJECT", "Commenta 3D", "comment the word AI"): sotto i post senza "Comment PAROLA" in caption (teaser per i clienti, ecc.) il bot non risponde. Maiuscole, emoji e un errore di battitura non contano. Le parole in `IG_WORDS` (BLUEPRINT, PROJECT, 3D, AI, CLAUDE, DUBAI) valgono solo per chi le scrive direttamente in DM.

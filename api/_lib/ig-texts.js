@@ -3,6 +3,7 @@
 // Button and quick-reply labels: 20 characters at most (Instagram cuts the rest).
 
 export const BLUEPRINT = 'https://omnyalab.com/the-blueprint';
+export const TOWER_BLUEPRINT = 'https://omnyalab.com/the-tower-blueprint';
 export const BOOK_CALL = 'https://omnyalab.com/book/call';
 
 /** Under the comment, one at random, so Instagram doesn't see the same line a hundred times. */
@@ -63,3 +64,31 @@ export const nudgeFollow = {
 };
 
 export const nudgeQuestion = 'Did you get a chance to open The Blueprint? 👀 If you’re working on a project, the first image is on us.';
+
+/** Under the tower reels (caption mentions a tower): Nico's tower messages (4/11/2026), the rest as above. */
+const towerRest = 'Quick question so I can point you to the right part: are you working on a tower right now, or just curious how we make them? 👀';
+const towerBlueprint = `The Tower Blueprint is free on this page, and right under it there’s the full method we use for our towers: ${TOWER_BLUEPRINT}\n\n(and if you’d rather have us do it on your tower, the first image is free, it’s on the same page)\n\n${towerRest}`;
+
+const tower = {
+  publicReplies: [
+    'Sent 🙌🏻 check your DMs for The Tower Blueprint',
+    'Just sent it, check your DMs 👀',
+    'Done! It’s in your DMs 🫶🏻',
+    'Check your DMs, The Tower Blueprint is there 🙌🏻',
+    'Sent you a DM 👇🏻 enjoy The Tower Blueprint',
+    'It’s in your inbox now 🙌🏻',
+  ],
+  cantDm: 'We can’t send you the Tower Blueprint unless you send us a text, if you want it, just send us a text 🫶🏻',
+  opener: { text: 'Hey 🙌🏻 The Tower Blueprint is ready, tap below and I’ll send it over 👇🏻', button: 'Get the Blueprint' },
+  followFirst: { ...followFirst, text: followFirst.text.replace('The Blueprint', 'The Tower Blueprint') },
+  blueprintFollower: `Here you go 👇🏻 ${towerBlueprint}`,
+  blueprintNewFollower: `Thanks for the follow 🙌🏻 ${towerBlueprint}`,
+  answerCurious: 'Love that 👀 we post a new before and after every week, so keep an eye on the reels. And if a tower comes up, the first image is on us 🫶🏻',
+  nudgeFollow: { ...nudgeFollow, text: nudgeFollow.text.replace('The Blueprint', 'The Tower Blueprint') },
+  nudgeQuestion: 'Did you get a chance to open The Tower Blueprint? 👀 If you’re working on a tower, the first image is on us.',
+};
+
+const base = { publicReplies, cantDm, opener, followFirst, stillNotFollowing, blueprintFollower, blueprintNewFollower, answerProject, answerCurious, nudgeFollow, nudgeQuestion };
+
+/** The texts for a post: 'tower' or anything else (the normal Blueprint). */
+export const textsFor = (kind) => (kind === 'tower' ? { ...base, ...tower } : base);

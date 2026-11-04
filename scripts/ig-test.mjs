@@ -30,6 +30,7 @@ const server = http.createServer(async (req, res) => {
   }
   if (path.endsWith('/replies')) return out({ id: `r${++mid}` });
   if (path === 'client') return out({ caption: 'DANA, full house teaser for our client', permalink: 'https://www.instagram.com/reel/dana/' });
+  if (path === 'tower') return out({ caption: 'You don’t send the buyer a brochure, you send them the tower 👇🏻 Comment “AI” and I’ll send you the full blueprint (it’s free)', permalink: 'https://www.instagram.com/p/tower/' });
   if (path.startsWith('media')) return out({ caption: 'From rough 3D to final photo ✨ Comment “PROJECT” below and I’ll send you The Blueprint', permalink: 'https://www.instagram.com/reel/abc/' });
   if (path.startsWith('u')) return out({ username: `name_${path}`, is_user_follow_business: !!state.follows[path] });
   out({ error: { message: 'unknown ' + path } }, 404);
@@ -218,6 +219,24 @@ await step('webhook check from Meta', async () => {
   const r = await hook.GET(new Request('http://x/api/instagram?hub.mode=subscribe&hub.verify_token=v&hub.challenge=42'));
   assert.equal(await r.text(), '42');
   assert.equal((await hook.GET(new Request('http://x/api/instagram?hub.mode=subscribe&hub.verify_token=no&hub.challenge=42'))).status, 403);
+});
+
+await step('tower post: Tower Blueprint texts and link, all the way through', async () => {
+  assert.equal(ig.postKind('you send them the tower'), 'tower');
+  assert.equal(ig.postKind('From rough 3D to final photo'), 'blueprint');
+  const tw = T.textsFor('tower');
+  assert.deepEqual(await comment('u7', 'AI 🔥', 'tower').res, ['sent']);
+  let s = sent().filter((x) => x.method === 'POST');
+  assert.equal(msgText(s[0]), tw.opener.text);
+  assert.ok(tw.publicReplies.includes(s[1].query.message));
+  await tap('u7', 'GET');
+  assert.equal(msgText(sent().find((x) => x.method === 'POST')), tw.followFirst.text);
+  state.follows.u7 = true;
+  await tap('u7', 'DONE');
+  const m = msgText(sent().find((x) => x.method === 'POST'));
+  assert.equal(m, tw.blueprintNewFollower);
+  assert.match(m, /the-tower-blueprint/);
+  assert.equal((await lead('u7')).kind, 'tower');
 });
 
 await step('leads page: private, lists everyone', async () => {

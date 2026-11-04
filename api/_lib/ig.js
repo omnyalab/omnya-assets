@@ -217,6 +217,9 @@ export function matchWord(comment, words) {
   return null;
 }
 
+/** Which Blueprint a post gives: 'tower' when the caption talks about a tower, otherwise the normal one. */
+export const postKind = (caption) => (/\b(towers?|torr[ei])\b/i.test(caption) ? 'tower' : 'blueprint');
+
 /** The caption's words, kept 6 hours; a caption Instagram didn't give us is asked again next time. */
 async function reelInfo(mediaId) {
   const key = `caption:${mediaId}`;
@@ -224,7 +227,7 @@ async function reelInfo(mediaId) {
   if (cached) return cached;
   try {
     const m = await api(mediaId, { query: { fields: 'caption,permalink' } });
-    const c = { words: captionWords(m.caption || ''), permalink: m.permalink || '' };
+    const c = { words: captionWords(m.caption || ''), permalink: m.permalink || '', kind: postKind(m.caption || '') };
     await kv.set(key, c, 6 * 3600);
     return c;
   } catch (e) {
@@ -255,7 +258,8 @@ async function tellNico(lead, subject, lines = []) {
 // ---------- the flow ----------
 
 async function sendBlueprint(lead, newFollower) {
-  await question(lead.id, newFollower ? T.blueprintNewFollower : T.blueprintFollower);
+  const t = T.textsFor(lead.kind);
+  await question(lead.id, newFollower ? t.blueprintNewFollower : t.blueprintFollower);
   Object.assign(lead, { stage: 'asked', follows: true, sentAt: Date.now() });
 }
 
@@ -265,7 +269,8 @@ async function giveBlueprint(lead, afterDone) {
   if (p.username) lead.username ||= p.username;
   // Instagram doesn't say: on Done we take their word for it, first time we ask for the follow
   if (p.follows === true || (p.follows === null && afterDone)) return sendBlueprint(lead, afterDone || lead.stage === 'asked_follow');
-  const msg = afterDone ? T.stillNotFollowing : T.followFirst;
+  const t = T.textsFor(lead.kind);
+  const msg = afterDone ? t.stillNotFollowing : t.followFirst;
   await button({ id: lead.id }, msg.text, msg.button, 'DONE');
   Object.assign(lead, { stage: 'asked_follow', follows: false, wasAskedFollow: true });
 }
@@ -281,17 +286,18 @@ export async function onComment(ownId, v) {
   if (!word) return 'no word';
   if (!(await kv.once(`once:${mediaId}:${from.id}`))) return 'already';
 
+  const t = T.textsFor(reel.kind);
   let uid = from.id;
   let dm = true;
   try {
-    const r = await button({ comment_id: v.id }, T.opener.text, T.opener.button, 'GET');
+    const r = await button({ comment_id: v.id }, t.opener.text, t.opener.button, 'GET');
     if (r.recipient_id) uid = r.recipient_id;
   } catch (e) {
     console.error('[ig] private reply', e.message);
     dm = false;
   }
   try {
-    await replyComment(v.id, dm ? T.publicReplies[Math.floor(Math.random() * T.publicReplies.length)] : T.cantDm);
+    await replyComment(v.id, dm ? t.publicReplies[Math.floor(Math.random() * t.publicReplies.length)] : t.cantDm);
   } catch (e) {
     console.error('[ig] public reply', e.message);
   }
@@ -302,6 +308,7 @@ export async function onComment(ownId, v) {
     media: mediaId,
     permalink: reel.permalink || lead.permalink,
     word,
+    kind: reel.kind || 'blueprint',
     comment: String(v.text || '').slice(0, 300),
     commentId: v.id,
     commentAt: Date.now(),
@@ -371,12 +378,12 @@ export async function onMessaging(ownId, m) {
   if (what === 'get' && (payload === 'GET' || !lead.human)) await giveBlueprint(lead, false);
   else if (what === 'done') await giveBlueprint(lead, true);
   else if (what === 'project') {
-    await text(uid, T.answerProject);
+    await text(uid, T.textsFor(lead.kind).answerProject);
     Object.assign(lead, { stage: 'project', interest: 'project' });
     await saveLead(lead);
     await tellNico(lead, 'ha un progetto', ['Ha detto che sta lavorando a un progetto. Gli è arrivato il link della call gratis.', said && `Ha scritto: ${said}`].filter(Boolean));
   } else if (what === 'curious') {
-    await text(uid, T.answerCurious);
+    await text(uid, T.textsFor(lead.kind).answerCurious);
     Object.assign(lead, { stage: 'curious', interest: lead.interest || 'curious' });
   } else if (['asked', 'project', 'curious'].includes(lead.stage) && (await kv.once(`told:${uid}`, 3600))) {
     // a real answer in words: the bot doesn't improvise, Nico does
@@ -405,8 +412,8 @@ export async function tick(now = Date.now()) {
         if (lead.stage === 'asked_follow') {
           const p = await profile(lead.id);
           if (p.follows === true) await sendBlueprint(lead, true);
-          else await button({ id: lead.id }, T.nudgeFollow.text, T.nudgeFollow.button, 'DONE');
-        } else if (lead.stage === 'asked') await question(lead.id, T.nudgeQuestion);
+          else await button({ id: lead.id }, T.textsFor(lead.kind).nudgeFollow.text, T.textsFor(lead.kind).nudgeFollow.button, 'DONE');
+        } else if (lead.stage === 'asked') await question(lead.id, T.textsFor(lead.kind).nudgeQuestion);
         else continue;
         lead.nudged = true;
       }
