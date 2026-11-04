@@ -115,7 +115,7 @@ const pdfs = {
     'before-it-exists': ['Sell it before it exists', 'playbook-03-sell-it-before-it-exists.pdf'],
     prompts: ['The full prompt files', 'bundle-the-full-prompt-files.pdf'],
     checklist: ['The checklist before every delivery', 'bundle-the-checklist-before-every-delivery.pdf'],
-    'full-tower': ['The Full Tower Blueprint', 'full-tower-blueprint.pdf'],
+    'full-tower': ['How to build a tower that sells with AI', 'full-tower-blueprint.pdf'],
     'full-3d': ['How to make a 3D that sells with AI', 'full-3d-blueprint.pdf'],
   },
   it: {
@@ -125,7 +125,7 @@ const pdfs = {
     prompts: ['I file di prompt completi', 'pacchetto-i-file-di-prompt-completi.pdf'],
     checklist: ['Il controllo prima di ogni consegna', 'pacchetto-il-controllo-prima-di-ogni-consegna.pdf'],
     // only in English: the Italian page gives the English file
-    'full-tower': ['The Full Tower Blueprint (EN)', '../en/full-tower-blueprint.pdf'],
+    'full-tower': ['How to build a tower that sells with AI (EN)', '../en/full-tower-blueprint.pdf'],
     'full-3d': ['How to make a 3D that sells with AI (EN)', '../en/full-3d-blueprint.pdf'],
   },
 } as const;
