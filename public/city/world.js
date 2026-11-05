@@ -42,8 +42,23 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
   const useEnv = (root) => root.traverse((o) => { if (o.isMesh && o.material && (o.material.metalness > 0.05 || o.material.roughness < 0.4)) { o.material.envMap = envTex; o.material.needsUpdate = true; } });
   useEnv(scene);
 
+  // Downtown (the ring around the fountain) the villas are huge: two side-by-side lots make one (Nico, 5/11).
+  const merged = [];
+  const byRow = new Map();
+  for (const L of city.lots) { const k = `${L.i},${L.j},${L.r}`; if (!byRow.has(k)) byRow.set(k, []); byRow.get(k).push(L); }
+  for (const row of byRow.values()) {
+    row.sort((a, b) => a.c - b.c);
+    for (let c = 0; c < row.length; c++) {
+      const L = row[c], M = row[c + 1];
+      if (L.dist <= 1 && M) {
+        const x = (L.x + M.x) / 2;
+        merged.push({ ...L, x, lw: L.lw + M.lw, mega: true, base: new THREE.Matrix4().makeRotationY(L.yaw).setPosition(x, 0, L.z) });
+        c++;
+      } else merged.push(L);
+    }
+  }
   // lots from the centre outwards; ties broken by angle so the order never changes
-  const lots = city.lots.slice().sort((l, m) => {
+  const lots = merged.sort((l, m) => {
     const d = Math.hypot(l.x, l.z) - Math.hypot(m.x, m.z);
     return Math.abs(d) > 0.01 ? d : Math.atan2(l.z, l.x) - Math.atan2(m.z, m.x);
   });

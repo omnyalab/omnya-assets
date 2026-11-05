@@ -58,6 +58,7 @@ async function start() {
     scene.add(g);
   }
   orbit.x = L.x; orbit.z = L.z; orbit.az = L.yaw + 0.55;
+  if (L.mega) orbit.d *= 1.3; // the downtown villas take two lots
   W.aimSun(new THREE.Vector3(L.x, 0, L.z), 90);
   W.setDetail(true);
   scene.add(makeFrame(THREE, L));

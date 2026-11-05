@@ -660,6 +660,69 @@ export function buildCity(scene, styleKey, opts = {}) {
     if (r() < .5) tree(-side * 3.8, -6.8, .7, base);
   }
 
+  // Omnya City sito (Nico 5/11): in downtown le ville enormi prendono due lotti, e alcune hanno la supercar fuori
+  function sportsCar(base, x, z, yaw, color) {
+    const y = .5, R = [0, yaw, 0];
+    const at = (lx, ly, lz) => { const c = Math.cos(yaw), s = Math.sin(yaw); return [x + lx * c + lz * s, ly, z - lx * s + lz * c]; };
+    put('box', 'matte', color, at(0, y + .42, 0), [1.95, .46, 4.5], R, base);               // corpo basso
+    put('box', 'matte', color, at(0, y + .7, -.25), [1.7, .22, 2.2], R, base);              // fianchi alti
+    put('box', 'glass', '#1B2430', at(0, y + .92, -.35), [1.5, .34, 1.7], R, base);         // abitacolo
+    put('box', 'matte', color, at(0, y + 1.1, -.45), [1.3, .06, 1.1], R, base);             // tetto
+    put('box', 'matte', '#111111', at(0, y + .78, -2.05), [1.9, .08, .35], R, base);         // spoiler
+    put('box', 'matte', '#FFF6D6', at(-.68, y + .48, 2.26), [.42, .1, .04], R, base);         // fari
+    put('box', 'matte', '#FFF6D6', at(.68, y + .48, 2.26), [.42, .1, .04], R, base);
+    for (const sx of [-1, 1]) for (const sz of [-1.45, 1.45]) put('cyl', 'matte', '#151515', at(sx * .92, y + .34, sz), [.68, .26, .68], [0, yaw, Math.PI / 2], base, 'YXZ');
+  }
+  function megaVilla(base, r) {
+    const y0 = .5, W = curLW, D = curLD;
+    put('box', TX('grass', 'matte'), pick(r, st.lawn), [0, .42, 0], [W - .8, .2, D - .8], [0, 0, 0], base); // un solo prato sui due lotti
+    const w1 = W - 5.5, d1 = Math.min(9.5, D - 6), h1 = 3.8, zc = -D / 2 + 1.2 + d1 / 2;
+    const wall = pick(r, ['#FFFFFF', '#F4EEE2', '#EFE6D6', '#FFFFFF']);
+    const trim = pick(r, st.roofTop);
+    // piano terra lungo, tutto vetro sul fronte
+    put('box', 'matte', wall, [0, y0 + h1 / 2, zc], [w1, h1, d1], [0, 0, 0], base);
+    put('box', 'matte', '#FFFFFF', [0, y0 + h1 + .15, zc], [w1 + .8, .3, d1 + .8], [0, 0, 0], base);
+    const zf = zc + d1 / 2;
+    put('box', 'glass', st.glass, [-w1 * .12, y0 + h1 / 2 - .1, zf + .05], [w1 * .66, h1 - .7, .1], [0, 0, 0], base);
+    for (let k = 0; k <= 6; k++) put('box', 'matte', '#2A2724', [-w1 * .45 + w1 * .66 * k / 6, y0 + h1 / 2 - .1, zf + .1], [.07, h1 - .7, .06], [0, 0, 0], base);
+    put('box', 'matte', '#5A3A24', [w1 * .36, y0 + 1.6, zf + .07], [1.8, 3.2, .14], [0, 0, 0], base); // portone
+    // primo piano a sbalzo, sfalsato
+    const w2 = w1 * .62, d2 = d1 * .9, h2 = 3.4, ox = (r() < .5 ? -1 : 1) * w1 * .16, oz = 1.4, y2 = y0 + h1 + .3;
+    put('box', 'matte', wall, [ox, y2 + h2 / 2, zc + oz], [w2, h2, d2], [0, 0, 0], base);
+    put('box', 'matte', trim, [ox, y2 + h2 + .14, zc + oz], [w2 + .7, .28, d2 + .7], [0, 0, 0], base);
+    put('box', 'glass', st.glass, [ox, y2 + h2 / 2, zc + oz + d2 / 2 + .05], [w2 * .86, h2 - .6, .1], [0, 0, 0], base);
+    for (let k = 0; k <= 5; k++) put('box', 'matte', '#2A2724', [ox - w2 * .43 + w2 * .86 * k / 5, y2 + h2 / 2, zc + oz + d2 / 2 + .1], [.06, h2 - .6, .06], [0, 0, 0], base);
+    put('box', 'glass', st.glass, [0, y0 + h1 + .8, zf + .25], [w1 * .94, 1, .06], [0, 0, 0], base); // ringhiera terrazza
+    // terrazza sul tetto con piccola piscina e pergola
+    put('box', 'water', st.pool, [ox - w2 * .18, y2 + h2 + .36, zc + oz], [w2 * .42, .06, d2 * .38], [0, 0, 0], base);
+    for (const sx of [-1, 1]) put('box', 'matte', '#FFFFFF', [ox + w2 * .25 + sx * 1.2, y2 + h2 + 1.3, zc + oz], [.15, 2, .15], [0, 0, 0], base);
+    put('box', 'matte', '#C9B38C', [ox + w2 * .25, y2 + h2 + 2.35, zc + oz], [3, .12, 2.4], [0, 0, 0], base);
+    // giardino: piscina lunga, deck, lettini, ombrelloni, palme
+    const pw = w1 * .58, pz = zf + 3.3, px = -w1 * .1;
+    put('box', 'matte', st.deck, [px, y0 + .05, pz], [pw + 2.4, .12, 4.6], [0, 0, 0], base);
+    put('box', 'water', st.pool, [px, y0 + .13, pz], [pw, .06, 2.8], [0, 0, 0], base);
+    for (let k = 0; k < 4; k++) put('box', 'matte', '#FFFFFF', [px - pw / 2 + 1 + k * 1.3, y0 + .3, pz - 2.1], [.75, .3, 1.7], [0, 0, 0], base);
+    for (const sx of [-1, 1]) {
+      const ux = px + sx * (pw / 2 + .6);
+      put('cyl', 'matte', '#FFFFFF', [ux, y0 + 1.3, pz - 1.6], [.09, 2.5, .09], [0, 0, 0], base);
+      put('cone', 'flat', pick(r, st.umbrella), [ux, y0 + 2.6, pz - 1.6], [2.8, .6, 2.8], [0, 0, 0], base);
+    }
+    for (const sx of [-1, 1]) palm(sx * (W / 2 - 1.6), D / 2 - 2.2, .95 + r() * .2, base);
+    palm(-W / 2 + 1.8, zc - 1, .9, base);
+    // muro di cinta con cancello e vialetto per l'auto
+    const gx = w1 * .36;
+    { const a = -W / 2 + .6, b = gx - 1.9, c = gx + 1.9, e = W / 2 - .6;
+      put('box', 'matte', wall, [(a + b) / 2, y0 + .55, D / 2 - .5], [b - a, 1.1, .3], [0, 0, 0], base);
+      if (e > c) put('box', 'matte', wall, [(c + e) / 2, y0 + .55, D / 2 - .5], [e - c, 1.1, .3], [0, 0, 0], base); }
+    put('box', 'matte', '#3A3A3A', [gx, y0 + .04, D / 2 - 2.6], [3, .08, 4.6], [0, 0, 0], base);
+    put('box', 'matte', '#2A2724', [gx + 1.8, y0 + .8, D / 2 - .5], [.25, 1.6, .25], [0, 0, 0], base);
+    // la supercar fuori, non su tutte: rossa, gialla, a volte nera o bianca
+    if (r() < .62) {
+      const cr = r(), col = cr < .5 ? '#D3141B' : cr < .88 ? '#F5B800' : cr < .95 ? '#16181C' : '#F2F2F0';
+      sportsCar(base, gx, D / 2 - 2.6, (r() - .5) * .12, col);
+    }
+  }
+
   // instancing
   function makeGroup(bk) {
     const group = new THREE.Group();
@@ -687,7 +750,7 @@ export function buildCity(scene, styleKey, opts = {}) {
   // Omnya City sito: tutte le case prenotate in un solo gruppo (poche draw call anche con migliaia di case)
   function makeHouses(items) {
     const saved = buckets; buckets = new Map(); const sLW = curLW, sLD = curLD;
-    for (const { L, seed } of items) { house.prev = null; curLW = L.lw; curLD = L.ld; house(L.base, seed, L.dist); }
+    for (const { L, seed } of items) { house.prev = null; curLW = L.lw; curLD = L.ld; if (L.mega) megaVilla(L.base, rng(seed)); else house(L.base, seed, L.dist); }
     const g = makeGroup(buckets); buckets = saved; curLW = sLW; curLD = sLD; return g;
   }
   function makeWith(fn) { const saved = buckets; buckets = new Map(); fn(put); const g = makeGroup(buckets); buckets = saved; return g; }
