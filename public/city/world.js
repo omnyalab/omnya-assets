@@ -14,9 +14,9 @@ export const seedOf = (u) => hashStr('@' + u);
 export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').matches } = {}) {
   const st = STYLES[KEY];
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', logarithmicDepthBuffer: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, mobile ? 2 : 1.75));
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, mobile ? 1.5 : 1.75));
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = mobile ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
   const scene = new THREE.Scene();
   scene.background = new THREE.Color('#EFE8D5');
   scene.fog = new THREE.Fog('#E4E2D6', 700, 3800);
@@ -34,11 +34,11 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
   const sun = new THREE.DirectionalLight(st.sun[0], st.sun[1]);
   scene.add(sun, sun.target);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(mobile ? 2048 : 4096, mobile ? 2048 : 4096);
+  sun.shadow.mapSize.set(mobile ? 1024 : 4096, mobile ? 1024 : 4096);
   sun.shadow.bias = -0.0006;
   sun.shadow.normalBias = 0.3;
 
-  const city = buildCity(scene, KEY, { empty: true });
+  const city = buildCity(scene, KEY, { empty: true, lite: mobile });
   const useEnv = (root) => root.traverse((o) => { if (o.isMesh && o.material && (o.material.metalness > 0.05 || o.material.roughness < 0.4)) { o.material.envMap = envTex; o.material.needsUpdate = true; } });
   useEnv(scene);
 

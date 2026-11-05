@@ -139,10 +139,11 @@ export function buildCity(scene, styleKey, opts = {}) {
     box: new THREE.BoxGeometry(1, 1, 1),
     gable: gableGeo(),
     hip: new THREE.ConeGeometry(Math.SQRT1_2, 1, 4, 1).rotateY(Math.PI / 4),
-    cyl: new THREE.CylinderGeometry(.5, .5, 1, 10),
+    // opts.lite (phones): fewer segments, same shapes, about a third fewer triangles
+    cyl: new THREE.CylinderGeometry(.5, .5, 1, opts.lite ? 6 : 10),
     ico: new THREE.IcosahedronGeometry(.5, 0),
-    sph: new THREE.SphereGeometry(.5, 14, 10),
-    cone: new THREE.ConeGeometry(.5, 1, 10),
+    sph: new THREE.SphereGeometry(.5, opts.lite ? 8 : 14, opts.lite ? 6 : 10),
+    cone: new THREE.ConeGeometry(.5, 1, opts.lite ? 7 : 10),
     mount: new THREE.ConeGeometry(.5, 1, 7, 1),
     plane: new THREE.PlaneGeometry(1, 1),
   };
@@ -208,7 +209,9 @@ export function buildCity(scene, styleKey, opts = {}) {
   let buckets = new Map();
   const tmpM = new THREE.Matrix4(), tmpQ = new THREE.Quaternion(), tmpE = new THREE.Euler();
   const V = new THREE.Vector3(), S = new THREE.Vector3();
+  let mute = false; // opts.lite: far trees and orchards are skipped, but their R() calls still run (same city on every device)
   function put(geom, mat, color, pos, scl, rot = [0, 0, 0], base = null, order = 'XYZ', noShadow = false) {
+    if (mute) return;
     tmpE.set(rot[0], rot[1], rot[2], order); tmpQ.setFromEuler(tmpE);
     const m = new THREE.Matrix4().compose(V.set(pos[0], pos[1], pos[2]), tmpQ, S.set(scl[0], scl[1], scl[2]));
     if (base) m.premultiply(base);
@@ -322,6 +325,7 @@ export function buildCity(scene, styleKey, opts = {}) {
     const fx = gx + 32, fz = gz + 26;
     if (inCityW(fx, fz, 40)) continue;
     put('box', 'flat', pick(R, st.fields), [fx, -.05 + R() * .04, fz], [60, .1, 48]);
+    mute = !!opts.lite && !inCityW(fx, fz, 220);
     const near = !inCityW(fx, fz, 420);
     const rr = R();
     if (st.mix && !near && rr < .08 && !(opts.clear && Math.hypot(fx - opts.clear[0], fz - opts.clear[1]) < opts.clear[2] + 30)) { // fienile rosso con silo
@@ -344,13 +348,16 @@ export function buildCity(scene, styleKey, opts = {}) {
       if (inCityW(tx, tz, 20)) continue;
       put('ico', 'flat', pick(R, st.tree), [tx, s * .9 + 1.5, tz], [s * 1.6, s * 1.8, s * 1.6], [R(), R(), 0]);
     }
+    mute = false;
   }
   if (st.hills) {
     for (let k = 0; k < 70; k++) { // colline verdi con boschi
       const a = k / 70 * Math.PI * 2, rad = 1150 + R() * 260, x = Math.cos(a) * rad, z = Math.sin(a) * rad * .85;
       if (z > seaZ - 160) continue;
       put('sph', 'flat', pick(R, ['#6DBA55', '#5FB04C', '#7CC35E', '#68B552']), [x, -20, z], [340, 70 + R() * 60, 280]);
+      mute = !!opts.lite; // the forests on the hills: only seen from very high
       for (let t = 0; t < 7; t++) put('cone', 'flat', pick(R, ['#3F8A50', '#4E8F55', '#2F7A47']), [x + (R() - .5) * 170, 40 + R() * 30, z + (R() - .5) * 130], [16, 26, 16]);
+      mute = false;
     }
     if (st.mix) for (let k = 0; k < 26; k++) { // montagne ai lati e dietro, con la neve in cima
       const a = Math.PI * (.62 + k / 26 * 1.76), rad = 1500 + R() * 350, x = Math.cos(a) * rad * 1.1, z = Math.sin(a) * rad;

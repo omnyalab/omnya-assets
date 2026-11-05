@@ -37,6 +37,7 @@ resize();
 place();
 
 function frame(now) {
+  if (spin && now > 15000) spin = false; // stop turning by itself after 15 s: the phone stops drawing frames
   if (spin) { orbit.az += 0.0025; place(); }
   if (dirty) { renderer.render(scene, camera); dirty = false; }
   requestAnimationFrame(frame);
