@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import { loadEnv } from 'vite';
+import { existsSync } from 'node:fs';
 
 /** Local preview only: serves the Vercel functions in /api (slots, book) from the dev server. */
 const devApi = () => ({
@@ -8,8 +9,15 @@ const devApi = () => ({
   /** @param {import('vite').ViteDevServer} server */
   configureServer(server) {
     for (const [k, v] of Object.entries(loadEnv('development', server.config.root, ''))) process.env[k] ??= v;
+    // same as the vercel.json rewrite: /city/@username is the one house page
+    server.middlewares.use((req, _res, next) => {
+      const p = decodeURIComponent((req.url || '').split('?')[0]);
+      if (/^\/city\/[^/]+\/?$/.test(p) && !/^\/city\/house\/?$/.test(p) && !existsSync(`${server.config.root}/public${p}`)) req.url = '/city/house/';
+      next();
+    });
     server.middlewares.use('/api', async (req, res, next) => {
-      const name = (req.url || '').split('?')[0].replace(/^\/+|\/+$/g, '');
+      // /api/city/link → api/city.js (the function reads the action from the path)
+      const name = (req.url || '').split('?')[0].replace(/^\/+|\/+$/g, '').replace(/^city\/[a-z]+$/, 'city');
       if (!/^[a-z]+$/.test(name)) return next();
       try {
         const mod = await server.ssrLoadModule(`/api/${name}.js`);

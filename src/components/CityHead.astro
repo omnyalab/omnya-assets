@@ -1,0 +1,33 @@
+---
+// <head> of the Omnya City pages (/city and /city/@username), standalone from the site layout.
+interface Props { title: string; description: string; path: string; noindex?: boolean }
+const { title, description, path, noindex = false } = Astro.props;
+const og = new URL('/city/og.jpg', Astro.site);
+const url = new URL(path, Astro.site);
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+{noindex && <meta name="robots" content="noindex" />}
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={url} />
+<meta name="theme-color" content="#EFE8D5" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Omnya Lab" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={url} />
+<meta property="og:image" content={og} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content={og} />
+<link rel="preload" as="font" type="font/woff2" href="/city/LilitaOne.woff2" crossorigin />
+<link rel="modulepreload" href="/city/three.module.min.js" />
+<link rel="modulepreload" href="/city/city.js" />
+<link rel="modulepreload" href="/city/world.js" />
+<link rel="stylesheet" href="/city/city.css" />
+{import.meta.env.PROD && <script is:inline defer src="/_vercel/insights/script.js"></script>}

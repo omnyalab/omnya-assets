@@ -1,0 +1,70 @@
+---
+// /city/@username (vercel.json rewrites every /city/<name> here; the script reads the name from the address).
+// "View my home": the house in 3D on its lot, turning with a finger; number, district, neighbour, share.
+// Then the offers (src/lib/city.ts) and, for professionals, the Blueprint.
+import CityHead from '../../components/CityHead.astro';
+import { cityOffers, cityWhatsApp } from '../../lib/city';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <CityHead title="My house in Omnya City" description="Every follower gets a free house in our 3D city. This one is mine." path="/city" noindex />
+  </head>
+  <body>
+    <div class="house">
+      <div class="stage">
+        <canvas id="c" aria-label="The house in 3D"></canvas>
+        <header class="top">
+          <a href="/city" style="pointer-events:auto">← The city</a>
+          <a href="https://www.instagram.com/omnyalab/" target="_blank" rel="noopener">@omnyalab</a>
+        </header>
+        <span class="hint" id="hint">Drag to turn it</span>
+      </div>
+
+      <article class="card" id="card">
+        <div class="loading" id="loading"><i></i>Finding the house…</div>
+        <div id="found" hidden>
+          <p class="k" style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--roof)">Omnya City</p>
+          <h1 class="lil" id="name"></h1>
+          <div class="facts">
+            <div><small>House</small><b id="num"></b></div>
+            <div><small>District</small><b id="dist"></b></div>
+            <div><small>Neighbour</small><b id="nb"></b></div>
+          </div>
+          <div class="row">
+            <button class="btn" id="share" type="button">Share my house</button>
+          </div>
+        </div>
+        <div id="none" class="empty" hidden>
+          <h1 class="lil" id="none-name" style="font-size:34px"></h1>
+          <p class="s" style="color:var(--mute)">No house here yet. Comment <b>HOUSE</b> under our reel on <a href="https://www.instagram.com/omnyalab/">@omnyalab</a> and we'll DM you the link to reserve one.</p>
+          <a class="btn" href="/city" style="margin-top:14px">See the city</a>
+        </div>
+      </article>
+
+      <section class="offers" id="offers" hidden>
+        <h2>Make it yours</h2>
+        {cityOffers.map((o) => (
+          <a class="offer" href={o.checkout || cityWhatsApp} data-offer={o.id} data-title={o.title} data-stripe={o.checkout ? '1' : ''} target="_blank" rel="noopener">
+            <b>{o.title}</b>
+            <span>{o.line}</span>
+            <em>{o.price}</em>
+          </a>
+        ))}
+        <p class="pro">For architects and brands</p>
+        <a class="offer offer--pro" href="/the-blueprint">
+          <b>Build a city like this for your brand</b>
+          <span>The free Blueprint: how we make 3D worlds and reels like this one.</span>
+          <em>Free →</em>
+        </a>
+      </section>
+
+      <footer class="foot">
+        <a href="/city">See the whole city</a>
+        <a href="/">Omnya Lab</a>
+      </footer>
+    </div>
+    <script type="module" src="/city/house.js"></script>
+  </body>
+</html>

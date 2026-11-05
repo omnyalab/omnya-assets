@@ -1,0 +1,61 @@
+---
+// /city (5/11/2026): Omnya City, the map of the reel "I'm giving every follower a free house in my city".
+// A standalone page (no site header, no preloader, no smooth scroll): the whole screen is the 3D map.
+// The link in the DM is /city?k=TOKEN (from /api/city/link): it shows the locked username and Reserve my spot.
+// Scripts and the city generator are plain modules in public/city/.
+import CityHead from '../../components/CityHead.astro';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <CityHead title="Omnya City · Reserve your free house" description="Every follower gets a free house in our 3D city. The first ones get downtown." path="/city" />
+  </head>
+  <body>
+    <div class="map">
+      <canvas id="c" aria-label="Map of Omnya City"></canvas>
+      <div id="labels" aria-hidden="true"></div>
+      <div id="chip" hidden></div>
+      <header class="top">
+        <div>
+          <h1 class="lil">Omnya City</h1>
+          <p id="count">Building the city…</p>
+        </div>
+        <a href="https://www.instagram.com/omnyalab/" target="_blank" rel="noopener">@omnyalab</a>
+      </header>
+
+      <section class="sheet" id="sheet">
+        <div data-s="load" class="loading"><i></i>Building the city…</div>
+
+        <div data-s="reserve" hidden>
+          <p class="k">Your lot is waiting</p>
+          <h2>Reserve your free house</h2>
+          <div class="lock" aria-label="Your Instagram username">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
+            <span id="me-name"></span><small>from your DM</small>
+          </div>
+          <button class="btn" id="reserve" type="button">Reserve my spot</button>
+          <p class="s"><span id="me-next"></span> Your username designs the house, and your neighbour is whoever comes right after you.</p>
+        </div>
+
+        <div data-s="home" hidden>
+          <p class="k">Welcome home</p>
+          <p class="big" id="home-name"></p>
+          <p class="s" id="home-lot" style="margin-top:2px;font-weight:600;color:var(--ink)"></p>
+          <a class="btn" id="home-go" href="/city" style="margin-top:14px">View my home →</a>
+          <p class="s">Your neighbour is whoever reserves next. Share it with a friend so it's someone you know.</p>
+        </div>
+
+        <div data-s="find" hidden>
+          <h2>I already have a house</h2>
+          <form class="find" id="find">
+            <input id="find-u" name="u" placeholder="@username" autocomplete="off" autocapitalize="none" spellcheck="false" inputmode="text" aria-label="Instagram username" />
+            <button class="btn" type="submit">Go</button>
+          </form>
+          <p class="s" id="find-note">No house yet? Comment <b>HOUSE</b> under our reel on <a href="https://www.instagram.com/omnyalab/" target="_blank" rel="noopener">@omnyalab</a> and we'll DM you your link.</p>
+        </div>
+      </section>
+    </div>
+    <script type="module" src="/city/map.js"></script>
+  </body>
+</html>

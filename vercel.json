@@ -274,11 +274,30 @@
           "value": "noindex, nofollow"
         }
       ]
+    },
+    {
+      "source": "/city/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
     }
   ],
   "functions": {
     "api/whatsapp.js": {
       "maxDuration": 120
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/city/:action",
+      "destination": "/api/city?action=:action"
+    },
+    {
+      "source": "/city/:user",
+      "destination": "/city/house/index.html"
+    }
+  ]
 }
