@@ -35,26 +35,26 @@ export const products: { id: ProductId; checkout: string }[] = [
   { id: 'free-tower', checkout: '/learn/free/omnya-lab-tower-blueprint.pdf' },
   { id: 'full-tower', checkout: 'https://buy.stripe.com/aFa4gyckZh2M7xQ8ap8so0b' },
   { id: 'free-3d', checkout: '/learn/free/omnya-lab-3d-to-film-blueprint.pdf' },
-  // €19 after Sunday 8 November; until then /go/full-3d sends to the €4.99 link (full3dDeal)
+  // €19 after Sunday 8 November; until then /go/full-3d sends to the €1.99 link (full3dDeal)
   { id: 'full-3d', checkout: 'https://buy.stripe.com/eVq8wO4SxeUE4lE1M18so0d' },
 ];
 
 /**
- * The Full Tower Blueprint launch price (4/11): €4.99 instead of €19 because we hit 500 followers,
+ * The Full Tower Blueprint launch price: €1.99 instead of €19 because we hit 1,000 followers (5/11; €4.99 for 500 on 4/11),
  * until Sunday 8 November at midnight, Rome time. After that the page shows €19 and /go/full-tower
  * sends to the €19 link by itself, so the offer really ends.
  */
 export const fullTowerDeal = {
   until: '2026-11-08T23:59:59+01:00',
-  checkout: 'https://buy.stripe.com/9B6fZg4Sx13O8BUfCR8so0a',
-  price: 4.99,
+  checkout: 'https://buy.stripe.com/14AfZg2Kp13O8BUcqF8so0e',
+  price: 1.99,
   was: 19,
-  off: 74,
+  off: 90,
 };
 export const dealOn = (now = Date.now()) => now < Date.parse(fullTowerDeal.until);
 
-/** The Full Blueprint (How to make a 3D that sells with AI, 4/11): the same launch, €4.99 until the same Sunday. */
-export const full3dDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.com/8x2aEW98N7scg4m2Q58so0c' };
+/** The Full Blueprint (How to make a 3D that sells with AI, 4/11): the same launch, €1.99 until the same Sunday. */
+export const full3dDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.com/5kQaEW1Gl9Akg4m62h8so0f' };
 
 /**
  * After each purchase the checkout returns to /learn/thanks/<product>. That page makes one
