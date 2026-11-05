@@ -22,6 +22,7 @@ import { cityOffers, cityWhatsApp, cityBlueprint } from '../../lib/city';
         <span class="hint" id="hint">Drag to turn it</span>
       </div>
 
+      <div class="duo">
       <article class="card" id="card">
         <div class="loading" id="loading"><i></i>Finding the house…</div>
         <div id="found" hidden>
@@ -42,16 +43,15 @@ import { cityOffers, cityWhatsApp, cityBlueprint } from '../../lib/city';
           <a class="btn" href="/city" style="margin-top:14px">See the city</a>
         </div>
       </article>
+      <a class="build" href={cityBlueprint}>
+        <span class="build__stamp" aria-hidden="true">FREE</span>
+        <b class="build__t">Steal our<br />city method</b>
+        <span class="build__s">The free blueprint with the real prompts behind this city.</span>
+        <span class="build__btn">Get the free blueprint <i>→</i></span>
+      </a>
+      </div>
 
       <section class="offers" id="offers" hidden>
-        <a class="build" href={cityBlueprint}>
-          <span class="build__stamp" aria-hidden="true">FREE</span>
-          <p class="build__k">For architects, developers and brands</p>
-          <b class="build__t">Build a city like this<br />for your brand</b>
-          <span class="build__s">Steal our city method: the free blueprint with the real prompts we used for this one.</span>
-          <span class="build__btn">Get the free blueprint <i>→</i></span>
-        </a>
-
         <div class="mine">
           <span class="mine__tab">1,000 followers offer</span>
           <h2>Make it yours</h2>
@@ -66,8 +66,7 @@ import { cityOffers, cityWhatsApp, cityBlueprint } from '../../lib/city';
       </section>
 
       <footer class="foot">
-        <a href="/city">See the whole city</a>
-        <a href="/">Omnya Lab</a>
+        <a href="/city">See the whole city →</a>
       </footer>
     </div>
     <script type="module" src="/city/house.js"></script>

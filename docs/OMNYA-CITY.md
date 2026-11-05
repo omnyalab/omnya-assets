@@ -16,7 +16,8 @@ Reel "I'm giving every follower a free house in my city". Comment HOUSE or 🏠 
 ## Nico
 
 - Vercel env: `CITY_LINK_SECRET` (any long random string, the same one goes in the ManyChat header).
-- Stripe: three Payment Links (Make it real €19, Move downtown €4.99, Film of your house €49) in `src/lib/city.ts` → `checkout`. Until then the buttons open WhatsApp with the request written. The page adds `client_reference_id=<username>` (dots become dashes).
+- Stripe (created 5/11 from Nico's Chrome): Make it real €0.99, 10-second film €9, Move downtown €1.99 in `src/lib/city.ts`; the Full City Blueprint €1.99 until Sunday (`fullCityDeal`) and €19 after (`products` in `src/lib/learn.ts`), back to /learn/thanks/full-city. The house page adds `client_reference_id=<username>` (dots become dashes).
+- Funnel page: /the-city-blueprint. PDFs built in ~/Desktop/Omnya City Blueprint (free/build_free.py, full/build_full.py, cover/gen.py).
 - "Move downtown" is done by hand for now (no admin action yet).
 
 ## Local test

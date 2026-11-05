@@ -3,7 +3,7 @@
 // Built like /3d-to-film and /the-tower-blueprint (Montserrat, Apple blue, black, no site header), with bigger
 // buttons on the first screen (Nico: "fai bene i pulsanti") and a sticky bar on phones.
 // Free blueprint first (3 real prompts), the Full one right under it at the 1,000 followers price (fullCityDeal),
-// then the real pages (DM → reserve → house), the five steps, who it is for, questions and the last call.
+// then the five steps, who it is for, questions and the last call.
 // Images are renders of the real city (public/city) and frames of the reel; the PDFs are built in
 // ~/Desktop/Omnya City Blueprint (free/build_free.py, full/build_full.py).
 import Base from '../layouts/Base.astro';
@@ -14,7 +14,7 @@ const full = goHref('full-city', 'en');
 const sample = goHref('sample', 'en');
 ---
 
-<Base page="learn" header={false} title="How to build a 3D city that goes viral with AI" description="Steal our city method: the free blueprint with the three real prompts behind Omnya City, and the Full Blueprint with every prompt and every file." og="/city/og.jpg">
+<Base page="learn" header={false} footer={false} title="How to build a 3D city that goes viral with AI" description="Steal our city method: the free blueprint with the three real prompts behind Omnya City, and the Full Blueprint with every prompt and every file." og="/city/og.jpg">
 <div class="x3">
 
 <section class="x3-hero" id="top">
@@ -25,7 +25,7 @@ const sample = goHref('sample', 'en');
       <h1 class="x3-T">Steal our<br><span class="x3-box">city</span><br>method</h1>
       <p class="x3-lead"><b>The 3D city behind our free house reel, built by Claude from three prompts.</b> Grab them free.</p>
       <div class="ct-ctas">
-        <a class="ct-free" href={free} target="_blank" rel="noopener"><span><b>Grab the free blueprint</b><small>PDF · 3 prompts, word for word</small></span><i>↓</i></a>
+        <a class="ct-free" href={free} target="_blank" rel="noopener"><span><b>Grab the free blueprint</b><small>PDF · the 3 prompts behind the city</small></span><i>↓</i></a>
         <a class="ct-full" href="#full">Get the Full one<em><span data-deal><s>€19</s>€1.99</span><span data-after hidden>€19</span></em></a>
       </div>
       <p class="ct-proof"><span>No SketchUp</span><span>No Blender</span><span>Runs on a phone</span></p>
@@ -60,27 +60,13 @@ const sample = goHref('sample', 'en');
   </div>
 </section>
 
-<section class="x3-sec">
-  <div class="x3-in">
-    <p class="x3-kick">It's live, try it</p>
-    <h2 class="x3-T">From a comment<br>to<br><span class="x3-box">a house</span></h2>
-    <p class="x3-lead">Comment HOUSE, get a DM, tap Reserve my spot, and your house lands on the map with your name on it. The link works once, so nobody fills the city with fake names.</p>
-    <div class="ct-phones">
-      <figure><img src="/learn/ct_ui_reserve.webp" width="600" height="1298" alt="The map with the locked username and Reserve my spot" loading="lazy"><figcaption><b>01</b>Your name, locked</figcaption></figure>
-      <figure><img src="/learn/ct_ui_welcome.webp" width="600" height="1298" alt="The house landing on the map" loading="lazy"><figcaption><b>02</b>It lands live</figcaption></figure>
-      <figure><img src="/learn/ct_ui_house.webp" width="600" height="1298" alt="The house page" loading="lazy"><figcaption><b>03</b>View my home</figcaption></figure>
-    </div>
-    <div class="x3-ctas"><a class="x3-btn x3-btn--line" href="/city">See Omnya City →</a></div>
-  </div>
-</section>
-
 <section class="x3-sec" id="free">
   <div class="x3-in x3-free">
     <div>
       <p class="x3-kick">The free blueprint</p>
       <h2 class="x3-T">Five steps<br><span class="x3-box">three prompts</span></h2>
       <ol class="x3-steps">
-        <li class="x3-step"><img src="/learn/ct_city.webp" alt="" loading="lazy"><div><b><i>01</i>The city in code</b><span>Claude Code writes the whole town in three.js: villas downtown, trailers and shacks in the suburbs. Prompt 1, word for word.</span></div></li>
+        <li class="x3-step"><img src="/learn/ct_city.webp" alt="" loading="lazy"><div><b><i>01</i>The city in code</b><span>Claude Code writes the whole town in three.js: villas downtown, trailers and shacks in the suburbs. It starts from prompt 1.</span></div></li>
         <li class="x3-step"><img src="/learn/ct_cozy.webp" alt="" loading="lazy"><div><b><i>02</i>Make it cozy</b><span>Our frame next to the reel we were matching, and one question: what's the difference? Windows, chimneys, one sun.</span></div></li>
         <li class="x3-step"><img src="/learn/ct_username.webp" alt="" loading="lazy"><div><b><i>03</i>Your username, your house</b><span>The name becomes the seed: same name, same house, no two alike. Prompt 2.</span></div></li>
         <li class="x3-step"><img src="/learn/ct_reel.webp" alt="" loading="lazy"><div><b><i>04</i>The reel</b><span>Rendered frame by frame from the browser, every move on the word, never a still scene. Prompt 3.</span></div></li>

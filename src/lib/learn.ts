@@ -41,8 +41,8 @@ export const products: { id: ProductId; checkout: string }[] = [
   // €19 after Sunday 8 November; until then /go/full-3d sends to the €1.99 link (full3dDeal)
   { id: 'full-3d', checkout: 'https://buy.stripe.com/eVq8wO4SxeUE4lE1M18so0d' },
   { id: 'free-city', checkout: '/learn/free/omnya-lab-city-blueprint.pdf' },
-  // STRIPE: the Full City Blueprint at €19 (Nico creates it); until then WhatsApp
-  { id: 'full-city', checkout: '' },
+  // the Full City Blueprint at €19 (Stripe, 5/11); €1.99 until Sunday through fullCityDeal
+  { id: 'full-city', checkout: 'https://buy.stripe.com/00w6oGfxbcMw2dw4Yd8so0k' },
 ];
 
 /**
@@ -62,8 +62,8 @@ export const dealOn = (now = Date.now()) => now < Date.parse(fullTowerDeal.until
 /** The Full Blueprint (How to make a 3D that sells with AI, 4/11): the same launch, €1.99 until the same Sunday. */
 export const full3dDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.com/5kQaEW1Gl9Akg4m62h8so0f' };
 
-/** The Full City Blueprint (5/11): the same 1,000 followers launch. STRIPE: paste the €1.99 link here. */
-export const fullCityDeal = { ...fullTowerDeal, checkout: '' };
+/** The Full City Blueprint (5/11): the same 1,000 followers launch, €1.99 until Sunday. */
+export const fullCityDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.com/4gMfZg3Ot3bWbO6duJ8so0g' };
 
 /**
  * After each purchase the checkout returns to /learn/thanks/<product>. That page makes one

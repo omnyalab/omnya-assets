@@ -116,3 +116,24 @@ button, input { font: inherit; }
 .mine h2 { text-align: center; }
 .offer em { display: flex; flex-direction: column; align-items: center; line-height: 1.05; }
 .offer em s { font-size: 12px; font-weight: 700; color: #8a7f72; text-decoration-thickness: 2px; }
+
+/* house page, 5/11 round 3: the house card and "Steal our city method" side by side on PC,
+   one under the other on phones with the blueprint card already in the first screen */
+.duo { position: relative; width: min(1120px, calc(100% - 24px)); margin: -34px auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: stretch; }
+.duo .card { width: auto; margin: 0; }
+.duo .build { display: flex; flex-direction: column; justify-content: center; }
+.duo .build__btn { margin-top: auto; }
+.duo .build__s { margin-bottom: 18px; }
+.offers { width: min(560px, calc(100% - 24px)); }
+.foot { justify-content: center; }
+@media (min-width: 900px) { .offers { width: min(1120px, calc(100% - 24px)); } .mine { max-width: 640px; margin-left: auto; margin-right: auto; } }
+@media (max-width: 899px) {
+  .stage { height: 50vh; height: 50svh; }
+  .duo { grid-template-columns: 1fr; gap: 14px; }
+  .card { padding: 16px; }
+  .card h1 { font-size: clamp(28px, 8vw, 38px); }
+  .facts { margin: 12px 0; }
+  .duo .build { padding: 18px 18px 16px; }
+  .build__t { font-size: clamp(30px, 8.4vw, 40px); }
+  .build__s { margin-top: 6px; }
+}
