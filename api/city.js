@@ -7,7 +7,7 @@
 //   GET  /api/city/house?u= → { house, neighbour } for /city/@username
 import { cleanName, linkFor, peek, reserve, allHouses, houseOf, onLot } from './_lib/city.js';
 
-const SITE = 'https://omnyalab.com';
+const SITE = 'https://www.omnyalab.com'; // the apex answers 308 to www
 
 const json = (body, status = 200, cache = 'no-store') =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': cache } });

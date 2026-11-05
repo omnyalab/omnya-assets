@@ -24,3 +24,8 @@ Reel "I'm giving every follower a free house in my city". Comment HOUSE or 🏠 
 `.env.local` with `CITY_LINK_SECRET=local-test-secret`, `npm run dev`, then
 `curl -X POST localhost:5173/api/city/link -H 'X-City-Secret: local-test-secret' -H 'Content-Type: application/json' -d '{"username":"sofia.m"}'`.
 Without Redis keys the API keeps everything in memory.
+
+## ManyChat (5/11)
+
+Automation "Omnya City · HOUSE" (Flow Builder, draft): comment on the next post with HOUSE or 🏠 → 3 public replies → DM "Get my house" → condition "Follows your account" → no: "follow and tap Done" (Done re-checks) → yes: External Request POST https://www.omnyalab.com/api/city/link, header X-City-Secret (value pasted by Nico), body {"username": Instagram Username, "igId": Contact Id}, `$.url` → user field `city_url` → DM with the "Reserve my spot" button on {{city_url}}.
+Use www: the apex answers 308.
