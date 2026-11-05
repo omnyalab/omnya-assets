@@ -16,7 +16,10 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'full-tower'
   // the free and the paid 3D-to-film PDFs, on /3d-to-film (4/11)
   | 'free-3d'
-  | 'full-3d';
+  | 'full-3d'
+  // the free and the paid city PDFs, on /the-city-blueprint (5/11, Omnya City reel)
+  | 'free-city'
+  | 'full-city';
 
 export const products: { id: ProductId; checkout: string }[] = [
   { id: 'white-to-real', checkout: 'https://buy.stripe.com/9B66oGet7bIs3hAeyN8so00' },
@@ -37,6 +40,9 @@ export const products: { id: ProductId; checkout: string }[] = [
   { id: 'free-3d', checkout: '/learn/free/omnya-lab-3d-to-film-blueprint.pdf' },
   // €19 after Sunday 8 November; until then /go/full-3d sends to the €1.99 link (full3dDeal)
   { id: 'full-3d', checkout: 'https://buy.stripe.com/eVq8wO4SxeUE4lE1M18so0d' },
+  { id: 'free-city', checkout: '/learn/free/omnya-lab-city-blueprint.pdf' },
+  // STRIPE: the Full City Blueprint at €19 (Nico creates it); until then WhatsApp
+  { id: 'full-city', checkout: '' },
 ];
 
 /**
@@ -56,6 +62,9 @@ export const dealOn = (now = Date.now()) => now < Date.parse(fullTowerDeal.until
 /** The Full Blueprint (How to make a 3D that sells with AI, 4/11): the same launch, €1.99 until the same Sunday. */
 export const full3dDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.com/5kQaEW1Gl9Akg4m62h8so0f' };
 
+/** The Full City Blueprint (5/11): the same 1,000 followers launch. STRIPE: paste the €1.99 link here. */
+export const fullCityDeal = { ...fullTowerDeal, checkout: '' };
+
 /**
  * After each purchase the checkout returns to /learn/thanks/<product>. That page makes one
  * offer that exists only there (oto), the most natural next step for that buyer, and if
@@ -71,6 +80,7 @@ export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: Pr
   build: { kind: 'lesson', oto: 'sample', down: 'community' },
   'full-tower': { kind: 'pdf', oto: 'sample', down: 'community' },
   'full-3d': { kind: 'pdf', oto: 'sample', down: 'community' },
+  'full-city': { kind: 'pdf', oto: 'sample', down: 'community' },
 };
 
 /** The words used in the reels ("Comment 3D"). Each one has its own page, /learn/<word>, and leads with one playbook. */
@@ -117,6 +127,7 @@ const pdfs = {
     checklist: ['The checklist before every delivery', 'bundle-the-checklist-before-every-delivery.pdf'],
     'full-tower': ['How to build a tower that sells with AI', 'full-tower-blueprint.pdf'],
     'full-3d': ['How to make a 3D that sells with AI', 'full-3d-blueprint.pdf'],
+    'full-city': ['How to build a 3D city that goes viral with AI', 'full-city-blueprint.pdf'],
   },
   it: {
     'white-to-real': ['Dal 3D alla foto vera', 'playbook-01-dal-3d-alla-foto-vera.pdf'],
@@ -127,6 +138,7 @@ const pdfs = {
     // only in English: the Italian page gives the English file
     'full-tower': ['How to build a tower that sells with AI (EN)', '../en/full-tower-blueprint.pdf'],
     'full-3d': ['How to make a 3D that sells with AI (EN)', '../en/full-3d-blueprint.pdf'],
+    'full-city': ['How to build a 3D city that goes viral with AI (EN)', '../en/full-city-blueprint.pdf'],
   },
 } as const;
 type FileKey = keyof (typeof pdfs)['en'];

@@ -16,4 +16,4 @@ export const cityOffers: CityOffer[] = [
 export const cityWhatsApp = 'https://wa.me/393792220465';
 
 /** The funnel page for people who want to build a city like this (free blueprint, then the Full one). */
-export const cityBlueprint = '/the-blueprint'; // → /the-city-blueprint once that page is in
+export const cityBlueprint = '/the-city-blueprint';
