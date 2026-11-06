@@ -145,6 +145,8 @@ export function buildCity(scene, styleKey, opts = {}) {
     sph: new THREE.SphereGeometry(.5, opts.lite ? 8 : 14, opts.lite ? 6 : 10),
     cone: new THREE.ConeGeometry(.5, 1, opts.lite ? 7 : 10),
     mount: new THREE.ConeGeometry(.5, 1, 7, 1),
+    terr: new THREE.CylinderGeometry(.5, .58, 1, opts.lite ? 40 : 72),
+    disc: new THREE.CylinderGeometry(.5, .5, 1, opts.lite ? 40 : 72),
     plane: new THREE.PlaneGeometry(1, 1),
   };
   const M = {
@@ -206,12 +208,27 @@ export function buildCity(scene, styleKey, opts = {}) {
     x.strokeStyle = 'rgba(0,0,0,.12)'; x.lineWidth = 2; x.strokeRect(1, 1, 126, 158);
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; })();
   M.win = new THREE.MeshStandardMaterial({ map: winTex, roughness: .55, metalness: 0 });
+  // Ep.2: glass that reflects, lit panes at night, tower glass, lamps, glowing pools, the lit penthouse
+  const canvasTex = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d')); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; };
+  const winEm = canvasTex(128, 160, (x) => { x.fillStyle = '#000'; x.fillRect(0, 0, 128, 160); x.fillStyle = '#FFFFFF'; for (const [px, py, pw, ph] of [[14, 14, 46, 62], [68, 14, 46, 62], [14, 84, 46, 62], [68, 84, 46, 62]]) x.fillRect(px, py, pw, ph); });
+  const tR = rng(77);
+  const towerMap = canvasTex(64, 256, (x) => { x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, 64, 256); x.fillStyle = 'rgba(30,45,60,.25)'; for (let i = 0; i < 16; i++) x.fillRect(i * 4, 0, 1, 256); for (let j = 0; j < 64; j++) x.fillRect(0, j * 4, 64, 1); });
+  const towerEm = canvasTex(64, 256, (x) => { x.fillStyle = '#000'; x.fillRect(0, 0, 64, 256); for (let i = 0; i < 16; i++) for (let j = 0; j < 64; j++) if (tR() < .3) { x.fillStyle = tR() < .8 ? '#FFE2B0' : '#FFFFFF'; x.fillRect(i * 4 + 1, j * 4 + 1, 3, 3); } });
+  if (styleKey !== 'C') Object.assign(M.glass, { roughness: .12, metalness: .5, envMapIntensity: 1.4 });
+  M.tower = new THREE.MeshStandardMaterial({ map: towerMap, roughness: .1, metalness: .6, envMapIntensity: 1.5, emissive: 0xFFD9A0, emissiveMap: towerEm, emissiveIntensity: 0 });
+  M.pool = M.water.clone(); M.pool.emissive = new THREE.Color('#19D2F5'); M.pool.emissiveIntensity = 0;
+  M.lamp = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .5, emissive: 0xFFC879, emissiveIntensity: 0 });
+  M.pent = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .2, metalness: .2, emissive: 0xFFC060, emissiveIntensity: 1.6 });
+  M.win.emissive = new THREE.Color('#FFC46B'); M.win.emissiveMap = winEm; M.win.emissiveIntensity = 0;
+  M.glass.emissive = new THREE.Color('#FFB45E'); M.glass.emissiveIntensity = 0;
   let buckets = new Map();
   const tmpM = new THREE.Matrix4(), tmpQ = new THREE.Quaternion(), tmpE = new THREE.Euler();
   const V = new THREE.Vector3(), S = new THREE.Vector3();
+  let ghost = false; // white model villas on the free lots of The Hills
   let mute = false; // opts.lite: far trees and orchards are skipped, but their R() calls still run (same city on every device)
   function put(geom, mat, color, pos, scl, rot = [0, 0, 0], base = null, order = 'XYZ', noShadow = false) {
     if (mute) return;
+    if (ghost) { color = mat === 'glass' ? '#C3D3DB' : mat === 'pool' ? '#BFE3EA' : mat === 'flat' ? '#E6E4DE' : '#F7F5F1'; if (mat === 'pool') mat = 'water'; }
     tmpE.set(rot[0], rot[1], rot[2], order); tmpQ.setFromEuler(tmpE);
     const m = new THREE.Matrix4().compose(V.set(pos[0], pos[1], pos[2]), tmpQ, S.set(scl[0], scl[1], scl[2]));
     if (base) m.premultiply(base);
@@ -302,10 +319,19 @@ export function buildCity(scene, styleKey, opts = {}) {
   const seaZ = ext.z + 170;
   put('box', 'water', st.sea, [0, .05, seaZ + 1200], [4000, .2, 2400], [0, 0, 0], null, 'XYZ', true);
   put('box', 'flat', st.sand, [0, .02, seaZ - 15], [4000, .2, 34]);
+  const DIS = opts.districts || {};
+  const HILL = { cx: 790, cz: 150, r0: 235, dr: 30, rows: 6, h0: 2.5, dh: 9 };
+  const RES = { x0: -1060, x1: -640, z0: 90, z1: seaZ - 60 };
+  // the towers of The Residences: [x, z, floors, main]; the main one has the penthouse
+  const RES_T = [[-760, 200, 40, 1], [-850, 150, 34, 0], [-680, 120, 30, 0], [-930, 230, 36, 0], [-820, 290, 30, 0], [-1000, 150, 32, 0]];
+  const inRect = (x, z, a, b, c, d) => x > a && x < b && z > c && z < d;
+  const inDist = (x, z) => (DIS.hills && Math.hypot(x - HILL.cx, z - HILL.cz) < HILL.r0 * 1.09 + 40)
+    || (DIS.marina && inRect(x, z, -340, 560, seaZ - 130, seaZ + 10)) || (DIS.residences && inRect(x, z, RES.x0 - 30, RES.x1 + 20, RES.z0 - 30, seaZ))
+    || (DIS.river && Math.abs(x - riverX(z)) < 40);
   // strade che escono dalla citta verso campagna e mare
   if (st.mix) {
     const zr = rowZ[0] + rowD[0] / 2 + RZ / 2, xr = colX[0] + colW[0] / 2 + ROAD / 2;
-    put('box', 'matte', st.asphalt, [ext.x + 700, -.04, zr], [1400, .1, 8]);
+    { const mm = mute; if (DIS.hills) mute = true; put('box', 'matte', st.asphalt, [ext.x + 700, -.04, zr], [1400, .1, 8]); mute = mm; } // Ep.2: The Hills take this road
     put('box', 'matte', st.asphalt, [-ext.x - 700, -.04, zr], [1400, .1, 8]);
     put('box', 'matte', st.asphalt, [xr, -.04, (ext.z + seaZ) / 2], [8, .1, seaZ - ext.z]);
     put('box', 'matte', st.asphalt, [xr, -.04, -ext.z - 700], [8, .1, 1400]);
@@ -325,7 +351,7 @@ export function buildCity(scene, styleKey, opts = {}) {
     const fx = gx + 32, fz = gz + 26;
     if (inCityW(fx, fz, 40)) continue;
     put('box', 'flat', pick(R, st.fields), [fx, -.05 + R() * .04, fz], [60, .1, 48]);
-    mute = !!opts.lite && !inCityW(fx, fz, 220);
+    mute = (!!opts.lite && !inCityW(fx, fz, 220)) || inDist(fx, fz); // the R() calls still run: the old lots never move
     const near = !inCityW(fx, fz, 420);
     const rr = R();
     if (st.mix && !near && rr < .08 && !(opts.clear && Math.hypot(fx - opts.clear[0], fz - opts.clear[1]) < opts.clear[2] + 30)) { // fienile rosso con silo
@@ -346,7 +372,7 @@ export function buildCity(scene, styleKey, opts = {}) {
       const tx = gx + R() * 64, tz = gz + (R() < .5 ? 1 : 51), s = 3 + R() * 3;
       if (opts.clear && Math.hypot(tx - opts.clear[0], tz - opts.clear[1]) < opts.clear[2]) continue;
       if (inCityW(tx, tz, 20)) continue;
-      put('ico', 'flat', pick(R, st.tree), [tx, s * .9 + 1.5, tz], [s * 1.6, s * 1.8, s * 1.6], [R(), R(), 0]);
+      { const mm = mute; if (inDist(tx, tz)) mute = true; put('ico', 'flat', pick(R, st.tree), [tx, s * .9 + 1.5, tz], [s * 1.6, s * 1.8, s * 1.6], [R(), R(), 0]); mute = mm; }
     }
     mute = false;
   }
@@ -638,7 +664,7 @@ export function buildCity(scene, styleKey, opts = {}) {
       put('box', 'matte', up, [ox, y2 + h2 / 2, zc + oz], [w2, h2, d2], [0, 0, 0], base);
       put('box', 'matte', st.roofs[0], [ox, y2 + h2 + .12, zc + oz], [w2 + .5, .24, d2 + .5], [0, 0, 0], base);
       { const rt = st.sameWall ? roofC : pick(r, st.roofTop); if (st.pitched) put('hip', TX('roof', 'flat'), rt, [ox, y2 + h2 + .24 + .8, zc + oz], [w2 + .9, 1.6, d2 + .9], [0, 0, 0], base); else put('box', 'flat', rt, [ox, y2 + h2 + .31, zc + oz], [w2 - .4, .08, d2 - .4], [0, 0, 0], base);
-        if (r() < .3) put('box', 'water', st.pool, [ox + w2 * .15, y2 + h2 + .4, zc + oz], [w2 * .45, .06, d2 * .4], [0, 0, 0], base); }
+        if (r() < .3) put('box', 'pool', st.pool, [ox + w2 * .15, y2 + h2 + .4, zc + oz], [w2 * .45, .06, d2 * .4], [0, 0, 0], base); }
       put('box', 'glass', st.glass, [ox, y2 + h2 / 2, zc + oz + d2 / 2 + .05], [w2 * .78, h2 - .5, .1], [0, 0, 0], base);
       for (let k = 0; k <= 4; k++) put('box', 'matte', st.frame, [ox - w2 * .39 + w2 * .78 * k / 4, y2 + h2 / 2, zc + oz + d2 / 2 + .1], [.06, h2 - .5, .06], [0, 0, 0], base);
       // ringhiera vetro terrazza
@@ -650,7 +676,7 @@ export function buildCity(scene, styleKey, opts = {}) {
     const hasPool = !small || r() < .45;
     if (hasPool) {
     put('box', 'matte', st.deck, [px, y0 + .05, 3.6], [pw + 1.6, .12, 3.6], [0, 0, 0], base);
-    put('box', 'water', st.pool, [px, y0 + .13, 3.6], [pw, .06, 2.2], [0, 0, 0], base);
+    put('box', 'pool', st.pool, [px, y0 + .13, 3.6], [pw, .06, 2.2], [0, 0, 0], base);
     for (let k = 0; k < 2; k++) put('box', 'matte', '#FFFFFF', [px - pw / 2 + 1 + k * 1.1, y0 + .3, 1.9], [.7, .3, 1.6], [0, 0, 0], base);
     }
     if (!small && r() < .55) {
@@ -701,13 +727,13 @@ export function buildCity(scene, styleKey, opts = {}) {
     for (let k = 0; k <= 5; k++) put('box', 'matte', '#2A2724', [ox - w2 * .43 + w2 * .86 * k / 5, y2 + h2 / 2, zc + oz + d2 / 2 + .1], [.06, h2 - .6, .06], [0, 0, 0], base);
     put('box', 'glass', st.glass, [0, y0 + h1 + .8, zf + .25], [w1 * .94, 1, .06], [0, 0, 0], base); // ringhiera terrazza
     // terrazza sul tetto con piccola piscina e pergola
-    put('box', 'water', st.pool, [ox - w2 * .18, y2 + h2 + .36, zc + oz], [w2 * .42, .06, d2 * .38], [0, 0, 0], base);
+    put('box', 'pool', st.pool, [ox - w2 * .18, y2 + h2 + .36, zc + oz], [w2 * .42, .06, d2 * .38], [0, 0, 0], base);
     for (const sx of [-1, 1]) put('box', 'matte', '#FFFFFF', [ox + w2 * .25 + sx * 1.2, y2 + h2 + 1.3, zc + oz], [.15, 2, .15], [0, 0, 0], base);
     put('box', 'matte', '#C9B38C', [ox + w2 * .25, y2 + h2 + 2.35, zc + oz], [3, .12, 2.4], [0, 0, 0], base);
     // giardino: piscina lunga, deck, lettini, ombrelloni, palme
     const pw = w1 * .58, pz = zf + 3.3, px = -w1 * .1;
     put('box', 'matte', st.deck, [px, y0 + .05, pz], [pw + 2.4, .12, 4.6], [0, 0, 0], base);
-    put('box', 'water', st.pool, [px, y0 + .13, pz], [pw, .06, 2.8], [0, 0, 0], base);
+    put('box', 'pool', st.pool, [px, y0 + .13, pz], [pw, .06, 2.8], [0, 0, 0], base);
     for (let k = 0; k < 4; k++) put('box', 'matte', '#FFFFFF', [px - pw / 2 + 1 + k * 1.3, y0 + .3, pz - 2.1], [.75, .3, 1.7], [0, 0, 0], base);
     for (const sx of [-1, 1]) {
       const ux = px + sx * (pw / 2 + .6);
@@ -729,6 +755,233 @@ export function buildCity(scene, styleKey, opts = {}) {
       sportsCar(base, gx, D / 2 - 2.6, (r() - .5) * .12, col);
     }
   }
+
+  // ---- Ep.2 (6/11/2026): the city grows. The Hills (new lots, LA style), the river, the Marina, the Omnya Tower,
+  // and the old city gets boulevards, cars and a livelier plaza. Everything here uses its own random stream
+  // and only adds things around the lots: the old lots and the claimed houses never move or change.
+  function districts() {
+    const D = opts.districts || {};
+    const Rd = rng(hashStr('omnya-city-ep2'));
+    const lite = !!opts.lite; // phones: same places, fewer small things
+    const lampAt = (x, y, z, base = null) => { if (lite) return; put('cyl', 'matte', '#3A3530', [x, y + 2.2, z], [.16, 4.4, .16], [0, 0, 0], base); put('sph', 'lamp', '#FFE2A8', [x, y + 4.5, z], [.6, .6, .6], [0, 0, 0], base); };
+    const CARS = ['#F2F2F0', '#16181C', '#B9BEC4', '#D3141B', '#1F4E8C', '#C9B48A', '#F2F2F0', '#2E3B33'];
+    // ---------- old city: boulevards on the two main axes, parked and driving cars, people around the fountain
+    if (D.refresh) {
+      const xb = colW[0] / 2 + ROAD / 2, zb = rowD[0] / 2 + RZ / 2;
+      for (const sx of [-1, 1]) for (let j = -NBZ; j <= NBZ; j++) { if (!inCity(0, j) && !inCity(1, j)) continue; const zc = rowZ[j], L = rowD[j] - 4;
+        put('box', 'flat', '#7DBE5A', [sx * xb, .12, zc], [1.6, .24, L]); for (let z = zc - L / 2 + 3; z < zc + L / 2 - 2; z += 7) tree(sx * xb, z, .55); }
+      for (const sz of [-1, 1]) for (let i = -NBX; i <= NBX; i++) { if (!inCity(i, 0) && !inCity(i, 1)) continue; const xc = colX[i], L = colW[i] - 4;
+        put('box', 'flat', '#7DBE5A', [xc, .12, sz * zb], [L, .24, 1.6]); for (let x = xc - L / 2 + 3; x < xc + L / 2 - 2; x += 7) tree(x, sz * zb, .55); }
+      for (let i = -NBX; i <= NBX; i++) for (let j = -NBZ; j <= NBZ; j++) {
+        if (!inCity(i, j)) continue; const b = block(i, j);
+        if (inCity(i, j - 1) && Rd() < .55) { const z0 = b.z - b.d / 2 - RZ / 2, s = Rd() < .5 ? 1 : -1; car(b.x + (Rd() - .5) * (b.w - 6), z0 + s * 2.6, s > 0 ? Math.PI / 2 : -Math.PI / 2, pick(Rd, CARS)); }
+        if (inCity(i - 1, j) && Rd() < .45) { const x0 = b.x - b.w / 2 - ROAD / 2, s = Rd() < .5 ? 1 : -1; car(x0 + s * 2.6, b.z + (Rd() - .5) * (b.d - 6), s > 0 ? Math.PI : 0, pick(Rd, CARS)); }
+      }
+      // the plaza: café tables under umbrellas and people as tiny traces
+      for (const [x, z] of [[-9, -3.6], [9, -3.6], [-9, 3.6], [9, 3.6], [-13, 0], [13, 0]]) { put('cyl', 'matte', '#FFFFFF', [x, 1.5, z], [.08, 2, .08]); put('cone', 'flat', pick(Rd, ['#E0402E', '#FFFFFF', '#2C5A9E', '#FFD21F']), [x, 2.6, z], [2.6, .5, 2.6]);
+        put('cyl', 'matte', '#FFFFFF', [x, .9, z], [1, .08, 1]); }
+      for (let k = 0; k < 46; k++) { const a = Rd() * Math.PI * 2, rr = 6 + Rd() * 14; person(Math.cos(a) * rr * 1.2, .5, Math.sin(a) * rr * .7); }
+    }
+    // ---------- the river: from the hills down the west side of the city to the sea, with bridges
+    if (D.river) {
+      let px = riverX(-1100), pz = -1100;
+      for (let z = -1090; z <= seaZ + 10; z += 9) { const x = riverX(z), a = Math.atan2(x - px, z - pz), l = Math.hypot(x - px, z - pz) + 1.2, wd = 22 + 10 * Math.max(0, (z - 100) / (seaZ - 100));
+        put('box', 'flat', '#E8D6A6', [(x + px) / 2, .03, (z + pz) / 2], [wd + 12, .1, l], [0, a, 0], null, 'XYZ', true);
+        put('box', 'water', st.sea, [(x + px) / 2, .08, (z + pz) / 2], [wd, .1, l], [0, a, 0], null, 'XYZ', true);
+        if (Rd() < .55) { const s = Rd() < .5 ? 1 : -1; if (!lite || Rd() < .4) tree(x + s * (wd / 2 + 8 + Rd() * 6), z + (Rd() - .5) * 6, .7 + Rd() * .5); }
+        px = x; pz = z; }
+      const zr = rowZ[0] + rowD[0] / 2 + RZ / 2;
+      for (const [z, road] of [[zr, true], [-260, false], [190, false]]) bridge(riverX(z), z, road);
+    }
+    // ---------- the Marina and the beach club
+    if (D.marina) {
+      const zb = seaZ, x0 = -300, x1 = 230, zw = zb + 120;
+      put('box', TX('paving', 'matte'), '#EFE4CC', [(x0 + x1) / 2, .2, zb - 26], [x1 - x0 + 40, .4, 16]);
+      for (let x = x0 + 6; x < x1; x += 14) { palm(x, zb - 31, 1.3); lampAt(x + 7, .4, zb - 20); if (Rd() < .5) person(x + Rd() * 10, .6, zb - 24 + Rd() * 6); }
+      put('box', 'flat', '#D8CDB6', [x0, .9, (zb + zw) / 2], [9, 1.8, zw - zb], [0, 0, 0], null, 'XYZ', true);
+      put('box', 'flat', '#D8CDB6', [(x0 + x1 - 70) / 2, .9, zw], [x1 - 70 - x0, 1.8, 9], [0, 0, 0], null, 'XYZ', true);
+      { const lx = x1 - 70, lz = zw; put('cyl', 'matte', '#FFFFFF', [lx, 9, lz], [4, 16, 4]); put('cyl', 'matte', '#D9483B', [lx, 6, lz], [4.1, 3, 4.1]); put('cyl', 'matte', '#D9483B', [lx, 13, lz], [4.1, 3, 4.1]);
+        put('cyl', 'lamp', '#FFF3C4', [lx, 18.2, lz], [2.6, 2.4, 2.6]); put('cone', 'matte', '#D9483B', [lx, 20.6, lz], [3.6, 2.4, 3.6]); }
+      for (let p = 0; p < 5; p++) { const px = x0 + 50 + p * 92;
+        put('box', 'matte', '#C79B6B', [px, .7, zb + 38], [4, .3, 76], [0, 0, 0], null, 'XYZ', true);
+        for (let b = 0; b < 5; b++) for (const s of [-1, 1]) { if (Rd() < .2) continue; const big = Rd() < .35 ? 2.2 : 1.6; boat(px + s * (4 + 2 * big), zb + 8 + b * 15, s > 0 ? 0 : Math.PI, big); } }
+      for (let b = 0; b < (lite ? 0 : 12); b++) sail(-700 + Rd() * 1500, zw + 50 + Rd() * 360, Rd() * 6, 1.8);
+      for (let u = 0; u < 44; u++) { const ux = x1 + 30 + (u % 22) * 13, uz = zb - 13 + Math.floor(u / 22) * 10;
+        put('cyl', 'matte', '#FFFFFF', [ux, 1.2, uz], [.1, 2.4, .1]); put('cone', 'flat', pick(Rd, ['#E0402E', '#FFD21F', '#2C5A9E', '#FFFFFF', '#FF8DB0']), [ux, 2.5, uz], [3.6, .7, 3.6]);
+        put('box', 'matte', '#FFFFFF', [ux + 1.6, .35, uz], [.8, .3, 1.8]); if (Rd() < .3) person(ux - 1.5, .1, uz + 1); }
+    }
+    // ---------- THE HILLS: round terraces with winding palm roads, villas looking at the ocean, OMNYA on top
+    if (D.hills) {
+      const H = HILL;
+      for (let k = 0; k <= H.rows; k++) {
+        const r = H.r0 - k * H.dr, h = H.h0 + k * H.dh;
+        put(k ? 'disc' : 'terr', 'flat', k % 2 ? '#C9B994' : '#D4C4A0', [H.cx, h / 2, H.cz], [r * 2, h, r * 2], [0, 0, 0], null, 'XYZ', k > 0); // stone retaining walls, so no slope covers the terrace below
+        if (k < H.rows) {
+          put('disc', TX('asphalt', 'matte'), '#55575C', [H.cx, h + .04, H.cz], [r * 2 - .6, .1, r * 2 - .6]);
+          put('disc', TX('grass', 'matte'), '#8CC460', [H.cx, h + .09, H.cz], [(r - 5.2) * 2, .1, (r - 5.2) * 2]);
+          const n = Math.floor(r * Math.PI * 2 / 15);
+          for (let p = 0; p < n; p++) { const a = p / n * Math.PI * 2; if (lite && p % 3) continue; palm(H.cx + Math.sin(a) * (r - .6), H.cz + Math.cos(a) * (r - .6), 1.45 + ((p * 7) % 5) * .06); if (p % 4 === 0) lampAt(H.cx + Math.sin(a + .02) * (r - 5.6), h, H.cz + Math.cos(a + .02) * (r - 5.6)); }
+          // the back of the hill: trees instead of villas
+          for (let t = 0; t < r / 6; t++) { const a = Math.PI * (.62 + Rd() * .76) * (Rd() < .5 ? 1 : -1), rr = r - 8 - Rd() * (H.dr - 12); tree(H.cx + Math.sin(a) * rr, H.cz + Math.cos(a) * rr, .8 + Rd() * .5); }
+        } else {
+          put('disc', TX('grass', 'matte'), '#8CC460', [H.cx, h + .09, H.cz], [r * 2, .1, r * 2]);
+          for (let t = 0; t < 26; t++) { const a = Rd() * Math.PI * 2, rr = Rd() * (r - 6); if (Math.cos(a) * rr > 8) continue; put('cone', 'flat', pick(Rd, ['#3F8A50', '#4E8F55', '#2F7A47']), [H.cx + Math.sin(a) * rr, h + 7, H.cz + Math.cos(a) * rr], [6, 14, 6]); }
+          sign('OMNYAWOOD', H.cx, h, H.cz + r * .42, 11.5);
+        }
+      }
+      // the road from the city climbs onto the first terrace
+      { const zr = rowZ[0] + rowD[0] / 2 + RZ / 2, xh = H.cx - Math.sqrt(H.r0 * H.r0 - (zr - H.cz) ** 2);
+        put('box', TX('asphalt', 'matte'), '#55575C', [(ext.x + xh) / 2, -.03, zr], [xh - ext.x + 10, .1, 9]);
+        for (let x = ext.x + 8; x < xh - 4; x += 14) for (const s of [-1, 1]) palm(x, zr + s * 6, 1.4); }
+    }
+    // ---------- the Omnya Tower: already tall, the penthouse lit at the top
+    // ---------- THE RESIDENCES, west of the river: towers of 30-40 floors for the new followers, townhouses on the beach
+    if (D.residences) {
+      const RS = RES;
+      put('box', TX('grass', 'matte'), '#93C866', [(RS.x0 + RS.x1) / 2, .06, (RS.z0 + RS.z1) / 2], [RS.x1 - RS.x0, .12, RS.z1 - RS.z0]);
+      const T = RES_T;
+      for (const [x, z, f, main] of T) residence(x, z, f, main);
+      // a park between the towers: paths, trees, a pond
+      put('box', 'matte', '#EFE4CC', [(RS.x0 + RS.x1) / 2, .14, 245], [RS.x1 - RS.x0 - 20, .06, 5]);
+      put('box', 'matte', '#EFE4CC', [-760, .14, (RS.z0 + RS.z1) / 2], [5, .06, RS.z1 - RS.z0 - 10]);
+      put('cyl', 'pool', st.pool, [-900, .15, 300], [40, .1, 26]);
+      for (let t = 0; t < (lite ? 40 : 120); t++) { const x = RS.x0 + 6 + Rd() * (RS.x1 - RS.x0 - 12), z = RS.z0 + 6 + Rd() * (RS.z1 - RS.z0 - 12);
+        if (T.some(([tx, tz, , m]) => Math.abs(x - tx) < (m ? 32 : 28) && Math.abs(z - tz) < (m ? 29 : 26))) continue;
+        if (Rd() < .3) palm(x, z, 1.2 + Rd() * .3); else tree(x, z, .8 + Rd() * .5); }
+      // boulevard with palms between the towers and the beach
+      put('box', TX('asphalt', 'matte'), '#55575C', [(RS.x0 + RS.x1) / 2, -.02, RS.z1 + 6], [RS.x1 - RS.x0, .1, 9]);
+      for (let x = RS.x0 + 6; x < RS.x1; x += lite ? 22 : 11) palm(x, RS.z1 + 12, 1.4);
+      // townhouses on the beach, facing the sea
+      const zt = seaZ - 40; let x = RS.x0 + 8, k = 0;
+      while (x < RS.x1 - 8) { townhouse(x, zt, k++); x += 8.2; if (k % 8 === 0) x += 10; }
+      for (let u = 0; u < (lite ? 12 : 26); u++) { const ux = RS.x0 + 14 + u * (RS.x1 - RS.x0 - 28) / (lite ? 12 : 26), uz = seaZ - 8;
+        put('cyl', 'matte', '#FFFFFF', [ux, 1.2, uz], [.1, 2.4, .1]); put('cone', 'flat', pick(Rd, ['#E0402E', '#FFD21F', '#2C5A9E', '#FFFFFF', '#FF8DB0']), [ux, 2.5, uz], [3.6, .7, 3.6]); }
+    }
+  }
+  function riverX(z) { return -ext.x - 95 + 58 * Math.sin(z / 150 + 1) + 20 * Math.sin(z / 61); }
+  function bridge(x, z, road) {
+    const w = road ? 10 : 5, len = 46;
+    put('box', road ? 'matte' : 'matte', road ? '#55575C' : '#EFE6D6', [x, 1.6, z], [len, .5, w]);
+    for (const s of [-1, 1]) put('box', 'matte', '#F4EEE2', [x, 2.3, z + s * w / 2], [len, .9, .35]);
+    for (let k = 0; k < 9; k++) { const t = k / 8 - .5, y = 1.4 - 1.2 * (4 * t * t); put('box', 'matte', '#F4EEE2', [x + t * 30, y / 2, z], [3.6, Math.max(.3, y), w - .6]); }
+    for (const s of [-1, 1]) put('box', 'matte', road ? '#55575C' : '#EFE6D6', [x + s * (len / 2 + 5), .8, z], [11, .3, w], [0, 0, s * .15]);
+  }
+  function car(x, z, yaw, color) {
+    const b = new THREE.Matrix4().makeRotationY(yaw).setPosition(x, 0, z);
+    put('box', 'matte', color, [0, .55, 0], [1.8, .7, 4.2], [0, 0, 0], b, 'XYZ', true);
+    put('box', 'glass', '#22303D', [0, 1.1, -.2], [1.6, .5, 2.2], [0, 0, 0], b, 'XYZ', true);
+  }
+  function person(x, y, z) { if (opts.lite) return; put('sph', 'matte', pick(rng(hashStr(`pp${x.toFixed(1)}${z.toFixed(1)}`)), ['#2B2B2B', '#F2F2F0', '#C9442F', '#2C5A9E', '#E8C25A']), [x, y + .85, z], [.5, 1.7, .5], [0, 0, 0], null, 'XYZ', true); }
+  function boat(x, z, yaw, s = 1) {
+    const b = new THREE.Matrix4().makeRotationY(yaw).setPosition(x, 0, z);
+    put('box', 'matte', '#FFFFFF', [0, .55, 0], [3.2 * s, 1.1, 9 * s], [0, 0, 0], b);
+    put('cone', 'matte', '#FFFFFF', [0, .55, 4.5 * s + 1.5 * s], [3.2 * s, 3 * s, 1.1], [Math.PI / 2, 0, 0], b);
+    put('box', 'matte', '#1E3550', [0, .25, 0], [3.3 * s, .3, 9 * s], [0, 0, 0], b);
+    put('box', 'matte', '#F4F1EA', [0, 1.5, -.6 * s], [2.4 * s, .9, 4 * s], [0, 0, 0], b);
+    put('box', 'glass', '#25384C', [0, 1.6, .9 * s], [2.3 * s, .6, .8], [-.5, 0, 0], b);
+    put('box', 'matte', '#C79B6B', [0, 1.12, -3.5 * s], [2.8 * s, .06, 1.8 * s], [0, 0, 0], b);
+  }
+  function sail(x, z, yaw, s = 1) {
+    const b = new THREE.Matrix4().makeRotationY(yaw).setPosition(x, 0, z).scale(new THREE.Vector3(s, s, s));
+    put('box', 'matte', '#FFFFFF', [0, .5, 0], [2.4, .9, 7], [0, 0, 0], b);
+    put('cyl', 'matte', '#DADDE2', [0, 6, .3], [.15, 11, .15], [0, 0, 0], b);
+    put('cone', 'flat', '#FFFFFF', [.05, 6.5, -1.2], [.1, 9.5, 5], [0, 0, 0], b);
+  }
+  // big white letters standing on the hill, our own word
+  function sign(word, cx, y, cz, H) {
+    const W = H * .62, gap = H * .28, T = H * .16, total = word.length * W + (word.length - 1) * gap;
+    const bar = (x0, y0, x1, y1) => { const l = Math.hypot(x1 - x0, y1 - y0); put('box', 'matte', '#FFFFFF', [(x0 + x1) / 2, y + 2 + (y0 + y1) / 2, cz], [T, l + T * .6, T], [0, 0, Math.atan2(x0 - x1, y1 - y0)]); };
+    [...word].forEach((ch, i) => { const x = cx - total / 2 + i * (W + gap), r = x + W;
+      if (ch === 'O') { bar(x, 0, x, H); bar(r, 0, r, H); bar(x, 0, r, 0); bar(x, H, r, H); }
+      if (ch === 'M') { bar(x, 0, x, H); bar(r, 0, r, H); bar(x, H, (x + r) / 2, H * .45); bar((x + r) / 2, H * .45, r, H); }
+      if (ch === 'N') { bar(x, 0, x, H); bar(r, 0, r, H); bar(x, H, r, 0); }
+      if (ch === 'Y') { bar(x, H, (x + r) / 2, H * .5); bar(r, H, (x + r) / 2, H * .5); bar((x + r) / 2, 0, (x + r) / 2, H * .5); }
+      if (ch === 'W') { bar(x, H, x + W * .25, 0); bar(x + W * .25, 0, (x + r) / 2, H * .6); bar((x + r) / 2, H * .6, r - W * .25, 0); bar(r - W * .25, 0, r, H); }
+      if (ch === 'D') { bar(x, 0, x, H); bar(x, H, x + W * .6, H); bar(x, 0, x + W * .6, 0); bar(x + W * .6, H, r, H * .7); bar(r, H * .7, r, H * .3); bar(r, H * .3, x + W * .6, 0); }
+      if (ch === 'A') { bar(x, 0, (x + r) / 2, H); bar(r, 0, (x + r) / 2, H); bar(x + W * .22, H * .38, r - W * .22, H * .38); }
+      for (const px of [x + W * .2, r - W * .2]) put('box', 'matte', '#8A8F96', [px, y + 1, cz - T], [.3, 2, .3]);
+    });
+  }
+  // a residential tower: stone podium with a garden and a pool, glass and white balconies, lit penthouse on the main one
+  function residence(x, z, floors, main) {
+    const fh = 3.4, w = main ? 30 : 24, d = main ? 24 : 20, Ht = floors * fh, y0 = 7, r = rng(hashStr(`res${x},${z}`));
+    put('box', 'flat', '#E9DDC6', [x, 3.5, z], [w + 26, 7, d + 26]);
+    put('box', TX('grass', 'matte'), '#8CC460', [x, 7.05, z], [w + 24, .1, d + 24]);
+    put('box', 'pool', st.pool, [x - w / 2 - 4, 7.15, z + d / 2 + 4], [10, .1, 6]);
+    if (!opts.lite) for (const [px, pz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) palm(x + px * (w / 2 + 9), z + pz * (d / 2 + 9), 1.3);
+    const glassC = pick(r, ['#8FB4D0', '#9DBBCF', '#86A9C2']);
+    put('box', 'tower', glassC, [x, y0 + Ht / 2, z], [w - 2, Ht, d - 2]);
+    for (let f = 1; f < floors; f += (opts.lite ? 4 : 2)) put('box', 'matte', '#F7F4EE', [x, y0 + f * fh, z], [w + .8, .45, d + .8], [0, 0, 0], null, 'XYZ', true); // balconies
+    for (const k of [-1, 1]) put('box', 'matte', '#F7F4EE', [x + k * (w / 2 - .2), y0 + Ht / 2, z], [1.2, Ht, d + 1], [0, 0, 0], null, 'XYZ', true);
+    const yt = y0 + Ht;
+    put('box', main ? 'pent' : 'glass', main ? '#FFD27A' : glassC, [x, yt + 3, z], [w - 6, 6, d - 6]);
+    put('box', 'matte', '#F7F4EE', [x, yt + 6.3, z], [w - 3, .6, d - 3]);
+    if (main) { put('box', 'pool', st.pool, [x - w * .2, yt + .4, z + d * .32], [w * .45, .2, d * .2]); put('cyl', 'matte', '#F7F4EE', [x + w * .3, yt + 18, z - d * .3], [.6, 24, .6]); }
+  }
+  // a beach townhouse: three floors, roof terrace, small garden towards the sea
+  function townhouse(x, z, k) {
+    const c = ['#FFFFFF', '#F3E3C8', '#FFFFFF', '#E9D3C4', '#DCE8E4', '#FFFFFF', '#F5D9B8'][k % 7], w = 8, d = 11, h = 9;
+    put('box', 'matte', c, [x, .4 + h / 2, z - 4], [w - .3, h, d]);
+    put('box', 'glass', st.glass, [x, .4 + h / 2, z - 4 + d / 2 + .05], [w - 1.6, h - 1.4, .1]);
+    for (const y of [3.4, 6.4]) put('box', 'matte', '#F7F4EE', [x, .4 + y, z - 4 + d / 2 + .7], [w - .3, .3, 1.4], [0, 0, 0], null, 'XYZ', true);
+    put('box', 'matte', '#C79B6B', [x, .4 + h + .2, z - 4], [w - .3, .4, d]);
+    if (!opts.lite) { put('cone', 'flat', ['#E0402E', '#2C5A9E', '#FFD21F'][k % 3], [x + 1.5, .4 + h + 2, z - 3], [2.4, .5, 2.4]); put('cyl', 'matte', '#FFFFFF', [x + 1.5, .4 + h + 1.2, z - 3], [.07, 1.8, .07]); }
+    put('box', TX('grass', 'matte'), '#93C866', [x, .45, z + 4.5], [w - .4, .2, 6]);
+    if (k % 2) put('box', 'pool', st.pool, [x, .58, z + 4.8], [w - 3, .06, 3]);
+  }
+  // phones: the free villas of The Hills as simple white masses (a handful of boxes each)
+  function hillMass(base, r) {
+    const W = curLW, Dp = curLD, w1 = W - 5, d1 = 8, zc = -Dp / 2 + 1 + d1 / 2;
+    put('box', 'matte', '#F7F5F1', [0, 2.3, zc], [w1, 3.6, d1], [0, 0, 0], base);
+    put('box', 'matte', '#F7F5F1', [(r() - .5) * 3, 5.8, zc + 1.2], [w1 * .6, 3.2, d1 + 1.5], [0, 0, 0], base);
+    put('box', 'water', '#BFE3EA', [0, .64, Dp / 2 - 6], [w1 * .7, .06, 4], [0, 0, 0], base);
+  }
+  // a villa of The Hills, LA style: white volumes, glass, wood, an infinity pool on the edge, hedges, bougainvillea, a car
+  function hillVilla(base, r) {
+    const y0 = .5, W = curLW, Dp = curLD;
+    const stone = pick(r, ['#FFFFFF', '#FAF7F1', '#F4EFE6', '#FFFFFF']);
+    const dark = pick(r, ['#2B2E33', '#3B3631', '#2F3B47']);
+    const w1 = W - 4 - r() * 2, d1 = 7.5 + r() * 1.5, h1 = 3.6, zc = -Dp / 2 + 1 + d1 / 2, zf = zc + d1 / 2;
+    put('box', 'matte', stone, [0, y0 + h1 / 2, zc], [w1, h1, d1], [0, 0, 0], base);
+    put('box', 'glass', st.glass, [0, y0 + h1 / 2, zf + .05], [w1 - 1.2, h1 - .6, .1], [0, 0, 0], base);
+    for (let k = 0; k <= 5; k++) put('box', 'matte', dark, [-(w1 - 1.2) / 2 + (w1 - 1.2) * k / 5, y0 + h1 / 2, zf + .1], [.08, h1 - .6, .06], [0, 0, 0], base);
+    put('box', 'matte', '#FFFFFF', [0, y0 + h1 + .15, zc + .6], [w1 + 1, .3, d1 + 1.8], [0, 0, 0], base);
+    const w2 = w1 * (.5 + r() * .25), d2 = d1 + 1.5, h2 = 3.2, ox = (r() < .5 ? -1 : 1) * (w1 - w2) / 2, y2 = y0 + h1 + .3;
+    const up = pick(r, ['#FFFFFF', '#FFFFFF', '#B07A4F', '#FFFFFF']);
+    put('box', 'matte', up, [ox, y2 + h2 / 2, zc + 1.2], [w2, h2, d2], [0, 0, 0], base);
+    put('box', 'glass', st.glass, [ox, y2 + h2 / 2, zc + 1.2 + d2 / 2 + .05], [w2 - .8, h2 - .7, .1], [0, 0, 0], base);
+    put('box', 'matte', '#FFFFFF', [ox, y2 + h2 + .12, zc + 1.2], [w2 + .5, .24, d2 + .5], [0, 0, 0], base);
+    if (r() < .6) for (let k = 0; k < 9; k++) put('box', 'matte', '#B07A4F', [-ox * .9 + (k - 4) * .45, y0 + h1 / 2, zf + .35], [.18, h1 - .4, .18], [0, 0, 0], base);
+    put('box', 'glass', st.glass, [-ox, y0 + h1 + .8, zf + .7], [w1 - w2 - .4, 1, .06], [0, 0, 0], base);
+    const pd = Dp / 2 - zf - 3, pz = zf + 1.6 + pd / 2, pw = w1 * (.55 + r() * .2), px = (r() < .5 ? -1 : 1) * (W - pw - 2) / 2 * .6;
+    put('box', 'matte', '#E2CBA6', [0, y0 + .05, (zf + Dp / 2) / 2], [W - 1.2, .12, Dp / 2 - zf], [0, 0, 0], base);
+    put('box', 'pool', st.pool, [px, y0 + .14, pz + .4], [pw, .06, pd], [0, 0, 0], base);
+    put('box', 'glass', st.glass, [px, y0 + .7, Dp / 2 - .6], [pw + 1, .9, .06], [0, 0, 0], base);
+    for (let k = 0; k < 3; k++) put('box', 'matte', '#FFFFFF', [px - pw / 2 + .9 + k * 1.2, y0 + .3, pz - pd / 2 - .3], [.75, .3, 1.7], [0, 0, 0], base);
+    for (const sx of [-1, 1]) { put('box', 'flat', '#4F8F45', [sx * (W / 2 - .45), y0 + .7, 0], [.8, 1.4, Dp - 2], [0, 0, 0], base);
+      for (let k = 0; k < 3; k++) put('ico', 'flat', pick(r, ['#D6247A', '#E8418F', '#C21D6B']), [sx * (W / 2 - .5), y0 + 1.5, -Dp / 2 + 2 + k * 2.2 + r()], [1.3, 1.1, 1.3], [r(), r(), 0], base); }
+    const dx = -Math.sign(px || 1) * (W / 2 - 2.4);
+    put('box', 'matte', '#D9D2C4', [dx, y0 + .04, Dp / 2 - 3], [3, .08, 5.6], [0, 0, 0], base);
+    if (r() < .7) { const cr = r(); sportsCar(base, dx, Dp / 2 - 3, Math.PI + (r() - .5) * .1, cr < .35 ? '#F2F2F0' : cr < .6 ? '#16181C' : cr < .8 ? '#D3141B' : '#9AA3AB'); }
+    palm(-dx * .9, -Dp / 2 + 2, 1.1, base);
+  }
+
+  // the new lots of The Hills: numbered after the old ones, lowest terrace (by the sea) first, west to east
+  const hillLots = [];
+  if (DIS.hills) {
+    const H = HILL, ARC = Math.PI * .56;
+    for (let k = 0; k < H.rows; k++) {
+      const rk = H.r0 - k * H.dr, y = H.h0 + k * H.dh + .1, rc = rk - 5.2 - 12, n = Math.floor((rc - 12) * ARC * 2 / 18);
+      for (let c = 0; c < n; c++) {
+        const a = -ARC + (c + .5) / n * ARC * 2, x = H.cx + Math.sin(a) * rc, z = H.cz + Math.cos(a) * rc;
+        const L = { hills: true, row: k, c, x, y, z, yaw: a, lw: 18, ld: 24, dist: 9 };
+        L.base = new THREE.Matrix4().makeRotationY(a).setPosition(x, y, z);
+        put('box', TX('grass', 'matte'), (k + c) % 2 ? '#9AD06C' : '#8BC55E', [0, .3, 0], [17.2, .2, 23.2], [0, 0, 0], L.base);
+        hillLots.push(L);
+      }
+    }
+  }
+  districts();
 
   // instancing
   function makeGroup(bk) {
@@ -757,9 +1010,11 @@ export function buildCity(scene, styleKey, opts = {}) {
   // Omnya City sito: tutte le case prenotate in un solo gruppo (poche draw call anche con migliaia di case)
   function makeHouses(items) {
     const saved = buckets; buckets = new Map(); const sLW = curLW, sLD = curLD;
-    for (const { L, seed } of items) { house.prev = null; curLW = L.lw; curLD = L.ld; if (L.mega) megaVilla(L.base, rng(seed)); else house(L.base, seed, L.dist); }
+    for (const { L, seed } of items) { house.prev = null; curLW = L.lw; curLD = L.ld; if (L.hills) hillVilla(L.base, rng(seed)); else if (L.mega) megaVilla(L.base, rng(seed)); else house(L.base, seed, L.dist); }
     const g = makeGroup(buckets); buckets = saved; curLW = sLW; curLD = sLD; return g;
   }
+  // the free lots of The Hills as white models: they get colour when someone moves in
+  function makeModels(items) { if (opts.lite) { const saved = buckets; buckets = new Map(); for (const { L, seed } of items) { curLW = L.lw; curLD = L.ld; hillMass(L.base, rng(seed)); } const g = makeGroup(buckets); buckets = saved; return g; } ghost = true; const g = makeHouses(items); ghost = false; return g; }
   function makeWith(fn) { const saved = buckets; buckets = new Map(); fn(put); const g = makeGroup(buckets); buckets = saved; return g; }
   // evidenziatore downtown (scena "Early?")
   const hl = new THREE.Group();
@@ -774,5 +1029,8 @@ export function buildCity(scene, styleKey, opts = {}) {
   tint.scale.set(hx * 2, .2, hz * 2); tint.position.set(0, 9, 0); hl.add(tint);
   hl.visible = false; scene.add(hl);
 
-  return { lots, hl, PX, PZ, ext, stats, makeHouse, makeHouses, makeWith, st, setDetail, inCity, block };
+  // night: 0 = day, 1 = night (the end of the Ep.2 reel)
+  const setNight = (k) => { M.glass.emissiveIntensity = k * .85; M.win.emissiveIntensity = k * 1.1; M.tower.emissiveIntensity = k * .8; M.pool.emissiveIntensity = k * .75; M.lamp.emissiveIntensity = k * 3; M.pent.emissiveIntensity = 1.6 + k * 1.4;
+    M.water.envMapIntensity = 1.2 * (1 - k * .7); M.pool.envMapIntensity = M.water.envMapIntensity; };
+  return { lots, hillLots, hl, PX, PZ, ext, seaZ, stats, makeHouse, makeHouses, makeModels, makeWith, st, setDetail, setNight, inCity, block, HILL, RES, residences: DIS.residences ? RES_T.map(([x, z, floors, main]) => ({ x, z, floors, main: !!main })) : [] };
 }

@@ -30,3 +30,10 @@ Without Redis keys the API keeps everything in memory.
 
 Automation "Omnya City · HOUSE" (Flow Builder, draft): comment on the next post with HOUSE or 🏠 → 3 public replies → DM "Get my house" → condition "Follows your account" → no: "follow and tap Done" (Done re-checks) → yes: External Request POST https://www.omnyalab.com/api/city/link, header X-City-Secret (value pasted by Nico), body {"username": Instagram Username, "igId": Contact Id}, `$.url` → user field `city_url` → DM with the "Reserve my spot" button on {{city_url}}.
 Use www: the apex answers 308.
+
+## Ep.2 (6/11/2026): the city grows
+
+- New in `public/city/city.js` (`opts.districts`, all from their own random stream: the old lots and houses never move): **Omnyawood** (round terraces east of the city, palm roads, 150 villa lots, OMNYAWOOD letters), **The Residences** west of the river (6 towers of 30–40 floors, `RES_T`, the main one with the lit penthouse, townhouses on the beach), the river with three bridges, the Marina, and the old city refreshed (boulevards, cars, cafés around the fountain). Golden-hour light, haze and ACES in `world.js`. `setNight(k)` exists for reels; the site stays by day.
+- Who gets what: `omnya:city:ep2` is the first house number reserved with the Ep.2 code (`SET NX` in `reserve`, sent by `/api/city/houses` as `ep2`). Houses before it stay on their lot. From it on, `W.placeOf(n, ep2)`: penthouse (main tower, floor 40), a villa in Omnyawood, the next floor down, a villa… until both run out, then the old lots carry on. `placeName()` gives "Penthouse · The Residences", "Floor 12 · The Residences", "Omnyawood" or the old district.
+- Free villas of Omnyawood show as white models (`makeModels`); on phones they are simple white blocks. Phones: about 424k triangles against 360k before.
+- Floors on the house page: the camera turns around the tower at that floor. Per-floor drawings come later.

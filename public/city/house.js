@@ -1,5 +1,5 @@
 // /city/@username: one house on its lot, the camera turns around it (drag), the neighbours stay drawn around.
-import { makeWorld, makeFrame, districtOf, seedOf, getJSON } from './world.js';
+import { makeWorld, makeFrame, placeName, seedOf, getJSON } from './world.js';
 
 const $ = (id) => document.getElementById(id);
 const raw = decodeURIComponent(location.pathname.split('/').filter(Boolean)[1] || '');
@@ -10,12 +10,12 @@ const W = makeWorld(canvas);
 const { THREE, renderer, scene, lots } = W;
 const camera = new THREE.PerspectiveCamera(36, 1, 1, 9000);
 
-const orbit = { x: 0, z: 0, az: 0.6, el: 0.42, d: matchMedia('(max-width: 899px)').matches ? 58 : 44 };
+const orbit = { x: 0, y: 0, z: 0, az: 0.6, el: 0.42, d: matchMedia('(max-width: 899px)').matches ? 58 : 44 };
 let spin = true, dirty = true;
 function place() {
   const r = Math.cos(orbit.el) * orbit.d;
-  camera.position.set(orbit.x + Math.sin(orbit.az) * r, 4 + Math.sin(orbit.el) * orbit.d, orbit.z + Math.cos(orbit.az) * r);
-  camera.lookAt(orbit.x, 5, orbit.z);
+  camera.position.set(orbit.x + Math.sin(orbit.az) * r, orbit.y + 4 + Math.sin(orbit.el) * orbit.d, orbit.z + Math.cos(orbit.az) * r);
+  camera.lookAt(orbit.x, orbit.y + 5, orbit.z);
   dirty = true;
 }
 
@@ -49,8 +49,8 @@ async function start() {
   const [h, all] = await Promise.all([getJSON(`/api/city/house?u=${encodeURIComponent(u)}`), getJSON('/api/city/houses')]);
   if (!h.house) return none();
   const { n } = h.house;
-  W.setHouses(all.houses || [[u, n]]);
-  let L = lots[n - 1];
+  W.setHouses(all.houses || [[u, n]], all.ep2);
+  let L = W.placeOf(n, all.ep2);
   if (!L) {
     // the city is full: the house waits in the new district, past the last street
     L = { x: W.ext.x + 60, z: 0, lw: 11, ld: 15, dist: 7, yaw: 0 };
@@ -58,23 +58,24 @@ async function start() {
     g.position.set(L.x, 0, L.z);
     scene.add(g);
   }
-  orbit.x = L.x; orbit.z = L.z; orbit.az = L.yaw + 0.55;
+  orbit.x = L.x; orbit.z = L.z; orbit.y = L.y || 0; orbit.az = L.yaw + 0.55;
+  if (L.floor) { orbit.d *= 2.4; orbit.el = 0.18; } // a floor of The Residences: the tower, the floor in yellow
   if (L.mega) orbit.d *= 1.3; // the downtown villas take two lots
   W.aimSun(new THREE.Vector3(L.x, 0, L.z), 90);
   W.setDetail(true);
-  scene.add(makeFrame(THREE, L));
+  const fr = makeFrame(THREE, L); fr.position.y = (L.y || 0) + (L.floor ? -1.5 : 0); scene.add(fr);
   place();
 
   document.title = `@${u}'s house in Omnya City`;
   $('name').textContent = '@' + u;
   $('num').textContent = '#' + n.toLocaleString('en');
-  $('dist').textContent = lots[n - 1] ? districtOf(L.dist) : 'New district';
+  $('dist').textContent = placeName(W.placeOf(n, all.ep2));
   $('nb').innerHTML = h.neighbour ? `<a href="/city/@${h.neighbour}">@${h.neighbour}</a>` : 'Still free';
   $('loading').hidden = true;
   $('found').hidden = false;
   $('offers').hidden = false;
 
-  if (lots[n - 1] && L.dist <= 1) document.querySelector('[data-offer="downtown"]')?.remove(); // already downtown
+  if (!L.floor && !L.hills && L.dist <= 1) document.querySelector('[data-offer="downtown"]')?.remove(); // already downtown
   const ref = u.replace(/\./g, '-');
   for (const a of document.querySelectorAll('[data-offer]')) {
     if (a.dataset.stripe) {
@@ -89,7 +90,7 @@ async function start() {
   $('share').addEventListener('click', async (e) => {
     const btn = e.currentTarget;
     const url = `${location.origin}/city/@${u}`;
-    const text = `I got a free house in Omnya City: house #${n}, ${districtOf(L.dist)}. Get yours before downtown is gone 🏠`;
+    const text = `I got a free house in Omnya City: house #${n}, ${placeName(L)}. Get yours before the penthouse floors are gone 🏠`;
     if (navigator.share) {
       try { await navigator.share({ title: 'My house in Omnya City', text, url }); } catch {}
       return;

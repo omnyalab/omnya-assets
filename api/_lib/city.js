@@ -4,6 +4,7 @@
 //
 //   omnya:city:n            counter, the last lot handed out (INCR, so two people never get the same lot)
 //   omnya:city:houses       sorted set, score = lot number, member = username
+//   omnya:city:ep2          the first house number of Ep.2 (from there: penthouse, villas, floors)
 //   omnya:city:u:<name>     JSON { u, n, t, ig } for that profile (SET NX: one profile, one house)
 //   omnya:city:tok:<token>  JSON { u, ig }, the one-time link (7 days, deleted with GETDEL when used)
 //   omnya:city:ut:<name>    the open token of that profile, so asking twice gives the same link
@@ -103,6 +104,9 @@ export async function reserve(token) {
   }
   try {
     const n = Number(await cmd('INCR', `${P}n`));
+    // Ep.2 (6/11/2026): the first house reserved with this code marks where the new places start
+    // (penthouse, villas in Omnyawood, floors). SET NX: set once, so the houses before it never move.
+    await cmd('SET', `${P}ep2`, n, 'NX');
     const house = { u, n, t: Date.now(), ig: ig || '' };
     await cmd('SET', `${P}u:${u}`, JSON.stringify(house));
     await cmd('ZADD', `${P}houses`, n, u);
@@ -111,6 +115,12 @@ export async function reserve(token) {
     await cmd('DEL', `${P}u:${u}`).catch(() => {});
     throw e;
   }
+}
+
+/** The first house number of Ep.2, or null before anyone reserved with the Ep.2 code. */
+export async function ep2From() {
+  const v = await cmd('GET', `${P}ep2`);
+  return v ? Number(v) : null;
 }
 
 /** Every house as [username, lot], in lot order: what the map draws. */

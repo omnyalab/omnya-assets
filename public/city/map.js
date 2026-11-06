@@ -1,6 +1,6 @@
 // /city: the map of Omnya City from above. ?k=TOKEN (from the Instagram DM) shows the locked
 // username and "Reserve my spot"; without it, "I already have a house" finds a house by name.
-import { makeWorld, makePin, districtOf, getJSON } from './world.js';
+import { makeWorld, makePin, placeName, getJSON } from './world.js';
 
 const $ = (id) => document.getElementById(id);
 const canvas = $('c');
@@ -13,7 +13,7 @@ const mobile = matchMedia('(max-width: 899px)').matches;
 const EL = 0.98; // elevation (rad), the reel's top-down look
 const AZ = -0.28;
 const view = { x: 0, z: 0, d: mobile ? 620 : 520 };
-const lim = () => ({ x: W.ext.x * 0.95, z: W.ext.z * 0.95 });
+const lim = () => ({ x: 1050, z: W.ext.z * 0.95 + 120 }); // Ep.2: Omnyawood to the east, The Residences to the west
 let anim = null, dirty = true;
 function place() {
   const L = lim();
@@ -80,17 +80,19 @@ canvas.addEventListener('pointercancel', (e) => { ptrs.delete(e.pointerId); pinc
 canvas.addEventListener('wheel', (e) => { e.preventDefault(); anim = null; view.d *= Math.exp(e.deltaY * 0.0012); place(); }, { passive: false });
 
 // ---------- houses ----------
-let houses = [];           // [[username, lot], …]
-const owner = new Map();   // lot → username
+let houses = [];           // [[username, house number], …]
+let ep2 = null;            // the first house of Ep.2 (from the API): from there on, new places
+const owner = new Map();   // place → { u, n }
+const at = (n) => W.placeOf(n, ep2);
 const pin = makePin(THREE); pin.visible = false; scene.add(pin);
 let mine = null;
 
-function draw(list) {
-  houses = list;
+function draw(list, e2 = ep2) {
+  houses = list; ep2 = e2 || null;
   owner.clear();
-  for (const [u, n] of list) owner.set(n, u);
-  W.setHouses(list);
-  $('count').textContent = list.length ? `${list.length.toLocaleString('en')} ${list.length === 1 ? 'house' : 'houses'} · lot #${(Math.max(0, ...list.map((h) => h[1])) + 1).toLocaleString('en')} is next` : 'House #1 is still empty';
+  for (const [u, n] of list) { const P = at(n); if (P) owner.set(P, { u, n }); }
+  W.setHouses(list, ep2);
+  $('count').textContent = list.length ? `${list.length.toLocaleString('en')} ${list.length === 1 ? 'house' : 'houses'} · next: ${placeName(at(Math.max(0, ...list.map((h) => h[1])) + 1))}` : 'House #1 is still empty';
   dirty = true;
 }
 
@@ -100,17 +102,17 @@ function tap(cx, cy) {
   const g = ground(cx, cy);
   const L = g && W.lotAt(g.x, g.z);
   if (!L) { chip.hidden = true; chipLot = null; return; }
-  const u = owner.get(L.n);
+  const o = owner.get(L);
   chipLot = L;
-  chip.innerHTML = u
-    ? `<a href="/city/@${u}"><b>@${u}</b><span>House #${L.n} · ${districtOf(L.dist)}</span><i>View →</i></a>`
-    : `<div><b>Lot #${L.n}</b><span>${districtOf(L.dist)} · still free</span></div>`;
+  chip.innerHTML = o
+    ? `<a href="/city/@${o.u}"><b>@${o.u}</b><span>House #${o.n} · ${placeName(L)}</span><i>View →</i></a>`
+    : `<div><b>${L.floor ? 'The penthouse' : L.hills ? 'A villa in Omnyawood' : `Lot #${L.n}`}</b><span>${L.floor || L.hills ? 'for the next followers' : `${placeName(L)} · still free`}</span></div>`;
   chip.hidden = false;
   placeChip();
 }
 function placeChip() {
   if (!chipLot || chip.hidden) return;
-  const v = new THREE.Vector3(chipLot.x, 14, chipLot.z).project(camera);
+  const v = new THREE.Vector3(chipLot.x, (chipLot.y || 0) + (chipLot.floor ? 8 : 14), chipLot.z).project(camera);
   const r = canvas.getBoundingClientRect();
   chip.style.transform = `translate(${((v.x + 1) / 2) * r.width}px, ${((1 - v.y) / 2) * r.height}px) translate(-50%, -100%)`;
 }
@@ -123,10 +125,10 @@ function placeLabels() {
   let k = 0;
   if (show) {
     const r = canvas.getBoundingClientRect();
-    const near = houses.map(([u, n]) => [u, lots[n - 1]]).filter(([, L]) => L && Math.abs(L.x - view.x) < view.d * 0.7 && Math.abs(L.z - view.z) < view.d * 0.9)
+    const near = houses.map(([u, n]) => [u, at(n)]).filter(([, L]) => L && Math.abs(L.x - view.x) < view.d * 0.7 && Math.abs(L.z - view.z) < view.d * 0.9)
       .sort((a, b) => (b[0] === mine) - (a[0] === mine) || Math.hypot(a[1].x - view.x, a[1].z - view.z) - Math.hypot(b[1].x - view.x, b[1].z - view.z));
     for (const [u, L] of near.slice(0, 60)) {
-      const v = new THREE.Vector3(L.x, 12, L.z).project(camera);
+      const v = new THREE.Vector3(L.x, (L.y || 0) + (L.floor ? 4 : 12), L.z).project(camera);
       if (v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1) continue;
       const el = pool[k] || (pool[k] = labels.appendChild(document.createElement('span')));
       el.textContent = '@' + u;
@@ -146,26 +148,26 @@ const params = new URLSearchParams(location.search);
 const k = params.get('k');
 
 function landOn(house) {
-  const L = lots[house.n - 1];
+  const L = at(house.n);
   mine = house.u;
   $('home-name').textContent = '@' + house.u;
-  $('home-lot').textContent = L ? `House #${house.n} · ${districtOf(L.dist)}` : `House #${house.n} · New district`;
+  $('home-lot').textContent = `House #${house.n} · ${placeName(L)}`;
   $('home-go').href = `/city/@${house.u}`;
   show('home');
-  if (L) { pin.position.set(L.x, 0, L.z); pin.visible = true; flyTo(L.x, L.z + (mobile ? 38 : 0), mobile ? 190 : 160, 2200); }
+  if (L) { pin.position.set(L.x, (L.y || 0) + (L.floor ? 8 : 0), L.z); pin.visible = true; flyTo(L.x, L.z + (mobile ? 38 : 0), mobile ? 190 : 160, 2200); }
 }
 
 async function start() {
   const [h] = await Promise.all([getJSON('/api/city/houses'), k ? null : Promise.resolve()]);
-  draw(h.houses || []);
+  draw(h.houses || [], h.ep2);
   if (!k) return show('find');
   const p = await getJSON(`/api/city/peek?k=${encodeURIComponent(k)}`);
   if (p.house) return landOn(p.house);
   if (!p.ok) { $('find-note').textContent = 'This link was already used. Search your name below.'; return show('find'); }
   $('me-name').textContent = '@' + p.u;
   const next = (Math.max(0, ...houses.map((x) => x[1])) + 1);
-  const L = lots[next - 1];
-  $('me-next').textContent = L ? `Lot #${next.toLocaleString('en')} in ${districtOf(L.dist)} is next.` : '';
+  const L = at(next);
+  $('me-next').textContent = L ? `Next up: ${L.floor || L.hills ? '' : `lot #${next.toLocaleString('en')} in `}${placeName(L)}.` : '';
   show('reserve');
 }
 
@@ -176,7 +178,7 @@ $('reserve').addEventListener('click', async (e) => {
   if (r.house) {
     history.replaceState(null, '', '/city');
     const h = await getJSON('/api/city/houses');
-    draw(h.houses && h.houses.some((x) => x[0] === r.house.u) ? h.houses : [...houses, [r.house.u, r.house.n]]);
+    draw(h.houses && h.houses.some((x) => x[0] === r.house.u) ? h.houses : [...houses, [r.house.u, r.house.n]], h.ep2 || r.ep2 || ep2);
     return landOn(r.house);
   }
   b.disabled = false; b.textContent = 'Reserve my spot';

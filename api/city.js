@@ -5,7 +5,7 @@
 //   POST /api/city/reserve  { k } → { house } : uses the link, gives the next free lot
 //   GET  /api/city/houses   → { houses: [[username, lot], …] } for the map
 //   GET  /api/city/house?u= → { house, neighbour } for /city/@username
-import { cleanName, linkFor, peek, reserve, allHouses, houseOf, onLot } from './_lib/city.js';
+import { cleanName, linkFor, peek, reserve, allHouses, houseOf, onLot, ep2From } from './_lib/city.js';
 
 const SITE = 'https://www.omnyalab.com'; // the apex answers 308 to www
 
@@ -65,7 +65,8 @@ export async function GET(request) {
   const q = new URL(request.url).searchParams;
   try {
     if (a === 'houses') {
-      return json({ houses: await allHouses() }, 200, 'public, max-age=0, s-maxage=5, stale-while-revalidate=30');
+      const [houses, ep2] = await Promise.all([allHouses(), ep2From()]);
+      return json({ houses, ep2 }, 200, 'public, max-age=0, s-maxage=5, stale-while-revalidate=30');
     }
     if (a === 'peek') {
       const p = await peek(q.get('k'));
