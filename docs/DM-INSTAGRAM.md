@@ -27,3 +27,7 @@ Stesso PDF del Blueprint, su una pagina col nome di Casa Cresta, solo in inglese
 Here you go 👇🏻 The Casa Cresta Blueprint is free on this page, and right under it there's the full method we used for this house: https://omnyalab.com/casa-cresta-blueprint
 
 (and if you'd rather have us do it on your project, the first image is free, it's on the same page)
+
+## Reel dei piani della torre (dal 6/11)
+
+Reel DfaH3QkN4qs (la torre, la pianta del piano in 3D, le stanze), parola AI, automazione ManyChat a parte ("Grow followers from comments copy", copia di quella della torre). Il bottone porta a https://omnyalab.com/the-tower-floors (corto: omnyalab.com/floors): stessa pagina della Tower Blueprint, stessi PDF gratis e Full, con i testi sui piani. Solo in inglese.
