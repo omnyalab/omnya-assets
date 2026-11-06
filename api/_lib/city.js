@@ -149,6 +149,17 @@ export async function onLot(n) {
 export const EP2_LIVE = true;
 export const PREM = 100000;
 const RANGE = { penthouse: [PREM, PREM + 3], villa: [PREM + 3, PREM + 13] };
+// The 8 houses around the fountain (the 8 lots closest to it). Bought for €0.99: whoever lived there moves to a free villa
+// in Omnyawood (never somewhere worse). A house someone paid for can't be bought again; the Stripe link stops after 8.
+export const FOUNTAIN = [1, 2, 3, 4, 5, 6, 7, 8];
+const isPaid = async (u) => !!u && Number(await cmd('SISMEMBER', `${P}paid`, u)) === 1;
+async function fountainFree() { for (const n of FOUNTAIN) if (!(await isPaid(await onLot(n)))) return n; return null; }
+async function freeVilla() { // new places alternate floor / villa from ep2: villas are the odd ones
+  const e = await ep2From(); if (!e) return null;
+  for (let i = 1; i < 62; i += 2) if (!(await onLot(e + i))) return e + i;
+  for (let i = 0; i < 400; i++) if (!(await onLot(e + i))) return e + i;
+  return null;
+}
 
 async function firstFree(kind) {
   const [a, b] = RANGE[kind];
@@ -158,17 +169,36 @@ async function firstFree(kind) {
 
 /** What can still be bought: { penthouse, villa } true while one is free. */
 export async function forSale() {
-  if (!EP2_LIVE) return { penthouse: false, villa: false };
-  const [p, v] = await Promise.all([firstFree('penthouse'), firstFree('villa')]);
-  return { penthouse: !!p, villa: !!v };
+  if (!EP2_LIVE) return { penthouse: false, villa: false, fountain: false };
+  const [p, v, f] = await Promise.all([firstFree('penthouse'), firstFree('villa'), fountainFree()]);
+  return { penthouse: !!p, villa: !!v, fountain: !!f };
 }
 
 /** Moves a buyer to the first free penthouse or top villa. kind: 'penthouse' | 'villa'. */
 export async function upgrade(u, kind) {
   if (!EP2_LIVE) return { error: 'Ep.2 not live yet' };
-  if (!RANGE[kind]) return { error: 'kind' };
   const me = await houseOf(u);
   if (!me) return { error: 'no house' };
+  if (kind === 'fountain') {
+    if (FOUNTAIN.includes(me.n)) return { error: 'already there' };
+    const n = await fountainFree();
+    if (!n) return { error: 'sold out' };
+    const was = await onLot(n);
+    let moved = null;
+    if (was) {
+      const to = await freeVilla();
+      if (!to) return { error: 'no free villa for the neighbour' };
+      const h = await houseOf(was);
+      await cmd('SET', `${P}u:${was}`, JSON.stringify({ ...h, n: to, from: n, moved: Date.now() }));
+      await cmd('ZADD', `${P}houses`, to, was);
+      moved = { u: was, from: n, to };
+    }
+    await cmd('SET', `${P}u:${u}`, JSON.stringify({ ...me, n, from: me.n, bought: Date.now() }));
+    await cmd('ZADD', `${P}houses`, n, u);
+    await cmd('SADD', `${P}paid`, u);
+    return { house: { u, from: me.n, n }, moved };
+  }
+  if (!RANGE[kind]) return { error: 'kind' };
   if (me.n >= RANGE[kind][0] && me.n < RANGE[kind][1]) return { error: 'already has one' };
   const n = await firstFree(kind);
   if (!n) return { error: 'sold out' };

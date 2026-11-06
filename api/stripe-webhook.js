@@ -10,7 +10,7 @@ import { host } from './_lib/config.js';
 import { upgrade } from './_lib/city.js';
 
 // Omnya City upsell (6/11/2026): these products move the buyer (client_reference_id = username, dots sent as dashes).
-const CITY = { 'Omnya City · The penthouse': 'penthouse', 'Omnya City · The best villa in Omnyawood': 'villa' };
+const CITY = { 'Omnya City · The penthouse': 'penthouse', 'Omnya City · The best villa in Omnyawood': 'villa', 'Omnya City · A house by the fountain': 'fountain' };
 
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
@@ -61,7 +61,7 @@ export async function POST(request) {
         subject: r.error ? `[city] ${kind} paid, NOT moved: ${r.error}` : `[city] @${u} bought the ${kind}`,
         text: r.error
           ? `@${u || '?'} (${email || 'no email'}) paid for ${kind} but: ${r.error}. Move or refund by hand.`
-          : `@${u} moved from house #${r.house.from} to #${r.house.n}.\nhttps://www.omnyalab.com/city/@${u}`,
+          : `@${u} moved from house #${r.house.from} to #${r.house.n}.${r.moved ? `\n@${r.moved.u} lived there and moved to #${r.moved.to} (a villa in Omnyawood).` : ''}\nhttps://www.omnyalab.com/city/@${u}`,
       }).catch((e) => console.error('[stripe-webhook] city mail', e));
       return new Response('ok');
     }
