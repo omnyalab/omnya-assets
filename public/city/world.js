@@ -17,7 +17,7 @@ export const seedOf = (u) => hashStr('@' + u);
 // THE SWITCH for Ep.2 (6/11/2026). false = the map exactly as in Ep.1 (the Ep.1 reel is live and points here).
 // true = Omnyawood, The Residences, river, marina, the golden-hour look and the new places for new followers.
 // Flip it here AND in api/_lib/city.js (EP2_LIVE) the day the Ep.2 reel goes out, then push.
-export const EP2_LIVE = false;
+export const EP2_LIVE = true;
 const EP2 = { hills: true, river: true, marina: true, residences: true, refresh: true };
 
 export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').matches, districts = EP2_LIVE ? EP2 : {}, towerFloors } = {}) {
@@ -93,12 +93,13 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
   // top terrace, under the letters. Their house numbers are PREM + k (api/_lib/city.js uses the same order).
   const topRow = Math.max(-1, ...city.hillLots.map((L) => L.row));
   const premium = [
-    ...city.residences.map((t, i) => ({ t, i })).sort((a, b) => b.t.floors - a.t.floors).slice(0, 3)
+    // not the main tower: its penthouse is the first free Ep.2 place (house #211 got it on 6/11)
+    ...city.residences.map((t, i) => ({ t, i })).filter(({ t }) => !t.main).sort((a, b) => b.t.floors - a.t.floors).slice(0, 3)
       .map(({ t, i }) => floors.find((F) => F.tower === i && F.f === t.floors)),
     ...city.hillLots.filter((L) => L.row === topRow),
   ].filter(Boolean);
   for (const P of premium) P.premium = true;
-  for (const F of premium) if (F.floor) F.pent = true;
+  for (const F of floors) if (F.f === city.residences[F.tower].floors) F.pent = true; // every tower's top floor is a penthouse
   const freeFloors = floors.filter((F) => !F.premium), freeVillas = city.hillLots.filter((L) => !L.premium);
   const seq = [];
   for (let i = 0; i < Math.max(freeFloors.length, freeVillas.length); i++) { if (freeFloors[i]) seq.push(freeFloors[i]); if (freeVillas[i]) seq.push(freeVillas[i]); }

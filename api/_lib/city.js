@@ -146,7 +146,7 @@ export async function onLot(n) {
 // 10 villas of Omnyawood's top terrace (PREM + 3..12). Same order as `premium` in public/city/world.js.
 // The Stripe links stop after 3 and 10 payments. The buyer's old place becomes free.
 // THE SWITCH (same as EP2_LIVE in public/city/world.js): false until the Ep.2 reel goes out.
-export const EP2_LIVE = false;
+export const EP2_LIVE = true;
 export const PREM = 100000;
 const RANGE = { penthouse: [PREM, PREM + 3], villa: [PREM + 3, PREM + 13] };
 
