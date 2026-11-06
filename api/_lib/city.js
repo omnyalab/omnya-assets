@@ -141,67 +141,38 @@ export async function onLot(n) {
   return r[0] || null;
 }
 
-// ---------- Ep.2 upsell (6/11/2026): buy the best places ----------
-// The numbers match public/city/world.js (placeOf): the fountain houses are the downtown lots,
-// the penthouse is the first Ep.2 place (ep2 + 0), the best villa is the sea-front one in the middle
-// of Omnyawood's first terrace (ep2 + 41). Whoever lives there is moved to the best free new place
-// (a villa or a high floor), never somewhere worse. Buyers are kept in omnya:city:paid.
+// ---------- Ep.2 upsell (6/11/2026): places that are only bought ----------
+// €0.99 each, never given for free, so nobody is ever moved out: 3 penthouses (house numbers PREM + 0..2) and the
+// 10 villas of Omnyawood's top terrace (PREM + 3..12). Same order as `premium` in public/city/world.js.
+// The Stripe links stop after 3 and 10 payments. The buyer's old place becomes free.
 // THE SWITCH (same as EP2_LIVE in public/city/world.js): false until the Ep.2 reel goes out.
 export const EP2_LIVE = false;
-export const FOUNTAIN = [...Array.from({ length: 28 }, (_, i) => i + 1), 37, 38, 39, 40];
-const PENTHOUSE_AT = 0, BEST_VILLA_AT = 41, NEW_PLACES = 352;
+export const PREM = 100000;
+const RANGE = { penthouse: [PREM, PREM + 3], villa: [PREM + 3, PREM + 13] };
 
-async function ep2Start() {
-  let e = await ep2From();
-  if (!e) { await cmd('SET', `${P}ep2`, Number((await cmd('GET', `${P}n`)) || 0) + 1, 'NX'); e = await ep2From(); }
-  return e;
-}
-async function moveTo(u, n) {
-  const h = await houseOf(u);
-  await cmd('SET', `${P}u:${u}`, JSON.stringify({ ...h, n, moved: Date.now() }));
-  await cmd('ZADD', `${P}houses`, n, u);
-}
-async function freeNewPlace(e) {
-  for (let i = 1; i < NEW_PLACES; i++) if (i !== BEST_VILLA_AT && !(await onLot(e + i))) return e + i;
+async function firstFree(kind) {
+  const [a, b] = RANGE[kind];
+  for (let n = a; n < b; n++) if (!(await onLot(n))) return n;
   return null;
 }
-const isPaid = async (u) => !!u && Number(await cmd('SISMEMBER', `${P}paid`, u)) === 1;
 
-/** What can still be bought: { penthouse, villa, fountain } true while for sale. */
+/** What can still be bought: { penthouse, villa } true while one is free. */
 export async function forSale() {
-  if (!EP2_LIVE) return { penthouse: false, villa: false, fountain: false, ep2: null };
-  const e = await ep2From();
-  const [p, v] = e ? await Promise.all([onLot(e + PENTHOUSE_AT), onLot(e + BEST_VILLA_AT)]) : [null, null];
-  let fountain = false;
-  for (const n of FOUNTAIN) if (!(await isPaid(await onLot(n)))) { fountain = true; break; }
-  return { penthouse: !(await isPaid(p)), villa: !(await isPaid(v)), fountain, ep2: e };
+  if (!EP2_LIVE) return { penthouse: false, villa: false };
+  const [p, v] = await Promise.all([firstFree('penthouse'), firstFree('villa')]);
+  return { penthouse: !!p, villa: !!v };
 }
 
-/** Moves a buyer to the penthouse, the best villa or a house by the fountain. kind: 'penthouse' | 'villa' | 'fountain'. */
+/** Moves a buyer to the first free penthouse or top villa. kind: 'penthouse' | 'villa'. */
 export async function upgrade(u, kind) {
   if (!EP2_LIVE) return { error: 'Ep.2 not live yet' };
+  if (!RANGE[kind]) return { error: 'kind' };
   const me = await houseOf(u);
   if (!me) return { error: 'no house' };
-  const e = await ep2Start();
-  let target = null;
-  if (kind === 'penthouse') target = e + PENTHOUSE_AT;
-  else if (kind === 'villa') target = e + BEST_VILLA_AT;
-  else if (kind === 'fountain') {
-    if (FOUNTAIN.includes(me.n)) return { error: 'already there' };
-    for (const n of [...FOUNTAIN].reverse()) { const o = await onLot(n); if (!(await isPaid(o))) { target = n; break; } }
-  } else return { error: 'kind' };
-  if (!target) return { error: 'sold out' };
-  if (me.n === target) return { error: 'already there' };
-  const was = await onLot(target);
-  if (was && (await isPaid(was))) return { error: 'sold' }; // someone else bought it first: refund by hand
-  let moved = null;
-  if (was) {
-    const to = await freeNewPlace(e);
-    if (!to) return { error: 'no free place for the neighbour' };
-    await moveTo(was, to);
-    moved = { u: was, from: target, to };
-  }
-  await moveTo(u, target);
-  await cmd('SADD', `${P}paid`, u);
-  return { house: { u, from: me.n, n: target }, moved };
+  if (me.n >= RANGE[kind][0] && me.n < RANGE[kind][1]) return { error: 'already has one' };
+  const n = await firstFree(kind);
+  if (!n) return { error: 'sold out' };
+  await cmd('SET', `${P}u:${u}`, JSON.stringify({ ...me, n, from: me.n, bought: Date.now() }));
+  await cmd('ZADD', `${P}houses`, n, u);
+  return { house: { u, from: me.n, n } };
 }

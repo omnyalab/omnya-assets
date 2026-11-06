@@ -77,12 +77,10 @@ async function start() {
 
   // Ep.2 upsell: the best places, only while the API says they are for sale (EP2_LIVE)
   const sale = all.forSale || {};
-  if (sale.penthouse || sale.villa || sale.fountain) {
+  if (sale.penthouse || sale.villa) {
     $('upgrades').hidden = false;
-    document.querySelector('[data-offer="downtown"]')?.remove(); // "a house by the fountain" replaces it
-    if (!sale.penthouse || L.top) document.querySelector('[data-offer="penthouse"]')?.remove();
-    if (!sale.villa) document.querySelector('[data-offer="villa"]')?.remove();
-    if (!sale.fountain || (!L.floor && !L.hills && L.dist <= 1)) document.querySelector('[data-offer="fountain"]')?.remove();
+    if (!sale.penthouse || L.pent) document.querySelector('[data-offer="penthouse"]')?.remove();
+    if (!sale.villa || (L.hills && L.premium)) document.querySelector('[data-offer="villa"]')?.remove();
   }
   if (!L.floor && !L.hills && L.dist <= 1) document.querySelector('[data-offer="downtown"]')?.remove(); // already downtown
   const ref = u.replace(/\./g, '-');

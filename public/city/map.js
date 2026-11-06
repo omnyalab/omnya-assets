@@ -106,7 +106,7 @@ function tap(cx, cy) {
   chipLot = L;
   chip.innerHTML = o
     ? `<a href="/city/@${o.u}"><b>@${o.u}</b><span>House #${o.n} · ${placeName(L)}</span><i>View →</i></a>`
-    : `<div><b>${L.floor ? 'The penthouse' : L.hills ? 'A villa in Omnyawood' : `Lot #${L.n}`}</b><span>${L.floor || L.hills ? 'for the next followers' : `${placeName(L)} · still free`}</span></div>`;
+    : `<div><b>${L.pent ? 'A penthouse' : L.hills ? (L.premium ? 'A top villa in Omnyawood' : 'A villa in Omnyawood') : `Lot #${L.n}`}</b><span>${L.premium ? 'for sale on any house page · €0.99' : L.floor || L.hills ? 'for the next followers' : `${placeName(L)} · still free`}</span></div>`;
   chip.hidden = false;
   placeChip();
 }

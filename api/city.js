@@ -66,7 +66,7 @@ export async function GET(request) {
   try {
     if (a === 'houses') {
       const [houses, ep2, sale] = await Promise.all([allHouses(), ep2From(), forSale()]);
-      return json({ houses, ep2, forSale: { penthouse: sale.penthouse, villa: sale.villa, fountain: sale.fountain } }, 200, 'public, max-age=0, s-maxage=5, stale-while-revalidate=30');
+      return json({ houses, ep2, forSale: sale }, 200, 'public, max-age=0, s-maxage=5, stale-while-revalidate=30');
     }
     if (a === 'peek') {
       const p = await peek(q.get('k'));

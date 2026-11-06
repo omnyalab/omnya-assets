@@ -13,14 +13,14 @@ export const cityOffers: CityOffer[] = [
   { id: 'downtown', title: 'Move downtown', line: 'Swap your lot for one by the fountain.', was: '€19', price: '€1.99', checkout: 'https://buy.stripe.com/9B6fZg3OtaEo6tMbmB8so0j' },
 ];
 
-// Ep.2 upsell (6/11/2026, idea from a follower via Nico): buy the best places. Shown only when the API says they are for sale
-// (EP2_LIVE on). The Stripe webhook moves the buyer; whoever lived there moves to the best free new place, never worse.
+// Ep.2 upsell (6/11/2026, idea from a follower via Nico): places that are only bought, €0.99 each, shown only while the API
+// says they are for sale (EP2_LIVE on): 3 penthouses (the 3 tallest towers) and the 10 villas of Omnyawood's top terrace.
+// The Stripe links stop by themselves after 3 and 10 payments, so nobody pays for a place that is gone.
 // Product names in Stripe must stay exactly these (api/stripe-webhook.js matches them).
-export type CityUpgrade = { id: 'penthouse' | 'fountain' | 'villa'; title: string; line: string; was: string; price: string; checkout: string };
+export type CityUpgrade = { id: 'penthouse' | 'villa'; title: string; line: string; was: string; price: string; checkout: string };
 export const cityUpgrades: CityUpgrade[] = [
-  { id: 'penthouse', title: 'Get the penthouse', line: 'Floor 40 of The Residences, the top of Omnya City.', was: '€19', price: '€1.99', checkout: '' },
-  { id: 'villa', title: 'The best villa in Omnyawood', line: 'Sea front, in the middle of the first terrace.', was: '€19', price: '€1.99', checkout: '' },
-  { id: 'fountain', title: 'A house by the fountain', line: 'Move downtown, right by the fountain.', was: '€9', price: '€0.99', checkout: '' },
+  { id: 'penthouse', title: 'Get a penthouse', line: 'The top floor of a tower in The Residences. Only 3.', was: '€19', price: '€0.99', checkout: 'https://buy.stripe.com/7sY9ASfxb3bW9FY76l8so0o' },
+  { id: 'villa', title: 'A top villa in Omnyawood', line: 'The top terrace, under the OMNYAWOOD letters. Only 10.', was: '€19', price: '€0.99', checkout: 'https://buy.stripe.com/aFa5kC5WBfYIg4m9et8so0p' },
 ];
 
 export const cityWhatsApp = 'https://wa.me/393792220465';

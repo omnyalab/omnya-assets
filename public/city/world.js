@@ -8,7 +8,8 @@ const KEY = 'Z';
 
 export const districtOf = (dist) => (dist <= 1 ? 'Downtown' : dist <= 3 ? 'Midtown' : dist <= 5 ? 'Garden District' : 'Outskirts');
 /** The name of a place: a lot, a villa in Omnyawood or a floor of The Residences. */
-export const placeName = (P) => (!P ? 'New district' : P.floor ? (P.top ? 'Penthouse · The Residences' : `Floor ${P.f} · The Residences`) : P.hills ? 'Omnyawood' : districtOf(P.dist));
+export const PREM = 100000; // house numbers of the places that are only bought
+export const placeName = (P) => (!P ? 'New district' : P.floor ? (P.pent ? 'Penthouse · The Residences' : `Floor ${P.f} · The Residences`) : P.hills ? (P.premium ? 'Omnyawood · top terrace' : 'Omnyawood') : districtOf(P.dist));
 
 /** The seed of a person's house: the reel used hashStr('@name'). */
 export const seedOf = (u) => hashStr('@' + u);
@@ -88,10 +89,22 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
   // new people get the penthouse first, then a villa in Omnyawood, a floor lower, a villa… The houses before ep2 never move.
   const floors = [];
   for (const [i, t] of city.residences.entries()) for (let f = t.floors; f >= 1; f--) floors.push({ floor: true, tower: i, f, x: t.x, z: t.z, y: 6.4 + (f - 0.5) * 3.4, top: !!t.main && f === t.floors, lw: 30, ld: 24, yaw: 0 });
+  // the upsell (€0.99 each, never given for free): the penthouses of the 3 tallest towers and the villas of Omnyawood's
+  // top terrace, under the letters. Their house numbers are PREM + k (api/_lib/city.js uses the same order).
+  const topRow = Math.max(-1, ...city.hillLots.map((L) => L.row));
+  const premium = [
+    ...city.residences.map((t, i) => ({ t, i })).sort((a, b) => b.t.floors - a.t.floors).slice(0, 3)
+      .map(({ t, i }) => floors.find((F) => F.tower === i && F.f === t.floors)),
+    ...city.hillLots.filter((L) => L.row === topRow),
+  ].filter(Boolean);
+  for (const P of premium) P.premium = true;
+  for (const F of premium) if (F.floor) F.pent = true;
+  const freeFloors = floors.filter((F) => !F.premium), freeVillas = city.hillLots.filter((L) => !L.premium);
   const seq = [];
-  for (let i = 0; i < Math.max(floors.length, city.hillLots.length); i++) { if (floors[i]) seq.push(floors[i]); if (city.hillLots[i]) seq.push(city.hillLots[i]); }
+  for (let i = 0; i < Math.max(freeFloors.length, freeVillas.length); i++) { if (freeFloors[i]) seq.push(freeFloors[i]); if (freeVillas[i]) seq.push(freeVillas[i]); }
   /** Where house number n lives. */
   function placeOf(n, ep2) {
+    if (n >= PREM) return premium[n - PREM] || null;
     if (!ep2 || n < ep2 || !seq.length) return lots[n - 1] || null; // before Ep.2 (or with the switch off): the old lots
     const i = n - ep2;
     return seq[i] || lots[n - seq.length - 1] || null;
@@ -133,7 +146,7 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
   function lotAt(x, z) {
     return lots.find((L) => Math.abs(x - L.x) < L.lw / 2 && Math.abs(z - L.z) < L.ld / 2)
       || city.hillLots.find((L) => Math.hypot(x - L.x, z - L.z) < 10)
-      || floors.find((F) => F.top && Math.abs(x - F.x) < 18 && Math.abs(z - F.z) < 15) || null;
+      || floors.find((F) => F.pent && Math.abs(x - F.x) < 18 && Math.abs(z - F.z) < 15) || null;
   }
 
   // night for the reel's ending: 0 day, 1 night
@@ -147,7 +160,7 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
     hemi.color.copy(day.hc).lerp(new THREE.Color('#5A6FB0'), k); hemi.groundColor.copy(day.hg).lerp(new THREE.Color('#1C2338'), k); hemi.intensity = day.hi * (1 + k * .15);
     city.setNight(k);
   }
-  return { THREE, renderer, setNight, sky, useEnv, placeOf, seq, floors, hillLots: city.hillLots, scene, city, lots, setHouses, aimSun, resize, lotAt, ext: city.ext, setDetail: city.setDetail };
+  return { THREE, renderer, setNight, sky, useEnv, placeOf, seq, floors, premium, hillLots: city.hillLots, scene, city, lots, setHouses, aimSun, resize, lotAt, ext: city.ext, setDetail: city.setDetail };
 }
 
 /** Pin over a lot: a yellow disc with a stem, like the reel's marker. */
