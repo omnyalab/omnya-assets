@@ -81,6 +81,11 @@
       "permanent": true
     },
     {
+      "source": "/floors",
+      "destination": "/the-tower-floors",
+      "permanent": true
+    },
+    {
       "source": "/tower",
       "destination": "/the-tower-blueprint",
       "permanent": true
