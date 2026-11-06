@@ -13,6 +13,16 @@ export const cityOffers: CityOffer[] = [
   { id: 'downtown', title: 'Move downtown', line: 'Swap your lot for one by the fountain.', was: '€19', price: '€1.99', checkout: 'https://buy.stripe.com/9B6fZg3OtaEo6tMbmB8so0j' },
 ];
 
+// Ep.2 upsell (6/11/2026, idea from a follower via Nico): buy the best places. Shown only when the API says they are for sale
+// (EP2_LIVE on). The Stripe webhook moves the buyer; whoever lived there moves to the best free new place, never worse.
+// Product names in Stripe must stay exactly these (api/stripe-webhook.js matches them).
+export type CityUpgrade = { id: 'penthouse' | 'fountain' | 'villa'; title: string; line: string; was: string; price: string; checkout: string };
+export const cityUpgrades: CityUpgrade[] = [
+  { id: 'penthouse', title: 'Get the penthouse', line: 'Floor 40 of The Residences, the top of Omnya City.', was: '€19', price: '€1.99', checkout: '' },
+  { id: 'villa', title: 'The best villa in Omnyawood', line: 'Sea front, in the middle of the first terrace.', was: '€19', price: '€1.99', checkout: '' },
+  { id: 'fountain', title: 'A house by the fountain', line: 'Move downtown, right by the fountain.', was: '€9', price: '€0.99', checkout: '' },
+];
+
 export const cityWhatsApp = 'https://wa.me/393792220465';
 
 /** The funnel page for people who want to build a city like this (free blueprint, then the Full one). */

@@ -7,6 +7,10 @@ import Stripe from 'stripe';
 import { sendMail } from './_lib/mail.js';
 import { filesForProduct } from './_lib/learn-files.js';
 import { host } from './_lib/config.js';
+import { upgrade } from './_lib/city.js';
+
+// Omnya City upsell (6/11/2026): these products move the buyer (client_reference_id = username, dots sent as dashes).
+const CITY = { 'Omnya City · The penthouse': 'penthouse', 'Omnya City · A house by the fountain': 'fountain', 'Omnya City · The best villa in Omnyawood': 'villa' };
 
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
@@ -44,6 +48,28 @@ export async function POST(request) {
 
   const email = session.customer_details?.email;
   const name = session.customer_details?.name || 'there';
+
+  // Omnya City: buy a better place
+  try {
+    const items = await stripe.checkout.sessions.listLineItems(session.id, { expand: ['data.price.product'] });
+    const kind = items.data.map((it) => CITY[it.price?.product?.name || it.description || '']).find(Boolean);
+    if (kind) {
+      const u = String(session.client_reference_id || '').replace(/-/g, '.').toLowerCase(); // Instagram names have no dashes
+      const r = u ? await upgrade(u, kind) : { error: 'no username on the payment' };
+      await sendMail({
+        to: host.email,
+        subject: r.error ? `[city] ${kind} paid, NOT moved: ${r.error}` : `[city] @${u} bought the ${kind}`,
+        text: r.error
+          ? `@${u || '?'} (${email || 'no email'}) paid for ${kind} but: ${r.error}. Move or refund by hand.`
+          : `@${u} moved from house #${r.house.from} to #${r.house.n}.${r.moved ? `\n@${r.moved.u} was there and moved to #${r.moved.to} (a new place, never worse).` : ''}\nhttps://www.omnyalab.com/city/@${u}`,
+      }).catch((e) => console.error('[stripe-webhook] city mail', e));
+      return new Response('ok');
+    }
+  } catch (e) {
+    console.error('[stripe-webhook] city', e);
+    return new Response('city failed', { status: 502 });
+  }
+
   if (!email) return new Response('ok');
 
   try {

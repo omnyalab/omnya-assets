@@ -214,7 +214,7 @@ export function buildCity(scene, styleKey, opts = {}) {
   const tR = rng(77);
   const towerMap = canvasTex(64, 256, (x) => { x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, 64, 256); x.fillStyle = 'rgba(30,45,60,.25)'; for (let i = 0; i < 16; i++) x.fillRect(i * 4, 0, 1, 256); for (let j = 0; j < 64; j++) x.fillRect(0, j * 4, 64, 1); });
   const towerEm = canvasTex(64, 256, (x) => { x.fillStyle = '#000'; x.fillRect(0, 0, 64, 256); for (let i = 0; i < 16; i++) for (let j = 0; j < 64; j++) if (tR() < .3) { x.fillStyle = tR() < .8 ? '#FFE2B0' : '#FFFFFF'; x.fillRect(i * 4 + 1, j * 4 + 1, 3, 3); } });
-  if (styleKey !== 'C') Object.assign(M.glass, { roughness: .12, metalness: .5, envMapIntensity: 1.4 });
+  if (styleKey !== 'C' && Object.values(opts.districts || {}).some((v) => v === true)) Object.assign(M.glass, { roughness: .12, metalness: .5, envMapIntensity: 1.4 });
   M.tower = new THREE.MeshStandardMaterial({ map: towerMap, roughness: .1, metalness: .6, envMapIntensity: 1.5, emissive: 0xFFD9A0, emissiveMap: towerEm, emissiveIntensity: 0 });
   M.pool = M.water.clone(); M.pool.emissive = new THREE.Color('#19D2F5'); M.pool.emissiveIntensity = 0;
   M.lamp = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .5, emissive: 0xFFC879, emissiveIntensity: 0 });
@@ -1026,7 +1026,7 @@ export function buildCity(scene, styleKey, opts = {}) {
     return group;
   }
   const mainGroup = makeGroup(buckets); scene.add(mainGroup);
-  const setDetail = v => { mainGroup.children.forEach(m => { if (m.userData.detail) m.visible = v; }); M.water.roughness = v ? .04 : .55; M.water.envMapIntensity = v ? 1.2 : .4; };
+  const setDetail = v => { mainGroup.children.forEach(m => { if (m.userData.detail) m.visible = v; }); M.water.roughness = v ? .04 : .55; M.water.envMapIntensity = v ? 1.2 : .4; M.pool.roughness = M.water.roughness; M.pool.envMapIntensity = M.water.envMapIntensity; };
   // casa singola da mostrare (username, vetrina): costruita attorno all'origine, poi posizionata dal chiamante
   function makeHouse(type, seed, dist, lw = 11, fc = null) {
     const saved = buckets; buckets = new Map(); house.prev = null; const savedLW = curLW, savedLD = curLD; curLW = lw; curLD = 15; force = fc;

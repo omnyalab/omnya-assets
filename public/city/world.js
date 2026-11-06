@@ -13,21 +13,25 @@ export const placeName = (P) => (!P ? 'New district' : P.floor ? (P.top ? 'Penth
 /** The seed of a person's house: the reel used hashStr('@name'). */
 export const seedOf = (u) => hashStr('@' + u);
 
+// THE SWITCH for Ep.2 (6/11/2026). false = the map exactly as in Ep.1 (the Ep.1 reel is live and points here).
+// true = Omnyawood, The Residences, river, marina, the golden-hour look and the new places for new followers.
+// Flip it here AND in api/_lib/city.js (EP2_LIVE) the day the Ep.2 reel goes out, then push.
+export const EP2_LIVE = false;
 const EP2 = { hills: true, river: true, marina: true, residences: true, refresh: true };
 
-export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').matches, districts = EP2, towerFloors } = {}) {
+export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').matches, districts = EP2_LIVE ? EP2 : {}, towerFloors } = {}) {
+  const ep2Look = Object.values(districts).some((v) => v === true); // the reel renders always get the new look
   const st = STYLES[KEY];
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance', logarithmicDepthBuffer: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, mobile ? 1.5 : 1.75));
   renderer.shadowMap.enabled = true;
   // Ep.2 look: golden hour, soft haze, filmic colours
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.18;
+  if (ep2Look) { renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.18; }
   renderer.shadowMap.type = mobile ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
   const scene = new THREE.Scene();
-  const HAZE = '#F4D9B4';
+  const HAZE = ep2Look ? '#F4D9B4' : '#EFE8D5';
   scene.background = new THREE.Color(HAZE);
-  scene.fog = new THREE.Fog(HAZE, 700, 3800);
+  scene.fog = new THREE.Fog(ep2Look ? HAZE : '#E4E2D6', 700, 3800);
   // a sky that goes from blue overhead to warm haze at the horizon (seen when the camera looks up)
   const skyTex = (() => { const c = document.createElement('canvas'); c.width = 4; c.height = 256; const x = c.getContext('2d'); const g = x.createLinearGradient(0, 0, 0, 256);
     g.addColorStop(0, '#5F9FD8'); g.addColorStop(.55, '#B9D3E6'); g.addColorStop(.85, '#F6DDB8'); g.addColorStop(1, HAZE); x.fillStyle = g; x.fillRect(0, 0, 4, 256);
@@ -35,19 +39,20 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
   const sky = new THREE.Mesh(new THREE.SphereGeometry(8000, 32, 16), new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, fog: false, depthWrite: false, toneMapped: false }));
   sky.geometry.attributes.uv.array.forEach((v, i, a) => { if (i % 2) a[i] = Math.min(1, Math.max(0, (v - .5) * 3.2)); });
   sky.renderOrder = -1;
+  sky.visible = ep2Look;
   scene.add(sky);
 
   // soft environment for water and glass, as in the reel
   const es = new THREE.Scene();
   const sp = new THREE.Mesh(new THREE.SphereGeometry(10, 32, 16), new THREE.MeshBasicMaterial({ side: THREE.BackSide, vertexColors: true }));
-  const p = sp.geometry.attributes.position, col = [], a = new THREE.Color('#6FA6DA'), b = new THREE.Color('#FFD6A6'), gg = new THREE.Color('#8FA86C');
+  const p = sp.geometry.attributes.position, col = [], a = new THREE.Color(ep2Look ? '#6FA6DA' : st.sky[0]), b = new THREE.Color(ep2Look ? '#FFD6A6' : st.sky[1]), gg = new THREE.Color(ep2Look ? '#8FA86C' : st.ground);
   for (let i = 0; i < p.count; i++) { const y = p.getY(i) / 10; const c = y > 0 ? b.clone().lerp(a, Math.pow(y, 0.6)) : b.clone().lerp(gg, Math.min(1, -y * 3)); col.push(c.r, c.g, c.b); }
   sp.geometry.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
   es.add(sp);
   const envTex = new THREE.PMREMGenerator(renderer).fromScene(es).texture;
 
-  scene.add(new THREE.HemisphereLight('#FFE9CF', '#8FA872', .8));
-  const sun = new THREE.DirectionalLight('#FFD29A', 3.1);
+  scene.add(ep2Look ? new THREE.HemisphereLight('#FFE9CF', '#8FA872', .8) : new THREE.HemisphereLight(st.hemi[0], st.hemi[1], st.hemi[2]));
+  const sun = ep2Look ? new THREE.DirectionalLight('#FFD29A', 3.1) : new THREE.DirectionalLight(st.sun[0], st.sun[1]);
   scene.add(sun, sun.target);
   sun.castShadow = true;
   sun.shadow.mapSize.set(mobile ? 1024 : 4096, mobile ? 1024 : 4096);
@@ -87,7 +92,7 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
   for (let i = 0; i < Math.max(floors.length, city.hillLots.length); i++) { if (floors[i]) seq.push(floors[i]); if (city.hillLots[i]) seq.push(city.hillLots[i]); }
   /** Where house number n lives. */
   function placeOf(n, ep2) {
-    if (!ep2 || n < ep2) return lots[n - 1] || null;
+    if (!ep2 || n < ep2 || !seq.length) return lots[n - 1] || null; // before Ep.2 (or with the switch off): the old lots
     const i = n - ep2;
     return seq[i] || lots[n - seq.length - 1] || null;
   }
@@ -109,7 +114,7 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
 
   /** Points the sun's shadow box at what the camera sees. */
   function aimSun(target, size) {
-    const d = new THREE.Vector3(.62, .48, -.42).normalize(); // lower, warmer sun than Ep.1
+    const d = (ep2Look ? new THREE.Vector3(.62, .48, -.42) : new THREE.Vector3(st.sunDir[0], st.sunDir[1], st.sunDir[2])).normalize(); // Ep.2: lower, warmer sun
     sun.position.copy(target).addScaledVector(d, 600);
     sun.target.position.copy(target);
     const sc = sun.shadow.camera;

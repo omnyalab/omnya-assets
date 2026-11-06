@@ -3,7 +3,7 @@
 // "View my home": the house in 3D on its lot, turning with a finger; number, district, neighbour, share.
 // Then the offers (src/lib/city.ts) and, for professionals, the Blueprint.
 import CityHead from '../../components/CityHead.astro';
-import { cityOffers, cityWhatsApp, cityBlueprint } from '../../lib/city';
+import { cityOffers, cityWhatsApp, cityBlueprint, cityUpgrades } from '../../lib/city';
 ---
 
 <!doctype html>
@@ -55,6 +55,15 @@ import { cityOffers, cityWhatsApp, cityBlueprint } from '../../lib/city';
         <div class="mine">
           <span class="mine__tab">1,000 followers offer</span>
           <h2>Make it yours</h2>
+          <div id="upgrades" hidden>
+            {cityUpgrades.map((o) => (
+              <a class="offer" href={o.checkout || cityWhatsApp} data-offer={o.id} data-title={o.title} data-stripe={o.checkout ? '1' : ''} target="_blank" rel="noopener">
+                <b>{o.title}</b>
+                <span>{o.line}</span>
+                <em><s>{o.was}</s>{o.price}</em>
+              </a>
+            ))}
+          </div>
           {cityOffers.map((o) => (
             <a class="offer" href={o.checkout || cityWhatsApp} data-offer={o.id} data-title={o.title} data-stripe={o.checkout ? '1' : ''} target="_blank" rel="noopener">
               <b>{o.title}</b>

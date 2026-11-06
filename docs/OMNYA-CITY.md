@@ -37,3 +37,8 @@ Use www: the apex answers 308.
 - Who gets what: `omnya:city:ep2` is the first house number reserved with the Ep.2 code (`SET NX` in `reserve`, sent by `/api/city/houses` as `ep2`). Houses before it stay on their lot. From it on, `W.placeOf(n, ep2)`: penthouse (main tower, floor 40), a villa in Omnyawood, the next floor down, a villa… until both run out, then the old lots carry on. `placeName()` gives "Penthouse · The Residences", "Floor 12 · The Residences", "Omnyawood" or the old district.
 - Free villas of Omnyawood show as white models (`makeModels`); on phones they are simple white blocks. Phones: about 424k triangles against 360k before.
 - Floors on the house page: the camera turns around the tower at that floor. Per-floor drawings come later.
+
+### The switch and the upsell (6/11/2026)
+
+- `EP2_LIVE` in `public/city/world.js` AND in `api/_lib/city.js`: false = the map exactly as in Ep.1 (checked pixel by pixel), true = Ep.2. Flip both and push the day the Ep.2 reel goes out. The reel renders pass `districts` themselves.
+- Upsell (only with the switch on): "Get the penthouse" €1.99, "The best villa in Omnyawood" €1.99 (ep2 + 41), "A house by the fountain" €0.99 (the 32 downtown houses, it takes the one claimed latest that nobody paid for). Stripe products must be named `Omnya City · The penthouse`, `Omnya City · The best villa in Omnyawood`, `Omnya City · A house by the fountain`; the links go in `cityUpgrades` (src/lib/city.ts). `api/stripe-webhook.js` calls `upgrade(u, kind)` and mails Nico what happened. Whoever lived there moves to the best free new place (never worse). A place someone paid for can't be bought again ("sold": refund by hand). `reserve` skips numbers already taken.

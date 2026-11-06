@@ -37,6 +37,9 @@ function memCmd(op, ...a) {
     }
     case 'INCR': { const n = Number(memCmd('GET', a[0]) || 0) + 1; mem.kv.set(a[0], { v: String(n), x: 0 }); return n; }
     case 'ZADD': mem.z.set(a[2], Number(a[1])); return 1;
+    case 'SADD': { const set = mem.kv.get(a[0])?.s || new Set(); set.add(a[1]); mem.kv.set(a[0], { s: set, x: 0 }); return 1; }
+    case 'SMEMBERS': return [...(mem.kv.get(a[0])?.s || [])];
+    case 'SISMEMBER': return mem.kv.get(a[0])?.s?.has(a[1]) ? 1 : 0;
     case 'ZRANGE': return [...mem.z].sort((x, y) => x[1] - y[1]).flatMap(([m, s]) => [m, String(s)]);
     case 'ZSCORE': return mem.z.has(a[1]) ? String(mem.z.get(a[1])) : null;
     case 'ZRANGEBYSCORE': return [...mem.z].filter(([, s]) => s >= Number(a[1]) && s <= Number(a[2])).sort((x, y) => x[1] - y[1]).map(([m]) => m);
@@ -103,10 +106,11 @@ export async function reserve(token) {
     return h ? { house: h, fresh: false } : { error: 'busy' };
   }
   try {
-    const n = Number(await cmd('INCR', `${P}n`));
+    let n = Number(await cmd('INCR', `${P}n`));
+    while (await onLot(n)) n = Number(await cmd('INCR', `${P}n`)); // a place someone bought or was moved to
     // Ep.2 (6/11/2026): the first house reserved with this code marks where the new places start
     // (penthouse, villas in Omnyawood, floors). SET NX: set once, so the houses before it never move.
-    await cmd('SET', `${P}ep2`, n, 'NX');
+    if (EP2_LIVE) await cmd('SET', `${P}ep2`, n, 'NX');
     const house = { u, n, t: Date.now(), ig: ig || '' };
     await cmd('SET', `${P}u:${u}`, JSON.stringify(house));
     await cmd('ZADD', `${P}houses`, n, u);
@@ -135,4 +139,69 @@ export async function allHouses() {
 export async function onLot(n) {
   const r = await cmd('ZRANGEBYSCORE', `${P}houses`, n, n);
   return r[0] || null;
+}
+
+// ---------- Ep.2 upsell (6/11/2026): buy the best places ----------
+// The numbers match public/city/world.js (placeOf): the fountain houses are the downtown lots,
+// the penthouse is the first Ep.2 place (ep2 + 0), the best villa is the sea-front one in the middle
+// of Omnyawood's first terrace (ep2 + 41). Whoever lives there is moved to the best free new place
+// (a villa or a high floor), never somewhere worse. Buyers are kept in omnya:city:paid.
+// THE SWITCH (same as EP2_LIVE in public/city/world.js): false until the Ep.2 reel goes out.
+export const EP2_LIVE = false;
+export const FOUNTAIN = [...Array.from({ length: 28 }, (_, i) => i + 1), 37, 38, 39, 40];
+const PENTHOUSE_AT = 0, BEST_VILLA_AT = 41, NEW_PLACES = 352;
+
+async function ep2Start() {
+  let e = await ep2From();
+  if (!e) { await cmd('SET', `${P}ep2`, Number((await cmd('GET', `${P}n`)) || 0) + 1, 'NX'); e = await ep2From(); }
+  return e;
+}
+async function moveTo(u, n) {
+  const h = await houseOf(u);
+  await cmd('SET', `${P}u:${u}`, JSON.stringify({ ...h, n, moved: Date.now() }));
+  await cmd('ZADD', `${P}houses`, n, u);
+}
+async function freeNewPlace(e) {
+  for (let i = 1; i < NEW_PLACES; i++) if (i !== BEST_VILLA_AT && !(await onLot(e + i))) return e + i;
+  return null;
+}
+const isPaid = async (u) => !!u && Number(await cmd('SISMEMBER', `${P}paid`, u)) === 1;
+
+/** What can still be bought: { penthouse, villa, fountain } true while for sale. */
+export async function forSale() {
+  if (!EP2_LIVE) return { penthouse: false, villa: false, fountain: false, ep2: null };
+  const e = await ep2From();
+  const [p, v] = e ? await Promise.all([onLot(e + PENTHOUSE_AT), onLot(e + BEST_VILLA_AT)]) : [null, null];
+  let fountain = false;
+  for (const n of FOUNTAIN) if (!(await isPaid(await onLot(n)))) { fountain = true; break; }
+  return { penthouse: !(await isPaid(p)), villa: !(await isPaid(v)), fountain, ep2: e };
+}
+
+/** Moves a buyer to the penthouse, the best villa or a house by the fountain. kind: 'penthouse' | 'villa' | 'fountain'. */
+export async function upgrade(u, kind) {
+  if (!EP2_LIVE) return { error: 'Ep.2 not live yet' };
+  const me = await houseOf(u);
+  if (!me) return { error: 'no house' };
+  const e = await ep2Start();
+  let target = null;
+  if (kind === 'penthouse') target = e + PENTHOUSE_AT;
+  else if (kind === 'villa') target = e + BEST_VILLA_AT;
+  else if (kind === 'fountain') {
+    if (FOUNTAIN.includes(me.n)) return { error: 'already there' };
+    for (const n of [...FOUNTAIN].reverse()) { const o = await onLot(n); if (!(await isPaid(o))) { target = n; break; } }
+  } else return { error: 'kind' };
+  if (!target) return { error: 'sold out' };
+  if (me.n === target) return { error: 'already there' };
+  const was = await onLot(target);
+  if (was && (await isPaid(was))) return { error: 'sold' }; // someone else bought it first: refund by hand
+  let moved = null;
+  if (was) {
+    const to = await freeNewPlace(e);
+    if (!to) return { error: 'no free place for the neighbour' };
+    await moveTo(was, to);
+    moved = { u: was, from: target, to };
+  }
+  await moveTo(u, target);
+  await cmd('SADD', `${P}paid`, u);
+  return { house: { u, from: me.n, n: target }, moved };
 }
