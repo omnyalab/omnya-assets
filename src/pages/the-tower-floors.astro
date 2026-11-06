@@ -15,7 +15,7 @@ const bundle = goHref('bundle', 'en');
 
 <Base page="learn" header={false} title="How to sell every floor of a tower with AI" description="Steal our floor method: from the tower to the plan of one level, its 3D and every room, free in five steps, and the Full Tower Blueprint with every prompt.">
 <div class="x3">
-<a class="x3-flash" href="#pack" data-deal aria-label="2,000 followers offer: all three playbooks for €39 instead of €107, until Sunday"><span class="x3-flash__track" aria-hidden="true"><span class="x3-flash__run"><span class="x3-flash__it"><b>2,000 followers offer</b></span><span class="x3-flash__it">All three playbooks <strong>€39</strong> <s>€107</s></span><span class="x3-flash__dot"></span><span class="x3-flash__it"><em>−64%</em> until Sunday at midnight</span><span class="x3-flash__dot"></span><span class="x3-flash__it">+ the prompt files and the checklist, only in the pack</span><span class="x3-flash__dot"></span><span class="x3-flash__it x3-flash__go">Tap to grab it <i>↓</i></span><span class="x3-flash__dot"></span><span class="x3-flash__it"><b>2,000 followers offer</b></span><span class="x3-flash__it">All three playbooks <strong>€39</strong> <s>€107</s></span><span class="x3-flash__dot"></span><span class="x3-flash__it"><em>−64%</em> until Sunday at midnight</span><span class="x3-flash__dot"></span><span class="x3-flash__it">+ the prompt files and the checklist, only in the pack</span><span class="x3-flash__dot"></span><span class="x3-flash__it x3-flash__go">Tap to grab it <i>↓</i></span><span class="x3-flash__dot"></span></span><span class="x3-flash__run"><span class="x3-flash__it"><b>2,000 followers offer</b></span><span class="x3-flash__it">All three playbooks <strong>€39</strong> <s>€107</s></span><span class="x3-flash__dot"></span><span class="x3-flash__it"><em>−64%</em> until Sunday at midnight</span><span class="x3-flash__dot"></span><span class="x3-flash__it">+ the prompt files and the checklist, only in the pack</span><span class="x3-flash__dot"></span><span class="x3-flash__it x3-flash__go">Tap to grab it <i>↓</i></span><span class="x3-flash__dot"></span><span class="x3-flash__it"><b>2,000 followers offer</b></span><span class="x3-flash__it">All three playbooks <strong>€39</strong> <s>€107</s></span><span class="x3-flash__dot"></span><span class="x3-flash__it"><em>−64%</em> until Sunday at midnight</span><span class="x3-flash__dot"></span><span class="x3-flash__it">+ the prompt files and the checklist, only in the pack</span><span class="x3-flash__dot"></span><span class="x3-flash__it x3-flash__go">Tap to grab it <i>↓</i></span><span class="x3-flash__dot"></span></span></span></a>
+<a class="x3-flash" href="#pack" data-deal><b>2,000 followers offer</b><span>All three playbooks €39 <s>€107</s></span><i aria-hidden="true">↓</i></a>
 <section class="x3-hero" id="top">
   <picture class="x3-hero__bg"><source media="(max-width:899px)" srcset="/learn/tw_hero_mobile.webp"><img src="/learn/tw_hero.webp" width="2400" height="1339" fetchpriority="high" alt="SAMAR, the tower at sunset over the marina"></picture>
   <div class="x3-in">
@@ -164,13 +164,6 @@ const bundle = goHref('bundle', 'en');
 </section>
 <p class="x3-foot">OMNYA LAB</p>
 </div>
-<script is:inline>
-  (() => {
-    const bar = document.querySelector('.x3-flash'), pack = document.getElementById('pack');
-    if (!bar || !pack || !('IntersectionObserver' in window)) return;
-    new IntersectionObserver(([e]) => bar.classList.toggle('is-away', e.isIntersecting || e.boundingClientRect.top < 0), { threshold: 0.05 }).observe(pack);
-  })();
-</script>
 <script is:inline define:vars={{ until: fullTowerDeal.until }}>
   // After Sunday the €19 version shows by itself
   if (Date.now() >= Date.parse(until)) {
@@ -405,25 +398,12 @@ const bundle = goHref('bundle', 'en');
   .pk .x3-pay__price b{font-size:36px}
 }
 /* 2,000 followers offer bar (6/11): seen first, sends down to the €39 pack; the €1.99 card stays first on the page */
-.x3-flash{position:sticky;top:0;z-index:50;display:block;overflow:hidden;background:linear-gradient(90deg,#0071e3,#2997ff 50%,#0071e3);color:#fff;text-decoration:none;box-shadow:0 10px 30px -10px rgba(41,151,255,.9);transition:transform .4s ease,opacity .4s ease}
-.x3-flash.is-away{transform:translateY(-110%);opacity:0;pointer-events:none}
-.x3-flash::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-100%);animation:x3shine 3.2s ease-in-out infinite;pointer-events:none}
-.x3-flash__track{display:flex;width:max-content;animation:x3marq 30s linear infinite}
-.x3-flash:hover .x3-flash__track{animation-play-state:paused}
-.x3-flash__run{display:flex;flex:none;align-items:center}
-.x3-flash__it{display:inline-flex;align-items:center;gap:10px;padding:13px 18px;white-space:nowrap;font-weight:700;font-size:14px;letter-spacing:.04em}
-.x3-flash__it b{font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:12px;background:#fff;color:#0071e3;padding:6px 11px;border-radius:999px;animation:x3pulse 1.6s ease-in-out infinite}
-.x3-flash__it strong{font-weight:900;font-size:17px}
-.x3-flash__it s{opacity:.7}
-.x3-flash__it em{font-style:normal;font-weight:900;background:#05070a;padding:3px 9px;border-radius:999px}
-.x3-flash__go{font-weight:900;text-transform:uppercase;letter-spacing:.12em;font-size:12px}
-.x3-flash__it i{font-style:normal;display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#fff;color:#0071e3;animation:x3bob 1.2s ease-in-out infinite}
-.x3-flash__dot{flex:none;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.6)}
+.x3-flash{position:relative;z-index:5;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;padding:12px 18px;background:linear-gradient(90deg,#0071e3,#2997ff,#0071e3);color:#fff;text-decoration:none;font-weight:700;font-size:14px;letter-spacing:.04em;text-align:center;box-shadow:0 10px 30px -10px rgba(41,151,255,.9);animation:x3glow 2.2s ease-in-out infinite}
+.x3-flash b{font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:12px;background:#fff;color:#0071e3;padding:5px 10px;border-radius:999px}
+.x3-flash s{opacity:.7;margin-left:4px}
+.x3-flash i{font-style:normal;display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.22)}
 .x3-flash[hidden]{display:none}
-@keyframes x3marq{to{transform:translateX(-50%)}}
-@keyframes x3shine{60%,100%{transform:translateX(100%)}}
-@keyframes x3pulse{50%{box-shadow:0 0 0 6px rgba(255,255,255,.25)}}
-@keyframes x3bob{50%{transform:translateY(3px)}}
-@media (prefers-reduced-motion:reduce){.x3-flash__track{animation-duration:90s}.x3-flash::after,.x3-flash__it b,.x3-flash__it i{animation:none}}
-@media (max-width:899px){.x3-flash__it{font-size:13px;padding:11px 14px;gap:8px}.x3-flash__it b{font-size:10px}.x3-flash__it strong{font-size:15px}.x3-flash__track{animation-duration:24s}}
+@keyframes x3glow{50%{box-shadow:0 10px 50px 4px rgba(41,151,255,1),0 0 24px 2px rgba(124,196,255,.8)}}
+@media (prefers-reduced-motion:reduce){.x3-flash{animation:none}}
+@media (max-width:899px){.x3-flash{font-size:13px;gap:8px 10px;padding:11px 14px}.x3-flash b{font-size:10px}}
 </style>
