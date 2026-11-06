@@ -10,6 +10,7 @@ import { goHref, fullTowerDeal } from '../lib/learn';
 const free = goHref('free-tower', 'en');
 const full = goHref('full-tower', 'en');
 const sample = goHref('sample', 'en');
+const bundle = goHref('bundle', 'en');
 ---
 
 <Base page="learn" header={false} title="How to sell every floor of a tower with AI" description="Steal our floor method: from the tower to the plan of one level, its 3D and every room, free in five steps, and the Full Tower Blueprint with every prompt.">
@@ -61,6 +62,37 @@ const sample = goHref('sample', 'en');
           <a class="x3-cta" href={full}><span>Get the Full Blueprint</span><i>→</i></a>
         </div>
         <p class="x3-pay__note"><span data-deal>Until Sunday 8 November at midnight, then it goes back to €19. </span>The PDF arrives right after payment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pk" id="pack">
+  <div class="pk__glow" aria-hidden="true"></div>
+  <div class="x3-in">
+    <div class="x3-card">
+      <span class="x3-card__tab">The whole studio · save €28</span>
+      <div class="arc">
+        <div class="arc__fan"><div class="arc__halo" aria-hidden="true"></div>
+          <img class="arc__b arc__b--1" src="/learn/pk_pb01.webp" width="640" height="905" loading="lazy" alt="Playbook 01, From 3D to real photo">
+          <img class="arc__b arc__b--3" src="/learn/pk_pb03.webp" width="640" height="905" loading="lazy" alt="Playbook 03, Sell it before it exists">
+          <img class="arc__b arc__b--2" src="/learn/pk_pb02.webp" width="640" height="905" loading="lazy" alt="Playbook 02, The reel they comment on"></div>
+        <div class="arc__x"><div><img src="/learn/pk_prompts.webp" width="640" height="905" loading="lazy" alt="The full prompt files"><img src="/learn/pk_checklist.webp" width="640" height="905" loading="lazy" alt="The checklist before every delivery"></div><span>+2 only in the pack</span></div>
+      </div>
+      <div class="x3-card__body">
+        <p class="x3-kick">Got the tower? Take the rest</p>
+        <h2 class="x3-T">The whole<br><span class="x3-box">studio</span><br>method</h2>
+        <ul class="x3-vs">
+          <li><i></i><div><b>01 · From 3D to real photo</b><span>the grey model becomes the image the client approves</span></div><em class="pr">€49</em></li>
+          <li><i></i><div><b>02 · The reel they comment on</b><span>our most watched format, with the real cost of every clip</span></div><em class="pr">€29</em></li>
+          <li><i></i><div><b>03 · Sell it before it exists</b><span>the 8 images and the film an off-plan launch needs</span></div><em class="pr">€29</em></li>
+          <li class="xtra"><i></i><div><b>The prompt files + the checklist</b><span>every prompt we use, and what we check before any delivery</span></div><em class="only">Only here</em></li>
+        </ul>
+        <div class="x3-pay">
+          <div class="x3-pay__price"><small>All three</small><b>€79</b><s>€107</s><span>−26%</span></div>
+          <a class="x3-cta" href={bundle}><span>Get the pack</span><i>→</i></a>
+        </div>
+        <p class="x3-pay__note">Five PDFs, in English and in Italian, right after payment.</p>
       </div>
     </div>
   </div>
@@ -334,5 +366,35 @@ const sample = goHref('sample', 'en');
   .x3-mhero__pb{margin:6px 0 0;font-weight:900;font-size:32px;line-height:1;text-transform:uppercase;color:var(--blue)}
   .x3-mhero__for{margin:12px 0 0;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
   .x3-mhero .x3-ctas{margin-top:22px;padding-bottom:36px}
+}
+/* the €79 pack under the €1.99 card (6/11): three playbooks in an arc, same card language */
+.pk{position:relative;padding:0 0 clamp(80px,10vw,130px);overflow:hidden}
+.pk__glow{position:absolute;inset:0;background:radial-gradient(55% 55% at 28% 50%,rgba(41,151,255,.42),rgba(41,151,255,0) 70%),radial-gradient(40% 40% at 90% 85%,rgba(0,113,227,.3),rgba(0,113,227,0) 70%);pointer-events:none}
+.pk .x3-card{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.pk .x3-card__tab{background:linear-gradient(90deg,#2997ff,#7cc4ff)}
+.arc{--w:clamp(130px,14.5vw,220px);position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;min-width:0}
+.arc__fan{position:relative;width:100%;height:calc(var(--w) * 1.72)}
+.arc__halo{position:absolute;left:50%;top:50%;width:calc(var(--w) * 2.4);height:calc(var(--w) * 2.4);transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(rgba(41,151,255,.75),rgba(41,151,255,.18) 45%,rgba(41,151,255,0) 68%);filter:blur(24px)}
+.arc__b{position:absolute;left:50%;bottom:0;width:var(--w);margin-left:calc(var(--w) / -2);border-radius:6px;transform-origin:50% 100%;box-shadow:0 40px 60px -18px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.12),0 0 50px -6px rgba(41,151,255,.55);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.arc__b--1{transform:translateX(calc(var(--w) * -.58)) translateY(10px) rotate(-11deg)}
+.arc__b--2{transform:translateY(-16px) scale(1.08);z-index:2;box-shadow:0 50px 70px -18px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.2),0 0 80px -4px rgba(41,151,255,.85)}
+.arc__b--3{transform:translateX(calc(var(--w) * .58)) translateY(10px) rotate(11deg)}
+@media (hover:hover){.arc:hover .arc__b--1{transform:translateX(calc(var(--w) * -.64)) translateY(10px) rotate(-13deg)}.arc:hover .arc__b--3{transform:translateX(calc(var(--w) * .64)) translateY(10px) rotate(13deg)}}
+.arc__x{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:12px}
+.arc__x div{display:flex;gap:10px}
+.arc__x img{width:66px;border-radius:3px;box-shadow:0 16px 26px -8px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.15)}
+.arc__x span{font-weight:800;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:linear-gradient(90deg,#0071e3,#2997ff);padding:9px 14px;border-radius:999px;box-shadow:0 10px 26px -8px rgba(41,151,255,.9)}
+.pk .x3-vs li.xtra{background:linear-gradient(90deg,rgba(41,151,255,.22),rgba(41,151,255,.05));border-color:rgba(41,151,255,.45)}
+.pk .x3-vs em.only{color:#fff;background:#2997ff;border-color:#2997ff}
+.pk .x3-vs em.pr{font-weight:700;font-size:13px;letter-spacing:0;color:rgba(255,255,255,.55);background:none;border:0;padding:0}
+.pk .x3-pay__price{flex-wrap:wrap;row-gap:8px}
+.pk .x3-pay__price b{font-size:clamp(44px,4.2vw,66px)}
+@media (max-width:899px){
+  .pk .x3-card{grid-template-columns:1fr}
+  .arc{--w:124px;padding-top:14px;gap:22px}
+  .arc__x img{width:46px}
+  .arc__x span{font-size:10px;padding:7px 11px}
+  .pk .x3-pay__price{flex-wrap:nowrap}
+  .pk .x3-pay__price b{font-size:36px}
 }
 </style>
