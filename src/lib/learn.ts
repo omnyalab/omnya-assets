@@ -65,6 +65,9 @@ export const full3dDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.com/
 /** The Full City Blueprint (5/11): the same 1,000 followers launch, €1.99 until Sunday. */
 export const fullCityDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.com/4gMfZg3Ot3bWbO6duJ8so0g' };
 
+/** All three playbooks (6/11): €39 instead of €79 until the same Sunday (the three one by one are €107), then /go/bundle sends to the €79 link again. */
+export const bundleDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.com/3cI7sK1Gl5k45pI3U98so0q' };
+
 /**
  * After each purchase the checkout returns to /learn/thanks/<product>. That page makes one
  * offer that exists only there (oto), the most natural next step for that buyer, and if
