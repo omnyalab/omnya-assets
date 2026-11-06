@@ -321,9 +321,9 @@ export function buildCity(scene, styleKey, opts = {}) {
   put('box', 'flat', st.sand, [0, .02, seaZ - 15], [4000, .2, 34]);
   const DIS = opts.districts || {};
   const HILL = { cx: 790, cz: 150, r0: 235, dr: 30, rows: 6, h0: 2.5, dh: 9 };
-  const RES = { x0: -1060, x1: -640, z0: 90, z1: seaZ - 60 };
+  const RES = { x0: -920, x1: -612, z0: 150, z1: seaZ - 60 };
   // the towers of The Residences: [x, z, floors, main]; the main one has the penthouse
-  const RES_T = [[-760, 200, 40, 1], [-850, 150, 34, 0], [-680, 120, 30, 0], [-930, 230, 36, 0], [-820, 290, 30, 0], [-1000, 150, 32, 0]];
+  const RES_T = [[-668, 335, 40, 1, 'B'], [-735, 245, 36, 0, 'A'], [-800, 340, 34, 0, 'C'], [-860, 240, 32, 0, 'A'], [-680, 190, 30, 0, 'C'], [-880, 345, 30, 0, 'B']];
   const inRect = (x, z, a, b, c, d) => x > a && x < b && z > c && z < d;
   const inDist = (x, z) => (DIS.hills && Math.hypot(x - HILL.cx, z - HILL.cz) < HILL.r0 * 1.09 + 40)
     || (DIS.marina && inRect(x, z, -340, 560, seaZ - 130, seaZ + 10)) || (DIS.residences && inRect(x, z, RES.x0 - 30, RES.x1 + 20, RES.z0 - 30, seaZ))
@@ -837,20 +837,24 @@ export function buildCity(scene, styleKey, opts = {}) {
     // ---------- the Omnya Tower: already tall, the penthouse lit at the top
     // ---------- THE RESIDENCES, west of the river: towers of 30-40 floors for the new followers, townhouses on the beach
     if (D.residences) {
-      const RS = RES;
-      put('box', TX('grass', 'matte'), '#93C866', [(RS.x0 + RS.x1) / 2, .06, (RS.z0 + RS.z1) / 2], [RS.x1 - RS.x0, .12, RS.z1 - RS.z0]);
-      const T = RES_T;
-      for (const [x, z, f, main] of T) residence(x, z, f, main);
-      // a park between the towers: paths, trees, a pond
-      put('box', 'matte', '#EFE4CC', [(RS.x0 + RS.x1) / 2, .14, 245], [RS.x1 - RS.x0 - 20, .06, 5]);
-      put('box', 'matte', '#EFE4CC', [-760, .14, (RS.z0 + RS.z1) / 2], [5, .06, RS.z1 - RS.z0 - 10]);
-      put('cyl', 'pool', st.pool, [-900, .15, 300], [40, .1, 26]);
-      for (let t = 0; t < (lite ? 40 : 120); t++) { const x = RS.x0 + 6 + Rd() * (RS.x1 - RS.x0 - 12), z = RS.z0 + 6 + Rd() * (RS.z1 - RS.z0 - 12);
-        if (T.some(([tx, tz, , m]) => Math.abs(x - tx) < (m ? 32 : 28) && Math.abs(z - tz) < (m ? 29 : 26))) continue;
-        if (Rd() < .3) palm(x, z, 1.2 + Rd() * .3); else tree(x, z, .8 + Rd() * .5); }
+      const RS = RES, T = RES_T;
+      // a warm stone plaza with lawns, a fountain, palms, cafés and people: no bare grass
+      put('box', TX('paving', 'matte'), '#EFE4CC', [(RS.x0 + RS.x1) / 2, .1, (RS.z0 + RS.z1) / 2], [RS.x1 - RS.x0, .2, RS.z1 - RS.z0]);
+      for (let gx = RS.x0 + 22; gx < RS.x1 - 10; gx += 44) for (let gz = RS.z0 + 20; gz < RS.z1 - 10; gz += 40) {
+        if (T.some(([tx, tz]) => Math.abs(gx - tx) < 36 && Math.abs(gz - tz) < 34)) continue;
+        put('box', TX('grass', 'matte'), '#8CC460', [gx, .26, gz], [30, .14, 26]);
+        if (!lite || (gx + gz) % 3 < 1) { tree(gx - 9, gz - 7, .8); palm(gx + 9, gz + 7, 1.3); }
+        if (!lite && Rd() < .5) for (const [cx, cz] of [[-4, 4], [4, -4]]) { put('cyl', 'matte', '#FFFFFF', [gx + cx, 1.4, gz + cz], [.08, 2, .08]); put('cone', 'flat', pick(Rd, ['#E0402E', '#FFD21F', '#2C5A9E', '#FFFFFF']), [gx + cx, 2.5, gz + cz], [2.8, .5, 2.8]); }
+      }
+      { const fx = (RS.x0 + RS.x1) / 2 - 20, fz = RS.z0 + 110; put('cyl', 'matte', '#F4EEE2', [fx, .5, fz], [22, .6, 22]); put('cyl', 'pool', st.pool, [fx, .82, fz], [20, .1, 20]); put('cyl', 'matte', '#F4EEE2', [fx, 2.4, fz], [1.6, 4, 1.6]); }
+      for (const t of T) residence(...t);
+      for (let k = 0; k < (lite ? 0 : 40); k++) person(RS.x0 + 10 + Rd() * (RS.x1 - RS.x0 - 20), .2, RS.z0 + 10 + Rd() * (RS.z1 - RS.z0 - 20));
+      // the river promenade on the west bank, lined with palms
+      for (let z = RS.z0 - 20; z < seaZ - 30; z += lite ? 24 : 12) { const x = riverX(z) - 26; put('box', TX('paving', 'matte'), '#EFE4CC', [x + 4, .12, z], [8, .2, 13]); palm(x, z, 1.35); }
       // boulevard with palms between the towers and the beach
       put('box', TX('asphalt', 'matte'), '#55575C', [(RS.x0 + RS.x1) / 2, -.02, RS.z1 + 6], [RS.x1 - RS.x0, .1, 9]);
       for (let x = RS.x0 + 6; x < RS.x1; x += lite ? 22 : 11) palm(x, RS.z1 + 12, 1.4);
+      for (let k = 0; k < 10; k++) car(RS.x0 + 10 + Rd() * (RS.x1 - RS.x0 - 20), RS.z1 + 6 + (Rd() < .5 ? -2.2 : 2.2), Math.PI / 2, pick(Rd, CARS));
       // townhouses on the beach, facing the sea
       const zt = seaZ - 40; let x = RS.x0 + 8, k = 0;
       while (x < RS.x1 - 8) { townhouse(x, zt, k++); x += 8.2; if (k % 8 === 0) x += 10; }
@@ -858,6 +862,7 @@ export function buildCity(scene, styleKey, opts = {}) {
         put('cyl', 'matte', '#FFFFFF', [ux, 1.2, uz], [.1, 2.4, .1]); put('cone', 'flat', pick(Rd, ['#E0402E', '#FFD21F', '#2C5A9E', '#FFFFFF', '#FF8DB0']), [ux, 2.5, uz], [3.6, .7, 3.6]); }
     }
   }
+  const Rd0 = rng(hashStr('omnya-towers'));
   function riverX(z) { return -ext.x - 95 + 58 * Math.sin(z / 150 + 1) + 20 * Math.sin(z / 61); }
   function bridge(x, z, road) {
     const w = road ? 10 : 5, len = 46;
@@ -902,21 +907,43 @@ export function buildCity(scene, styleKey, opts = {}) {
       for (const px of [x + W * .2, r - W * .2]) put('box', 'matte', '#8A8F96', [px, y + 1, cz - T], [.3, 2, .3]);
     });
   }
-  // a residential tower: stone podium with a garden and a pool, glass and white balconies, lit penthouse on the main one
-  function residence(x, z, floors, main) {
-    const fh = 3.4, w = main ? 30 : 24, d = main ? 24 : 20, Ht = floors * fh, y0 = 7, r = rng(hashStr(`res${x},${z}`));
-    put('box', 'flat', '#E9DDC6', [x, 3.5, z], [w + 26, 7, d + 26]);
-    put('box', TX('grass', 'matte'), '#8CC460', [x, 7.05, z], [w + 24, .1, d + 24]);
-    put('box', 'pool', st.pool, [x - w / 2 - 4, 7.15, z + d / 2 + 4], [10, .1, 6]);
-    if (!opts.lite) for (const [px, pz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) palm(x + px * (w / 2 + 9), z + pz * (d / 2 + 9), 1.3);
-    const glassC = pick(r, ['#8FB4D0', '#9DBBCF', '#86A9C2']);
-    put('box', 'tower', glassC, [x, y0 + Ht / 2, z], [w - 2, Ht, d - 2]);
-    for (let f = 1; f < floors; f += (opts.lite ? 4 : 2)) put('box', 'matte', '#F7F4EE', [x, y0 + f * fh, z], [w + .8, .45, d + .8], [0, 0, 0], null, 'XYZ', true); // balconies
-    for (const k of [-1, 1]) put('box', 'matte', '#F7F4EE', [x + k * (w / 2 - .2), y0 + Ht / 2, z], [1.2, Ht, d + 1], [0, 0, 0], null, 'XYZ', true);
-    const yt = y0 + Ht;
-    put('box', main ? 'pent' : 'glass', main ? '#FFD27A' : glassC, [x, yt + 3, z], [w - 6, 6, d - 6]);
-    put('box', 'matte', '#F7F4EE', [x, yt + 6.3, z], [w - 3, .6, d - 3]);
-    if (main) { put('box', 'pool', st.pool, [x - w * .2, yt + .4, z + d * .32], [w * .45, .2, d * .2]); put('cyl', 'matte', '#F7F4EE', [x + w * .3, yt + 18, z - d * .3], [.6, 24, .6]); }
+  // the towers, in the look of the Ep.1 reel: A blue glass with white slabs and a spire, B stone with gold bands, stepped,
+  // gold top (the main one has the lit penthouse), C a white cylinder with teal glass strips and trees on the roof
+  function residence(x, z, floors, main, type) {
+    const fh = 3.4, y0 = 1.2, Ht = floors * fh, lite = !!opts.lite, every = lite ? 3 : 1;
+    // podium: shops with awnings on the ground floor, planters, palms
+    const pw = 46, pd = 40;
+    put('box', 'matte', '#F4EEE2', [x, y0 + 2.5, z], [pw, 5, pd]);
+    put('box', 'glass', st.glass, [x, y0 + 2.2, z + pd / 2 + .05], [pw - 4, 3.6, .1]);
+    for (let k = 0; k < 5; k++) put('box', 'matte', ['#E0402E', '#2C5A9E', '#FFD21F', '#2E8B57', '#E0402E'][k], [x - pw / 2 + 6 + k * 8.5, y0 + 4.3, z + pd / 2 + 1], [6, .3, 2], [-.3, 0, 0]);
+    put('box', TX('grass', 'matte'), '#8CC460', [x, y0 + 5.1, z], [pw - 2, .2, pd - 2]);
+    if (!lite) for (const [px, pz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) palm(x + px * (pw / 2 - 3), z + pz * (pd / 2 - 3), 1.1);
+    const b0 = y0 + 5.2;
+    if (type === 'A') {
+      const segs = [[0, .5, 26], [.5, .82, 23], [.82, 1, 20]];
+      for (const [a, b, w] of segs) { const ya = b0 + a * Ht, yb = b0 + b * Ht;
+        put('box', 'tower', '#3F86D8', [x, (ya + yb) / 2, z], [w, yb - ya, w]);
+        for (let f = Math.ceil(a * floors); f < b * floors; f += every) put('box', 'matte', '#F2F4F6', [x, b0 + f * fh, z], [w + 1.4, .45, w + 1.4], [0, 0, 0], null, 'XYZ', true); }
+      put('cone', 'flat', '#9AA3AB', [x, b0 + Ht + 9, z], [8, 18, 8]);
+      if (main) put('box', 'pent', '#FFD27A', [x, b0 + Ht - 2.5, z], [20.4, 4, 20.4]);
+    } else if (type === 'B') {
+      const segs = [[0, .45, 28], [.45, .78, 23], [.78, 1, 18]];
+      for (const [a, b, w] of segs) { const ya = b0 + a * Ht, yb = b0 + b * Ht;
+        put('box', 'matte', '#DCD2BE', [x, (ya + yb) / 2, z], [w, yb - ya, w]);
+        for (let f = Math.ceil(a * floors); f < b * floors; f += every) put('box', 'matte', '#E2B53A', [x, b0 + f * fh + 1.2, z], [w + .3, 1, w + .3], [0, 0, 0], null, 'XYZ', true);
+        put('box', 'matte', '#EFE9DC', [x, yb, z], [w + 2, 1, w + 2]); }
+      if (main) put('box', 'pent', '#FFD27A', [x, b0 + Ht + 2.5, z], [15, 5, 15]);
+      put('hip', 'flat', '#D9A520', [x, b0 + Ht + (main ? 9 : 5), z], [14, 12, 14]);
+      put('cyl', 'matte', '#D9A520', [x, b0 + Ht + (main ? 20 : 16), z], [.5, 10, .5]);
+    } else {
+      const R = 12;
+      put('disc', 'matte', '#F2F2EE', [x, b0 + Ht / 2, z], [R * 2, Ht, R * 2]);
+      const n = lite ? 10 : 16;
+      for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2; put('box', 'glass', '#2FB7C4', [x + Math.sin(a) * (R + .05), b0 + Ht / 2, z + Math.cos(a) * (R + .05)], [2.6, Ht - 3, .3], [0, a, 0]); }
+      for (let f = 6; f < floors; f += lite ? 12 : 6) put('disc', 'matte', '#F2F2EE', [x, b0 + f * fh, z], [R * 2 + 1.2, .5, R * 2 + 1.2], [0, 0, 0], null, 'XYZ', true);
+      put('disc', 'matte', '#E8E6E0', [x, b0 + Ht + .6, z], [R * 2 + 1, 1.2, R * 2 + 1]);
+      for (let k = 0; k < (lite ? 4 : 9); k++) { const a = k / 9 * Math.PI * 2; put('ico', 'flat', pick(Rd0, ['#4FA85A', '#5DB866', '#3F9A52']), [x + Math.sin(a) * 6, b0 + Ht + 3, z + Math.cos(a) * 6], [4, 3.6, 4], [k, k, 0]); }
+    }
   }
   // a beach townhouse: three floors, roof terrace, small garden towards the sea
   function townhouse(x, z, k) {

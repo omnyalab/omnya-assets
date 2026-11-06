@@ -82,7 +82,7 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
   // Ep.2 (6/11/2026): from the first house reserved after Ep.2 went live (the API keeps that number as ep2),
   // new people get the penthouse first, then a villa in Omnyawood, a floor lower, a villa… The houses before ep2 never move.
   const floors = [];
-  for (const [i, t] of city.residences.entries()) for (let f = t.floors; f >= 1; f--) floors.push({ floor: true, tower: i, f, x: t.x, z: t.z, y: 7 + (f - 0.5) * 3.4, top: !!t.main && f === t.floors, lw: 30, ld: 24, yaw: 0 });
+  for (const [i, t] of city.residences.entries()) for (let f = t.floors; f >= 1; f--) floors.push({ floor: true, tower: i, f, x: t.x, z: t.z, y: 6.4 + (f - 0.5) * 3.4, top: !!t.main && f === t.floors, lw: 30, ld: 24, yaw: 0 });
   const seq = [];
   for (let i = 0; i < Math.max(floors.length, city.hillLots.length); i++) { if (floors[i]) seq.push(floors[i]); if (city.hillLots[i]) seq.push(city.hillLots[i]); }
   /** Where house number n lives. */
