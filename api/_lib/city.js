@@ -152,8 +152,8 @@ export const PREM = 100000;
 // Same order as `premium` in public/city/world.js (appended after the 13 places sold on 6/11).
 const RANGE = { penthouse: [PREM, PREM + 3], villa: [PREM + 3, PREM + 13], town: [PREM + 13, PREM + 33], sea: [PREM + 33, PREM + 43] };
 export const TRANCHES = { town: [6, 6, 8], sea: [2, 2, 2, 2, 2] };
-export const PRICES = { town: 99, sea: 299, sky: 99 }; // cents, sold with our own Stripe Checkout (api/city.js → buy)
-export const TITLES = { town: 'A townhouse on the water', sea: 'A seafront villa', sky: 'The penthouse' };
+export const PRICES = { town: 99, sea: 299, sky: 99, fountain: 99 }; // cents, sold with our own Stripe Checkout (api/city.js → buy)
+export const TITLES = { town: 'A townhouse on the water', sea: 'A seafront villa', sky: 'The penthouse', fountain: 'A house by the fountain' };
 /** Where the current tranche stands: { no, left, size, upTo } (upTo = how many are out so far, e.g. 12). */
 export function tranche(kind, left) {
   const t = TRANCHES[kind], total = t.reduce((a, b) => a + b, 0), sold = total - left;
@@ -190,7 +190,7 @@ export async function forSale() {
 }
 
 /** Moves a buyer to the first free penthouse or top villa. kind: 'penthouse' | 'villa'. */
-export async function stockOf(kind) { if (kind === 'sky') return (await forSale()).left.sky; const [a, b] = RANGE[kind] || [0, 0]; let k = 0; for (let n = a; n < b; n++) if (!(await onLot(n))) k++; return k; }
+export async function stockOf(kind) { if (kind === 'sky' || kind === 'fountain') return (await forSale()).left[kind]; const [a, b] = RANGE[kind] || [0, 0]; let k = 0; for (let n = a; n < b; n++) if (!(await onLot(n))) k++; return k; }
 
 export async function upgrade(u, kind) {
   if (!EP2_LIVE) return { error: 'Ep.2 not live yet' };

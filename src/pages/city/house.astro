@@ -15,6 +15,8 @@ Object.assign(up, {
   // Payment Links (7/11, from Nico's Stripe, like the others): limit 20 and 10, product names matched by api/stripe-webhook.js
   town: { title: 'A townhouse on the water', price: '€0.99', was: '€19', checkout: 'https://buy.stripe.com/7sY00iacRh2M3hAaix8so0x' },
   sea: { title: 'A seafront villa', price: '€2.99', was: '€29', checkout: 'https://buy.stripe.com/cNi7sKgBfeUE9FY2Q58so0y' },
+  // 7/11: the fountain Payment Link was deactivated on Stripe, so it goes through our own Checkout like the penthouses
+  fountain: { ...up.fountain, checkout: '', buy: '/api/city/buy?kind=fountain' },
   sky: { title: 'The penthouse', price: '€0.99', was: '€19', buy: '/api/city/buy?kind=sky' }, // 7/11: 3 new penthouses on the roofs
   yacht: { title: 'The Yacht', view: '/city/yacht' },
   island: { title: 'The Island', view: '/city/island' },
@@ -131,7 +133,7 @@ const pickBook = `<div class="pick" data-g="book">
             </label>
           ))}
         </div>
-        <a class="btn" id="movego" href={up.fountain.checkout} target="_blank" rel="noopener">Move my house · €0.99</a>
+        <a class="btn" id="movego" href={up.fountain.buy} rel="noopener">Move my house · €0.99</a>
         <button class="no" type="button" data-close>No thanks, I'll keep my free house</button>
       </div>
     </div>
