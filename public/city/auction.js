@@ -15,8 +15,8 @@ const P = item === 'yacht' ? W.yachtAt : W.islandAt;
 const orbit = { az: 0.6, el: item === 'yacht' ? 0.5 : 0.55, d: item === 'yacht' ? (mobile ? 230 : 170) : (mobile ? 300 : 230) };
 const label = makeGoldLabel(THREE, `${WORD} OF ???`);
 label.position.set(P.x, item === 'yacht' ? 30 : 36, P.z);
-label.scale.multiplyScalar(mobile ? .75 : .55);
-scene.add(label);
+// 7/11 (Nico, phone): no gold sign over the 3D here, the card already has the name; it covered the top buttons
+label.visible = false;
 let dirty = true, spin = true, drag = null;
 function place() {
   const r = Math.cos(orbit.el) * orbit.d;

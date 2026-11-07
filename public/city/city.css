@@ -341,3 +341,8 @@ button.mv{border:3px solid #1a120c}
 .aucard .bids li{display:flex;justify-content:space-between;font-size:13px;padding:6px 10px;border-radius:10px;background:#F4EFE6}
 .aucard .bids li.top{background:#FFE9A3;font-weight:700}
 .aucard .bids:empty{display:none}
+
+/* 7/11 phone fix: the auction form stays inside the card (grid items could grow to their inputs' width) */
+.bidf{grid-template-columns:minmax(0,1fr)}
+.bidf .amt{grid-template-columns:48px minmax(0,1fr) 48px}
+.bidf input{width:100%}
