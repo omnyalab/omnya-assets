@@ -29,6 +29,9 @@ export const NUDGE_AFTER = 20 * H;
 /** Words that start the flow in a DM sent out of nowhere (comments use the word in the caption). */
 const DEFAULT_WORDS = (process.env.IG_WORDS || 'BLUEPRINT,PROJECT,3D,AI,CLAUDE,DUBAI').split(',').map((w) => w.trim().toUpperCase()).filter(Boolean);
 // words that follow "comment" in a caption without being the keyword
+// Tester mode: IG_ONLY="gghizzoo,1234" (usernames or ids) makes the bot answer only these people and
+// leave everyone else to ManyChat; under posts without "Comment WORD" they can use the DM words too.
+const ONLY = new Set((process.env.IG_ONLY || '').split(',').map((w) => w.trim().replace(/^@/, '').toLowerCase()).filter(Boolean));
 const NOT_WORDS = new Set(['BELOW', 'DOWN', 'HERE', 'THE', 'AND', 'FOR', 'TO', 'IF', 'YOUR', 'ME', 'US', 'SOTTO', 'QUI', 'LA', 'IL', 'WITH', 'NOW']);
 
 // ---------- storage ----------
@@ -280,9 +283,10 @@ export async function onComment(ownId, v) {
   const from = v.from || {};
   if (!from.id || from.id === ownId || !v.id) return 'skip';
   const mediaId = v.media?.id;
+  if (ONLY.size && !ONLY.has(String(from.id)) && !ONLY.has(String(from.username || '').toLowerCase())) return 'not tester';
   const reel = mediaId ? await reelInfo(mediaId) : { words: [], permalink: '' };
   // only under posts whose caption asks for a word: client teasers and the rest are left alone
-  const word = matchWord(v.text || '', reel.words);
+  const word = matchWord(v.text || '', reel.words.length || !ONLY.size ? reel.words : DEFAULT_WORDS);
   if (!word) return 'no word';
   if (!(await kv.once(`once:${mediaId}:${from.id}`))) return 'already';
 
@@ -290,8 +294,10 @@ export async function onComment(ownId, v) {
   let uid = from.id;
   let dm = true;
   try {
+    if (ONLY.size) await kv.set(`tester:${from.id}`, 1, 7 * 86_400);
     const r = await button({ comment_id: v.id }, t.opener.text, t.opener.button, 'GET');
     if (r.recipient_id) uid = r.recipient_id;
+    if (ONLY.size) await kv.set(`tester:${uid}`, 1, 7 * 86_400);
   } catch (e) {
     console.error('[ig] private reply', e.message);
     dm = false;
@@ -340,6 +346,7 @@ export async function onMessaging(ownId, m) {
 
   const uid = m.sender?.id;
   if (!uid || uid === ownId) return 'skip';
+  if (ONLY.size && !ONLY.has(String(uid)) && !(await kv.get(`tester:${uid}`))) return 'not tester';
 
   if (m.read) {
     const lead = await getLead(uid);

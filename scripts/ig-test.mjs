@@ -39,6 +39,8 @@ await new Promise((r) => server.listen(0, r));
 process.env.IG_GRAPH_URL = `http://localhost:${server.address().port}`;
 process.env.IG_TOKEN = 'test';
 process.env.IG_ADMIN_KEY = 'k';
+const ONLY_RUN = process.argv.includes('--only');
+process.env.IG_ONLY = ONLY_RUN ? '@name_t1' : '';
 
 const ig = await import('../api/_lib/ig.js');
 const hook = await import('../api/instagram.js');
@@ -63,6 +65,27 @@ const lead = async (id) => (await ig.listLeads()).find((l) => l.id === id);
 
 let ok = 0;
 const step = async (name, fn) => { await fn(); ok++; console.log('✓', name); };
+
+if (ONLY_RUN) {
+  await step('tester mode: everyone else is left to ManyChat, comments and DMs', async () => {
+    assert.deepEqual(await comment('x1', 'PROJECT').res, ['not tester']);
+    assert.deepEqual(await dm('x1', { text: 'BLUEPRINT' }), ['not tester']);
+    assert.deepEqual(await tap('x1', 'GET'), ['not tester']);
+    assert.equal(sent().filter((c) => c.method === 'POST').length, 0);
+  });
+  await step('tester mode: the tester gets the whole flow, even under a post without Comment WORD', async () => {
+    assert.deepEqual(await comment('t1', 'BLUEPRINT', 'client').res, ['sent']);
+    assert.equal(sent().filter((x) => x.method === 'POST').length, 2);
+    await tap('t1', 'GET');
+    assert.equal(msgText(sent().find((x) => x.method === 'POST')), T.textsFor('blueprint').followFirst.text);
+    state.follows.t1 = true;
+    await tap('t1', 'DONE');
+    assert.match(msgText(sent().find((x) => x.method === 'POST')), /omnyalab\.com/);
+  });
+  server.close();
+  console.log(`\n${ok} prove tester passate`);
+  process.exit(0);
+}
 
 await step('caption words', () => {
   assert.deepEqual(ig.captionWords('Comment “PROJECT” below'), ['PROJECT']);
@@ -251,3 +274,5 @@ await step('leads page: private, lists everyone', async () => {
 
 server.close();
 console.log(`\n${ok} prove passate`);
+const { execFileSync } = await import('node:child_process');
+execFileSync(process.execPath, [new URL(import.meta.url).pathname, '--only'], { stdio: 'inherit' });

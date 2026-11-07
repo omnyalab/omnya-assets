@@ -47,3 +47,7 @@ Poi redeploy, e una volta `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&a
 
 ### Prova e App Review
 Finché l'app è in Development, il bot risponde solo agli account che hanno un ruolo sull'app: si aggiunge il profilo personale di Nico come Instagram Tester (App roles) e si prova commentando da lì. Per rispondere a tutti, Meta chiede di solito l'app in **Live** con **Advanced Access** su `instagram_business_manage_messages` e `instagram_business_manage_comments`. Serve un video del giro (si registra con il profilo di prova) e due righe sull'uso. È la stessa strada che ha fatto ManyChat. ManyChat resta acceso finché la review non passa, poi si spegne la sua automazione, altrimenti partono due DM.
+
+## Modalità tester (per i video della review)
+
+Con `IG_ONLY=gghizzoo` su Vercel (username o id, separati da virgola) il bot risponde solo a quegli account, a commenti e DM; tutti gli altri restano a ManyChat. Sotto i post senza "Comment PAROLA" il tester può usare le parole dei DM (BLUEPRINT, 3D, AI…). Si toglie la variabile quando la review passa e ManyChat si spegne.
