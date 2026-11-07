@@ -12,8 +12,9 @@ const up: Record<string, any> = Object.fromEntries(cityUpgrades.map((o) => [o.id
 // 7/11 (Nico): townhouses on the water €0.99 (tranches 6/6/8) and seafront villas €2.99 (2 at a time), our own Stripe Checkout;
 // the yacht and the island (one of each, auction) only say "View" and open their page.
 Object.assign(up, {
-  town: { title: 'A townhouse on the water', price: '€0.99', was: '€19', buy: '/api/city/buy?kind=town' },
-  sea: { title: 'A seafront villa', price: '€2.99', was: '€29', buy: '/api/city/buy?kind=sea' },
+  // Payment Links (7/11, from Nico's Stripe, like the others): limit 20 and 10, product names matched by api/stripe-webhook.js
+  town: { title: 'A townhouse on the water', price: '€0.99', was: '€19', checkout: 'https://buy.stripe.com/7sY00iacRh2M3hAaix8so0x' },
+  sea: { title: 'A seafront villa', price: '€2.99', was: '€29', checkout: 'https://buy.stripe.com/cNi7sKgBfeUE9FY2Q58so0y' },
   yacht: { title: 'The Yacht', view: '/city/yacht' },
   island: { title: 'The Island', view: '/city/island' },
 });
@@ -129,7 +130,7 @@ const pickBook = `<div class="pick" data-g="book">
             </label>
           ))}
         </div>
-        <a class="btn" id="movego" href={up.town.buy} rel="noopener">Move my house · €0.99</a>
+        <a class="btn" id="movego" href={up.town.checkout} target="_blank" rel="noopener">Move my house · €0.99</a>
         <button class="no" type="button" data-close>No thanks, I'll keep my free house</button>
       </div>
     </div>

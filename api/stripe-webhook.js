@@ -10,7 +10,8 @@ import { host } from './_lib/config.js';
 import { upgrade, placeBid } from './_lib/city.js';
 
 // Omnya City upsell (6/11/2026): these products move the buyer (client_reference_id = username, dots sent as dashes).
-const CITY = { 'Omnya City · The penthouse': 'penthouse', 'Omnya City · The best villa in Omnyawood': 'villa', 'Omnya City · A house by the fountain': 'fountain' };
+const CITY = { 'Omnya City · The penthouse': 'penthouse', 'Omnya City · The best villa in Omnyawood': 'villa', 'Omnya City · A house by the fountain': 'fountain',
+  'Omnya City · A townhouse on the water': 'town', 'Omnya City · A seafront villa': 'sea' }; // 7/11 Payment Links
 
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
