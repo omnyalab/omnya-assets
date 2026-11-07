@@ -39,7 +39,12 @@ export async function POST(request) {
     ].filter(Boolean);
     for (const [kind, v] of events) {
       try {
-        results.push(kind === 'comment' ? await onComment(own, v) : await onMessaging(own, v));
+        const r = kind === 'comment' ? await onComment(own, v) : await onMessaging(own, v);
+        results.push(r);
+        // one short line per event, to see in the Vercel logs what arrives and what the bot did
+        const who = kind === 'comment' ? `${v.from?.username || ''} ${v.from?.id || ''}` : v.sender?.id || '';
+        const what = kind === 'comment' ? v.text : v.postback?.payload || v.message?.quick_reply?.payload || (v.message?.is_echo ? 'echo' : v.read ? 'read' : v.message?.text) || '';
+        console.log('[ig]', kind, who, JSON.stringify(String(what).slice(0, 40)), '→', r);
       } catch (e) {
         console.error('[ig] event', kind, e.message);
       }

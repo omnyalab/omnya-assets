@@ -346,7 +346,12 @@ export async function onMessaging(ownId, m) {
 
   const uid = m.sender?.id;
   if (!uid || uid === ownId) return 'skip';
-  if (ONLY.size && !ONLY.has(String(uid)) && !(await kv.get(`tester:${uid}`))) return 'not tester';
+  if (ONLY.size && !ONLY.has(String(uid)) && !(await kv.get(`tester:${uid}`))) {
+    // a tap can come with a different id from the comment's: ask Instagram who it is
+    const p = await profile(uid);
+    if (!ONLY.has(String(p.username || '').toLowerCase())) return 'not tester';
+    await kv.set(`tester:${uid}`, 1, 7 * 86_400);
+  }
 
   if (m.read) {
     const lead = await getLead(uid);
@@ -364,10 +369,12 @@ export async function onMessaging(ownId, m) {
 
   let lead = await getLead(uid);
   if (!lead) {
-    // a DM out of nowhere: only the keyword starts the flow, the rest is Nico's
-    if (!matchWord(said, DEFAULT_WORDS)) return 'not ours';
+    // a DM out of nowhere: only the keyword or one of our buttons starts the flow, the rest is Nico's
+    // (a tap on our button can come with an id we never saw: the comment's id is not always the DM's)
+    const ours = ['GET', 'DONE'].includes(payload);
+    if (!ours && !matchWord(said, DEFAULT_WORDS)) return 'not ours';
     lead = newLead(uid);
-    lead.word = matchWord(said, DEFAULT_WORDS);
+    lead.word = matchWord(said, DEFAULT_WORDS) || 'BLUEPRINT';
     lead.stage = 'opened';
   }
   lead.lastUserAt = Date.now();
