@@ -44,7 +44,7 @@ export async function POST(request) {
     await sendMail({
       to: `${name} <${email}>`,
       replyTo: host.email,
-      subject: `Your ${f.name}`,
+      subject: `Your ${f.name.replace(/^The /, '')}`, // "Your Tower Blueprint", not "Your The Tower Blueprint"
       html: mailHtml(name, f),
       text: `Here it is, ${name}.\n\n${f.name}: ${SITE}${f.file}\n\nYou get this because you asked for it on omnyalab.com. This is the only email we send you.\n\nNico · Omnya Lab`,
     });
