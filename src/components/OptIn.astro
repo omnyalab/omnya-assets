@@ -34,6 +34,31 @@ const { slug, free, word, small, cover, hero, heroMobile } = Astro.props;
   </div>
 </div>
 
+<!-- After "Send me the blueprint": the loading steps, then the gentle line about the course (K1, 7/11) -->
+<div class="oil" hidden data-oil>
+  <div class="oil__bg"></div>
+  <div class="oil__in">
+    <div class="oil__top" data-oil-top>
+      <p class="oil__k">Free · no payment</p>
+      <p class="oil__t">Sending your<br />blueprint</p>
+      <div class="oil__bar"><i data-oil-bar></i></div>
+      <div class="oil__steps">
+        <div class="oil__st" data-st="1"><i>✓</i><span><b>Preparing your blueprint</b><small>the method in five steps</small></span></div>
+        <div class="oil__st" data-st="2"><i>✓</i><span><b>Sending it to your inbox</b><small data-oil-em></small></span></div>
+        <div class="oil__st" data-st="3"><i>✓</i><span><b>Sent</b><small>check your inbox, and Promotions just in case</small></span></div>
+      </div>
+    </div>
+    <div class="oil__fin" hidden data-oil-fin>
+      <div class="oil__ck"><svg viewBox="0 0 40 40"><path d="M10 21l7 7 14-15" /></svg></div>
+      <p class="oil__t">You're all set<span data-oil-nm></span></p>
+      <p class="oil__p"><b>Your <span style="color:#2997ff">free</span> blueprint</b> is in your inbox.</p>
+      <p class="oil__p">If one day you want to implement it faster, <b>the full interactive 3D course</b> is here for <b data-oil-price>€1.99</b> today.</p>
+      <a class="x3-btn x3-btn--blue" data-oil-go href={`/${slug}/sent`}>Have a look →</a>
+      <button type="button" class="oil__no" data-oil-skip>I'm good with the free one, thanks</button>
+    </div>
+  </div>
+</div>
+
 <script is:inline>
   (function () {
     var box = document.querySelector('[data-optin]');
@@ -47,16 +72,38 @@ const { slug, free, word, small, cover, hero, heroMobile } = Astro.props;
     box.querySelector('[data-oi-close]').addEventListener('click', close);
     box.addEventListener('click', function (e) { if (e.target === box) close(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) close(); });
+    var oil = document.querySelector('[data-oil]');
+    var T = function (fn, ms) { return setTimeout(fn, ms); };
+    var st = function (n) { return oil.querySelector('[data-st="' + n + '"]'); };
+    // after Sunday 8 November the Full is €19
+    if (Date.now() > Date.parse('2026-11-08T23:59:59+01:00')) oil.querySelector('[data-oil-price]').textContent = '€19';
+    oil.querySelector('[data-oil-skip]').addEventListener('click', function () { oil.hidden = true; box.hidden = true; });
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var name = form.name.value.trim(), email = form.email.value.trim();
+      var name = form.elements.name.value.trim(), email = form.elements.email.value.trim();
       if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = 'Write your name and a real email.'; err.hidden = false; return; }
       err.hidden = true;
-      var btn = form.querySelector('button'); btn.disabled = true; btn.textContent = 'Sending…';
-      fetch('/api/optin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, free: free, page: slug, company: form.company.value, k: new URLSearchParams(location.search).get('k') || '' }) })
-        .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
-        .then(function () { location.href = '/' + slug + '/sent'; })
-        .catch(function () { location.href = '/go/' + free; });
+      var sent = fetch('/api/optin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, free: free, page: slug, company: form.elements.company.value, k: new URLSearchParams(location.search).get('k') || '' }) })
+        .then(function (r) { return r.ok; }).catch(function () { return false; });
+      oil.querySelector('[data-oil-em]').textContent = 'to ' + email;
+      oil.querySelector('[data-oil-nm]').textContent = ', ' + name.split(' ')[0];
+      oil.hidden = false;
+      var bar = oil.querySelector('[data-oil-bar]');
+      if (bar.animate) bar.animate([{ width: '0%' }, { width: '100%' }], { duration: 7000, easing: 'cubic-bezier(.3,0,.2,1)', fill: 'forwards' }); else bar.style.width = '100%';
+      T(function () { st(1).classList.add('is-in'); }, 300); T(function () { st(1).classList.add('is-done'); }, 1900); T(function () { st(1).classList.add('is-out'); }, 2600);
+      T(function () { st(2).classList.add('is-in'); }, 2900);
+      // "Sent" only once the server said the email went out; if it didn't, the PDF opens right away
+      T(function () {
+        sent.then(function (ok) {
+          if (!ok) { location.href = '/go/' + free; return; }
+          st(2).classList.add('is-done');
+          T(function () { st(2).classList.add('is-out'); }, 700);
+          T(function () { st(3).classList.add('is-in'); }, 1000);
+          T(function () { st(3).classList.add('is-done'); }, 1900);
+          T(function () { oil.querySelector('[data-oil-top]').classList.add('is-gone'); oil.querySelector('[data-oil-fin]').hidden = false; }, 3700);
+          T(function () { if (!oil.hidden) location.href = '/' + slug + '/sent'; }, 3700 + 15000);
+        });
+      }, 4700);
     });
   })();
 </script>
