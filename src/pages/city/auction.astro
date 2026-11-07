@@ -1,0 +1,49 @@
+---
+// /city/yacht and /city/island (7/11/2026, vercel.json rewrites both here; the script reads which one from the address).
+// One of each in Omnya City, sold by auction: starting bid €3.99, each bid at least €1 more, 12 hours from the first bid
+// (a bid in the last 5 minutes adds 5 minutes). A bid only holds the money on the card (Stripe, capture later): when someone
+// bids more the hold is released, when the timer ends the top bid is charged and the name goes on the map in gold.
+import CityHead from '../../components/CityHead.astro';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <CityHead title="Omnya City · Only one" description="The only yacht and the only island in Omnya City. One of each, by auction." path="/city" noindex />
+  </head>
+  <body class="auc">
+    <div class="map">
+      <canvas id="c" aria-label="3D view"></canvas>
+      <header class="top">
+        <div><a class="back" href="/city">← The city</a></div>
+        <a href="https://www.instagram.com/omnyalab/" target="_blank" rel="noopener">@omnyalab</a>
+      </header>
+
+      <section class="sheet aucard" id="card">
+        <p class="k">Only one in Omnya City</p>
+        <h1 class="goldtitle" id="title">YACHT OF ???</h1>
+        <p class="line" id="line">The only yacht in the city, anchored off the marina. Win it and it takes your name.</p>
+
+        <div class="now">
+          <div><small id="bidlab">Starting bid</small><b id="bid">€3.99</b></div>
+          <div><small>Ends in</small><b id="left">12:00:00</b></div>
+        </div>
+        <p class="lead" id="lead">The 12-hour timer starts with the first bid.</p>
+
+        <form id="f" class="bidf">
+          <label class="u"><span>@</span><input id="u" placeholder="your Instagram" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Your Instagram username" /></label>
+          <div class="amt">
+            <button type="button" id="minus" aria-label="Lower">−</button>
+            <label><span>€</span><input id="amt" inputmode="decimal" aria-label="Your bid in euro" /></label>
+            <button type="button" id="plus" aria-label="Higher">+</button>
+          </div>
+          <button class="btn goldbtn" id="go" type="submit">Bid €3.99</button>
+        </form>
+        <p class="note" id="note"></p>
+        <p class="s">Your card is only <b>held</b>, not charged. If someone bids more, the hold is released and you pay nothing. When the timer ends, the top bid is charged and the name goes on the map in gold. You need a house in the city to bid.</p>
+        <ol class="bids" id="bids"></ol>
+      </section>
+    </div>
+    <script type="module" src="/city/auction.js"></script>
+  </body>
+</html>

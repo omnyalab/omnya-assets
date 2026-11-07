@@ -7,7 +7,7 @@ import Stripe from 'stripe';
 import { sendMail } from './_lib/mail.js';
 import { filesForProduct } from './_lib/learn-files.js';
 import { host } from './_lib/config.js';
-import { upgrade } from './_lib/city.js';
+import { upgrade, placeBid } from './_lib/city.js';
 
 // Omnya City upsell (6/11/2026): these products move the buyer (client_reference_id = username, dots sent as dashes).
 const CITY = { 'Omnya City · The penthouse': 'penthouse', 'Omnya City · The best villa in Omnyawood': 'villa', 'Omnya City · A house by the fountain': 'fountain' };
@@ -44,7 +44,41 @@ export async function POST(request) {
 
   if (event.type !== 'checkout.session.completed') return new Response('ok');
   const session = event.data.object;
+
+  // 7/11 Omnya City: a bid on the yacht or the island (the money is only held: capture_method 'manual', so not 'paid' yet)
+  if (session.metadata?.auction) {
+    const { auction: item, u } = session.metadata, amt = Number(session.metadata.amt), pi = session.payment_intent;
+    try {
+      const r = await placeBid(item, { u, amt, pi });
+      const drop = r.error ? pi : r.prev?.pi && r.prev.pi !== pi ? r.prev.pi : null; // too late or outbid: release that hold
+      if (drop) await stripe.paymentIntents.cancel(drop).catch((e) => console.error('[stripe-webhook] release', e.message));
+      await sendMail({
+        to: host.email,
+        subject: r.error ? `[city] bid on the ${item} too late (${r.error}), hold released` : `[city] @${u} bids €${(amt / 100).toFixed(2)} on the ${item}`,
+        text: r.error ? `@${u} €${(amt / 100).toFixed(2)}: ${r.error}. The hold was released.` : `Ends ${new Date(r.end).toISOString()}.${r.prev ? `\n@${r.prev.u} (€${(r.prev.amt / 100).toFixed(2)}) was outbid, hold released.` : ''}\nhttps://www.omnyalab.com/city/${item}`,
+      }).catch(() => {});
+    } catch (e) {
+      console.error('[stripe-webhook] auction', e);
+      return new Response('auction failed', { status: 502 });
+    }
+    return new Response('ok');
+  }
+
   if (session.payment_status !== 'paid') return new Response('ok');
+
+  // 7/11 Omnya City: townhouse on the water / seafront villa, bought with our own Checkout (metadata.buy)
+  if (session.metadata?.buy) {
+    const { buy: kind, u } = session.metadata;
+    const r = await upgrade(u, kind).catch((e) => ({ error: e.message }));
+    let refunded = false;
+    if (r.error && session.payment_intent) refunded = !!(await stripe.refunds.create({ payment_intent: session.payment_intent }).catch(() => null)); // sold out meanwhile: money back
+    await sendMail({
+      to: host.email,
+      subject: r.error ? `[city] ${kind} paid, NOT moved (${r.error})${refunded ? ', refunded' : ''}` : `[city] @${u} bought the ${kind}`,
+      text: r.error ? `@${u}: ${r.error}. ${refunded ? 'Refunded automatically.' : 'Refund by hand.'}` : `@${u} moved from house #${r.house.from} to #${r.house.n}.\nhttps://www.omnyalab.com/city/@${u}`,
+    }).catch(() => {});
+    return new Response('ok');
+  }
 
   const email = session.customer_details?.email;
   const name = session.customer_details?.name || 'there';

@@ -8,9 +8,21 @@ import CityHead from '../../components/CityHead.astro';
 import { cityUpgrades, cityWhatsApp } from '../../lib/city';
 import { fullCityDeal } from '../../lib/learn';
 
-const up = Object.fromEntries(cityUpgrades.map((o) => [o.id, o]));
+const up: Record<string, any> = Object.fromEntries(cityUpgrades.map((o) => [o.id, o]));
+// 7/11 (Nico): townhouses on the water €0.99 (tranches 6/6/8) and seafront villas €2.99 (2 at a time), our own Stripe Checkout;
+// the yacht and the island (one of each, auction) only say "View" and open their page.
+Object.assign(up, {
+  town: { title: 'A townhouse on the water', price: '€0.99', was: '€19', buy: '/api/city/buy?kind=town' },
+  sea: { title: 'A seafront villa', price: '€2.99', was: '€29', buy: '/api/city/buy?kind=sea' },
+  yacht: { title: 'The Yacht', view: '/city/yacht' },
+  island: { title: 'The Island', view: '/city/island' },
+});
 const book = `<span class="bk4" aria-hidden="true"><span class="b"><span class="k"></span><span class="p"></span><span class="tp"></span><span class="s"><i>OMNYA CITY</i></span><span class="f"></span></span></span>`;
 const places = [
+  { id: 'town', img: '/city/up/town.jpg', name: 'On the water', pick: 'A townhouse on the water', line: 'The Residences, garden on the beach', card: 'A townhouse on the beach of The Residences, the sea in front.' },
+  { id: 'sea', img: '/city/up/sea.jpg', name: 'Seafront villa', pick: 'A seafront villa', line: 'Pool on the beach, by the marina', card: 'A villa on the beach by the marina, the pool facing the sea.' },
+  { id: 'yacht', img: '/city/up/yacht.jpg', name: 'Yacht of ???', pick: 'Yacht of ???', line: 'Only one in the city · auction', card: 'The only yacht in the city. Its name will be yours.', gold: true },
+  { id: 'island', img: '/city/up/island.jpg', name: 'Island of ???', pick: 'Island of ???', line: 'Only one in the city · auction', card: 'A villa alone on its own island. Only one.', gold: true },
   { id: 'penthouse', img: '/city/up/penthouse.jpg', name: 'The penthouse', line: 'Top floor of a tower in The Residences', card: 'Top floor of a tower in The Residences, the whole city below.' },
   { id: 'villa', img: '/city/up/villa.jpg', name: 'A top villa', pick: 'A top villa in Omnyawood', line: 'Pool and view, under the letters', card: 'Omnyawood, the top terrace under the letters, with the pool.' },
   { id: 'fountain', img: '/city/up/fountain.jpg', name: 'By the fountain', pick: 'A house by the fountain', line: 'Downtown, one of the first 8 houses', card: 'Downtown, one of the first 8 houses of the city.' },
@@ -78,17 +90,19 @@ const pickBook = `<div class="pick" data-g="book">
       <section class="ux sec" id="up" hidden>
         <button class="stamp" type="button" data-open="move">MOVE UP ↑</button>
         <h2>Get a top spot</h2>
-        <p class="sub">Your free house is <b data-where></b>. For €0.99 it moves to one of the best places in the city, and stays yours.</p>
+        <p class="sub">Your free house is <b data-where></b>. From €0.99 it moves to one of the best places in the city, and stays yours.</p>
         <div class="three">
           {places.map((p, i) => (
-            <button class={`pl${i === 0 ? ' hot' : ''}`} type="button" data-open="move" data-pick={p.id} data-place={p.id}>
+            <button class={`pl${i === 0 ? ' hot' : ''}${p.gold ? ' gold' : ''}`} type="button" data-open={up[p.id].view ? undefined : 'move'} data-pick={p.id} data-place={p.id} data-view={up[p.id].view}>
               <img class="im" src={p.img} alt="" loading="lazy" width="800" height="622" />
               <div class="bd">
                 <span class="cnt" data-left={p.id}></span>
                 <div class="bar"><i data-bar={p.id}></i></div>
                 <b>{p.name}</b>
                 <p>{p.card}</p>
-                <div class="pr"><span><strong>{up[p.id].price}</strong><s>{up[p.id].was}</s></span><em>Move here</em></div>
+                {up[p.id].view
+                  ? <div class="pr"><span><strong>???</strong></span><em>View</em></div>
+                  : <div class="pr"><span><strong>{up[p.id].price}</strong><s>{up[p.id].was}</s></span><em>Move here</em></div>}
               </div>
             </button>
           ))}
@@ -110,12 +124,12 @@ const pickBook = `<div class="pick" data-g="book">
         <p class="sub">Your house can move to one of the <b>best places in the city</b>. Same name, new address.</p>
         <div class="pick" data-g="move">
           {places.map((p, i) => (
-            <label class={i === 0 ? 'on' : ''} data-place={p.id} data-img={p.img} data-name={p.name} data-href={up[p.id].checkout || cityWhatsApp} data-stripe={up[p.id].checkout ? '1' : ''} data-title={up[p.id].title}>
-              <i></i><div>{p.pick || p.name}<span>{p.line}<span data-left-line={p.id}></span></span>{i === 0 && <em class="tag" data-left-tag={p.id}></em>}</div><strong>{up[p.id].price}<s>{up[p.id].was}</s></strong>
+            <label class={`${i === 0 ? 'on' : ''}${p.gold ? ' gold' : ''}`} data-place={p.id} data-img={p.img} data-name={p.name} data-href={up[p.id].view || up[p.id].buy || up[p.id].checkout || cityWhatsApp} data-stripe={up[p.id].checkout ? '1' : ''} data-buy={up[p.id].buy ? '1' : ''} data-btn={up[p.id].view ? 'View it' : `Move my house · ${up[p.id].price}`} data-title={up[p.id].title}>
+              <i></i><div>{p.pick || p.name}<span>{p.line}<span data-left-line={p.id}></span></span>{(i === 0 || p.id === 'sea') && <em class="tag" data-left-tag={p.id}></em>}</div>{up[p.id].view ? <strong class="view">View</strong> : <strong>{up[p.id].price}<s>{up[p.id].was}</s></strong>}
             </label>
           ))}
         </div>
-        <a class="btn" id="movego" href={up.penthouse.checkout} target="_blank" rel="noopener">Move my house · €0.99</a>
+        <a class="btn" id="movego" href={up.town.buy} rel="noopener">Move my house · €0.99</a>
         <button class="no" type="button" data-close>No thanks, I'll keep my free house</button>
       </div>
     </div>

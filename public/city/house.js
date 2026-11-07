@@ -78,25 +78,35 @@ async function start() {
   // 7/11 upsell (board approved by Nico): MOVE UP opens the place picker, only with what is still for sale
   const sale = all.forSale || {};
   const left = sale.left || {};
-  const mine = { penthouse: !!L.pent, villa: !!(L.hills && L.premium), fountain: !L.floor && !L.hills && n <= 8 };
-  const open = Object.fromEntries(['penthouse', 'villa', 'fountain'].map((k) => [k, !!sale[k] && !mine[k] && (left[k] ?? 1) > 0]));
+  const mine = { penthouse: !!L.pent, villa: !!(L.hills && L.premium), fountain: !L.floor && !L.hills && !L.town && !L.sea && n <= 8, town: !!L.town, sea: !!L.sea };
+  const open = Object.fromEntries(['town', 'sea', 'penthouse', 'villa', 'fountain'].map((k) => [k, !!sale[k] && !mine[k] && (left[k] ?? 1) > 0]));
+  const auc = all.auctions || {};
+  for (const k of ['yacht', 'island']) open[k] = !!auc[k] && !auc[k].done; // 7/11: one of each, by auction (only "View")
   const where = `#${n.toLocaleString('en')} in ${placeName(L)}`;
   document.querySelectorAll('[data-where]').forEach((e) => (e.textContent = where));
   document.querySelectorAll('[data-where-kick]').forEach((e) => (e.textContent = `Your house · #${n.toLocaleString('en')} · ${placeName(L)}`));
   const ref = u.replace(/\./g, '-');
+  const tr = sale.tranche || {};
   for (const k of Object.keys(open)) {
-    const nLeft = left[k];
-    const txt = nLeft ? `Only ${nLeft} left` : '';
+    // 7/11 (Nico): townhouses in tranches of 6/6/8: the first only "Only n left", then "Only n remaining out of 12",
+    // the last "Only n remaining out of 20 · they're going fast"; seafront villas 2 at a time
+    const T = tr[k];
+    const nLeft = T ? T.left : left[k];
+    const txt = !nLeft ? '' : T && k === 'town' && T.no > 1 ? `Only ${nLeft} remaining out of ${T.upTo}${T.no === 3 ? ' · going fast' : ''}` : `Only ${nLeft} left`;
     // Nico 7/11: the bars look almost full on purpose
     const bar = nLeft ? Math.max(84, 100 - nLeft * 1.5) : 100;
     document.querySelectorAll(`[data-left="${k}"]`).forEach((e) => (e.textContent = txt));
     document.querySelectorAll(`[data-bar="${k}"]`).forEach((e) => (e.style.width = bar + '%'));
     document.querySelectorAll(`[data-left-tag="${k}"]`).forEach((e) => (txt ? (e.textContent = txt) : e.remove()));
-    document.querySelectorAll(`[data-left-line="${k}"]`).forEach((e) => (e.textContent = k !== 'penthouse' && nLeft ? ` · only ${nLeft} left` : ''));
+    document.querySelectorAll(`[data-left-line="${k}"]`).forEach((e) => (e.textContent = k !== 'penthouse' && k !== 'town' && k !== 'sea' && nLeft && !(T && k === 'town' && T.no > 1) ? ` · only ${nLeft} left` : ''));
+    if (k === 'yacht' || k === 'island') { const A = auc[k] || {}; const t = A.leader ? `Top bid €${(A.bid / 100).toFixed(2)}` : 'Starts at €3.99';
+      document.querySelectorAll(`[data-left-line="${k}"]`).forEach((e) => (e.textContent = ` · ${t}`)); }
     if (!open[k]) document.querySelectorAll(`[data-place="${k}"]`).forEach((e) => e.remove());
   }
   for (const l of document.querySelectorAll('#move label')) {
-    if (l.dataset.stripe) { const x = new URL(l.dataset.href); x.searchParams.set('client_reference_id', ref); l.dataset.href = x.toString(); }
+    if (l.dataset.buy) l.dataset.href = `${l.dataset.href}&u=${encodeURIComponent(u)}`;
+    else if (l.dataset.href.startsWith('/city/')) continue; // yacht and island: their page
+    else if (l.dataset.stripe) { const x = new URL(l.dataset.href); x.searchParams.set('client_reference_id', ref); l.dataset.href = x.toString(); }
     else l.dataset.href = `${l.dataset.href.split('?')[0]}?text=${encodeURIComponent(`Hi Omnya! I'd like "${l.dataset.title}" for my house in Omnya City: @${u}, house #${n}.`)}`;
   }
   const any = Object.values(open).some(Boolean);
@@ -139,6 +149,8 @@ function pickPlace(l) {
   $('shot').style.backgroundImage = `url(${l.dataset.img})`;
   $('shotname').textContent = l.dataset.name;
   $('movego').href = l.dataset.href;
+  $('movego').textContent = l.dataset.btn || 'Move my house · €0.99';
+  $('movego').target = l.dataset.stripe ? '_blank' : '';
 }
 let lastFocus = null;
 function openDialog(id, pick) {
@@ -154,6 +166,8 @@ function closeDialog() {
   lastFocus?.focus?.({ preventScroll: true });
 }
 document.addEventListener('click', (e) => {
+  const v = e.target.closest('[data-view]');
+  if (v) { e.preventDefault(); location.href = v.dataset.view; return; }
   const o = e.target.closest('[data-open]');
   if (o) { e.preventDefault(); return openDialog(o.dataset.open, o.dataset.pick); }
   if (e.target.closest('[data-close]') || e.target.classList.contains('dim')) { e.preventDefault(); return closeDialog(); }

@@ -12,7 +12,8 @@ const devApi = () => ({
     // same as the vercel.json rewrite: /city/@username is the one house page
     server.middlewares.use((req, _res, next) => {
       const p = decodeURIComponent((req.url || '').split('?')[0]);
-      if (/^\/city\/[^/]+\/?$/.test(p) && !/^\/city\/house\/?$/.test(p) && !existsSync(`${server.config.root}/public${p}`)) req.url = '/city/house/';
+      if (/^\/city\/(yacht|island)\/?$/.test(p)) { req.url = '/city/auction/'; return next(); } // 7/11: the two auctions
+      if (/^\/city\/[^/]+\/?$/.test(p) && !/^\/city\/house\/?$/.test(p) && !/^\/city\/auction\/?$/.test(p) && !existsSync(`${server.config.root}/public${p}`)) req.url = '/city/house/';
       next();
     });
     server.middlewares.use('/api', async (req, res, next) => {

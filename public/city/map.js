@@ -1,6 +1,6 @@
 // /city: the map of Omnya City from above. ?k=TOKEN (from the Instagram DM) shows the locked
 // username and "Reserve my spot"; without it, "I already have a house" finds a house by name.
-import { makeWorld, makePin, placeName, getJSON } from './world.js';
+import { makeWorld, makePin, placeName, getJSON, makeGoldLabel } from './world.js';
 
 const $ = (id) => document.getElementById(id);
 const canvas = $('c');
@@ -13,12 +13,12 @@ const mobile = matchMedia('(max-width: 899px)').matches;
 const EL = 0.98; // elevation (rad), the reel's top-down look
 const AZ = -0.28;
 const view = { x: 0, z: 0, d: mobile ? 620 : 520 };
-const lim = () => ({ x: 1050, z: W.ext.z * 0.95 + 120 }); // Ep.2: Omnyawood to the east, The Residences to the west
+const lim = () => ({ x: 1050, z: W.ext.z * 0.95 + 120, zs: 560 }); // 7/11: down to the sea, the yacht and the island // Ep.2: Omnyawood to the east, The Residences to the west
 let anim = null, dirty = true;
 function place() {
   const L = lim();
   view.x = Math.max(-L.x, Math.min(L.x, view.x));
-  view.z = Math.max(-L.z, Math.min(L.z, view.z));
+  view.z = Math.max(-L.z, Math.min(L.zs, view.z));
   view.d = Math.max(45, Math.min(1500, view.d));
   const h = Math.sin(EL) * view.d, r = Math.cos(EL) * view.d;
   camera.position.set(view.x + Math.sin(AZ) * r, h, view.z + Math.cos(AZ) * r);
@@ -85,6 +85,23 @@ let ep2 = null;            // the first house of Ep.2 (from the API): from there
 const owner = new Map();   // place → { u, n }
 const at = (n) => W.placeOf(n, ep2);
 const pin = makePin(THREE); pin.visible = false; scene.add(pin);
+// 7/11: the yacht and the island, one of each, sold by auction: a gold name always on screen over each of them
+const gold = {};
+for (const [item, P, y] of [['yacht', W.yachtAt, 30], ['island', W.islandAt, 34]]) {
+  if (!P) continue;
+  const sp = makeGoldLabel(THREE, `${item === 'yacht' ? 'YACHT' : 'ISLAND'} OF ???`, 'tap to view');
+  sp.scale.multiplyScalar(mobile ? .42 : .3); sp.center.set(.5, -.25); sp.position.set(P.x, y, P.z); scene.add(sp); gold[item] = sp;
+}
+function auctionsDraw(a = {}) {
+  for (const item of ['yacht', 'island']) {
+    const A = a[item] || {}, word = item === 'yacht' ? 'Yacht' : 'Island';
+    const who = A.winner ? '@' + A.winner.toUpperCase() : '???';
+    gold[item]?.set(`${word.toUpperCase()} OF ${who}`, A.winner ? '' : A.leader ? `bid €${(A.bid / 100).toFixed(2)} · tap to view` : 'tap to view');
+    const el = $(`go-${item}`);
+    if (el) el.querySelector('b').textContent = `${word} of ${A.winner ? '@' + A.winner : '???'}`;
+  }
+  dirty = true;
+}
 let mine = null;
 
 function draw(list, e2 = ep2) {
@@ -101,12 +118,13 @@ let chipLot = null;
 function tap(cx, cy) {
   const g = ground(cx, cy);
   const L = g && W.lotAt(g.x, g.z);
+  if (L && (L.yacht || L.island)) { location.href = `/city/${L.yacht ? 'yacht' : 'island'}`; return; }
   if (!L) { chip.hidden = true; chipLot = null; return; }
   const o = owner.get(L);
   chipLot = L;
   chip.innerHTML = o
     ? `<a href="/city/@${o.u}"><b>@${o.u}</b><span>House #${o.n} · ${placeName(L)}</span><i>View →</i></a>`
-    : `<div><b>${L.pent ? 'A penthouse' : L.hills ? (L.premium ? 'A top villa in Omnyawood' : 'A villa in Omnyawood') : `Lot #${L.n}`}</b><span>${L.premium ? 'for sale on any house page · €0.99' : L.floor || L.hills ? 'for the next followers' : `${placeName(L)} · still free`}</span></div>`;
+    : `<div><b>${L.town ? 'A townhouse on the water' : L.sea ? 'A seafront villa' : L.pent ? 'A penthouse' : L.hills ? (L.premium ? 'A top villa in Omnyawood' : 'A villa in Omnyawood') : `Lot #${L.n}`}</b><span>${L.town ? 'for sale on any house page · €0.99' : L.sea ? 'for sale on any house page · €2.99' : L.premium ? 'for sale on any house page · €0.99' : L.floor || L.hills ? 'for the next followers' : `${placeName(L)} · still free`}</span></div>`;
   chip.hidden = false;
   placeChip();
 }
@@ -160,6 +178,7 @@ function landOn(house) {
 async function start() {
   const [h] = await Promise.all([getJSON('/api/city/houses'), k ? null : Promise.resolve()]);
   draw(h.houses || [], h.ep2);
+  auctionsDraw(h.auctions);
   if (!k) return show('find');
   const p = await getJSON(`/api/city/peek?k=${encodeURIComponent(k)}`);
   if (p.house) return landOn(p.house);

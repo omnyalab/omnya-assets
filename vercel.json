@@ -301,6 +301,10 @@
       "destination": "/api/city?action=:action"
     },
     {
+      "source": "/city/:item(yacht|island)",
+      "destination": "/city/auction/index.html"
+    },
+    {
       "source": "/city/:user",
       "destination": "/city/house/index.html"
     }

@@ -9,7 +9,7 @@ const KEY = 'Z';
 export const districtOf = (dist) => (dist <= 1 ? 'Downtown' : dist <= 3 ? 'Midtown' : dist <= 5 ? 'Garden District' : 'Outskirts');
 /** The name of a place: a lot, a villa in Omnyawood or a floor of The Residences. */
 export const PREM = 100000; // house numbers of the places that are only bought
-export const placeName = (P) => (!P ? 'New district' : P.floor ? (P.pent ? 'Penthouse · The Residences' : `Floor ${P.f} · The Residences`) : P.hills ? (P.premium ? 'Omnyawood · top terrace' : 'Omnyawood') : districtOf(P.dist));
+export const placeName = (P) => (!P ? 'New district' : P.town ? 'Townhouse on the water · The Residences' : P.sea ? 'Seafront villa · The Beach' : P.floor ? (P.pent ? 'Penthouse · The Residences' : `Floor ${P.f} · The Residences`) : P.hills ? (P.premium ? 'Omnyawood · top terrace' : 'Omnyawood') : districtOf(P.dist));
 
 /** The seed of a person's house: the reel used hashStr('@name'). */
 export const seedOf = (u) => hashStr('@' + u);
@@ -18,7 +18,7 @@ export const seedOf = (u) => hashStr('@' + u);
 // true = Omnyawood, The Residences, river, marina, the golden-hour look and the new places for new followers.
 // Flip it here AND in api/_lib/city.js (EP2_LIVE) the day the Ep.2 reel goes out, then push.
 export const EP2_LIVE = true;
-const EP2 = { hills: true, river: true, marina: true, residences: true, refresh: true };
+const EP2 = { hills: true, river: true, marina: true, residences: true, refresh: true, sea: true }; // sea: the 7/11 seafront
 
 export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').matches, districts = EP2_LIVE ? EP2 : {}, towerFloors } = {}) {
   const ep2Look = Object.values(districts).some((v) => v === true); // the reel renders always get the new look
@@ -98,6 +98,9 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
       .map(({ t, i }) => floors.find((F) => F.tower === i && F.f === t.floors)),
     ...city.hillLots.filter((L) => L.row === topRow),
   ].filter(Boolean);
+  // 7/11 (Nico): 20 townhouses on the water (PREM+13…32, sold in tranches of 6, 6, 8) and 10 seafront villas (PREM+33…42, 2 at a time).
+  // Appended at the end, so the 13 places already sold keep their numbers.
+  if (premium.length === 13) premium.push(...(city.townLots || []), ...(city.seaLots || []));
   for (const P of premium) P.premium = true;
   for (const F of floors) if (F.f === city.residences[F.tower].floors) F.pent = true; // every tower's top floor is a penthouse
   const freeFloors = floors.filter((F) => !F.premium), freeVillas = city.hillLots.filter((L) => !L.premium);
@@ -117,12 +120,12 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
   function setHouses(list, ep2, { models = true } = {}) {
     for (const g of [housesGroup, modelsGroup]) if (g) { scene.remove(g); g.traverse((o) => o.isInstancedMesh && o.dispose()); }
     const items = [], taken = new Set();
-    for (const [u, n] of list) { const L = placeOf(n, ep2); if (L && !L.floor) { items.push({ L, seed: seedOf(u) }); taken.add(L); } }
+    for (const [u, n] of list) { const L = placeOf(n, ep2); if (L && !L.floor && !L.town) { items.push({ L, seed: seedOf(u) }); taken.add(L); } }
     housesGroup = city.makeHouses(items);
     useEnv(housesGroup);
     scene.add(housesGroup);
     // the free villas of Omnyawood stand there as white models
-    modelsGroup = !models ? null : city.makeModels(city.hillLots.filter((L) => !taken.has(L)).map((L) => ({ L, seed: hashStr(`model-${L.row}-${L.c}`) })));
+    modelsGroup = !models ? null : city.makeModels([...city.hillLots, ...(city.seaLots || [])].filter((L) => !taken.has(L)).map((L) => ({ L, seed: hashStr(L.sea ? `sea-${L.c}` : `model-${L.row}-${L.c}`) })));
     if (modelsGroup) scene.add(modelsGroup);
   }
 
@@ -147,6 +150,9 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
   function lotAt(x, z) {
     return lots.find((L) => Math.abs(x - L.x) < L.lw / 2 && Math.abs(z - L.z) < L.ld / 2)
       || city.hillLots.find((L) => Math.hypot(x - L.x, z - L.z) < 10)
+      || (city.townLots || []).find((L) => Math.abs(x - L.x) < 4.2 && Math.abs(z - L.z) < 9)
+      || (city.seaLots || []).find((L) => Math.abs(x - L.x) < 12 && Math.abs(z - L.z) < 13)
+      || [city.yachtAt, city.islandAt].find((L) => L && Math.hypot(x - L.x, z - L.z) < (L.yacht ? 34 : 50))
       || floors.find((F) => F.pent && Math.abs(x - F.x) < 18 && Math.abs(z - F.z) < 15) || null;
   }
 
@@ -161,7 +167,7 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
     hemi.color.copy(day.hc).lerp(new THREE.Color('#5A6FB0'), k); hemi.groundColor.copy(day.hg).lerp(new THREE.Color('#1C2338'), k); hemi.intensity = day.hi * (1 + k * .15);
     city.setNight(k);
   }
-  return { THREE, renderer, setNight, sky, useEnv, placeOf, seq, floors, premium, hillLots: city.hillLots, scene, city, lots, setHouses, aimSun, resize, lotAt, ext: city.ext, setDetail: city.setDetail };
+  return { yachtAt: city.yachtAt, islandAt: city.islandAt, THREE, renderer, setNight, sky, useEnv, placeOf, seq, floors, premium, hillLots: city.hillLots, scene, city, lots, setHouses, aimSun, resize, lotAt, ext: city.ext, setDetail: city.setDetail };
 }
 
 /** Pin over a lot: a yellow disc with a stem, like the reel's marker. */
@@ -192,4 +198,28 @@ export async function getJSON(url, opts) {
   let j = {};
   try { j = await r.json(); } catch {}
   return { ok: r.ok, status: r.status, ...j };
+}
+
+/** 7/11: the gold name over the yacht and the island ("YACHT OF ???" until the auction ends). Always on top, same size at any zoom. */
+export function makeGoldLabel(THREE, text, sub = '') {
+  const c = document.createElement('canvas'), x = c.getContext('2d'), W = 1024, H = 300;
+  c.width = W; c.height = H;
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false, depthWrite: false, toneMapped: false, sizeAttenuation: false }));
+  sp.renderOrder = 999;
+  sp.set = (t, s2 = '') => {
+    x.clearRect(0, 0, W, H);
+    x.font = '400 112px "Lilita One", Lilita, system-ui, sans-serif';
+    const w = Math.min(W - 20, x.measureText(t).width + 110), x0 = (W - w) / 2;
+    const g = x.createLinearGradient(0, 20, 0, 190); g.addColorStop(0, '#FFE9A3'); g.addColorStop(.5, '#F4C542'); g.addColorStop(1, '#C8901A');
+    x.fillStyle = 'rgba(40,24,0,.35)'; x.beginPath(); x.roundRect(x0 + 6, 30, w, 170, 85); x.fill();
+    x.fillStyle = g; x.beginPath(); x.roundRect(x0, 20, w, 170, 85); x.fill();
+    x.lineWidth = 8; x.strokeStyle = '#FFF6D6'; x.stroke();
+    x.fillStyle = '#3A2400'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(t, W / 2, 110, w - 60);
+    if (s2) { x.font = '700 54px system-ui, sans-serif'; x.fillStyle = '#FFFFFF'; x.strokeStyle = 'rgba(0,0,0,.55)'; x.lineWidth = 10; x.strokeText(s2, W / 2, 252); x.fillText(s2, W / 2, 252); }
+    tex.needsUpdate = true;
+  };
+  sp.set(text, sub);
+  sp.scale.set(.32, .32 * H / W, 1);
+  return sp;
 }

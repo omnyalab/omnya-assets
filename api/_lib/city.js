@@ -148,7 +148,19 @@ export async function onLot(n) {
 // THE SWITCH (same as EP2_LIVE in public/city/world.js): false until the Ep.2 reel goes out.
 export const EP2_LIVE = true;
 export const PREM = 100000;
-const RANGE = { penthouse: [PREM, PREM + 3], villa: [PREM + 3, PREM + 13] };
+// 7/11 (Nico): 20 townhouses on the water at €0.99 (tranches of 6, 6, 8) and 10 seafront villas at €2.99 (2 at a time).
+// Same order as `premium` in public/city/world.js (appended after the 13 places sold on 6/11).
+const RANGE = { penthouse: [PREM, PREM + 3], villa: [PREM + 3, PREM + 13], town: [PREM + 13, PREM + 33], sea: [PREM + 33, PREM + 43] };
+export const TRANCHES = { town: [6, 6, 8], sea: [2, 2, 2, 2, 2] };
+export const PRICES = { town: 99, sea: 299 }; // cents, sold with our own Stripe Checkout (api/city.js → buy)
+export const TITLES = { town: 'A townhouse on the water', sea: 'A seafront villa' };
+/** Where the current tranche stands: { no, left, size, upTo } (upTo = how many are out so far, e.g. 12). */
+export function tranche(kind, left) {
+  const t = TRANCHES[kind], total = t.reduce((a, b) => a + b, 0), sold = total - left;
+  let upTo = 0;
+  for (let i = 0; i < t.length; i++) { upTo += t[i]; if (sold < upTo) return { no: i + 1, left: upTo - sold, size: t[i], upTo, total }; }
+  return { no: t.length, left: 0, size: t[t.length - 1], upTo: total, total };
+}
 // The 8 houses around the fountain (the 8 lots closest to it). Bought for €0.99: whoever lived there moves to a free villa
 // in Omnyawood (never somewhere worse). A house someone paid for can't be bought again; the Stripe link stops after 8.
 export const FOUNTAIN = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -170,11 +182,14 @@ export async function forSale() {
   if (!EP2_LIVE) return { penthouse: false, villa: false, fountain: false, left: { penthouse: 0, villa: 0, fountain: 0 } };
   const count = async (kind) => { const [a, b] = RANGE[kind]; let k = 0; for (let n = a; n < b; n++) if (!(await onLot(n))) k++; return k; };
   const fountainLeft = async () => { let k = 0; for (const n of FOUNTAIN) if (!(await isPaid(await onLot(n)))) k++; return k; };
-  const [p, v, f] = await Promise.all([count('penthouse'), count('villa'), fountainLeft()]);
-  return { penthouse: p > 0, villa: v > 0, fountain: f > 0, left: { penthouse: p, villa: v, fountain: f } };
+  const [p, v, f, t, s] = await Promise.all([count('penthouse'), count('villa'), fountainLeft(), count('town'), count('sea')]);
+  return { penthouse: p > 0, villa: v > 0, fountain: f > 0, town: t > 0, sea: s > 0, left: { penthouse: p, villa: v, fountain: f, town: t, sea: s },
+    tranche: { town: tranche('town', t), sea: tranche('sea', s) } };
 }
 
 /** Moves a buyer to the first free penthouse or top villa. kind: 'penthouse' | 'villa'. */
+export async function stockOf(kind) { const [a, b] = RANGE[kind] || [0, 0]; let k = 0; for (let n = a; n < b; n++) if (!(await onLot(n))) k++; return k; }
+
 export async function upgrade(u, kind) {
   if (!EP2_LIVE) return { error: 'Ep.2 not live yet' };
   const me = await houseOf(u);
@@ -206,4 +221,69 @@ export async function upgrade(u, kind) {
   await cmd('SET', `${P}u:${u}`, JSON.stringify({ ...me, n, from: me.n, bought: Date.now() }));
   await cmd('ZADD', `${P}houses`, n, u);
   return { house: { u, from: me.n, n } };
+}
+
+// ---------- 7/11/2026: the yacht and the island, one of each, sold by auction ----------
+// A bid is a Stripe Checkout with capture_method 'manual': the money is only held on the card. A higher bid releases the
+// previous hold; when the timer ends the winner's hold is captured. The 12-hour timer starts with the first bid, and a bid in
+// the last 5 minutes pushes the end to 5 minutes from then. Starting bid €3.99, each bid at least €1 more.
+//   omnya:city:auc:<item>   JSON { top: { u, amt, pi, t } | null, end, done, hist: [{ u, amt, t }] }
+export const AUCTIONS = { yacht: { title: 'The Yacht', start: 399 }, island: { title: 'The Island', start: 399 } };
+export const AUC_MS = 12 * 3600e3, SNIPE_MS = 5 * 60e3, STEP = 100;
+
+export async function auctionState(item) {
+  const v = await cmd('GET', `${P}auc:${item}`);
+  return v ? JSON.parse(v) : { top: null, end: null, done: false, hist: [] };
+}
+export const minBid = (item, st) => (st.top ? st.top.amt + STEP : AUCTIONS[item].start);
+export const auctionOpen = (st) => !st.done && (!st.end || Date.now() < st.end);
+
+async function withLock(key, fn) {
+  for (let i = 0; i < 40; i++) {
+    if ((await cmd('SET', `${P}lock:${key}`, '1', 'NX', 'EX', 15)) === 'OK') {
+      try { return await fn(); } finally { await Promise.resolve(cmd('DEL', `${P}lock:${key}`)).catch(() => {}); }
+    }
+    await new Promise((r) => setTimeout(r, 150));
+  }
+  throw new Error('lock');
+}
+
+/** A held payment arrived (webhook): becomes the top bid if it is still high enough. Returns { ok, prev } or { error }. */
+export async function placeBid(item, { u, amt, pi }) {
+  if (!AUCTIONS[item]) return { error: 'item' };
+  return withLock(`auc:${item}`, async () => {
+    const st = await auctionState(item), now = Date.now();
+    if (!auctionOpen(st)) return { error: 'ended' };
+    if (amt < minBid(item, st)) return { error: 'outbid' };
+    const prev = st.top;
+    st.top = { u, amt, pi, t: now };
+    st.end = !st.end ? now + AUC_MS : Math.max(st.end, now + SNIPE_MS);
+    st.hist = [{ u, amt, t: now }, ...(st.hist || [])].slice(0, 8);
+    await cmd('SET', `${P}auc:${item}`, JSON.stringify(st));
+    return { ok: true, prev, end: st.end };
+  });
+}
+
+/** After the timer: marks the auction done once (the caller captures the payment). Returns the state if it just ended. */
+export async function closeAuction(item) {
+  return withLock(`auc:${item}`, async () => {
+    const st = await auctionState(item);
+    if (st.done || !st.end || Date.now() < st.end || !st.top) return null;
+    st.done = true;
+    await cmd('SET', `${P}auc:${item}`, JSON.stringify(st));
+    return st;
+  });
+}
+export async function markAuction(item, patch) {
+  const st = await auctionState(item);
+  await cmd('SET', `${P}auc:${item}`, JSON.stringify({ ...st, ...patch }));
+}
+/** What the pages show: no payment ids. */
+export async function publicAuctions() {
+  const out = {};
+  for (const item of Object.keys(AUCTIONS)) {
+    const st = await auctionState(item);
+    out[item] = { leader: st.top?.u || null, bid: st.top?.amt || 0, min: minBid(item, st), end: st.end, done: !!st.done, winner: st.done ? st.top?.u || null : null, bids: (st.hist || []).map((h) => ({ u: h.u, amt: h.amt, t: h.t })) };
+  }
+  return out;
 }

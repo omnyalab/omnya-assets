@@ -813,7 +813,9 @@ export function buildCity(scene, styleKey, opts = {}) {
         put('cyl', 'lamp', '#FFF3C4', [lx, 18.2, lz], [2.6, 2.4, 2.6]); put('cone', 'matte', '#D9483B', [lx, 20.6, lz], [3.6, 2.4, 3.6]); }
       for (let p = 0; p < 5; p++) { const px = x0 + 50 + p * 92;
         put('box', 'matte', '#C79B6B', [px, .7, zb + 38], [4, .3, 76], [0, 0, 0], null, 'XYZ', true);
-        for (let b = 0; b < 5; b++) for (const s of [-1, 1]) { if (Rd() < .2) continue; const big = Rd() < .35 ? 2.2 : 1.6; boat(px + s * (4 + 2 * big), zb + 8 + b * 15, s > 0 ? 0 : Math.PI, big); } }
+        const zc = { '-1': zb + 4, '1': zb + 4 }; // 7/11: boats in a row along the pier, never on top of each other (same Rd() calls)
+        for (let b = 0; b < 5; b++) for (const s of [-1, 1]) { if (Rd() < .2) continue; const big = Rd() < .35 ? 2.2 : 1.6, len = 9 * big + 3.4;
+          if (zc[s] + len > zb + 76) continue; boat(px + s * (4 + 2 * big), zc[s] + len / 2 - 1.5 * big, s > 0 ? 0 : Math.PI, big); zc[s] += len + 2; } }
       for (let b = 0; b < (lite ? 0 : 12); b++) sail(-700 + Rd() * 1500, zw + 50 + Rd() * 360, Rd() * 6, 1.8);
       for (let u = 0; u < 44; u++) { const ux = x1 + 30 + (u % 22) * 13, uz = zb - 13 + Math.floor(u / 22) * 10;
         put('cyl', 'matte', '#FFFFFF', [ux, 1.2, uz], [.1, 2.4, .1]); put('cone', 'flat', pick(Rd, ['#E0402E', '#FFD21F', '#2C5A9E', '#FFFFFF', '#FF8DB0']), [ux, 2.5, uz], [3.6, .7, 3.6]);
@@ -862,9 +864,83 @@ export function buildCity(scene, styleKey, opts = {}) {
       for (let k = 0; k < 10; k++) car(RS.x0 + 10 + Rd() * (RS.x1 - RS.x0 - 20), RS.z1 + 6 + (Rd() < .5 ? -2.2 : 2.2), Math.PI / 2, pick(Rd, CARS));
       // townhouses on the beach, facing the sea
       const zt = seaZ - 40; let x = RS.x0 + 8, k = 0;
-      while (x < RS.x1 - 8) { townhouse(x, zt, k++); x += 8.2; if (k % 8 === 0) x += 10; }
+      while (x < RS.x1 - 8) { townhouse(x, zt, k++); townAll.push({ x, z: zt }); x += 8.2; if (k % 8 === 0) x += 10; }
       for (let u = 0; u < (lite ? 12 : 26); u++) { const ux = RS.x0 + 14 + u * (RS.x1 - RS.x0 - 28) / (lite ? 12 : 26), uz = seaZ - 8;
         put('cyl', 'matte', '#FFFFFF', [ux, 1.2, uz], [.1, 2.4, .1]); put('cone', 'flat', pick(Rd, ['#E0402E', '#FFD21F', '#2C5A9E', '#FFFFFF', '#FF8DB0']), [ux, 2.5, uz], [3.6, .7, 3.6]); }
+    }
+  }
+  // ---------- 7/11/2026 THE SEAFRONT: a coast road that ties the city, the towers and the marina together, more green in
+  // The Residences, 10 seafront villas east of the marina, the yacht and the island (one each, sold by auction).
+  // Its own random stream and only after everything else: the lots and the houses already given never move.
+  function seaside() {
+    const Rs = rng(hashStr('omnya-seafront')), lite = !!opts.lite, zr = seaZ - 54, ASP = '#55575C';
+    const road = (x0, z0, x1, z1, w = 9) => { const l = Math.hypot(x1 - x0, z1 - z0); put('box', TX('asphalt', 'matte'), ASP, [(x0 + x1) / 2, .26, (z0 + z1) / 2], [w, .1, l], [0, Math.atan2(x1 - x0, z1 - z0), 0], null, 'XYZ', true); };
+    const palms = (x0, z0, x1, z1, off, step) => { const l = Math.hypot(x1 - x0, z1 - z0), ux = (x1 - x0) / l, uz = (z1 - z0) / l; for (let t = 6; t < l - 4; t += lite ? step * 2 : step) for (const s of [-1, 1]) palm(x0 + ux * t - uz * off * s, z0 + uz * t + ux * off * s, 1.3); };
+    // the coast road: from The Residences' boulevard, over the river, along the marina to the seafront villas
+    const xa = RES.x1, xb = 560, xr = riverX(zr);
+    road(RES.x0, zr, xr - 26, zr); road(xr + 26, zr, xb, zr); bridge(xr, zr, true);
+    palms(xa, zr, xr - 30, zr, 7, 13); palms(xr + 30, zr, -330, zr, 7, 13); palms(240, zr, xb, zr, 7, 13);
+    // three streets down from the city to the sea (the middle one lands on the marina)
+    const cols = Object.keys(colX).map(Number).filter((i) => inCity(i, NBZ) || inCity(i, NBZ - 1)).map((i) => colX[i] + colW[i] / 2 + ROAD / 2);
+    for (const want of [-330, -35, 30, 300]) { const x = cols.reduce((a, b) => (Math.abs(b - want) < Math.abs(a - want) ? b : a), cols[0]);
+      road(x, ext.z - 2, x, zr); palms(x, ext.z + 4, x, zr - 6, 6.5, 14); }
+    // the marina promenade meets the coast road
+    put('box', TX('paving', 'matte'), '#EFE4CC', [-35, .09, (zr + seaZ - 26) / 2], [520, .12, seaZ - 26 - zr - 4]);
+    for (let x = -290; x < 220; x += lite ? 40 : 20) { put('box', TX('grass', 'matte'), '#8CC460', [x, .2, zr + 10], [12, .14, 4]); if (Rs() < .7) tree(x, zr + 10, .55); }
+    // ---- more green in The Residences: palm avenues across the plaza and palms around every tower
+    { const RS = RES;
+      for (let z = RS.z0 + 30; z < RS.z1 - 10; z += 70) for (let x = RS.x0 + 10; x < RS.x1 - 6; x += lite ? 26 : 13) if (!RES_T.some(([tx, tz]) => Math.abs(x - tx) < 26 && Math.abs(z - tz) < 24)) palm(x, z, 1.25);
+      for (const [tx, tz] of RES_T) { for (let k = 0; k < (lite ? 6 : 12); k++) { const a = k / (lite ? 6 : 12) * Math.PI * 2; palm(tx + Math.sin(a) * 30, tz + Math.cos(a) * 27, 1.15 + Rs() * .3); }
+        if (!lite) for (let k = 0; k < 8; k++) { const a = Rs() * Math.PI * 2; tree(tx + Math.sin(a) * 36, tz + Math.cos(a) * 33, .6 + Rs() * .3); } }
+      // the street from the city bridge carries on into the plaza as a palm avenue up to the towers
+      let zb = 0, best = 1e9; for (let jj = -NBZ; jj < NBZ; jj++) { const z = rowZ[jj] + rowD[jj] / 2 + RZ / 2; if (Math.abs(z - 265) < best) { best = Math.abs(z - 265); zb = z; } }
+      // the towers stand in two rows: the avenue runs between them (z 290) and turns up to the bridge street
+      const za = 290, xe = RS.x1 - 6;
+      put('box', TX('asphalt', 'matte'), ASP, [(RS.x0 + 14 + xe) / 2, .3, za], [xe - RS.x0 - 14, .1, 9], [0, 0, 0], null, 'XYZ', true);
+      put('box', TX('asphalt', 'matte'), ASP, [xe, .3, (za + zb) / 2], [9, .1, Math.abs(za - zb) + 9], [0, 0, 0], null, 'XYZ', true);
+      put('box', TX('asphalt', 'matte'), ASP, [(xe + RS.x1 + 30) / 2, .3, zb], [RS.x1 + 30 - xe, .1, 9], [0, 0, 0], null, 'XYZ', true);
+      for (let x = RS.x0 + 24; x < xe - 8; x += lite ? 22 : 11) for (const s of [-1, 1]) palm(x, za + s * 7, 1.3);
+    }
+    // ---- 10 seafront villas east of the marina, on the beach, pool towards the sea
+    for (let i = 0; i < 10; i++) {
+      const x = 268 + i * 28, z = seaZ - 30, L = { sea: true, c: i, x, y: 0, z, yaw: 0, lw: 22, ld: 24, dist: 9 };
+      L.base = new THREE.Matrix4().setPosition(x, 0, z);
+      put('box', 'flat', '#E2D3B0', [0, .2, 0], [L.lw + 2, .4, L.ld + 2], [0, 0, 0], L.base);
+      put('box', TX('grass', 'matte'), '#9AD06C', [0, .45, -2], [L.lw, .1, L.ld - 6], [0, 0, 0], L.base);
+      put('box', TX('paving', 'matte'), '#EFE4CC', [0, .3, -L.ld / 2 - 7], [3.2, .1, 10], [0, 0, 0], L.base); // driveway to the coast road
+      seaLots.push(L);
+    }
+    // ---- the island: one villa alone in the sea, a beach all around, palms, a jetty and a white bridge to the shore
+    { const ix = 400, iz = seaZ + 130, R0 = 56;
+      put('disc', 'flat', st.sand, [ix, .3, iz], [R0 * 2 + 14, .6, R0 * 2 + 10]);
+      put('disc', 'flat', '#8CC460', [ix, .75, iz - 2], [R0 * 2 - 10, .5, R0 * 2 - 16]);
+      for (let k = 0; k < (lite ? 14 : 30); k++) { const a = k / (lite ? 14 : 30) * Math.PI * 2 + Rs() * .1; palm(ix + Math.sin(a) * (R0 - 6), iz + Math.cos(a) * (R0 - 9), 1.3 + Rs() * .4); }
+      const L = { island: true, x: ix, y: 1, z: iz, yaw: Math.PI, lw: 40, ld: 46, dist: 9 };
+      L.base = new THREE.Matrix4().makeRotationY(L.yaw).setPosition(ix, 1, iz);
+      const sLW = curLW, sLD = curLD; curLW = L.lw; curLD = L.ld; hillVilla(L.base, rng(hashStr('island-villa'))); curLW = sLW; curLD = sLD;
+      put('box', 'pent', '#FFD27A', [0, 9.6, -4], [L.lw - 9, .5, 9], [0, 0, 0], L.base); // a gold crown on the roof
+      put('cyl', 'matte', '#F4EEE2', [ix + 30, 1, iz + 26], [14, .5, 14]); put('cyl', 'pent', '#FFD27A', [ix + 30, 1.3, iz + 26], [10, .1, 10]); // the helipad
+      // no bridge (Nico 7/11): you get there only by boat, the tender waits at a small landing on the island's beach
+      put('box', 'matte', '#C79B6B', [ix - R0 - 4, .7, iz - 8], [16, .3, 4]);
+      boat(ix - R0 - 6, iz - 2, Math.PI / 2, 1.8);
+      islandAt = L;
+    }
+    // ---- the yacht: one superyacht at anchor off the marina, white with gold lines
+    { const x = -120, z = seaZ + 260, yaw = -.35, b = new THREE.Matrix4().makeRotationY(yaw).setPosition(x, 0, z);
+      put('box', 'matte', '#FFFFFF', [0, 2.2, 0], [13, 4.4, 58], [0, 0, 0], b);
+      put('cone', 'matte', '#FFFFFF', [0, 2.2, 29 + 8], [13, 16, 4.4], [Math.PI / 2, 0, 0], b);
+      put('box', 'matte', '#1E2A38', [0, .5, 0], [13.2, 1, 58], [0, 0, 0], b);
+      put('box', 'pent', '#FFD27A', [0, 3.6, 4], [13.25, .5, 58.5], [0, 0, 0], b); // the gold line
+      put('box', 'matte', '#F7F5F1', [0, 6, -4], [11, 3.4, 38], [0, 0, 0], b);
+      put('box', 'glass', '#1F2E3D', [0, 6.2, -4], [11.1, 1.6, 36], [0, 0, 0], b);
+      put('box', 'matte', '#F7F5F1', [0, 9.2, -6], [9, 3, 24], [0, 0, 0], b);
+      put('box', 'glass', '#1F2E3D', [0, 9.4, -5], [9.1, 1.4, 22], [0, 0, 0], b);
+      put('box', 'matte', '#FFFFFF', [0, 12, -9], [7, 2.6, 12], [0, 0, 0], b);
+      put('box', 'pent', '#FFD27A', [0, 13.4, -9], [7.2, .3, 12.2], [0, 0, 0], b);
+      put('cyl', 'matte', '#DADDE2', [0, 16, -9], [.4, 6, .4], [0, 0, 0], b);
+      put('box', 'pool', st.pool, [0, 4.6, -25], [7, .1, 6], [0, 0, 0], b); // pool on the stern
+      put('cyl', 'matte', '#F4EEE2', [0, 4.5, 20], [9, .2, 9], [0, 0, 0], b); put('cyl', 'pent', '#FFD27A', [0, 4.65, 20], [6.4, .1, 6.4], [0, 0, 0], b); // helipad on the bow
+      yachtAt = { x, z, yaw, y: 0, lw: 20, ld: 80, yacht: true };
     }
   }
   const Rd0 = rng(hashStr('omnya-towers'));
@@ -930,7 +1006,7 @@ export function buildCity(scene, styleKey, opts = {}) {
         put('box', 'tower', '#3F86D8', [x, (ya + yb) / 2, z], [w, yb - ya, w]);
         for (let f = Math.ceil(a * floors); f < b * floors; f += every) put('box', 'matte', '#F2F4F6', [x, b0 + f * fh, z], [w + 1.4, .45, w + 1.4], [0, 0, 0], null, 'XYZ', true); }
       put('cone', 'flat', '#9AA3AB', [x, b0 + Ht + 9, z], [8, 18, 8]);
-      if (main) put('box', 'pent', '#FFD27A', [x, b0 + Ht - 2.5, z], [20.4, 4, 20.4]);
+      put('box', 'pent', '#FFD27A', [x, b0 + Ht - 2.5, z], [20.4, 4, 20.4]); // 7/11: every top floor is a penthouse, lit
     } else if (type === 'B') {
       const segs = [[0, .45, 28], [.45, .78, 23], [.78, 1, 18]];
       for (const [a, b, w] of segs) { const ya = b0 + a * Ht, yb = b0 + b * Ht;
@@ -938,6 +1014,7 @@ export function buildCity(scene, styleKey, opts = {}) {
         for (let f = Math.ceil(a * floors); f < b * floors; f += every) put('box', 'matte', '#E2B53A', [x, b0 + f * fh + 1.2, z], [w + .3, 1, w + .3], [0, 0, 0], null, 'XYZ', true);
         put('box', 'matte', '#EFE9DC', [x, yb, z], [w + 2, 1, w + 2]); }
       if (main) put('box', 'pent', '#FFD27A', [x, b0 + Ht + 2.5, z], [15, 5, 15]);
+      else put('box', 'pent', '#FFD27A', [x, b0 + Ht - 2, z], [18.3, 3.4, 18.3]); // 7/11: the penthouse of the other stone towers, lit
       put('hip', 'flat', '#D9A520', [x, b0 + Ht + (main ? 9 : 5), z], [14, 12, 14]);
       put('cyl', 'matte', '#D9A520', [x, b0 + Ht + (main ? 20 : 16), z], [.5, 10, .5]);
     } else {
@@ -945,7 +1022,8 @@ export function buildCity(scene, styleKey, opts = {}) {
       put('disc', 'matte', '#F2F2EE', [x, b0 + Ht / 2, z], [R * 2, Ht, R * 2]);
       const n = lite ? 10 : 16;
       for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2; put('box', 'glass', '#2FB7C4', [x + Math.sin(a) * (R + .05), b0 + Ht / 2, z + Math.cos(a) * (R + .05)], [2.6, Ht - 3, .3], [0, a, 0]); }
-      for (let f = 6; f < floors; f += lite ? 12 : 6) put('disc', 'matte', '#F2F2EE', [x, b0 + f * fh, z], [R * 2 + 1.2, .5, R * 2 + 1.2], [0, 0, 0], null, 'XYZ', true);
+      for (let f = 1; f < floors; f += lite ? 3 : 1) put('disc', 'matte', '#F2F2EE', [x, b0 + f * fh, z], [R * 2 + (f % 6 ? .7 : 1.4), f % 6 ? .32 : .5, R * 2 + (f % 6 ? .7 : 1.4)], [0, 0, 0], null, 'XYZ', true); // 7/11: every floor shows
+      put('disc', 'pent', '#FFD27A', [x, b0 + Ht - fh / 2, z], [R * 2 + .3, fh - .6, R * 2 + .3]); // the penthouse, lit
       put('disc', 'matte', '#E8E6E0', [x, b0 + Ht + .6, z], [R * 2 + 1, 1.2, R * 2 + 1]);
       for (let k = 0; k < (lite ? 4 : 9); k++) { const a = k / 9 * Math.PI * 2; put('ico', 'flat', pick(Rd0, ['#4FA85A', '#5DB866', '#3F9A52']), [x + Math.sin(a) * 6, b0 + Ht + 3, z + Math.cos(a) * 6], [4, 3.6, 4], [k, k, 0]); }
     }
@@ -1001,6 +1079,7 @@ export function buildCity(scene, styleKey, opts = {}) {
   // Omnyawood: the road (a spiral from the foot to near the top) and the villas along it, lowest first.
   // The last 10 (the highest, under the letters) are the ones for sale (row 1); the rest are free (row 0).
   const hillLots = [], hillRoad = [];
+  const townAll = [], seaLots = []; let yachtAt = null, islandAt = null; // 7/11: the seafront (see seaside())
   if (DIS.hills) {
     const H = HILL, zr = rowZ[0] + rowD[0] / 2 + RZ / 2, f0 = .9, f1 = .3, TURNS = 1.8, N = 240;
     const t0 = -Math.acos(Math.max(-1, Math.min(1, (zr - H.cz) / (H.c * f0))));
@@ -1027,6 +1106,7 @@ export function buildCity(scene, styleKey, opts = {}) {
     });
   }
   districts();
+  if (DIS.sea) seaside();
 
   // instancing
   function makeGroup(bk) {
@@ -1055,7 +1135,7 @@ export function buildCity(scene, styleKey, opts = {}) {
   // Omnya City sito: tutte le case prenotate in un solo gruppo (poche draw call anche con migliaia di case)
   function makeHouses(items) {
     const saved = buckets; buckets = new Map(); const sLW = curLW, sLD = curLD;
-    for (const { L, seed } of items) { house.prev = null; curLW = L.lw; curLD = L.ld; if (L.hills) hillVilla(L.base, rng(seed)); else if (L.mega) megaVilla(L.base, rng(seed)); else house(L.base, seed, L.dist); }
+    for (const { L, seed } of items) { house.prev = null; curLW = L.lw; curLD = L.ld; if (L.hills || L.sea) hillVilla(L.base, rng(seed)); else if (L.mega) megaVilla(L.base, rng(seed)); else house(L.base, seed, L.dist); }
     const g = makeGroup(buckets); buckets = saved; curLW = sLW; curLD = sLD; return g;
   }
   // the free lots of The Hills as white models: they get colour when someone moves in
@@ -1077,5 +1157,7 @@ export function buildCity(scene, styleKey, opts = {}) {
   // night: 0 = day, 1 = night (the end of the Ep.2 reel)
   const setNight = (k) => { M.glass.emissiveIntensity = k * .85; M.win.emissiveIntensity = k * 1.1; M.tower.emissiveIntensity = k * .8; M.pool.emissiveIntensity = k * .75; M.lamp.emissiveIntensity = k * 3; M.pent.emissiveIntensity = 1.6 + k * 1.4;
     M.water.envMapIntensity = 1.2 * (1 - k * .7); M.pool.envMapIntensity = M.water.envMapIntensity; };
-  return { lots, hillLots, hl, PX, PZ, ext, seaZ, stats, makeHouse, makeHouses, makeModels, makeWith, st, setDetail, setNight, inCity, block, HILL, RES, residences: DIS.residences ? RES_T.map(([x, z, floors, main]) => ({ x, z, floors, main: !!main })) : [] };
+  // 7/11: the 20 townhouses for sale are the ones closest to the river (the end of the row)
+  const townLots = townAll.slice(-20).reverse().map((t, k) => ({ town: true, c: k, x: t.x, y: 0, z: t.z - 2, yaw: 0, lw: 8.6, ld: 19, dist: 9 }));
+  return { townLots, seaLots, yachtAt, islandAt, lots, hillLots, hl, PX, PZ, ext, seaZ, stats, makeHouse, makeHouses, makeModels, makeWith, st, setDetail, setNight, inCity, block, HILL, RES, residences: DIS.residences ? RES_T.map(([x, z, floors, main]) => ({ x, z, floors, main: !!main })) : [] };
 }
