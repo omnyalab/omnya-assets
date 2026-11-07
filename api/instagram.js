@@ -4,6 +4,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { onComment, onMessaging, tick } from './_lib/ig.js';
 
+const testerMode = !!(process.env.IG_ONLY || '').trim();
 const MESSAGE_FIELDS = new Set(['messages', 'messaging_postbacks', 'messaging_seen', 'message_echoes']);
 
 export function GET(request) {
@@ -38,7 +39,18 @@ export async function POST(request) {
       ...(entry.messaging || []).map((m) => ['message', m]),
     ].filter(Boolean);
     // messages that went to another app (ManyChat) as the main receiver: we only see them, we can't answer
-    for (const m of entry.standby || []) console.log('[ig] standby', m.sender?.id || '', JSON.stringify(String(m.postback?.payload || m.message?.text || '').slice(0, 40)));
+    // in tester mode the bot answers its testers there too (ManyChat stays the main app for everyone else)
+    for (const m of entry.standby || []) {
+      let r = 'seen';
+      if (testerMode) {
+        try {
+          r = await onMessaging(own, m);
+        } catch (e) {
+          r = 'error ' + e.message;
+        }
+      }
+      console.log('[ig] standby', m.sender?.id || '', JSON.stringify(String(m.postback?.payload || m.message?.text || '').slice(0, 40)), '→', r);
+    }
     for (const [kind, v] of events) {
       try {
         const r = kind === 'comment' ? await onComment(own, v) : await onMessaging(own, v);

@@ -348,8 +348,12 @@ export async function onMessaging(ownId, m) {
   if (!uid || uid === ownId) return 'skip';
   if (ONLY.size && !ONLY.has(String(uid)) && !(await kv.get(`tester:${uid}`))) {
     // a tap can come with a different id from the comment's: ask Instagram who it is
+    if (await kv.get(`nottester:${uid}`)) return 'not tester';
     const p = await profile(uid);
-    if (!ONLY.has(String(p.username || '').toLowerCase())) return 'not tester';
+    if (!ONLY.has(String(p.username || '').toLowerCase())) {
+      await kv.set(`nottester:${uid}`, 1, 86_400);
+      return 'not tester';
+    }
     await kv.set(`tester:${uid}`, 1, 7 * 86_400);
   }
 
