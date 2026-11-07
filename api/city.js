@@ -107,7 +107,7 @@ export async function POST(request) {
     return json({ error: 'action' }, 404);
   } catch (e) {
     console.error('[city]', a, e);
-    return json({ error: 'server' }, 500);
+    return json({ error: 'server', stripe: e?.type?.startsWith?.('Stripe') ? e.code || e.type : undefined }, 500);
   }
 }
 
@@ -156,6 +156,6 @@ export async function GET(request) {
     return json({ error: 'action' }, 404);
   } catch (e) {
     console.error('[city]', a, e);
-    return json({ error: 'server' }, 500);
+    return json({ error: 'server', stripe: e?.type?.startsWith?.('Stripe') ? e.code || e.type : undefined }, 500);
   }
 }
