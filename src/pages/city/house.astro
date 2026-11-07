@@ -15,18 +15,19 @@ Object.assign(up, {
   // Payment Links (7/11, from Nico's Stripe, like the others): limit 20 and 10, product names matched by api/stripe-webhook.js
   town: { title: 'A townhouse on the water', price: '€0.99', was: '€19', checkout: 'https://buy.stripe.com/7sY00iacRh2M3hAaix8so0x' },
   sea: { title: 'A seafront villa', price: '€2.99', was: '€29', checkout: 'https://buy.stripe.com/cNi7sKgBfeUE9FY2Q58so0y' },
+  sky: { title: 'The penthouse', price: '€0.99', was: '€19', buy: '/api/city/buy?kind=sky' }, // 7/11: 3 new penthouses on the roofs
   yacht: { title: 'The Yacht', view: '/city/yacht' },
   island: { title: 'The Island', view: '/city/island' },
 });
 const book = `<span class="bk4" aria-hidden="true"><span class="b"><span class="k"></span><span class="p"></span><span class="tp"></span><span class="s"><i>OMNYA CITY</i></span><span class="f"></span></span></span>`;
 const places = [
+  { id: 'fountain', img: '/city/up/fountain.jpg', name: 'By the fountain', pick: 'A house by the fountain', line: 'Downtown, one of the first 8 houses', card: 'Downtown, one of the first 8 houses of the city.' },
+  { id: 'sky', img: '/city/up/penthouse.jpg', name: 'The penthouse', line: 'Top floor of a tower in The Residences', card: 'Top floor of a tower in The Residences, the whole city below.' },
+  { id: 'villa', img: '/city/up/villa.jpg', name: 'A top villa', pick: 'A top villa in Omnyawood', line: 'Pool and view, under the letters', card: 'Omnyawood, the top terrace under the letters, with the pool.' },
   { id: 'town', img: '/city/up/town.jpg', name: 'On the water', pick: 'A townhouse on the water', line: 'The Residences, garden on the beach', card: 'A townhouse on the beach of The Residences, the sea in front.' },
   { id: 'sea', img: '/city/up/sea.jpg', name: 'Seafront villa', pick: 'A seafront villa', line: 'Pool on the beach, by the marina', card: 'A villa on the beach by the marina, the pool facing the sea.' },
   { id: 'yacht', img: '/city/up/yacht.jpg', name: 'Yacht of ???', pick: 'Yacht of ???', line: 'Only one in the city · auction', card: 'The only yacht in the city. Its name will be yours.', gold: true },
   { id: 'island', img: '/city/up/island.jpg', name: 'Island of ???', pick: 'Island of ???', line: 'Only one in the city · auction', card: 'A villa alone on its own island. Only one.', gold: true },
-  { id: 'penthouse', img: '/city/up/penthouse.jpg', name: 'The penthouse', line: 'Top floor of a tower in The Residences', card: 'Top floor of a tower in The Residences, the whole city below.' },
-  { id: 'villa', img: '/city/up/villa.jpg', name: 'A top villa', pick: 'A top villa in Omnyawood', line: 'Pool and view, under the letters', card: 'Omnyawood, the top terrace under the letters, with the pool.' },
-  { id: 'fountain', img: '/city/up/fountain.jpg', name: 'By the fountain', pick: 'A house by the fountain', line: 'Downtown, one of the first 8 houses', card: 'Downtown, one of the first 8 houses of the city.' },
 ];
 const pickBook = `<div class="pick" data-g="book">
   <label class="on" data-go="/go/full-city?k=city" data-p="1.99"><i></i><div>The Full City Guide<span>every prompt to build a 3D city like this</span></div><strong data-full>€1.99<s>€19</s></strong></label>
@@ -126,11 +127,11 @@ const pickBook = `<div class="pick" data-g="book">
         <div class="pick" data-g="move">
           {places.map((p, i) => (
             <label class={`${i === 0 ? 'on' : ''}${p.gold ? ' gold' : ''}`} data-place={p.id} data-img={p.img} data-name={p.name} data-href={up[p.id].view || up[p.id].buy || up[p.id].checkout || cityWhatsApp} data-stripe={up[p.id].checkout ? '1' : ''} data-buy={up[p.id].buy ? '1' : ''} data-btn={up[p.id].view ? 'View it' : `Move my house · ${up[p.id].price}`} data-title={up[p.id].title}>
-              <i></i><div>{p.pick || p.name}<span>{p.line}<span data-left-line={p.id}></span></span>{(i === 0 || p.id === 'sea') && <em class="tag" data-left-tag={p.id}></em>}</div>{up[p.id].view ? <strong class="view">View</strong> : <strong>{up[p.id].price}<s>{up[p.id].was}</s></strong>}
+              <i></i><div>{p.pick || p.name}<span>{p.line}<span data-left-line={p.id}></span></span>{['fountain', 'sky', 'sea', 'town'].includes(p.id) && <em class="tag" data-left-tag={p.id}></em>}</div>{up[p.id].view ? <strong class="view">View</strong> : <strong>{up[p.id].price}<s>{up[p.id].was}</s></strong>}
             </label>
           ))}
         </div>
-        <a class="btn" id="movego" href={up.town.checkout} target="_blank" rel="noopener">Move my house · €0.99</a>
+        <a class="btn" id="movego" href={up.fountain.checkout} target="_blank" rel="noopener">Move my house · €0.99</a>
         <button class="no" type="button" data-close>No thanks, I'll keep my free house</button>
       </div>
     </div>

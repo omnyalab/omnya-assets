@@ -152,8 +152,8 @@ export const PREM = 100000;
 // Same order as `premium` in public/city/world.js (appended after the 13 places sold on 6/11).
 const RANGE = { penthouse: [PREM, PREM + 3], villa: [PREM + 3, PREM + 13], town: [PREM + 13, PREM + 33], sea: [PREM + 33, PREM + 43] };
 export const TRANCHES = { town: [6, 6, 8], sea: [2, 2, 2, 2, 2] };
-export const PRICES = { town: 99, sea: 299 }; // cents, sold with our own Stripe Checkout (api/city.js → buy)
-export const TITLES = { town: 'A townhouse on the water', sea: 'A seafront villa' };
+export const PRICES = { town: 99, sea: 299, sky: 99 }; // cents, sold with our own Stripe Checkout (api/city.js → buy)
+export const TITLES = { town: 'A townhouse on the water', sea: 'A seafront villa', sky: 'The penthouse' };
 /** Where the current tranche stands: { no, left, size, upTo } (upTo = how many are out so far, e.g. 12). */
 export function tranche(kind, left) {
   const t = TRANCHES[kind], total = t.reduce((a, b) => a + b, 0), sold = total - left;
@@ -164,6 +164,8 @@ export function tranche(kind, left) {
 // The 8 houses around the fountain (the 8 lots closest to it). Bought for €0.99: whoever lived there moves to a free villa
 // in Omnyawood (never somewhere worse). A house someone paid for can't be bought again; the Stripe link stops after 8.
 export const FOUNTAIN = [1, 2, 3, 4, 5, 6, 7, 8];
+// the top floors of the main tower and of the two 30-floor towers (W.seq with ep2 = 211), sold on 7/11
+export const SKY = [211, 375, 405];
 const isPaid = async (u) => !!u && Number(await cmd('SISMEMBER', `${P}paid`, u)) === 1;
 async function fountainFree() { for (const n of FOUNTAIN) if (!(await isPaid(await onLot(n)))) return n; return null; }
 async function freeVillaOnly() { // a free villa of Omnyawood only (odd numbers from ep2, while the villas last)
@@ -182,18 +184,37 @@ export async function forSale() {
   if (!EP2_LIVE) return { penthouse: false, villa: false, fountain: false, left: { penthouse: 0, villa: 0, fountain: 0 } };
   const count = async (kind) => { const [a, b] = RANGE[kind]; let k = 0; for (let n = a; n < b; n++) if (!(await onLot(n))) k++; return k; };
   const fountainLeft = async () => { let k = 0; for (const n of FOUNTAIN) if (!(await isPaid(await onLot(n)))) k++; return k; };
-  const [p, v, f, t, s] = await Promise.all([count('penthouse'), count('villa'), fountainLeft(), count('town'), count('sea')]);
-  return { penthouse: p > 0, villa: v > 0, fountain: f > 0, town: t > 0, sea: s > 0, left: { penthouse: p, villa: v, fountain: f, town: t, sea: s },
+  const [p, v, f, t, s, k] = await Promise.all([count('penthouse'), count('villa'), fountainLeft(), count('town'), count('sea'), (async () => { let c = 0; for (const n of SKY) if (!(await isPaid(await onLot(n)))) c++; return c; })()]);
+  return { penthouse: p > 0, villa: v > 0, fountain: f > 0, town: t > 0, sea: s > 0, sky: k > 0, left: { penthouse: p, villa: v, fountain: f, town: t, sea: s, sky: k },
     tranche: { town: tranche('town', t), sea: tranche('sea', s) } };
 }
 
 /** Moves a buyer to the first free penthouse or top villa. kind: 'penthouse' | 'villa'. */
-export async function stockOf(kind) { const [a, b] = RANGE[kind] || [0, 0]; let k = 0; for (let n = a; n < b; n++) if (!(await onLot(n))) k++; return k; }
+export async function stockOf(kind) { if (kind === 'sky') return (await forSale()).left.sky; const [a, b] = RANGE[kind] || [0, 0]; let k = 0; for (let n = a; n < b; n++) if (!(await onLot(n))) k++; return k; }
 
 export async function upgrade(u, kind) {
   if (!EP2_LIVE) return { error: 'Ep.2 not live yet' };
   const me = await houseOf(u);
   if (!me) return { error: 'no house' };
+  if (kind === 'sky') {
+    // 7/11 (Nico): the penthouses of the 3 towers not sold on 6/11 (main tower #211, the two 30-floor towers #375 and #405).
+    // Whoever lives there now swaps with the buyer (gets the buyer's old house), same as the fountain houses.
+    if (SKY.includes(me.n)) return { error: 'already there' };
+    let n = null; for (const k of SKY) if (!(await isPaid(await onLot(k)))) { n = k; break; }
+    if (!n) return { error: 'sold out' };
+    const was = await onLot(n);
+    let moved = null;
+    if (was) {
+      const h = await houseOf(was);
+      await cmd('SET', `${P}u:${was}`, JSON.stringify({ ...h, n: me.n, from: n, moved: Date.now() }));
+      await cmd('ZADD', `${P}houses`, me.n, was);
+      moved = { u: was, from: n, to: me.n };
+    }
+    await cmd('SET', `${P}u:${u}`, JSON.stringify({ ...me, n, from: me.n, bought: Date.now() }));
+    await cmd('ZADD', `${P}houses`, n, u);
+    await cmd('SADD', `${P}paid`, u);
+    return { house: { u, from: me.n, n }, moved };
+  }
   if (kind === 'fountain') {
     if (FOUNTAIN.includes(me.n)) return { error: 'already there' };
     const n = await fountainFree();

@@ -78,8 +78,8 @@ async function start() {
   // 7/11 upsell (board approved by Nico): MOVE UP opens the place picker, only with what is still for sale
   const sale = all.forSale || {};
   const left = sale.left || {};
-  const mine = { penthouse: !!L.pent, villa: !!(L.hills && L.premium), fountain: !L.floor && !L.hills && !L.town && !L.sea && n <= 8, town: !!L.town, sea: !!L.sea };
-  const open = Object.fromEntries(['town', 'sea', 'penthouse', 'villa', 'fountain'].map((k) => [k, !!sale[k] && !mine[k] && (left[k] ?? 1) > 0]));
+  const mine = { penthouse: !!L.pent, villa: !!(L.hills && L.premium), fountain: !L.floor && !L.hills && !L.town && !L.sea && n <= 8, town: !!L.town, sea: !!L.sea, sky: !!L.pent };
+  const open = Object.fromEntries(['fountain', 'sky', 'villa', 'town', 'sea', 'penthouse'].map((k) => [k, !!sale[k] && !mine[k] && (left[k] ?? 1) > 0]));
   const auc = all.auctions || {};
   for (const k of ['yacht', 'island']) open[k] = !!auc[k] && !auc[k].done; // 7/11: one of each, by auction (only "View")
   const where = `#${n.toLocaleString('en')} in ${placeName(L)}`;
@@ -92,13 +92,13 @@ async function start() {
     // the last "Only n remaining out of 20 · they're going fast"; seafront villas 2 at a time
     const T = tr[k];
     const nLeft = T ? T.left : left[k];
-    const txt = !nLeft ? '' : T && k === 'town' && T.no > 1 ? `Only ${nLeft} remaining out of ${T.upTo}${T.no === 3 ? ' · going fast' : ''}` : `Only ${nLeft} left`;
+    const txt = !nLeft || (T && k === 'town' && T.no === 1) ? '' : T && k === 'town' && T.no > 1 ? `Only ${nLeft} remaining out of ${T.upTo}${T.no === 3 ? ' · going fast' : ''}` : `Only ${nLeft} left`;
     // Nico 7/11: the bars look almost full on purpose
     const bar = nLeft ? Math.max(84, 100 - nLeft * 1.5) : 100;
     document.querySelectorAll(`[data-left="${k}"]`).forEach((e) => (e.textContent = txt));
     document.querySelectorAll(`[data-bar="${k}"]`).forEach((e) => (e.style.width = bar + '%'));
     document.querySelectorAll(`[data-left-tag="${k}"]`).forEach((e) => (txt ? (e.textContent = txt) : e.remove()));
-    document.querySelectorAll(`[data-left-line="${k}"]`).forEach((e) => (e.textContent = k !== 'penthouse' && k !== 'town' && k !== 'sea' && nLeft && !(T && k === 'town' && T.no > 1) ? ` · only ${nLeft} left` : ''));
+    document.querySelectorAll(`[data-left-line="${k}"]`).forEach((e) => (e.textContent = !['penthouse', 'sky', 'town', 'sea', 'fountain'].includes(k) && nLeft && !(T && k === 'town' && T.no > 1) ? ` · only ${nLeft} left` : ''));
     if (k === 'yacht' || k === 'island') { const A = auc[k] || {}; const t = A.leader ? `Top bid €${(A.bid / 100).toFixed(2)}` : 'Starts at €3.99';
       document.querySelectorAll(`[data-left-line="${k}"]`).forEach((e) => (e.textContent = ` · ${t}`)); }
     if (!open[k]) document.querySelectorAll(`[data-place="${k}"]`).forEach((e) => e.remove());
