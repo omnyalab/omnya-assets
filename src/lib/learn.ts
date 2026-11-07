@@ -8,6 +8,10 @@ import type { Lang } from '../i18n';
 export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle' | 'session' | 'build' | 'community'
   // offers shown only after a purchase, on /learn/thanks/<product>
   | 'session-reader' | 'rest-30' | 'rest-50' | 'build-upgrade' | 'sample'
+  // the other two playbooks after buying 02 (€30) or 03 (€40), with the 7/11 prices (01 €79, 02 €49, 03 €39)
+  | 'rest-02' | 'rest-03'
+  // everything we teach: the three Full blueprints and the three playbooks, €39, only after a free blueprint (7/11)
+  | 'everything'
   // the free PDF people claim from the reel DM, on /learn/<word>
   | 'free'
   // the free tower PDF, on /the-tower-blueprint (3/11)
@@ -22,9 +26,9 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'full-city';
 
 export const products: { id: ProductId; checkout: string }[] = [
-  { id: 'white-to-real', checkout: 'https://buy.stripe.com/9B66oGet7bIs3hAeyN8so00' },
-  { id: 'reel', checkout: 'https://buy.stripe.com/6oUbJ084J4g06tMfCR8so01' },
-  { id: 'before-it-exists', checkout: 'https://buy.stripe.com/9B66oGacReUE2dwfCR8so02' },
+  { id: 'white-to-real', checkout: 'https://buy.stripe.com/aFaeVcbgVdQA2dwaix8so0s' },
+  { id: 'reel', checkout: 'https://buy.stripe.com/3cI28q84J5k47xQ3U98so0t' },
+  { id: 'before-it-exists', checkout: 'https://buy.stripe.com/6oUaEWdp3eUEcSabmB8so0u' },
   { id: 'bundle', checkout: 'https://buy.stripe.com/14A8wO5WB6o82dwfCR8so03' },
   { id: 'session', checkout: 'https://buy.stripe.com/7sY14m2KpfYI19s2Q58so04' },
   { id: 'build', checkout: 'https://buy.stripe.com/00w5kCacR27SbO6bmB8so05' },
@@ -32,6 +36,9 @@ export const products: { id: ProductId; checkout: string }[] = [
   { id: 'session-reader', checkout: 'https://buy.stripe.com/00w7sKet74g03hA62h8so06' },
   { id: 'rest-30', checkout: 'https://buy.stripe.com/9B66oGbgVaEo9FYgGV8so07' },
   { id: 'rest-50', checkout: 'https://buy.stripe.com/bJedR870F9Ak5pI0HX8so08' },
+  { id: 'rest-02', checkout: 'https://buy.stripe.com/fZu9ASdp3eUE6tM62h8so0v' },
+  { id: 'rest-03', checkout: 'https://buy.stripe.com/6oUfZget7aEoaK29et8so0w' },
+  { id: 'everything', checkout: 'https://buy.stripe.com/9B68wOgBf13O6tMbmB8so0r' },
   { id: 'build-upgrade', checkout: 'https://buy.stripe.com/8x23cufxbcMw4lE76l8so09' },
   { id: 'sample', checkout: '' },
   { id: 'free', checkout: '/learn/free/omnya-lab-blueprint.pdf' },
@@ -65,8 +72,11 @@ export const full3dDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.com/
 /** The Full City Blueprint (5/11): the same 1,000 followers launch, €1.99 until Sunday. */
 export const fullCityDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.com/4gMfZg3Ot3bWbO6duJ8so0g' };
 
-/** All three playbooks (6/11): €39 instead of €79 until the same Sunday (the three one by one are €107), then /go/bundle sends to the €79 link again. */
-export const bundleDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.com/3cI7sK1Gl5k45pI3U98so0q' };
+/** All three playbooks: €79 again from 7/11 (Nico: the €39 price is only for "Everything we teach" after a free blueprint). The 6/11 €39 deal is off. */
+export const bundleDeal = { ...fullTowerDeal, until: '2026-11-07T00:00:00+01:00', checkout: '' };
+
+/** Playbook prices from 7/11 (one by one €167, all three €79). Used for the "Are you sure?" box and the funnels. */
+export const prices = { 'white-to-real': 79, reel: 49, 'before-it-exists': 39, bundle: 79, everything: 39 } as const;
 
 /**
  * After each purchase the checkout returns to /learn/thanks/<product>. That page makes one
@@ -75,9 +85,11 @@ export const bundleDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.com/
  * difference to the next tier. No countdowns, no fake scarcity.
  */
 export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: ProductId; down: ProductId }>> = {
-  'white-to-real': { kind: 'pdf', oto: 'session-reader', down: 'rest-30' },
-  reel: { kind: 'pdf', oto: 'session-reader', down: 'rest-50' },
-  'before-it-exists': { kind: 'pdf', oto: 'sample', down: 'rest-50' },
+  // 01 costs as much as all three, so after it there is no "other two" offer (7/11)
+  'white-to-real': { kind: 'pdf', oto: 'session-reader', down: 'sample' },
+  reel: { kind: 'pdf', oto: 'rest-02', down: 'session-reader' },
+  'before-it-exists': { kind: 'pdf', oto: 'rest-03', down: 'sample' },
+  everything: { kind: 'pdf', oto: 'session-reader', down: 'sample' },
   bundle: { kind: 'pdf', oto: 'session-reader', down: 'community' },
   session: { kind: 'lesson', oto: 'build-upgrade', down: 'sample' },
   build: { kind: 'lesson', oto: 'sample', down: 'community' },
@@ -146,10 +158,11 @@ const pdfs = {
 } as const;
 type FileKey = keyof (typeof pdfs)['en'];
 const bundleFiles: FileKey[] = ['white-to-real', 'reel', 'before-it-exists', 'prompts', 'checklist'];
+const everythingFiles: FileKey[] = ['full-tower', 'full-3d', 'full-city', ...bundleFiles];
 
 /** What a buyer downloads after paying for a PDF product (the bundle gets all five files). */
 export function filesFor(id: ProductId, lang: Lang) {
-  const keys: FileKey[] = id === 'bundle' ? bundleFiles : id in pdfs.en ? [id as FileKey] : [];
+  const keys: FileKey[] = id === 'bundle' ? bundleFiles : id === 'everything' ? everythingFiles : id in pdfs.en ? [id as FileKey] : [];
   return keys.map((k) => ({ name: pdfs[lang][k][0], href: `${FILES}/${lang}/${pdfs[lang][k][1]}` }));
 }
 

@@ -11,11 +11,12 @@ const free = goHref('free-tower', 'en');
 const full = goHref('full-tower', 'en');
 const sample = goHref('sample', 'en');
 const bundle = goHref('bundle', 'en');
+import OptIn from '../components/OptIn.astro';
 ---
 
 <Base page="learn" header={false} title="How to sell every floor of a tower with AI" description="Steal our floor method: from the tower to the plan of one level, its 3D and every room, free in five steps, and the Full Tower Blueprint with every prompt.">
 <div class="x3">
-<a class="x3-flash" href="#pack" data-deal><b>2,000 followers offer</b><span>All three playbooks €39 <s>€107</s></span><i aria-hidden="true">↓</i></a>
+<OptIn slug="the-tower-floors" free="free-tower" word="Floor" cover="/learn/tw_cover_free.webp" hero="/learn/tw_hero.webp" heroMobile="/learn/tw_hero_mobile.webp" />
 <section class="x3-hero" id="top">
   <picture class="x3-hero__bg"><source media="(max-width:899px)" srcset="/learn/tw_hero_mobile.webp"><img src="/learn/tw_hero.webp" width="2400" height="1339" fetchpriority="high" alt="SAMAR, the tower at sunset over the marina"></picture>
   <div class="x3-in">
@@ -72,7 +73,7 @@ const bundle = goHref('bundle', 'en');
   <div class="pk__glow" aria-hidden="true"></div>
   <div class="x3-in">
     <div class="x3-card">
-      <span class="x3-card__tab" data-deal>2,000 followers offer · save €68</span><span class="x3-card__tab" data-after hidden>The whole studio · save €28</span>
+      <span class="x3-card__tab">The whole studio · save €88</span>
       <div class="arc">
         <div class="arc__fan"><div class="arc__halo" aria-hidden="true"></div>
           <img class="arc__b arc__b--1" src="/learn/pk_pb01.webp" width="640" height="905" loading="lazy" alt="Playbook 01, From 3D to real photo">
@@ -84,13 +85,13 @@ const bundle = goHref('bundle', 'en');
         <p class="x3-kick">Got the tower? Take the rest</p>
         <h2 class="x3-T">The whole<br><span class="x3-box">studio</span><br>method</h2>
         <ul class="x3-vs">
-          <li><i></i><div><b>01 · From 3D to real photo</b><span>the grey model becomes the image the client approves</span></div><em class="pr">€49</em></li>
-          <li><i></i><div><b>02 · The reel they comment on</b><span>our most watched format, with the real cost of every clip</span></div><em class="pr">€29</em></li>
-          <li><i></i><div><b>03 · Sell it before it exists</b><span>the 8 images and the film an off-plan launch needs</span></div><em class="pr">€29</em></li>
+          <li><i></i><div><b>01 · From 3D to real photo</b><span>the grey model becomes the image the client approves</span></div><em class="pr">€79</em></li>
+          <li><i></i><div><b>02 · The reel they comment on</b><span>our most watched format, with the real cost of every clip</span></div><em class="pr">€49</em></li>
+          <li><i></i><div><b>03 · Sell it before it exists</b><span>the 8 images and the film an off-plan launch needs</span></div><em class="pr">€39</em></li>
           <li class="xtra"><i></i><div><b>The prompt files + the checklist</b><span>every prompt we use, and what we check before any delivery</span></div><em class="only">Only here</em></li>
         </ul>
         <div class="x3-pay">
-          <div class="x3-pay__price" data-deal><small>All three</small><b>€39</b><s>€107</s><span>−64%</span></div><div class="x3-pay__price" data-after hidden><small>All three</small><b>€79</b><s>€107</s><span>−26%</span></div>
+          <div class="x3-pay__price"><small>All three</small><b>€79</b><s>€167</s><span>−53%</span></div>
           <a class="x3-cta" href={bundle}><span>Get the pack</span><i>→</i></a>
         </div>
       </div>

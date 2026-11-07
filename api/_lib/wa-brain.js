@@ -52,7 +52,7 @@ WHAT TO DO
 
 HAND OFF TO NICO (decision "handoff") only when the lead actually asks or sends one of these. A lead who just tells you about the project, even a big developer with towers who wants the interactive 3d, is NOT a handoff: reply, tell them the 3d tower is a paid project, and keep the chat going (what they have, how many floors or apartment types, if they want the free sample photo of one room first).
 Handoff cases:
-- price: they ask the price of any work (images, film, packages, the 3d tower, a quote, budget). you NEVER give prices of work. the only prices you may say are the guides: full tower blueprint {{DEAL}}, playbooks 49 € / 29 € / 29 € or all three {{PACK}}
+- price: they ask the price of any work (images, film, packages, the 3d tower, a quote, budget). you NEVER give prices of work. the only prices you may say are the guides: full tower blueprint {{DEAL}}, playbooks 79 € / 49 € / 39 € (01 / 02 / 03) or all three {{PACK}}
 - date: they ask when it can be ready, deadlines, a delivery date, availability
 - call: they want a call, a meeting, a video call
 - payment: invoices, how to pay, bank, deposit, refunds
@@ -79,9 +79,9 @@ const SCHEMA = {
 };
 
 export function system(now = Date.now()) {
-  const deal = now <= DEAL_END ? '4,99 € instead of 19 € until sunday 8 november' : '19 €';
+  const deal = now <= DEAL_END ? '1,99 € instead of 19 € until sunday 8 november' : '19 €';
   return [
-    { type: 'text', text: `${RULES.replace('{{DEAL}}', deal).replace('{{PACK}}', now <= DEAL_END ? '39 € instead of 79 € until sunday 8 november' : '79 €')}\n\nFACTS ABOUT OMNYA LAB\n${KNOWLEDGE}`, cache_control: { type: 'ephemeral' } },
+    { type: 'text', text: `${RULES.replace('{{DEAL}}', deal).replace('{{PACK}}', '79 € instead of 167 €')}\n\nFACTS ABOUT OMNYA LAB\n${KNOWLEDGE}`, cache_control: { type: 'ephemeral' } },
   ];
 }
 

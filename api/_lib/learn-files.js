@@ -15,15 +15,19 @@ const FULL_CITY = pdf('How to build a 3D city that goes viral with AI', 'full-ci
 
 /** One Stripe product name → the files it should deliver. Checked in order, first match wins. */
 const RULES = [
+  // "Everything we teach" (7/11, €39 after a free blueprint): the three Full blueprints and the three playbooks with the extras
+  [/everything we teach/i, [FULL_TOWER, FULL_3D, FULL_CITY, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST]],
   [/tower/i, [FULL_TOWER]],
   [/city/i, [FULL_CITY]],
   [/3d.*sells|sells.*3d/i, [FULL_3D]],
   [/all three playbooks|prompt files and checklist/i, [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST]],
+  // the other two always come with the prompt files and the checklist, as the offer says
+  [/other two playbooks \(after playbook 01\)/i, [REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST]],
+  [/other two playbooks \(after playbook 03\)/i, [WHITE_TO_REAL, REEL, PROMPTS, CHECKLIST]],
+  [/other two playbooks \(after playbook 02/i, [WHITE_TO_REAL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST]],
   [/playbook\s*01|3d to real photo/i, [WHITE_TO_REAL]],
   [/playbook\s*02|reel they comment/i, [REEL]],
   [/playbook\s*03|sell it before it exists/i, [BEFORE_IT_EXISTS]],
-  [/other two playbooks \(after playbook 01\)/i, [REEL, BEFORE_IT_EXISTS]],
-  [/other two playbooks \(after playbook 02/i, [WHITE_TO_REAL, BEFORE_IT_EXISTS]],
 ];
 
 /** names = every line item's product name on one Checkout Session. Returns the files to email, deduped.

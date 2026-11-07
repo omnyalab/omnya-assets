@@ -1,0 +1,66 @@
+/* E3 (7/11): the free blueprint form, before the PDF. Classes start with oi- so nothing on the page collides. */
+/* aggiunte per le prove: modulo, barra fissa, timer, confronto */
+.oif{display:grid;gap:10px;margin-top:26px;max-width:460px}
+.oif input{all:unset;box-sizing:border-box;height:58px;border-radius:16px;padding:0 20px;background:#ffffff14;border:1px solid #ffffff2e;color:#fff;font:600 16px Montserrat,-apple-system,sans-serif;backdrop-filter:blur(10px)}
+.oif input::placeholder{color:#ffffff8c}
+.oif .x3-btn{width:100%;border:0;cursor:pointer;font-family:inherit}
+.oiag{display:flex;gap:12px;align-items:flex-start;color:#ffffffb8;font:500 13px/1.5 -apple-system,sans-serif;text-align:left;margin:2px 0 4px}
+.oiag i{flex:0 0 22px;height:22px;border-radius:7px;background:#2997ff;display:grid;place-items:center;color:#fff;font:800 13px/1 -apple-system;font-style:normal;margin-top:1px}
+.oiag a{color:#fff;text-decoration:underline;text-underline-offset:3px}
+@media (width<=899px){
+ .oif{margin:22px auto 0;text-align:left}
+}
+/* sheet E2 */
+html:has(.oidim:not([hidden])),html:has(.oidim:not([hidden])) body{overflow:hidden;height:100%}
+.oidim::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--oi-hero-m) center/cover;transform:scale(1.15);filter:blur(16px) brightness(.45)}
+@media (width>=900px){
+ .oidim::before{background-image:var(--oi-hero)}
+}
+.oidim{position:fixed;inset:0;background:#05070a9e;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:40;display:grid;place-items:center;padding:170px 16px 24px}
+.oisheet{width:min(520px,100%);background:linear-gradient(170deg,#163266 0%,#0b1630 38%,#070b14 70%,#05070a 100%);border-radius:30px;padding:0 34px 30px;box-shadow:0 60px 120px -40px #2997ffa6,inset 0 1px #ffffff2e;text-align:center;position:relative;isolation:isolate}
+.oisheet::after{content:"";position:absolute;left:50%;bottom:-60px;width:520px;max-width:130%;height:240px;transform:translateX(-50%);background:radial-gradient(closest-side,#2997ff66,#2997ff1f 60%,transparent);filter:blur(20px);z-index:-1;pointer-events:none}
+.oisheet::before{content:"";position:absolute;left:50%;top:-170px;width:560px;max-width:150%;height:300px;transform:translateX(-50%);background:radial-gradient(closest-side,#2997ffa8,#2997ff33 55%,transparent);filter:blur(18px);z-index:-1;pointer-events:none}
+.oisheet .x3-kick{margin:6px 0 10px}
+.oist{margin:0;font-family:Montserrat,-apple-system,sans-serif;text-transform:uppercase;line-height:.95;display:grid;justify-items:center;gap:6px}
+.oist .a{font-weight:900;font-size:50px;letter-spacing:-.01em}
+.oist .b{font-weight:900;font-size:40px;letter-spacing:.14em;text-indent:.14em;border:.075em solid #fff;padding:.1em .32em .04em}
+/* stamp FREE */
+.oist .row{display:flex;align-items:center;gap:12px;transform:translateX(20px)}
+.oistamp{font:900 15px/1 Montserrat,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#2997ff;border:2px solid #2997ff;border-radius:6px;padding:7px 8px 6px 10px;transform:rotate(-9deg);box-shadow:0 0 0 2px #2997ff22 inset;background:#2997ff14}
+.oist .c{font-weight:800;font-size:24px;letter-spacing:.32em;text-indent:.32em;color:#2997ff;margin-top:4px}
+.oisheet .oif{margin:22px auto 0;text-align:left}
+/* libro 3D vero (come Book3D.astro del sito) */
+.oibk{--w:150px;--h:calc(var(--w)*1.777);--t:16px;width:var(--w);height:var(--h);margin:calc(var(--h)*-0.62) auto 14px;perspective:900px;position:relative}
+.oibk::after{content:"";position:absolute;left:8%;right:4%;bottom:-14px;height:22px;background:radial-gradient(closest-side,#000c,transparent);filter:blur(5px);animation:oibks 6s ease-in-out infinite}
+.oibk__b{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateY(-28deg) rotateX(6deg);animation:oibkt 6s ease-in-out infinite}
+@keyframes oibkt{50%{transform:rotateY(-14deg) rotateX(3deg) translateY(-10px)}}
+@keyframes oibks{50%{transform:scale(.86);opacity:.7}}
+.oibk__b>span{position:absolute;display:block;backface-visibility:hidden}
+.oibk__f{inset:0;transform:translateZ(calc(var(--t)/2));border-radius:2px 5px 5px 2px;overflow:hidden;background:#0b1220 center/cover var(--oi-cover);box-shadow:0 30px 60px -20px #000}
+.oibk__f::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0006,#0000 5%,#ffffff1f 6.5%,#0000 9%),linear-gradient(120deg,#ffffff26,#fff0 35%)}
+.oibk__p{top:1%;height:98%;width:var(--t);left:calc(var(--w) - var(--t)/2 - 1px);transform:rotateY(90deg);background:repeating-linear-gradient(90deg,#f6f1e8 0 1px,#d6cdbd 1px 2px);box-shadow:inset 0 0 6px #0003}
+.oibk__k{inset:0;transform:translateZ(calc(var(--t)/-2)) rotateY(180deg);background:#0a1426;border-radius:5px 2px 2px 5px}
+.oibk__t{left:0;width:calc(var(--w) - 2px);height:var(--t);top:calc(var(--t)/-2);transform:rotateX(90deg);background:#ebe4d7}
+@media (prefers-reduced-motion:reduce){
+ .oibk__b,.oibk::after{animation:none}
+}
+@media (width<=899px){
+ .oidim{padding:96px 16px 34px}
+ .oisheet{padding:0 18px 22px;border-radius:28px}
+ .oisheet::before{width:420px;height:260px;top:-130px}
+ .oibk{--w:118px;--t:13px;margin-bottom:10px}
+ .oist .row{gap:9px;transform:translateX(16px)}
+ .oistamp{font-size:13px;padding:6px 7px 5px 9px}
+ .oist .a{font-size:38px}
+ .oist .b{font-size:30px}
+ .oist .c{font-size:19px}
+ .oisheet .oif{margin-top:16px;gap:8px}
+ .oisheet .oif input{height:50px}
+ .oisheet .x3-btn{min-height:52px;font-size:14px}
+ .oisheet .x3-kick{font-size:12px}
+}
+.oidim[hidden]{display:none!important}
+.oif .oierr{color:#ffb4a8;font:500 13px -apple-system,sans-serif;margin:0}
+.oif button[disabled]{opacity:.6}
+.oihp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.oix{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;border:0;background:#ffffff1a;color:#fff;font:400 22px/1 -apple-system,sans-serif;cursor:pointer;z-index:2}

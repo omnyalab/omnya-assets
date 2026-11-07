@@ -2919,3 +2919,31 @@ main:has(.twhero) .t-h2 { line-height: 1; }
 .twbtn--blue { font-weight: 600; }
 main:has(.twhero) .lbooks { padding-top: clamp(72px, 10vw, 140px); }
 main:has(.twhero) .lbundle { margin-top: 0; }
+
+/* Learn, 7/11: the pack first, the playbooks one by one under it at full price (same sizes as
+   before, only the order changes), "Buy" on the buttons and "Are you sure?" before one playbook. */
+.lbundle--first { margin-top: 0; }
+.lbundle__down { display: inline-block; margin-top: 16px; color: var(--mute); font-size: var(--fs-small); text-decoration: underline; text-underline-offset: 4px; }
+.lone { margin: clamp(64px, 9vw, 120px) 0 clamp(28px, 4vw, 48px); padding-top: 22px; border-top: 1px solid var(--line); scroll-margin-top: calc(var(--hdr) + 16px); }
+.lone__title { margin: 0; font-size: var(--fs-h3); font-weight: 400; line-height: 1.02; letter-spacing: -0.035em; }
+.lone__title .mute { color: var(--mute-lg); }
+.sure { position: fixed; width: min(520px, calc(100vw - 24px)); border-radius: 28px; overflow: visible; }
+.sure::backdrop { background: rgba(11, 11, 11, 0.5); backdrop-filter: blur(6px); }
+.sure__x { position: absolute; top: 12px; right: 12px; margin: 0; z-index: 4; background: #f1eee8; }
+.sure__in { display: grid; gap: 14px; padding: 28px 26px 24px; text-align: center; }
+.sure__fan.lfan { height: 200px; margin-top: 4px; pointer-events: none; }
+.sure__fan .lfan__book { width: 120px; }
+.sure__fan .bk__top { top: 8px; left: 9px; right: 8px; font-size: 6.5px; }
+.sure__fan .bk__t { left: 9px; right: 6px; bottom: 9px; font-size: 15px; }
+.sure__k { margin: 0; color: var(--mute); }
+.sure__t { margin: 0; font-size: clamp(2rem, 6vw, 2.75rem); line-height: 1; letter-spacing: -0.04em; }
+.sure__p { margin: 0 auto; max-width: 36ch; color: #3a3936; line-height: 1.5; }
+.sure__p b { color: var(--ink); font-weight: 600; }
+.sure__go, .sure__no { justify-content: center; width: 100%; }
+.sure__go { min-height: 56px; }
+@media (max-width: 640px) {
+  .sure { margin: auto auto 0; width: 100%; max-width: 100%; border-radius: 28px 28px 0 0; }
+  .sure__fan.lfan { height: 170px; }
+  .sure__fan .lfan__book { width: 100px; }
+  .sure__fan .bk__t { font-size: 12.5px; }
+}

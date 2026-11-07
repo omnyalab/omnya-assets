@@ -14,7 +14,7 @@ import BookCover from '../components/BookCover.astro';
 import TowerOffer from '../components/TowerOffer.astro';
 import { projects } from '../lib/data';
 import { srcset } from '../lib/media';
-import { goHref, words, type ProductId } from '../lib/learn';
+import { goHref, words, prices, type ProductId } from '../lib/learn';
 import { t, langFromPath, localize } from '../i18n';
 
 interface Props {
@@ -63,12 +63,14 @@ const pic = (v: string, kind: 'white' | 'real') => ({
 });
 const go = (id: ProductId) => goHref(id, lang, w?.word);
 const eur = (n: number) => (lang === 'it' ? `${n} €` : `€${n}`);
-const diff = (price: string) => eur(price.includes('49') ? 30 : 50);
+// what the pack costs on top of this playbook (7/11 prices: 01 €79 = the pack, 02 €49, 03 €39)
+const diff = (id: string) => prices.bundle - (prices[id as keyof typeof prices] ?? prices.bundle);
 const buyData = (b: { id: string; a: string; b: string; price: string }) => ({
   'data-buy': '',
   'data-name': `${b.a} ${b.b}`,
   'data-price': b.price,
-  'data-diff': diff(b.price),
+  'data-diff': String(diff(b.id)),
+  'data-diff-eur': eur(diff(b.id)),
   'data-go': go(b.id as ProductId),
   'data-bundle-go': go('bundle'),
   'data-bundle-price': L.bundleB,
@@ -178,15 +180,44 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
   <section class="lbooks wrap" id="books" aria-labelledby={tower ? undefined : "books-title"} aria-label={tower ? L.bundleTitleA + " " + L.bundleTitleB : undefined}>
     {
       !tower && (
+        <div class="lsec__head">
+          <h2 class="t-h2" id="books-title" data-split>{L.booksA}{' '}<span class="mute">{L.booksB}</span></h2>
+        </div>
+      )
+    }
+    <!-- The bundle first (7/11): the three books fanned out, the real price struck -->
+    <div class:list={['lbundle', { 'lbundle--first': !tower }]} data-fade>
+      <a class="lfan" href={go('bundle')} aria-label={`${L.buy}: ${L.bundleTitleA} ${L.bundleTitleB}, ${eur(79)}`}>
+        {
+          L.books.map((b, i) => (
+            <span class={`lfan__book lfan__book--${i + 1}`}>
+              <BookCover real={covers[b.id].real} white={covers[b.id].white} label={`${L.playbook} ${b.n}`} a={b.a} b={b.b} c1={covers[b.id].c1} c2={covers[b.id].c2} sizes="(min-width: 900px) 18vw, 40vw" />
+            </span>
+          ))
+        }
+      </a>
+      <div class="lbundle__copy">
+        <p class="t-small lbundle__label">{L.best}</p>
+        <p class="t-h2 lbundle__title">{L.bundleTitleA} <span class="mute">{L.bundleTitleB}</span></p>
+        <p class="lbundle__price"><span class="lbundle__now">{eur(79)}</span><s class="lbundle__was">{eur(167)}</s></p>
+        <p class="lbundle__save">{L.thanks.save} {eur(88)}</p>
+        <p class="lbundle__text">{L.bundleText}</p>
+        <a class="btn btn--fill lbundle__cta" href={go('bundle')}>{L.bundleCta} <Arrow /></a>
+        {!tower && <a class="lbundle__down" href="#one">{L.oneDown}</a>}
+      </div>
+    </div>
+    {
+      !tower && (
         <>
-    <div class="lsec__head">
-      <h2 class="t-h2" id="books-title" data-split>{L.booksA}{' '}<span class="mute">{L.booksB}</span></h2>
+    <!-- Then the three playbooks one by one, at full price (same sizes as before) -->
+    <div class="lone" id="one">
+      <h3 class="lone__title">{L.oneA} <span class="mute">{L.oneB}</span></h3>
     </div>
     <ul class="lshelf" data-hbar>
       {
         books.map((b) => (
           <li class="lbook" data-fade>
-            <a class="lcover" href={go(b.id as ProductId)} aria-label={`${L.get}: ${b.a} ${b.b}, ${b.price}`} {...buyData(b)}>
+            <a class="lcover" href={go(b.id as ProductId)} aria-label={`${L.buy}: ${b.a} ${b.b}, ${b.price}`} {...buyData(b)}>
               <BookCover real={covers[b.id].real} white={covers[b.id].white} label={`${L.playbook} ${b.n}`} a={b.a} b={b.b} c1={covers[b.id].c1} c2={covers[b.id].c2} />
             </a>
             <div class="lbook__meta">
@@ -200,35 +231,14 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
                 {b.items.map((it) => <li>{it}</li>)}
               </ul>
             </details>
-            <a class="btn lbook__buy" href={go(b.id as ProductId)} {...buyData(b)}>{L.get} · {b.price} <Arrow /></a>
+            <a class="btn lbook__buy" href={go(b.id as ProductId)} {...buyData(b)}>{L.buy} <Arrow /></a>
           </li>
         ))
       }
     </ul>
-
         </>
       )
     }
-    <!-- The bundle: the three books fanned out, the real price struck -->
-    <div class="lbundle" data-fade>
-      <a class="lfan" href={go('bundle')} aria-label={`${L.get}: ${L.bundleTitleA} ${L.bundleTitleB}, ${eur(79)}`}>
-        {
-          L.books.map((b, i) => (
-            <span class={`lfan__book lfan__book--${i + 1}`}>
-              <BookCover real={covers[b.id].real} white={covers[b.id].white} label={`${L.playbook} ${b.n}`} a={b.a} b={b.b} c1={covers[b.id].c1} c2={covers[b.id].c2} sizes="(min-width: 900px) 18vw, 40vw" />
-            </span>
-          ))
-        }
-      </a>
-      <div class="lbundle__copy">
-        <p class="t-small lbundle__label">{L.best}</p>
-        <p class="t-h2 lbundle__title">{L.bundleTitleA} <span class="mute">{L.bundleTitleB}</span></p>
-        <p class="lbundle__price"><span class="lbundle__now">{eur(79)}</span><s class="lbundle__was">{eur(107)}</s></p>
-        <p class="lbundle__save">{L.thanks.save} {eur(28)}</p>
-        <p class="lbundle__text">{L.bundleText}</p>
-        <a class="btn btn--fill lbundle__cta" href={go('bundle')}>{L.bundleCta} <Arrow /></a>
-      </div>
-    </div>
   </section>
 
   <!-- Private lessons: two pastel cards on paper, Build marked as our pick -->
@@ -277,30 +287,24 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
     </ul>
   </section>
 
-  <!-- The order box: one add-on before the checkout -->
-  <dialog class="buy" data-buy-box aria-labelledby="buy-title">
-    <div class="buy__in">
-      <header class="buy__head">
-        <p class="t-small" id="buy-title">{L.bump.title}</p>
-        <button type="button" class="buy__x" data-close aria-label={L.bump.close}></button>
-      </header>
-      <div class="buy__item">
-        <img data-cover src="" alt="" width="540" height="720" />
-        <div>
-          <p class="buy__name" data-name></p>
-          <p class="buy__price" data-price></p>
-        </div>
-      </div>
-      <label class="buy__bump">
-        <input type="checkbox" data-bump />
-        <span class="buy__tick" aria-hidden="true"></span>
-        <span class="buy__bump-text">
-          <strong>{L.bump.add} <span data-diff></span> {L.bump.more}</strong>
-          <span>{L.bump.text}</span>
-        </span>
-      </label>
-      <div class="buy__total"><span>{L.bump.total}</span><span data-total></span></div>
-      <a class="btn btn--fill buy__pay" data-pay href="#">{L.bump.pay} <Arrow /></a>
+  <!-- "Are you sure?" (7/11): before paying for one playbook, the pack for the same or a little more -->
+  <dialog class="buy sure" data-buy-box aria-labelledby="buy-title" data-same={L.sure.same} data-more={L.sure.more} data-one={L.sure.one}>
+    <button type="button" class="buy__x sure__x" data-close aria-label={L.sure.close}></button>
+    <div class="sure__in">
+      <span class="lfan sure__fan" aria-hidden="true">
+        {
+          L.books.map((b, i) => (
+            <span class={`lfan__book lfan__book--${i + 1}`}>
+              <BookCover real={covers[b.id].real} white={covers[b.id].white} label={`${L.playbook} ${b.n}`} a={b.a} b={b.b} c1={covers[b.id].c1} c2={covers[b.id].c2} sizes="120px" />
+            </span>
+          ))
+        }
+      </span>
+      <p class="t-small sure__k" data-name></p>
+      <p class="sure__t" id="buy-title">{L.sure.title}</p>
+      <p class="sure__p" data-text></p>
+      <a class="btn btn--fill sure__go" data-all href={go('bundle')}>{L.sure.all} <Arrow /></a>
+      <a class="btn sure__no" data-pay href="#"></a>
     </div>
   </dialog>
 

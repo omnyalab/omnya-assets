@@ -28,7 +28,7 @@ const townhall = projects.find((p) => p.id === '17_the_townhall')!;
 
 // What each offer looks like: a lesson on a real project, the books, the studio's work, the community
 const visual = (id: string) => {
-  if (id === 'rest-30' || id === 'rest-50') return { kind: 'books' as const };
+  if (id === 'rest-30' || id === 'rest-50' || id === 'rest-02' || id === 'rest-03') return { kind: 'books' as const };
   if (id === 'session-reader') return { kind: 'pic' as const, src: '/learn/dev_rooftop.webp', badge: L.lessons[0].time };
   if (id === 'build-upgrade') return { kind: 'pic' as const, src: '/learn/burt_night_real_mobile.webp', badge: L.lessons[1].time };
   if (id === 'sample') return { kind: 'pic' as const, src: townhall.cover.mobile, badge: lang === 'it' ? '0 €' : '€0' };
