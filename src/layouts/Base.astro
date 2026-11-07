@@ -86,7 +86,8 @@ const links = sampleLinks(lang);
     {import.meta.env.PROD && <script is:inline defer src="/_vercel/insights/script.js"></script>}
   </head>
   <body>
-    <Preloader />
+    {/* 7/11, Nico: the funnel pages from the reels (no header) open straight away, without the house intro */}
+    {header && <Preloader />}
     <div class="grain" aria-hidden="true" transition:persist="grain"></div>
 
     {header && <Header page={page} />}
