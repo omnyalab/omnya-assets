@@ -73,27 +73,41 @@ async function start() {
   $('nb').innerHTML = h.neighbour ? `<a href="/city/@${h.neighbour}">@${h.neighbour}</a>` : 'Still free';
   $('loading').hidden = true;
   $('found').hidden = false;
-  $('offers').hidden = false;
+  ready();
 
-  // Ep.2 upsell: the best places, only while the API says they are for sale (EP2_LIVE)
+  // 7/11 upsell (board approved by Nico): MOVE UP opens the place picker, only with what is still for sale
   const sale = all.forSale || {};
-  if (sale.penthouse || sale.villa || sale.fountain) {
-    $('upgrades').hidden = false;
-    if (!sale.penthouse || L.pent) document.querySelector('[data-offer="penthouse"]')?.remove();
-    if (!sale.villa || (L.hills && L.premium)) document.querySelector('[data-offer="villa"]')?.remove();
-    if (!sale.fountain || (!L.floor && !L.hills && n <= 8)) document.querySelector('[data-offer="fountain"]')?.remove();
-  }
-  if (!L.floor && !L.hills && L.dist <= 1) document.querySelector('[data-offer="downtown"]')?.remove(); // already downtown
+  const left = sale.left || {};
+  const mine = { penthouse: !!L.pent, villa: !!(L.hills && L.premium), fountain: !L.floor && !L.hills && n <= 8 };
+  const open = Object.fromEntries(['penthouse', 'villa', 'fountain'].map((k) => [k, !!sale[k] && !mine[k] && (left[k] ?? 1) > 0]));
+  const where = `#${n.toLocaleString('en')} in ${placeName(L)}`;
+  document.querySelectorAll('[data-where]').forEach((e) => (e.textContent = where));
+  document.querySelectorAll('[data-where-kick]').forEach((e) => (e.textContent = `Your house · #${n.toLocaleString('en')} · ${placeName(L)}`));
   const ref = u.replace(/\./g, '-');
-  for (const a of document.querySelectorAll('[data-offer]')) {
-    if (a.dataset.stripe) {
-      const url = new URL(a.href);
-      url.searchParams.set('client_reference_id', ref);
-      a.href = url.toString();
-    } else {
-      a.href = `${a.href.split('?')[0]}?text=${encodeURIComponent(`Hi Omnya! I'd like "${a.dataset.title}" for my house in Omnya City: @${u}, house #${n}.`)}`;
-    }
+  for (const k of Object.keys(open)) {
+    const nLeft = left[k];
+    const txt = nLeft ? `Only ${nLeft} left` : '';
+    // Nico 7/11: the bars look almost full on purpose
+    const bar = nLeft ? Math.max(84, 100 - nLeft * 1.5) : 100;
+    document.querySelectorAll(`[data-left="${k}"]`).forEach((e) => (e.textContent = txt));
+    document.querySelectorAll(`[data-bar="${k}"]`).forEach((e) => (e.style.width = bar + '%'));
+    document.querySelectorAll(`[data-left-tag="${k}"]`).forEach((e) => (txt ? (e.textContent = txt) : e.remove()));
+    document.querySelectorAll(`[data-left-line="${k}"]`).forEach((e) => (e.textContent = k !== 'penthouse' && nLeft ? ` · only ${nLeft} left` : ''));
+    if (!open[k]) document.querySelectorAll(`[data-place="${k}"]`).forEach((e) => e.remove());
   }
+  for (const l of document.querySelectorAll('#move label')) {
+    if (l.dataset.stripe) { const x = new URL(l.dataset.href); x.searchParams.set('client_reference_id', ref); l.dataset.href = x.toString(); }
+    else l.dataset.href = `${l.dataset.href.split('?')[0]}?text=${encodeURIComponent(`Hi Omnya! I'd like "${l.dataset.title}" for my house in Omnya City: @${u}, house #${n}.`)}`;
+  }
+  const any = Object.values(open).some(Boolean);
+  if (any) {
+    $('up').hidden = false;
+    const first = document.querySelector('#move label');
+    if (first) pickPlace(first);
+  } else {
+    document.querySelectorAll('[data-up]').forEach((e) => e.remove()); // nothing left to buy: no MOVE UP
+  }
+  document.querySelector('.three')?.style.setProperty('--n', document.querySelectorAll('.three .pl').length);
 
   $('share').addEventListener('click', async (e) => {
     const btn = e.currentTarget;
@@ -108,10 +122,56 @@ async function start() {
 }
 
 function none() {
+  ready();
   $('loading').hidden = true;
   $('none-name').textContent = u ? '@' + u : 'Omnya City';
   $('none').hidden = false;
   orbit.x = 0; orbit.z = 0; orbit.d = 260; orbit.el = 0.7; place();
+}
+
+// the page fades in once the house is found (no loading screen, 7/11)
+function ready() { requestAnimationFrame(() => document.body.classList.replace('wait', 'in')); }
+setTimeout(ready, 4000); // never stay hidden
+
+// ---- dialogs: MOVE UP (places) and the book (Full City / Everything) ----
+function pickPlace(l) {
+  document.querySelectorAll('#move label').forEach((x) => x.classList.toggle('on', x === l));
+  $('shot').style.backgroundImage = `url(${l.dataset.img})`;
+  $('shotname').textContent = l.dataset.name;
+  $('movego').href = l.dataset.href;
+}
+let lastFocus = null;
+function openDialog(id, pick) {
+  lastFocus = document.activeElement;
+  document.querySelectorAll('.ux.dim').forEach((d) => (d.hidden = d.id !== id));
+  document.documentElement.classList.add('locked');
+  if (pick) { const l = document.querySelector(`#move label[data-place="${pick}"]`); if (l) pickPlace(l); }
+  $(id).querySelector('.x')?.focus({ preventScroll: true });
+}
+function closeDialog() {
+  document.querySelectorAll('.ux.dim').forEach((d) => (d.hidden = true));
+  document.documentElement.classList.remove('locked');
+  lastFocus?.focus?.({ preventScroll: true });
+}
+document.addEventListener('click', (e) => {
+  const o = e.target.closest('[data-open]');
+  if (o) { e.preventDefault(); return openDialog(o.dataset.open, o.dataset.pick); }
+  if (e.target.closest('[data-close]') || e.target.classList.contains('dim')) { e.preventDefault(); return closeDialog(); }
+  const l = e.target.closest('.pick label');
+  if (!l) return;
+  const g = l.closest('.pick');
+  if (g.dataset.g === 'move') return pickPlace(l);
+  g.querySelectorAll('label').forEach((x) => x.classList.toggle('on', x === l));
+  const go = g.parentElement.querySelector('.bookgo');
+  if (go) { go.href = l.dataset.go; go.textContent = `Get it · €${l.dataset.p}`; }
+});
+addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDialog(); });
+
+// After Sunday 8 November (Rome) the Full City Guide is €19 (same switch as the funnels)
+if (Date.now() >= Date.parse(window.__cityDeal || '2026-11-08T23:59:59+01:00')) {
+  document.querySelectorAll('label[data-p="1.99"]').forEach((l) => { l.dataset.p = '19'; l.querySelector('[data-full]').innerHTML = '€19'; });
+  document.querySelectorAll('.bookgo').forEach((g) => (g.textContent = 'Get it · €19'));
+  document.querySelectorAll('[data-kick]').forEach((k) => (k.textContent = 'The full guide'));
 }
 
 start().catch((e) => { console.error(e); none(); });

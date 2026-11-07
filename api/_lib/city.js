@@ -154,24 +154,24 @@ const RANGE = { penthouse: [PREM, PREM + 3], villa: [PREM + 3, PREM + 13] };
 export const FOUNTAIN = [1, 2, 3, 4, 5, 6, 7, 8];
 const isPaid = async (u) => !!u && Number(await cmd('SISMEMBER', `${P}paid`, u)) === 1;
 async function fountainFree() { for (const n of FOUNTAIN) if (!(await isPaid(await onLot(n)))) return n; return null; }
-async function freeVilla() { // new places alternate floor / villa from ep2: villas are the odd ones
+async function freeVillaOnly() { // a free villa of Omnyawood only (odd numbers from ep2, while the villas last)
   const e = await ep2From(); if (!e) return null;
-  for (let i = 1; i < 62; i += 2) if (!(await onLot(e + i))) return e + i;
-  for (let i = 0; i < 400; i++) if (!(await onLot(e + i))) return e + i;
+  for (let i = 1; i < 50; i += 2) if (!(await onLot(e + i))) return e + i;
   return null;
 }
-
 async function firstFree(kind) {
   const [a, b] = RANGE[kind];
   for (let n = a; n < b; n++) if (!(await onLot(n))) return n;
   return null;
 }
 
-/** What can still be bought: { penthouse, villa } true while one is free. */
+/** What can still be bought: { penthouse, villa, fountain } true while one is free, and `left`: how many of each (7/11). */
 export async function forSale() {
-  if (!EP2_LIVE) return { penthouse: false, villa: false, fountain: false };
-  const [p, v, f] = await Promise.all([firstFree('penthouse'), firstFree('villa'), fountainFree()]);
-  return { penthouse: !!p, villa: !!v, fountain: !!f };
+  if (!EP2_LIVE) return { penthouse: false, villa: false, fountain: false, left: { penthouse: 0, villa: 0, fountain: 0 } };
+  const count = async (kind) => { const [a, b] = RANGE[kind]; let k = 0; for (let n = a; n < b; n++) if (!(await onLot(n))) k++; return k; };
+  const fountainLeft = async () => { let k = 0; for (const n of FOUNTAIN) if (!(await isPaid(await onLot(n)))) k++; return k; };
+  const [p, v, f] = await Promise.all([count('penthouse'), count('villa'), fountainLeft()]);
+  return { penthouse: p > 0, villa: v > 0, fountain: f > 0, left: { penthouse: p, villa: v, fountain: f } };
 }
 
 /** Moves a buyer to the first free penthouse or top villa. kind: 'penthouse' | 'villa'. */
@@ -186,8 +186,9 @@ export async function upgrade(u, kind) {
     const was = await onLot(n);
     let moved = null;
     if (was) {
-      const to = await freeVilla();
-      if (!to) return { error: 'no free villa for the neighbour' };
+      // 7/11 fix: when the free villas were gone, freeVilla() fell back to any empty lot (#484, #507);
+      // now the neighbour gets a free villa or, failing that, the buyer's old house (a straight swap)
+      const to = (await freeVillaOnly()) || me.n;
       const h = await houseOf(was);
       await cmd('SET', `${P}u:${was}`, JSON.stringify({ ...h, n: to, from: n, moved: Date.now() }));
       await cmd('ZADD', `${P}houses`, to, was);

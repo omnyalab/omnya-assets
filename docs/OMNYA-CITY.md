@@ -47,3 +47,9 @@ Use www: the apex answers 308.
 - Omnyawood is one smooth hill (`bell` lathe, `hillY`), a road that winds up in a spiral from the city road to the letters, 35 villas along it on their own terraces with a driveway (25 free in road order, the top 10 for sale). The houses already given keep their villa number; the villas were redrawn in new spots.
 - The river runs further west (`riverX`), clear of the blocks; a street with a bridge goes from the city to The Residences (towers moved 20 west).
 - Fountain upsell: the 8 houses closest to the fountain (numbers 1–8), €0.99, link https://buy.stripe.com/14AbJ098N4g019sgGV8so0n (limit 8). The owner moves to the first free villa in Omnyawood. Photo and film offers removed (`cityOffers` is empty).
+
+### 7/11 house page upsell (board approved by Nico)
+- Cozy yellow, no blue. The page fades in once the house is found (no "Finding the house…" screen).
+- MOVE UP: the sticker on the house card, the "Move up my house" button (black, turning yellow border), the "Get a top spot" cards and their sticker all open the place picker (`#move`): penthouse / top villa / fountain, €0.99, the `cityUpgrades` Stripe links with `client_reference_id`. Only what is still for sale shows; the counts come from `/api/city/houses` → `forSale.left`. The bars look almost full on purpose (Nico).
+- The cozy book (top right on the city, and the card next to the house, which replaced the free "Steal our city method" card) sells the Full City Guide (`/go/full-city?k=city`, €1.99 until Sunday, then €19 by itself) or Everything (`/go/everything?k=city`, €39). Images in `public/city/up/`.
+- Fountain fix: whoever lived on the bought fountain house moves to a free Omnyawood villa or, when those are gone, to the buyer's old house (before, any empty lot: @jakesplosion went to #484 and @gghizzoo to #507).

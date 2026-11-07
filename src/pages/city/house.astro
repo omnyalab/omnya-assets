@@ -1,9 +1,24 @@
 ---
 // /city/@username (vercel.json rewrites every /city/<name> here; the script reads the name from the address).
 // "View my home": the house in 3D on its lot, turning with a finger; number, district, neighbour, share.
-// Then the offers (src/lib/city.ts) and, for professionals, the Blueprint.
+// 7/11/2026 (board approved by Nico, cozy yellow, no blue): the page fades in once the house is found;
+// MOVE UP (sticker, button, "Get a top spot" cards) opens the place picker (penthouse, top villa, fountain, €0.99 on Stripe);
+// the cozy book on the city and the card next to the house sell the Full City Guide (€1.99 until Sunday) or Everything (€39).
 import CityHead from '../../components/CityHead.astro';
-import { cityOffers, cityWhatsApp, cityBlueprint, cityUpgrades } from '../../lib/city';
+import { cityUpgrades, cityWhatsApp } from '../../lib/city';
+import { fullCityDeal } from '../../lib/learn';
+
+const up = Object.fromEntries(cityUpgrades.map((o) => [o.id, o]));
+const book = `<span class="bk4" aria-hidden="true"><span class="b"><span class="k"></span><span class="p"></span><span class="tp"></span><span class="s"><i>OMNYA CITY</i></span><span class="f"></span></span></span>`;
+const places = [
+  { id: 'penthouse', img: '/city/up/penthouse.jpg', name: 'The penthouse', line: 'Top floor of a tower in The Residences', card: 'Top floor of a tower in The Residences, the whole city below.' },
+  { id: 'villa', img: '/city/up/villa.jpg', name: 'A top villa', pick: 'A top villa in Omnyawood', line: 'Pool and view, under the letters', card: 'Omnyawood, the top terrace under the letters, with the pool.' },
+  { id: 'fountain', img: '/city/up/fountain.jpg', name: 'By the fountain', pick: 'A house by the fountain', line: 'Downtown, one of the first 8 houses', card: 'Downtown, one of the first 8 houses of the city.' },
+];
+const pickBook = `<div class="pick" data-g="book">
+  <label class="on" data-go="/go/full-city?k=city" data-p="1.99"><i></i><div>The Full City Guide<span>every prompt to build a 3D city like this</span></div><strong data-full>€1.99<s>€19</s></strong></label>
+  <label data-go="/go/everything?k=city" data-p="39"><i></i><div>Everything we teach<span>3 Full Guides + 3 playbooks</span><em class="tag">Only here</em></div><strong>€39<s>€164</s></strong></label>
+</div>`;
 ---
 
 <!doctype html>
@@ -11,14 +26,14 @@ import { cityOffers, cityWhatsApp, cityBlueprint, cityUpgrades } from '../../lib
   <head>
     <CityHead title="My house in Omnya City" description="Every follower gets a free house in our 3D city. This one is mine." path="/city" noindex />
   </head>
-  <body>
+  <body class="wait">
     <div class="house">
       <div class="stage">
         <canvas id="c" aria-label="The house in 3D"></canvas>
         <header class="top">
           <a href="/city" style="pointer-events:auto">← The city</a>
-          <a href="https://www.instagram.com/omnyalab/" target="_blank" rel="noopener">@omnyalab</a>
         </header>
+        <button class="gb" type="button" data-open="book" aria-label="The Full City Guide" set:html={book} />
         <span class="hint" id="hint">Drag to turn it</span>
       </div>
 
@@ -26,6 +41,7 @@ import { cityOffers, cityWhatsApp, cityBlueprint, cityUpgrades } from '../../lib
       <article class="card" id="card">
         <div class="loading" id="loading"><i></i>Finding the house…</div>
         <div id="found" hidden>
+          <button class="mv" type="button" data-open="move" data-up>MOVE UP ↑</button>
           <p class="k" style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--roof)">Omnya City</p>
           <h1 class="lil" id="name"></h1>
           <div class="facts">
@@ -35,6 +51,7 @@ import { cityOffers, cityWhatsApp, cityBlueprint, cityUpgrades } from '../../lib
           </div>
           <div class="row">
             <button class="btn" id="share" type="button">Share my house</button>
+            <button class="btn up" type="button" data-open="move" data-up>Move up<span class="lg">&nbsp;my house</span>&nbsp;↑</button>
           </div>
         </div>
         <div id="none" class="empty" hidden>
@@ -43,33 +60,37 @@ import { cityOffers, cityWhatsApp, cityBlueprint, cityUpgrades } from '../../lib
           <a class="btn" href="/city" style="margin-top:14px">See the city</a>
         </div>
       </article>
-      <a class="build" href={cityBlueprint}>
-        <span class="build__stamp" aria-hidden="true">FREE</span>
-        <b class="build__t">Steal our<br />city method</b>
-        <span class="build__s">The free blueprint with the real prompts behind this city.</span>
-        <span class="build__btn">Get the free blueprint <i>→</i></span>
-      </a>
+      <article class="card ux buy">
+        <span class="stamp">FULL GUIDE</span>
+        <div class="buy__in">
+          <button class="buy__bk" type="button" data-open="book" aria-label="The Full City Guide" set:html={book} />
+          <div class="buy__tx">
+            <p class="kick" data-kick>2,000 followers offer · until Sunday</p>
+            <h2>Build a city like this</h2>
+            <p class="sub">Every prompt we gave Claude to build Omnya City.</p>
+          </div>
+        </div>
+        <Fragment set:html={pickBook} />
+        <a class="btn bookgo" href="/go/full-city?k=city">Get it · €1.99</a>
+      </article>
       </div>
 
-      <section class="offers" id="offers" hidden>
-        <div class="mine">
-          <span class="mine__tab">1,000 followers offer</span>
-          <h2>Make it yours</h2>
-          <div id="upgrades" hidden>
-            {cityUpgrades.map((o) => (
-              <a class="offer" href={o.checkout || cityWhatsApp} data-offer={o.id} data-title={o.title} data-stripe={o.checkout ? '1' : ''} target="_blank" rel="noopener">
-                <b>{o.title}</b>
-                <span>{o.line}</span>
-                <em><s>{o.was}</s>{o.price}</em>
-              </a>
-            ))}
-          </div>
-          {cityOffers.map((o) => (
-            <a class="offer" href={o.checkout || cityWhatsApp} data-offer={o.id} data-title={o.title} data-stripe={o.checkout ? '1' : ''} target="_blank" rel="noopener">
-              <b>{o.title}</b>
-              <span>{o.line}</span>
-              <em><s>{o.was}</s>{o.price}</em>
-            </a>
+      <section class="ux sec" id="up" hidden>
+        <button class="stamp" type="button" data-open="move">MOVE UP ↑</button>
+        <h2>Get a top spot</h2>
+        <p class="sub">Your free house is <b data-where></b>. For €0.99 it moves to one of the best places in the city, and stays yours.</p>
+        <div class="three">
+          {places.map((p, i) => (
+            <button class={`pl${i === 0 ? ' hot' : ''}`} type="button" data-open="move" data-pick={p.id} data-place={p.id}>
+              <img class="im" src={p.img} alt="" loading="lazy" width="800" height="622" />
+              <div class="bd">
+                <span class="cnt" data-left={p.id}></span>
+                <div class="bar"><i data-bar={p.id}></i></div>
+                <b>{p.name}</b>
+                <p>{p.card}</p>
+                <div class="pr"><span><strong>{up[p.id].price}</strong><s>{up[p.id].was}</s></span><em>Move here</em></div>
+              </div>
+            </button>
           ))}
         </div>
       </section>
@@ -78,6 +99,41 @@ import { cityOffers, cityWhatsApp, cityBlueprint, cityUpgrades } from '../../lib
         <a href="/city">See the whole city →</a>
       </footer>
     </div>
+
+    <div class="ux dim" id="move" hidden>
+      <button class="x" type="button" data-close aria-label="Close">×</button>
+      <div class="card" role="dialog" aria-modal="true" aria-label="Get a top spot">
+        <span class="stamp">MOVE UP ↑</span>
+        <div class="shot" id="shot" style="background-image:url(/city/up/penthouse.jpg)"><span class="left" id="shotname">The penthouse</span></div>
+        <p class="kick" data-where-kick></p>
+        <h2>Get a top spot</h2>
+        <p class="sub">Your house can move to one of the <b>best places in the city</b>. Same name, new address.</p>
+        <div class="pick" data-g="move">
+          {places.map((p, i) => (
+            <label class={i === 0 ? 'on' : ''} data-place={p.id} data-img={p.img} data-name={p.name} data-href={up[p.id].checkout || cityWhatsApp} data-stripe={up[p.id].checkout ? '1' : ''} data-title={up[p.id].title}>
+              <i></i><div>{p.pick || p.name}<span>{p.line}<span data-left-line={p.id}></span></span>{i === 0 && <em class="tag" data-left-tag={p.id}></em>}</div><strong>{up[p.id].price}<s>{up[p.id].was}</s></strong>
+            </label>
+          ))}
+        </div>
+        <a class="btn" id="movego" href={up.penthouse.checkout} target="_blank" rel="noopener">Move my house · €0.99</a>
+        <button class="no" type="button" data-close>No thanks, I'll keep my free house</button>
+      </div>
+    </div>
+
+    <div class="ux dim" id="book" hidden>
+      <button class="x" type="button" data-close aria-label="Close">×</button>
+      <div class="card" role="dialog" aria-modal="true" aria-label="Build a city like this">
+        <span class="stamp">FULL GUIDE</span>
+        <Fragment set:html={book} />
+        <p class="kick" data-kick>2,000 followers offer · until Sunday</p>
+        <h2>Build a city like this</h2>
+        <p class="sub">Every prompt we gave Claude to build Omnya City: the houses, the map and the links in the DMs.</p>
+        <Fragment set:html={pickBook} />
+        <a class="btn bookgo" href="/go/full-city?k=city">Get it · €1.99</a>
+        <button class="no" type="button" data-close>No thanks</button>
+      </div>
+    </div>
+    <script is:inline define:vars={{ dealUntil: fullCityDeal.until }}>window.__cityDeal = dealUntil;</script>
     <script type="module" src="/city/house.js"></script>
   </body>
 </html>
