@@ -37,6 +37,8 @@ export async function POST(request) {
       ...(entry.changes || []).map((c) => (c.field === 'comments' ? ['comment', c.value] : MESSAGE_FIELDS.has(c.field) ? ['message', c.value] : null)),
       ...(entry.messaging || []).map((m) => ['message', m]),
     ].filter(Boolean);
+    // messages that went to another app (ManyChat) as the main receiver: we only see them, we can't answer
+    for (const m of entry.standby || []) console.log('[ig] standby', m.sender?.id || '', JSON.stringify(String(m.postback?.payload || m.message?.text || '').slice(0, 40)));
     for (const [kind, v] of events) {
       try {
         const r = kind === 'comment' ? await onComment(own, v) : await onMessaging(own, v);
