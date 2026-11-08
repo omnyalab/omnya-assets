@@ -16,7 +16,7 @@ const AZ = mobile ? -1.82 : -0.28;
 // 8/11: the map opens on the whole city (old town, Omnyawood, The Residences, the sea, the yacht and the island)
 const ALL = mobile ? { x: -380, z: 170, d: 2600 } : { x: -170, z: 140, d: 1650 };
 const view = { ...ALL };
-const lim = () => ({ x: 1050, z: W.ext.z * 0.95 + 120, zs: 560 }); // 7/11: down to the sea, the yacht and the island // Ep.2: Omnyawood to the east, The Residences to the west
+const lim = () => ({ x: 1050, z: (W.ext.zn || W.ext.z) * 0.95 + 160, zs: 560 }); // 7/11: down to the sea, the yacht and the island // Ep.2: Omnyawood to the east, The Residences to the west
 let anim = null, dirty = true;
 function place() {
   const L = lim();

@@ -296,38 +296,45 @@ export function buildCity(scene, styleKey, opts = {}) {
   const parkBlocks = []; // Part 3 (jobs())
   let curLW = LW, curLD = LD, force = null;
   const NBX = st.mix ? 8 : NB, NBZ = st.mix ? 6 : NB, ROAD = PX - BW;
+  // Part 3 (8/11, Nico: "un'americanata"): G2 = blocks of every size, the city grows to the north (NZN rows), skyscrapers on the
+  // west side, malls, car parks, gas stations and a highway in the north. Only with districts.grid2 (preview ?p3=G…).
+  const G2 = !!(st.mix && opts.districts && opts.districts.grid2), Rg = rng(hashStr('omnya-grid2'));
+  const NZN = G2 ? NBZ + 4 : NBZ;
+  const CARC = ['#F2F2F0', '#16181C', '#B9BEC4', '#D3141B', '#1F4E8C', '#C9B48A', '#2E3B33', '#F2F2F0'];
   const colW = {}, rowD = {}, colX = {}, rowZ = {};
   for (let i = -NBX; i <= NBX; i++) colW[i] = (!st.mix || Math.abs(i) <= 1) ? BW : pick(R, [34, 44, 44, 56, 62]);
-  for (let j = -NBZ; j <= NBZ; j++) rowD[j] = (!st.mix || Math.abs(j) <= 1) ? BD : pick(R, [24, 30, 30, 38, 46]);
+  for (let j = -NZN; j <= NBZ; j++) rowD[j] = (!st.mix || Math.abs(j) <= 1) ? BD : pick(R, [24, 30, 30, 38, 46]);
   // Part 3 v3 (8/11, Nico: "the lots are all the same size"): blocks of very different widths and depths, the centre (3x3, the
   // fountain houses) unchanged, the city keeps its size so the river, the hill, the towers and the sea stay where they are.
-  const G2 = !!(opts.districts && opts.districts.grid2), Rg = rng(hashStr('omnya-grid2'));
   if (G2) {
     const spread = (keys, total) => { const w = keys.map(() => pick(Rg, [.45, .6, .8, 1, 1.2, 1.6, 2.1])); const t = w.reduce((a, b) => a + b, 0); keys.forEach((k, n) => (colOrRow[k] = Math.max(20, w[n] * total / t))); };
     let colOrRow = colW; for (const sg of [1, -1]) spread([2, 3, 4, 5, 6, 7, 8].map((k) => k * sg), 461 - (BW * 1.5 + ROAD * 1.5) - 7 * ROAD);
     colOrRow = rowD; for (const sg of [1, -1]) spread([2, 3, 4, 5, 6].map((k) => k * sg), 284 - (BD * 1.5 + (PZ - BD) * 1.5) - 5 * (PZ - BD));
+    for (let j = NBZ + 1; j <= NZN; j++) rowD[-j] = pick(Rg, [30, 38, 46, 56, 64]);
   }
   colX[0] = 0; rowZ[0] = 0;
   for (let i = 1; i <= NBX; i++) { colX[i] = colX[i - 1] + colW[i - 1] / 2 + ROAD + colW[i] / 2; colX[-i] = colX[-i + 1] - colW[-i + 1] / 2 - ROAD - colW[-i] / 2; }
   for (let j = 1; j <= NBZ; j++) { rowZ[j] = rowZ[j - 1] + rowD[j - 1] / 2 + (PZ - BD) + rowD[j] / 2; rowZ[-j] = rowZ[-j + 1] - rowD[-j + 1] / 2 - (PZ - BD) - rowD[-j] / 2; }
+  for (let j = NBZ + 1; j <= NZN; j++) rowZ[-j] = rowZ[-j + 1] - rowD[-j + 1] / 2 - (PZ - BD) - rowD[-j] / 2;
   const RZ = PZ - BD;
   const onDiag = (x, z, m) => Math.abs(z - (150 - .55 * x)) / 1.1413 < m && Math.abs(x) < 470;
   const block = (i, j) => ({ x: colX[i], z: rowZ[j], w: colW[i], d: rowD[j] });
-  const ext = st.mix ? { x: colX[NBX] + colW[NBX] / 2 + ROAD / 2, z: rowZ[NBZ] + rowD[NBZ] / 2 + RZ / 2 } : { x: NB * PX + PX / 2, z: NB * PZ + PZ / 2 };
+  const ext = st.mix ? { x: colX[NBX] + colW[NBX] / 2 + ROAD / 2, z: rowZ[NBZ] + rowD[NBZ] / 2 + RZ / 2, zn: G2 ? -(rowZ[-NZN] - rowD[-NZN] / 2 - RZ / 2) : undefined } : { x: NB * PX + PX / 2, z: NB * PZ + PZ / 2 };
   const lots = [];
 
   // la citta ha una forma: un ovale di isolati che finisce nei campi
   const inCity = (i, j) => {
-    if (Math.abs(i) > NBX || Math.abs(j) > NBZ) return false;
+    if (Math.abs(i) > NBX || j > NBZ || j < -NZN) return false;
     if (!st.mix) return true;
-    const edge = Math.abs(i) === NBX || Math.abs(j) === NBZ;
-    if (Math.abs(i) === NBX && Math.abs(j) === NBZ) return false;
+    const ej = j === NBZ || j === -NZN;
+    const edge = Math.abs(i) === NBX || ej;
+    if (Math.abs(i) === NBX && ej) return false;
     return !(edge && (hashStr(`e${i},${j}`) % 100) < 30);
   };
-  const inCityW = (x, z, m = 0) => Math.abs(x) < ext.x + m && Math.abs(z) < ext.z + m;
+  const inCityW = (x, z, m = 0) => Math.abs(x) < ext.x + m && z < ext.z + m && z > -(ext.zn ?? ext.z) - m;
   // terreno, asfalto, mare
   put('box', 'flat', st.ground, [0, -.6, 0], [4000, 1, 4000]);
-  for (let i = -NBX; i <= NBX; i++) for (let j = -NBZ; j <= NBZ; j++) if (inCity(i, j)) { const b = block(i, j); put('box', TX('asphalt', 'matte'), st.asphalt, [b.x, -.05, b.z], [b.w + ROAD, .1, b.d + RZ]); }
+  for (let i = -NBX; i <= NBX; i++) for (let j = -NZN; j <= NBZ; j++) if (inCity(i, j)) { const b = block(i, j); put('box', TX('asphalt', 'matte'), st.asphalt, [b.x, -.05, b.z], [b.w + ROAD, .1, b.d + RZ]); }
   const seaZ = ext.z + 170;
   put('box', 'water', st.sea, [0, .05, seaZ + 1200], [4000, .2, 2400], [0, 0, 0], null, 'XYZ', true);
   put('box', 'flat', st.sand, [0, .02, seaZ - 15], [4000, .2, 34]);
@@ -348,11 +355,11 @@ export function buildCity(scene, styleKey, opts = {}) {
     { const mm = mute; if (DIS.hills) mute = true; put('box', 'matte', st.asphalt, [ext.x + 700, -.04, zr], [1400, .1, 8]); mute = mm; } // Ep.2: The Hills take this road
     put('box', 'matte', st.asphalt, [-ext.x - 700, -.04, zr], [1400, .1, 8]);
     put('box', 'matte', st.asphalt, [xr, -.04, (ext.z + seaZ) / 2], [8, .1, seaZ - ext.z]);
-    put('box', 'matte', st.asphalt, [xr, -.04, -ext.z - 700], [8, .1, 1400]);
+    put('box', 'matte', st.asphalt, [xr, -.04, -(ext.zn ?? ext.z) - 700], [8, .1, 1400]);
     const xl = colX[-3] - colW[-3] / 2 - ROAD / 2;
     put('box', 'matte', st.asphalt, [xl, -.04, (ext.z + seaZ) / 2], [8, .1, seaZ - ext.z]);
     // strada curva che esce in basso a destra
-    let px = colX[4] + colW[4] / 2 + ROAD / 2, pz = -ext.z, ang = 0;
+    let px = colX[4] + colW[4] / 2 + ROAD / 2, pz = -(ext.zn ?? ext.z), ang = 0;
     for (let k = 0; k < 40; k++) { ang += .045; const nx = px + Math.sin(ang) * 18, nz = pz - Math.cos(ang) * 18;
       put('box', 'matte', st.asphalt, [(px + nx) / 2, -.04, (pz + nz) / 2], [8, .1, 19], [0, Math.atan2(nx - px, nz - pz), 0]); px = nx; pz = nz; }
   } else {
@@ -421,7 +428,7 @@ export function buildCity(scene, styleKey, opts = {}) {
   }
 
   // segnaletica: solo dove ci sono strade vere
-  for (let i = -NBX; i <= NBX; i++) for (let j = -NBZ; j <= NBZ; j++) {
+  for (let i = -NBX; i <= NBX; i++) for (let j = -NZN; j <= NBZ; j++) {
     if (!inCity(i, j)) continue;
     const b = block(i, j), x0 = b.x - b.w / 2 - ROAD / 2, x1 = b.x + b.w / 2 + ROAD / 2, z0 = b.z - b.d / 2 - RZ / 2, z1 = b.z + b.d / 2 + RZ / 2;
     if (inCity(i, j - 1)) for (let x = x0 + 4; x < x1 - 2; x += 9) put('box', 'matte', st.marking, [x, .02, z0], [3, .03, .28], [0, 0, 0], null, 'XYZ', true);
@@ -433,12 +440,14 @@ export function buildCity(scene, styleKey, opts = {}) {
   }
 
   // isolati
-  for (let i = -NBX; i <= NBX; i++) for (let j = -NBZ; j <= NBZ; j++) {
+  for (let i = -NBX; i <= NBX; i++) for (let j = -NZN; j <= NBZ; j++) {
     if (!inCity(i, j)) continue;
     const bb = block(i, j), cx = bb.x, cz = bb.z, bw = bb.w, bd = bb.d;
     put('box', TX('paving', 'matte'), st.sidewalk, [cx, .15, cz], [bw + 2, .3, bd + 2]);
     if (i === 0 && j === 0) { plaza(cx, cz); continue; }
     const dist = Math.max(Math.abs(i), Math.abs(j));
+    if (G2 && j >= -NBZ && (i <= -NBX + 1 || (i === -NBX + 2 && Math.abs(j) <= 3) || (i === -NBX + 3 && Math.abs(j) <= 1))) { skyBlock(cx, cz, bw, bd); continue; } // downtown on the west side
+    if (G2 && j <= -NBZ - 3) { mallBlock(cx, cz, bw, bd); continue; }            // malls, car parks, gas stations in the north
     if (dist > 1 && R() < (st.mix ? .11 : .07)) {
       // Part 3: the parks near the fountain may become the places where people work (jobs()); same R() calls, nothing moves
       if (DIS.jobs && dist <= 5) { const mm = mute; mute = true; park(cx, cz, bw, bd); mute = mm; parkBlocks.push({ i, j, cx, cz, bw, bd }); }
@@ -450,6 +459,20 @@ export function buildCity(scene, styleKey, opts = {}) {
     if (G2 && dist > 1) { const t = Rg(); cols = t < .3 ? Math.max(3, Math.round(bw / 7.4)) : t > .82 ? Math.max(1, Math.round(bw / 17)) : Math.max(2, Math.round(bw / 10.5)); }
     const lw = bw / cols, ld = bd / 2;
     const pocket = st.mix && dist > 1 && R() < .14;
+    if (G2 && dist > 1) { // lots of mixed widths in the same row and two different depths: no two blocks alike
+      const sp = .32 + Rg() * .36, lds = [bd * sp, bd * (1 - sp)];
+      const sets = [[6.5, 7.5, 8.5], [9, 10.5, 12, 14], [15, 18, 22, 26], [7, 9, 12, 16, 22]], set = pick(Rg, sets);
+      for (let r = 0; r < 2; r++) {
+        const ldr = lds[r], zr0 = r ? cz - bd / 2 + lds[0] + ldr / 2 : cz - bd / 2 + ldr / 2;
+        if (pocket && r === 1) { if (Rg() < .5) parkingLot(cx, zr0, bw, ldr); else pocketPark(cx, zr0, bw, ldr); continue; }
+        const ws = []; let sum = 0; while (sum < bw - 4) { const w = pick(Rg, set); ws.push(w); sum += w; }
+        const k = bw / sum; let x0 = cx - bw / 2;
+        ws.forEach((w0, c) => { const w = w0 * k, x = x0 + w / 2; x0 += w;
+          if (onDiag(x, zr0, 9)) return;
+          lots.push({ i, j, r, c, x, z: zr0, yaw: r ? 0 : Math.PI, dist, lw: w, ld: ldr }); });
+      }
+      continue;
+    }
     for (let r = 0; r < 2; r++) {
       if (pocket && r === 1) { pocketPark(cx, cz + ld / 2, bw, ld); continue; }
       for (let c = 0; c < cols; c++) {
@@ -476,6 +499,62 @@ export function buildCity(scene, styleKey, opts = {}) {
     put('box', TX('asphalt', 'matte'), st.asphalt, [0, .36, 150], [14, .1, L], [0, ry, 0], null, 'XYZ', true);
     put('box', 'flat', '#7DBE5A', [0, .44, 150], [2.6, .12, L], [0, ry, 0], null, 'XYZ', true);
     for (let t = 8; t < L - 8; t += opts.lite ? 22 : 11) { const x = x0 + (x1 - x0) * t / L, z = z0 + (z1 - z0) * t / L; if (inCityW(x, z)) tree(x, z, .6); }
+  }
+  // ---- G2 helpers: car parks, malls, gas stations, skyscrapers, the highway
+  function parkingLot(cx, cz, w, d, fill = .7) {
+    put('box', TX('asphalt', 'matte'), '#5E6064', [cx, .34, cz], [w - 2, .1, d - 2], [0, 0, 0], null, 'XYZ', true);
+    const rows = Math.max(1, Math.floor((d - 4) / 11));
+    for (let r = 0; r < rows; r++) { const z = cz - d / 2 + 4 + r * 11 + 3;
+      for (let x = cx - w / 2 + 4; x < cx + w / 2 - 3; x += 3.4) { put('box', 'flat', '#FFFFFF', [x, .4, z], [.18, .04, 5], [0, 0, 0], null, 'XYZ', true);
+        if (Rg() < fill) car(x + 1.7, z, r % 2 ? 0 : Math.PI, pick(Rg, CARC)); } }
+  }
+  function mallBlock(cx, cz, w, d) {
+    const t = Rg();
+    if (t < .4) { // a big box store: building at the back, the car park in front
+      const bd = d * .45, col = pick(Rg, [['#2C5A9E', '#FFD21F'], ['#D3362B', '#FFFFFF'], ['#E87A1E', '#FFFFFF'], ['#2E8B57', '#FFFFFF']]);
+      put('box', 'matte', '#EDE8DE', [cx, 5.5, cz - d / 2 + bd / 2 + 1], [w - 4, 11, bd]);
+      put('box', 'matte', col[0], [cx, 10.4, cz - d / 2 + bd + 1.1], [w * .5, 3.4, .5]);
+      put('box', 'matte', col[1], [cx, 10.4, cz - d / 2 + bd + 1.4], [w * .3, 1.2, .2]);
+      put('box', 'glass', st.glass, [cx, 3, cz - d / 2 + bd + 1.05], [w * .25, 5, .1]);
+      parkingLot(cx, cz + bd / 2, w, d - bd, .75);
+    } else if (t < .7) { // a strip mall: shops in a row with coloured awnings, parking in front
+      const bd = Math.min(16, d * .35), n = Math.max(3, Math.floor((w - 6) / 9));
+      put('box', 'matte', '#F3EBDD', [cx, 3, cz - d / 2 + bd / 2 + 1], [w - 4, 6, bd]);
+      for (let k = 0; k < n; k++) { const x = cx - (w - 6) / 2 + (k + .5) * (w - 6) / n;
+        put('box', 'matte', pick(Rg, ['#D3362B', '#2C5A9E', '#FFD21F', '#2E8B57', '#E87A1E', '#7A3B8E']), [x, 5, cz - d / 2 + bd + 2], [(w - 6) / n - 1.2, .3, 3], [-.35, 0, 0]);
+        put('box', 'glass', st.glass, [x, 2.4, cz - d / 2 + bd + 1.05], [(w - 6) / n - 2, 3.4, .1]); }
+      put('box', 'matte', '#FFFFFF', [cx + w / 2 - 6, 9, cz + d / 2 - 4], [.5, 18, .5]); put('box', 'matte', '#D3362B', [cx + w / 2 - 6, 17, cz + d / 2 - 4], [7, 4, .6]);
+      parkingLot(cx, cz + bd / 2 + 1, w, d - bd - 2, .6);
+    } else if (t < .85) { // a gas station
+      put('box', TX('asphalt', 'matte'), '#5E6064', [cx, .34, cz], [w - 2, .1, d - 2], [0, 0, 0], null, 'XYZ', true);
+      put('box', 'matte', '#FFFFFF', [cx, 6, cz + 2], [Math.min(30, w - 8), 1, 14]); put('box', 'matte', '#D3362B', [cx, 6.7, cz + 2], [Math.min(30, w - 8) + .2, .5, 14.2]);
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) put('box', 'matte', '#DADDE2', [cx + sx * 9, 3, cz + 2 + sz * 4.5], [.6, 6, .6]);
+      for (let k = -1; k <= 1; k++) { put('box', 'matte', '#2B2B2B', [cx + k * 8, 1.2, cz + 2], [1.2, 2.4, .8]); if (Rg() < .7) car(cx + k * 8 + 2.4, cz + 2, 0, pick(Rg, CARC)); }
+      put('box', 'matte', '#F3EBDD', [cx, 2.5, cz - d / 2 + 7], [16, 5, 9]);
+      put('box', 'matte', '#FFFFFF', [cx + w / 2 - 4, 8, cz + d / 2 - 4], [.6, 16, .6]); put('box', 'matte', '#D3362B', [cx + w / 2 - 4, 15, cz + d / 2 - 4], [5, 5, .6]);
+    } else parkingLot(cx, cz, w, d, .85);
+  }
+  function sky(x, z, w, d, h, type) {
+    const fh = 3.4, fl = Math.floor(h / fh), every = opts.lite ? 4 : 2;
+    if (type === 0) { put('box', 'tower', '#3F86D8', [x, h / 2, z], [w, h, d]); for (let f = 2; f < fl; f += every) put('box', 'matte', '#F2F4F6', [x, f * fh, z], [w + .8, .35, d + .8], [0, 0, 0], null, 'XYZ', true); put('box', 'matte', '#E7EAEE', [x, h + 2, z], [w * .6, 4, d * .6]); }
+    else if (type === 1) { put('box', 'matte', '#1E2833', [x, h / 2, z], [w, h, d]); for (let f = 4; f < fl; f += every * 2) put('box', 'matte', '#C9A34A', [x, f * fh, z], [w + .5, .3, d + .5], [0, 0, 0], null, 'XYZ', true); put('box', 'pent', '#FFD27A', [x, h + 1.5, z], [w - 2, 3, d - 2]); }
+    else if (type === 2) { const s = [[0, .6, 1], [.6, .85, .8], [.85, 1, .6]]; for (const [a, b, k] of s) { put('box', 'matte', '#DCD2BE', [x, h * (a + b) / 2, z], [w * k, h * (b - a), d * k]); put('box', 'matte', '#E2B53A', [x, h * b, z], [w * k + 1, .8, d * k + 1]); } put('cyl', 'matte', '#D9A520', [x, h + 8, z], [.5, 16, .5]); }
+    else { put('disc', 'matte', '#F2F2EE', [x, h / 2, z], [Math.min(w, d), h, Math.min(w, d)]); for (let k = 0; k < (opts.lite ? 8 : 14); k++) { const a = k / 14 * Math.PI * 2; put('box', 'glass', '#2FB7C4', [x + Math.sin(a) * Math.min(w, d) / 2, h / 2, z + Math.cos(a) * Math.min(w, d) / 2], [2, h - 3, .3], [0, a, 0]); } }
+  }
+  function skyBlock(cx, cz, w, d) {
+    put('box', TX('paving', 'matte'), '#E9E2D2', [cx, .34, cz], [w - 1, .1, d - 1], [0, 0, 0], null, 'XYZ', true);
+    const two = w > 40 && Rg() < .6, n = two ? 2 : 1;
+    for (let k = 0; k < n; k++) { const tw = Math.min(26, (w - 6) / n - 3), td = Math.min(26, d - 8), x = cx - w / 2 + (k + .5) * w / n;
+      const peak = Math.exp(-(((cz - 20) / 170) ** 2)) * Math.exp(-(((cx + 330) / 140) ** 2)); // tallest in the middle of downtown
+      sky(x, cz, tw, td, 40 + peak * 190 + Rg() * 50, Math.floor(Rg() * 4)); }
+  }
+  if (G2) { // the highway along the north edge, four lanes, cars, two ramps into the city
+    const zH = -(ext.zn) - 34, L = 2600;
+    put('box', TX('asphalt', 'matte'), '#4E5054', [0, .3, zH], [L, .1, 26], [0, 0, 0], null, 'XYZ', true);
+    put('box', 'matte', '#C8C2B6', [0, .5, zH], [L, .4, 1.2], [0, 0, 0], null, 'XYZ', true);
+    for (const off of [-6.5, 6.5]) for (let x = -1200; x < 1200; x += 9) put('box', 'flat', '#FFFFFF', [x, .38, zH + off], [4, .03, .3], [0, 0, 0], null, 'XYZ', true);
+    for (let k = 0; k < (opts.lite ? 30 : 70); k++) { const x = -1200 + Rg() * 2400, lane = pick(Rg, [-9.5, -3.2, 3.2, 9.5]); car(x, zH + lane, lane < 0 ? Math.PI / 2 : -Math.PI / 2, pick(Rg, CARC)); }
+    for (const xr of [colX[-3] + colW[-3] / 2 + ROAD / 2, colX[3] + colW[3] / 2 + ROAD / 2]) put('box', TX('asphalt', 'matte'), '#55575C', [xr, .28, zH + 18], [9, .1, 22], [0, 0, 0], null, 'XYZ', true);
   }
   function plaza(cx, cz) {
     put('box', 'matte', st.plaza, [cx, .4, cz], [BW, .2, BD]);
@@ -796,11 +875,11 @@ export function buildCity(scene, styleKey, opts = {}) {
     // ---------- old city: boulevards on the two main axes, parked and driving cars, people around the fountain
     if (D.refresh) {
       const xb = colW[0] / 2 + ROAD / 2, zb = rowD[0] / 2 + RZ / 2;
-      for (const sx of [-1, 1]) for (let j = -NBZ; j <= NBZ; j++) { if (!inCity(0, j) && !inCity(1, j)) continue; const zc = rowZ[j], L = rowD[j] - 4;
+      for (const sx of [-1, 1]) for (let j = -NZN; j <= NBZ; j++) { if (!inCity(0, j) && !inCity(1, j)) continue; const zc = rowZ[j], L = rowD[j] - 4;
         put('box', 'flat', '#7DBE5A', [sx * xb, .12, zc], [1.6, .24, L]); for (let z = zc - L / 2 + 3; z < zc + L / 2 - 2; z += 7) tree(sx * xb, z, .55); }
       for (const sz of [-1, 1]) for (let i = -NBX; i <= NBX; i++) { if (!inCity(i, 0) && !inCity(i, 1)) continue; const xc = colX[i], L = colW[i] - 4;
         put('box', 'flat', '#7DBE5A', [xc, .12, sz * zb], [L, .24, 1.6]); for (let x = xc - L / 2 + 3; x < xc + L / 2 - 2; x += 7) tree(x, sz * zb, .55); }
-      for (let i = -NBX; i <= NBX; i++) for (let j = -NBZ; j <= NBZ; j++) {
+      for (let i = -NBX; i <= NBX; i++) for (let j = -NZN; j <= NBZ; j++) {
         if (!inCity(i, j)) continue; const b = block(i, j);
         if (inCity(i, j - 1) && Rd() < .55) { const z0 = b.z - b.d / 2 - RZ / 2, s = Rd() < .5 ? 1 : -1; car(b.x + (Rd() - .5) * (b.w - 6), z0 + s * 2.6, s > 0 ? Math.PI / 2 : -Math.PI / 2, pick(Rd, CARS)); }
         if (inCity(i - 1, j) && Rd() < .45) { const x0 = b.x - b.w / 2 - ROAD / 2, s = Rd() < .5 ? 1 : -1; car(x0 + s * 2.6, b.z + (Rd() - .5) * (b.d - 6), s > 0 ? Math.PI : 0, pick(Rd, CARS)); }
@@ -1223,7 +1302,7 @@ export function buildCity(scene, styleKey, opts = {}) {
     // --- T1: a monorail around the city, a yellow train, four stations
     const tr = DIS.transit || '';
     if (tr.includes('T1')) {
-      const X = ext.x + 26, Z = ext.z + 8, yb = 13, line = [[-X, -Z], [X, -Z], [X, Z], [-X, Z], [-X, -Z]];
+      const X = ext.x + 26, Z = ext.z + 8, ZN = (ext.zn ?? ext.z) + 8, yb = 13, line = [[-X, -ZN], [X, -ZN], [X, Z], [-X, Z], [-X, -ZN]];
       for (let s = 0; s < 4; s++) { const [ax, az] = line[s], [bx, bz] = line[s + 1], L = Math.hypot(bx - ax, bz - az), ry = Math.atan2(bx - ax, bz - az);
         put('box', 'matte', '#EDEBE6', [(ax + bx) / 2, yb, (az + bz) / 2], [2.2, 1.6, L], [0, ry, 0]);
         for (let t = 0; t <= L; t += lite ? 60 : 30) { const px = ax + (bx - ax) * t / L, pz = az + (bz - az) * t / L; put('box', 'matte', '#D9D6CF', [px, yb / 2, pz], [1.4, yb, 1.4], [0, 0, 0], null, 'XYZ', true); }
@@ -1241,7 +1320,7 @@ export function buildCity(scene, styleKey, opts = {}) {
       const bus = (x, z, yaw) => { const b = new THREE.Matrix4().makeRotationY(yaw).setPosition(x, 0, z);
         put('box', 'matte', '#FFD21F', [0, 1.9, 0], [2.6, 2.8, 11], [0, 0, 0], b, 'XYZ', true); put('box', 'glass', '#22303D', [0, 2.4, 0], [2.65, 1, 10], [0, 0, 0], b, 'XYZ', true); put('box', 'matte', '#FFFFFF', [0, 3.35, 0], [2.6, .2, 11], [0, 0, 0], b, 'XYZ', true); };
       const stop = (x, z, ry) => { put('box', 'flat', '#FFD21F', [x, 3, z], [5, .3, 2], [0, ry, 0]); put('box', 'glass', st.glass, [x, 1.6, z], [5, 2.6, .1], [0, ry, 0]); };
-      for (let j = -NBZ; j <= NBZ; j += 2) { if (!inCity(0, j)) continue; const z = rowZ[j];
+      for (let j = -NZN; j <= NBZ; j += 2) { if (!inCity(0, j)) continue; const z = rowZ[j];
         bus(xb + 2.6, z + 6, 0); bus(-xb - 2.6, z - 8, Math.PI); stop(xb + 6.5, z - 4, Math.PI / 2); stop(-xb - 6.5, z + 4, Math.PI / 2); }
       for (let i = -NBX; i <= NBX; i += 2) { if (!inCity(i, 0)) continue; const x = colX[i];
         bus(x + 7, zb + 2.6, Math.PI / 2); stop(x - 4, zb + 6.5, 0); }
