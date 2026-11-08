@@ -181,10 +181,10 @@ document.addEventListener('click', (e) => {
 });
 addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDialog(); });
 
-// After Sunday 8 November (Rome) the Full City Guide is €19 (same switch as the funnels)
+// After Sunday 8 November (Rome) the Full City Guide is €5.99, Nico 8/11 (same switch as the funnels)
 if (Date.now() >= Date.parse(window.__cityDeal || '2026-11-08T23:59:59+01:00')) {
-  document.querySelectorAll('label[data-p="1.99"]').forEach((l) => { l.dataset.p = '19'; l.querySelector('[data-full]').innerHTML = '€19'; });
-  document.querySelectorAll('.bookgo').forEach((g) => (g.textContent = 'Get it · €19'));
+  document.querySelectorAll('label[data-p="1.99"]').forEach((l) => { l.dataset.p = '5.99'; l.querySelector('[data-full]').innerHTML = '€5.99'; });
+  document.querySelectorAll('.bookgo').forEach((g) => (g.textContent = 'Get it · €5.99'));
   document.querySelectorAll('[data-kick]').forEach((k) => (k.textContent = 'The full guide'));
 }
 

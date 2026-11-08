@@ -75,8 +75,8 @@ const { slug, free, word, small, cover, hero, heroMobile } = Astro.props;
     var oil = document.querySelector('[data-oil]');
     var T = function (fn, ms) { return setTimeout(fn, ms); };
     var st = function (n) { return oil.querySelector('[data-st="' + n + '"]'); };
-    // after Sunday 8 November the Full Tower is €5.99 (Nico 8/11), the Full 3D €19
-    if (Date.now() > Date.parse('2026-11-08T23:59:59+01:00')) oil.querySelector('[data-oil-price]').textContent = free === 'free-tower' ? '€5.99' : '€19';
+    // after Sunday 8 November every Full guide is €5.99 (Nico 8/11)
+    if (Date.now() > Date.parse('2026-11-08T23:59:59+01:00')) oil.querySelector('[data-oil-price]').textContent = '€5.99';
     oil.querySelector('[data-oil-skip]').addEventListener('click', function () { oil.hidden = true; box.hidden = true; });
     form.addEventListener('submit', function (e) {
       e.preventDefault();

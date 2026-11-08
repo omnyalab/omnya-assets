@@ -26,7 +26,7 @@ const sample = goHref('sample', 'en');
       <p class="x3-lead"><b>The 3D city behind our free house reel, built by Claude from three prompts.</b> Grab them free.</p>
       <div class="ct-ctas">
         <a class="ct-free" href={free} target="_blank" rel="noopener"><span><b>Grab the free blueprint</b><small>PDF · the 3 prompts behind the city</small></span><i>↓</i></a>
-        <a class="ct-full" href="#full">Get the Full one<em><span data-deal><s>€19</s>€1.99</span><span data-after hidden>€19</span></em></a>
+        <a class="ct-full" href="#full">Get the Full one<em><span data-deal><s>€19</s>€1.99</span><span data-after hidden>€5.99</span></em></a>
       </div>
       <p class="ct-proof"><span>No SketchUp</span><span>No Blender</span><span>Runs on a phone</span></p>
     </div>
@@ -51,10 +51,10 @@ const sample = goHref('sample', 'en');
           <li><i></i><div><b>The money</b><span>the offers under every house, and how to adapt it to your brand</span></div><em>Included</em></li>
         </ul>
         <div class="x3-pay">
-          <div class="x3-pay__price" data-deal><small>Today</small><b>€1.99</b><s>€19</s><span>−90%</span></div><div class="x3-pay__price" data-after hidden><b>€19</b></div>
+          <div class="x3-pay__price" data-deal><small>Today</small><b>€1.99</b><s>€19</s><span>−90%</span></div><div class="x3-pay__price" data-after hidden><b>€5.99</b></div>
           <a class="x3-cta" href={full}><span>Get the Full Blueprint</span><i>→</i></a>
         </div>
-        <p class="x3-pay__note"><span data-deal>Until Sunday 8 November at midnight, then it goes back to €19. </span>The PDF arrives right after payment.</p>
+        <p class="x3-pay__note"><span data-deal>Until Sunday 8 November at midnight, then €5.99. </span>The PDF arrives right after payment.</p>
       </div>
     </div>
   </div>
@@ -113,10 +113,10 @@ const sample = goHref('sample', 'en');
 </section>
 
 <p class="x3-foot">OMNYA LAB</p>
-<nav class="ct-bar" aria-label="Get the blueprint" data-bar><a class="a" href={free} target="_blank" rel="noopener">Free blueprint ↓</a><a class="b" href="#full">Full <span data-deal>€1.99</span><span data-after hidden>€19</span></a></nav>
+<nav class="ct-bar" aria-label="Get the blueprint" data-bar><a class="a" href={free} target="_blank" rel="noopener">Free blueprint ↓</a><a class="b" href="#full">Full <span data-deal>€1.99</span><span data-after hidden>€5.99</span></a></nav>
 </div>
 <script is:inline define:vars={{ until: fullCityDeal.until }}>
-  // After Sunday the €19 version shows by itself
+  // After Sunday the €5.99 version shows by itself
   if (Date.now() >= Date.parse(until)) {
     document.querySelectorAll('.x3 [data-deal]').forEach((el) => (el.hidden = true));
     document.querySelectorAll('.x3 [data-after]').forEach((el) => (el.hidden = false));

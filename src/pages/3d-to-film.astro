@@ -3,7 +3,7 @@
 // Free blueprint first ("Steal our 3D to film method", Burtville at night behind), the Full Blueprint
 // ("How to make a 3D that sells with AI") right under it, then the 3D/film pairs, the five steps,
 // who it is for, questions and the last call. Montserrat, Apple blue and black, like the covers.
-// The launch price follows the same date as the tower one; after it the page shows €19 by itself.
+// The launch price follows the same date as the tower one; after it the page shows €5.99 by itself.
 import Base from '../layouts/Base.astro';
 import { goHref, full3dDeal } from '../lib/learn';
 
@@ -47,10 +47,10 @@ import OptIn from '../components/OptIn.astro';
           <li><i></i><div><b>The 3D and film split</b><span>how we line the 3D up with the film for the reel</span></div><em>Included</em></li>
         </ul>
         <div class="x3-pay">
-          <div class="x3-pay__price" data-deal><small>Today</small><b>€1.99</b><s>€19</s><span>−90%</span></div><div class="x3-pay__price" data-after hidden><b>€19</b></div>
+          <div class="x3-pay__price" data-deal><small>Today</small><b>€1.99</b><s>€19</s><span>−90%</span></div><div class="x3-pay__price" data-after hidden><b>€5.99</b></div>
           <a class="x3-cta" href={full}><span>Get the Full Blueprint</span><i>→</i></a>
         </div>
-        <p class="x3-pay__note"><span data-deal>Until Sunday 8 November at midnight, then it goes back to €19. </span>The PDF arrives right after payment.</p>
+        <p class="x3-pay__note"><span data-deal>Until Sunday 8 November at midnight, then €5.99. </span>The PDF arrives right after payment.</p>
       </div>
     </div>
   </div>
@@ -126,7 +126,7 @@ import OptIn from '../components/OptIn.astro';
 <p class="x3-foot">OMNYA LAB</p>
 </div>
 <script is:inline define:vars={{ until: full3dDeal.until }}>
-  // After Sunday the €19 version shows by itself
+  // After Sunday the €5.99 version shows by itself
   if (Date.now() >= Date.parse(until)) {
     document.querySelectorAll('.x3 [data-deal]').forEach((el) => (el.hidden = true));
     document.querySelectorAll('.x3 [data-after]').forEach((el) => (el.hidden = false));
