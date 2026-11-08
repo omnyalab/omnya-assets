@@ -193,12 +193,23 @@ export function buildCity(scene, styleKey, opts = {}) {
           float e0 = smoothstep(0.0, 0.04, q.x) * smoothstep(1.0, 0.96, q.x) * smoothstep(0.0, 0.04, q.y) * smoothstep(1.0, 0.96, q.y);
           float e = mix(e0, 0.9, aa3);
           diffuseColor.rgb *= 0.9 + 0.1 * e + 0.03 * h21(floor(vWp.xz / 1.6));` : ''}
+        ${kind === 'brick' ? `
+          float br = vWp.y / 0.32; float bi = floor(br); float bu = (vWp.x + vWp.z) / 0.7 + mod(bi, 2.0) * 0.5;
+          float aa4 = smoothstep(0.2, 0.5, max(fwidth(br), fwidth(bu)));
+          float mort = smoothstep(0.0, 0.1, fract(br)) * smoothstep(0.0, 0.06, fract(bu));
+          diffuseColor.rgb *= mix(mix(1.25, 0.9 + 0.16 * h21(vec2(floor(bu), bi)), mort), 0.98, aa4);` : ''}
+        ${kind === 'facade' ? `
+          vec2 w = vec2((vWp.x + vWp.z) / 2.6, vWp.y / 3.4); vec2 wf = fract(w);
+          float aa5 = smoothstep(0.15, 0.4, max(fwidth(w.x), fwidth(w.y)));
+          float pane = step(0.18, wf.x) * step(wf.x, 0.82) * step(0.28, wf.y) * step(wf.y, 0.86);
+          vec3 glass = vec3(0.32, 0.44, 0.55) * (0.85 + 0.3 * h21(floor(w)));
+          diffuseColor.rgb = mix(mix(diffuseColor.rgb, glass, pane), diffuseColor.rgb * 0.8, aa5);` : ''}
         ${kind === 'asphalt' ? `
           diffuseColor.rgb *= 0.93 + 0.1 * vn(vWp.xz * 3.0) + 0.04 * h21(floor(vWp.xz * 9.0));` : ''}`);
     };
     return m;
   }
-  if (st.tex) Object.assign(M, { roof: texMat('roof', true), siding: texMat('siding'), grass: texMat('grass'), paving: texMat('paving'), asphalt: texMat('asphalt') });
+  if (st.tex) Object.assign(M, { brick: texMat('brick'), facade: texMat('facade'), roof: texMat('roof', true), siding: texMat('siding'), grass: texMat('grass'), paving: texMat('paving'), asphalt: texMat('asphalt') });
   const TX = (k, fallback) => st.tex ? k : fallback;
   const winTex = (() => { const c = document.createElement('canvas'); c.width = 128; c.height = 160; const x = c.getContext('2d');
     x.fillStyle = '#F4F1EA'; x.fillRect(0, 0, 128, 160);
@@ -516,14 +527,14 @@ export function buildCity(scene, styleKey, opts = {}) {
     const t = force ?? Rg();
     if (t < .4) { // a big box store: building at the back, the car park in front
       const bd = d * .45, col = pick(Rg, [['#2C5A9E', '#FFD21F'], ['#D3362B', '#FFFFFF'], ['#E87A1E', '#FFFFFF'], ['#2E8B57', '#FFFFFF']]);
-      put('box', 'matte', '#EDE8DE', [cx, 5.5, cz - d / 2 + bd / 2 + 1], [w - 4, 11, bd]);
+      put('box', TX('siding', 'matte'), '#EDE8DE', [cx, 5.5, cz - d / 2 + bd / 2 + 1], [w - 4, 11, bd]);
       put('box', 'matte', col[0], [cx, 10.4, cz - d / 2 + bd + 1.1], [w * .5, 3.4, .5]);
       put('box', 'matte', col[1], [cx, 10.4, cz - d / 2 + bd + 1.4], [w * .3, 1.2, .2]);
       put('box', 'glass', st.glass, [cx, 3, cz - d / 2 + bd + 1.05], [w * .25, 5, .1]);
       parkingLot(cx, cz + bd / 2, w, d - bd, .75);
     } else if (t < .7) { // a strip mall: shops in a row with coloured awnings, parking in front
       const bd = Math.min(16, d * .35), n = Math.max(3, Math.floor((w - 6) / 9));
-      put('box', 'matte', '#F3EBDD', [cx, 3, cz - d / 2 + bd / 2 + 1], [w - 4, 6, bd]);
+      put('box', TX('brick', 'matte'), '#D9A27A', [cx, 3, cz - d / 2 + bd / 2 + 1], [w - 4, 6, bd]);
       for (let k = 0; k < n; k++) { const x = cx - (w - 6) / 2 + (k + .5) * (w - 6) / n;
         put('box', 'matte', pick(Rg, ['#D3362B', '#2C5A9E', '#FFD21F', '#2E8B57', '#E87A1E', '#7A3B8E']), [x, 5, cz - d / 2 + bd + 2], [(w - 6) / n - 1.2, .3, 3], [-.35, 0, 0]);
         put('box', 'glass', st.glass, [x, 2.4, cz - d / 2 + bd + 1.05], [(w - 6) / n - 2, 3.4, .1]); }
@@ -1025,8 +1036,17 @@ export function buildCity(scene, styleKey, opts = {}) {
       for (let k = 0; k < (lite ? 14 : 30); k++) { const a = k / (lite ? 14 : 30) * Math.PI * 2 + Rs() * .1; palm(ix + Math.sin(a) * (R0 - 6), iz + Math.cos(a) * (R0 - 9), 1.3 + Rs() * .4); }
       const L = { island: true, x: ix, y: 1, z: iz, yaw: Math.PI, lw: 40, ld: 46, dist: 9 };
       L.base = new THREE.Matrix4().makeRotationY(L.yaw).setPosition(ix, 1, iz);
-      const sLW = curLW, sLD = curLD; curLW = L.lw; curLD = L.ld; hillVilla(L.base, rng(hashStr('island-villa'))); curLW = sLW; curLD = sLD;
-      put('box', 'pent', '#FFD27A', [0, 9.6, -4], [L.lw - 9, .5, 9], [0, 0, 0], L.base); // a gold crown on the roof
+      // 8/11 (Nico: the roof was broken): a villa of its own, two white floors with deep flat roofs, glass all round, gold edges
+      { const B = L.base, P2 = (g, m, c, pos, sc) => put(g, m, c, pos, sc, [0, 0, 0], B);
+        P2('box', TX('paving', 'matte'), '#EFE4CC', [0, .35, 0], [34, .3, 34]);
+        P2('box', 'matte', '#F7F5F1', [0, 3.4, -6], [26, 6, 13]); P2('box', 'glass', st.glass, [0, 3.3, .55], [24, 4.6, .2]);
+        P2('box', 'matte', '#F7F5F1', [-1, 6.75, -5], [30, .7, 17]); P2('box', 'pent', '#FFD27A', [-1, 7.15, 3.6], [30, .25, .25]);
+        P2('box', 'matte', '#F7F5F1', [3, 9.9, -7], [17, 5.6, 10]); P2('box', 'glass', st.glass, [3, 9.8, -1.9], [15, 4.2, .2]);
+        P2('box', 'matte', '#F7F5F1', [3, 12.95, -6], [21, .6, 14]); P2('box', 'pent', '#FFD27A', [3, 13.3, 1], [21, .25, .25]);
+        P2('box', TX('grass', 'matte'), '#8CC460', [3, 13.35, -6], [17, .2, 10]);
+        P2('box', 'matte', '#C79B6B', [0, .55, 7.5], [30, .3, 13]); P2('box', 'pool', st.pool, [0, .75, 8.5], [20, .1, 7]);
+        for (let k = -3; k <= 3; k += 2) P2('box', 'matte', '#FFFFFF', [k * 3.2, .95, 13.3], [1.4, .3, 3]);
+        for (const sx of [-1, 1]) P2('cone', 'flat', '#FFD21F', [sx * 13, 3, 12], [3.4, .5, 3.4]); }
       put('cyl', 'matte', '#F4EEE2', [ix + 30, 1, iz + 26], [14, .5, 14]); put('cyl', 'pent', '#FFD27A', [ix + 30, 1.3, iz + 26], [10, .1, 10]); // the helipad
       // no bridge (Nico 7/11): you get there only by boat, the tender waits at a small landing on the island's beach
       put('box', 'matte', '#C79B6B', [ix - R0 - 4, .7, iz - 8], [16, .3, 4]);
@@ -1267,7 +1287,10 @@ export function buildCity(scene, styleKey, opts = {}) {
     // --- the supermarket (because you asked), with its car park
     if (at.market) { const { cx: x, cz: z, bw, bd } = at.market, w = bw - 4, d = bd - 4, hd = d * .55;
       lot(x, z, w, d, '#6A6C70');
-      put('box', 'matte', '#F6F3EC', [x, 4.5, z - d / 2 + hd / 2], [w, 9, hd]);
+      put('box', TX('siding', 'matte'), '#F6F3EC', [x, 4.5, z - d / 2 + hd / 2], [w, 9, hd]);
+      for (let k = 0; k < 4; k++) { put('box', 'matte', '#B9BEC4', [x - w / 3 + k * w / 4.5, 10.3, z - d / 2 + hd / 2 - 2], [3, 1.6, 3]); put('box', 'glass', st.glass, [x - w / 3 + k * w / 4.5, 9.2, z - d / 2 + hd / 2 + 3], [4, .2, 2.4]); }
+      for (let k = 0; k < 6; k++) put('box', 'matte', '#B9BEC4', [x + w / 2 - 8, .9, z - d / 2 + hd + 3 + k * .9], [2, 1, .7]);
+      for (const sx of [-1, 1]) tree(x + sx * (w / 2 - 3), z + d / 2 - 4, .8);
       put('box', 'matte', '#D3362B', [x, 9.4, z - d / 2 + hd / 2], [w + .4, 1.4, hd + .4]);
       put('box', 'glass', st.glass, [x, 3, z - d / 2 + hd + .05], [w * .5, 4.6, .1]);
       put('box', 'matte', '#D3362B', [x, 6.2, z - d / 2 + hd + 2], [w * .55, .4, 4]);
@@ -1278,7 +1301,11 @@ export function buildCity(scene, styleKey, opts = {}) {
     // --- the Omnya Café: terrace with yellow umbrellas, trees around
     if (at.cafe) { const { cx: x, cz: z, bw, bd } = at.cafe;
       lot(x, z, bw - 4, bd - 4);
-      put('box', 'matte', '#FFF6E2', [x, 3, z - bd / 4], [16, 6, 10]);
+      put('box', TX('brick', 'matte'), '#C8775A', [x, 3, z - bd / 4], [16, 6, 10]);
+      put('box', 'matte', '#F4EEE2', [x, 6.2, z - bd / 4], [16.6, .5, 10.6]);
+      for (const sx of [-1, 1]) { put('cyl', 'matte', '#B5654A', [x + sx * 9, .9, z - bd / 4 + 5.6], [1.2, 1.2, 1.2]); put('ico', 'flat', '#4FA85A', [x + sx * 9, 2.2, z - bd / 4 + 5.6], [2, 2, 2]); }
+      put('box', 'matte', '#2B2B2B', [x + 5.5, 1.2, z - bd / 4 + 6.2], [1.6, 2.2, .2], [-.2, 0, 0]);
+      if (!lite) for (let k = 0; k < 14; k++) put('sph', 'lamp', '#FFE2A8', [x - 14 + k * 2.2, 4.2 - Math.sin(k / 13 * Math.PI) * .8, z + 1], [.35, .35, .35], [0, 0, 0], null, 'XYZ', true);
       for (let k = 0; k < 8; k++) put('box', 'matte', k % 2 ? '#FFFFFF' : '#FFD21F', [x - 7 + k * 2, 5.4, z - bd / 4 + 6], [2, .3, 3], [-.35, 0, 0]);
       for (let a = 0; a < 3; a++) for (let b = 0; b < 2; b++) { const ux = x - 12 + a * 12, uz = z + 3 + b * 7;
         put('cyl', 'matte', '#FFFFFF', [ux, 1.7, uz], [.08, 2, .08]); put('cone', 'flat', b ? '#FFFFFF' : '#FFD21F', [ux, 2.8, uz], [3, .5, 3]); put('cyl', 'matte', '#FFFFFF', [ux, 1.1, uz], [1.1, .08, 1.1]); person(ux + 1.3, .4, uz); }
@@ -1288,7 +1315,7 @@ export function buildCity(scene, styleKey, opts = {}) {
     // --- the Omnya Tower HQ: in the middle of the city, the skyline
     if (at.hq) { const { cx: x, cz: z, bw, bd } = at.hq, fh = 3.4, floors = 56, b0 = 6, Ht = floors * fh, w = Math.min(24, bd - 8), hq = DIS.hq || 'J1';
       lot(x, z, bw - 4, bd - 4, '#E9E2D2');
-      put('box', 'matte', '#F4EEE2', [x, 3, z], [w + 12, 6, w + 6]);
+      put('box', TX('facade', 'matte'), '#F4EEE2', [x, 3, z], [w + 12, 6, w + 6]);
       const offices = [];
       if (hq === 'J2') {
         const segs = [[0, .55, w + 4], [.55, .85, w], [.85, 1, w - 4]];
@@ -1324,6 +1351,7 @@ export function buildCity(scene, styleKey, opts = {}) {
       for (const sx of [-1, 1]) { stairs(x + sx * bw / 5, z, 8, 14); put('box', 'glass', st.glass, [x + sx * bw / 5, 4, z], [9, .3, 15]); put('box', 'matte', '#FFFFFF', [x + sx * bw / 5, 2.2, z - 7], [9, .3, .3]); }
       for (let k = 0; k < 14; k++) person(x - bw / 3 + Rj() * bw * .66, .4, z + bd / 2 - 6 + Rj() * 3);
       for (const sx of [-1, 1]) for (const sz of [-1, 1]) tree(x + sx * (bw / 2 - 4), z + sz * (bd / 2 - 4), .8);
+      for (const sx of [-1, 1]) { put('box', TX('grass', 'matte'), '#8CC460', [x + sx * bw / 2.6, .5, z - bd / 3], [8, .4, 4]); for (let k = 0; k < 6; k++) put('ico', 'flat', ['#FF4D8D', '#FFD60A', '#FFFFFF'][k % 3], [x + sx * bw / 2.6 - 3 + k * 1.2, .9, z - bd / 3], [.6, .5, .6]); put('box', 'matte', '#B9874F', [x + sx * bw / 2.6, .7, z + bd / 3], [5, .4, 1]); }
       jobsAt.station = { x, z, y: 14 };
     }
     for (const [i, j] of [[2, 2], [-2, 2], [2, -2], [-2, -2], [0, 3], [0, -3], [3, 0], [-3, 0]]) { if (!inCity(i, j)) continue; const b = block(i, j);
@@ -1352,6 +1380,9 @@ export function buildCity(scene, styleKey, opts = {}) {
       put('cyl', 'matte', '#3A3530', [cx - 26, 48, cz], [.12, 20, .12]);
       for (const sg of [-1, 1]) { put('box', 'flat', '#F2B705', [x, 1.4, z + sg * (bd / 2 - 2)], [bw - 4, 2.2, .2]); put('box', 'flat', '#F2B705', [x + sg * (bw / 2 - 2), 1.4, z], [.2, 2.2, bd - 4]); }
       for (let k = 0; k < 6; k++) person(x - bw / 3 + Rj() * bw * .66, .4, z + bd / 2 - 6);
+      for (const [dx, c] of [[-bw / 2 + 7, '#2C5A9E'], [-bw / 2 + 7, '#D3362B']].map((v, i) => [v[0], v[1], i])) put('box', 'matte', c, [x + dx, 1.4 + 0, z + bd / 2 - 7 - (c === '#D3362B' ? 3.2 : 0)], [8, 2.6, 3]);
+      for (let k = 0; k < 4; k++) put('box', 'matte', '#C79B6B', [x - 4 + k * 3, .5, z - bd / 2 + 5], [2.4, .5, 2.4]);
+      put('cyl', 'matte', '#F28C1E', [x + bw / 2 - 8, 2, z + bd / 2 - 8], [2.4, 3, 2.4], [0, 0, Math.PI / 2.4]);
       jobsAt.site = { x, z, y: 42 };
     }
     // --- T1: a monorail around the city, a yellow train, four stations
