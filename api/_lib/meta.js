@@ -1,5 +1,5 @@
 // Meta Conversions API (8/11/2026): server events for the omnyalab.com dataset.
-// Vercel env: META_PIXEL_ID (the dataset ID, same as PIXEL in public/consent.js), META_CAPI_TOKEN (secret,
+// Vercel env: META_PIXEL_ID = 1793649065040225 (dataset "Omnya Lab website", same as PIXEL in public/consent.js), META_CAPI_TOKEN (secret,
 // Events Manager > Settings > Conversions API > Generate access token: Nico pastes it on Vercel),
 // META_TEST_EVENT_CODE (optional, only while checking in Test Events; remove it afterwards).
 // Without the ID or the token nothing is sent. Email and name are hashed (SHA-256), never sent in clear.

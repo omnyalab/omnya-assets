@@ -5,7 +5,7 @@
    Purchase comes from the server (Conversions API, api/stripe-webhook.js).
    window.omnyaConsent.open() shows the banner again (privacy policy, "Cookie settings"). */
 (function () {
-  var PIXEL = window.OMNYA_PIXEL_TEST || '';  // Meta dataset ID of omnyalab.com (Events Manager)
+  var PIXEL = '1793649065040225';  // Meta dataset "Omnya Lab website" (Events Manager, portfolio Omnya Lab | Renders & Films)
   if (window.omnyaConsent) return;
   var KEY = 'omnya-consent';
   var get = function () { try { return localStorage.getItem(KEY); } catch (e) { return null; } };
