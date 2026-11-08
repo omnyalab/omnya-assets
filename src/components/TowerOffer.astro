@@ -52,9 +52,13 @@ const afterB = top ? X.upAfterB : X.endAfterB;
   top && (
     <script is:inline define:vars={{ until: fullTowerDeal.until }}>
       // After Sunday the €5.99 version shows by itself
+      // runs after the whole page is parsed: the "end" card comes later in the HTML than this script (8/11 fix)
       if (Date.now() >= Date.parse(until)) {
-        document.querySelectorAll('[data-tw-offer] [data-deal], [data-tw-deal]').forEach((el) => (el.hidden = true));
-        document.querySelectorAll('[data-tw-offer] [data-after], [data-tw-after]').forEach((el) => (el.hidden = false));
+        const swap = () => {
+          document.querySelectorAll('[data-tw-offer] [data-deal], [data-tw-deal]').forEach((el) => (el.hidden = true));
+          document.querySelectorAll('[data-tw-offer] [data-after], [data-tw-after]').forEach((el) => (el.hidden = false));
+        };
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', swap); else swap();
       }
       // The free PDF opens in a new tab; this page stays and says it is on its way
       document.querySelectorAll('[data-tw-dl]').forEach((a) =>
