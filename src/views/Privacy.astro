@@ -63,7 +63,7 @@ flush();
     </div>
     {
       sections.map((s) => (
-        <article class="legal__sec" data-fade>
+        <article class="legal__sec" data-fade id={s.n === '04' ? 'cookies' : undefined}>
           <h2 class="t-h3">
             <small>{s.n}</small>
             <span>{s.h}</span>
@@ -76,5 +76,10 @@ flush();
         </article>
       ))
     }
+    <p class="legal__cookie"><button type="button" class="u" onclick="window.omnyaConsent && window.omnyaConsent.open()">{lang === 'it' ? 'Impostazioni cookie' : 'Cookie settings'}</button></p>
   </section>
 </Base>
+<style>
+  .legal__cookie { margin: 32px 0 0; }
+  .legal__cookie button { appearance: none; background: none; border: 0; padding: 0; font: inherit; color: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+</style>

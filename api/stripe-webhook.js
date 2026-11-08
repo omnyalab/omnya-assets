@@ -8,6 +8,7 @@ import { sendMail } from './_lib/mail.js';
 import { filesForProduct } from './_lib/learn-files.js';
 import { host } from './_lib/config.js';
 import { upgrade, placeBid } from './_lib/city.js';
+import { metaEvent } from './_lib/meta.js';
 
 // Omnya City upsell (6/11/2026): these products move the buyer (client_reference_id = username, dots sent as dashes).
 const CITY = { 'Omnya City · The penthouse': 'penthouse', 'Omnya City · The best villa in Omnyawood': 'villa', 'Omnya City · A house by the fountain': 'fountain',
@@ -83,6 +84,18 @@ export async function POST(request) {
 
   const email = session.customer_details?.email;
   const name = session.customer_details?.name || 'there';
+
+  // Meta Conversions API (8/11): the Purchase comes from here, not from the browser. event_id = the Checkout
+  // Session, so a Stripe retry of this webhook is counted once. Nothing is sent until META_CAPI_TOKEN is on Vercel.
+  await metaEvent({
+    name: 'Purchase',
+    id: `purchase_${session.id}`,
+    url: 'https://www.omnyalab.com/learn',
+    email,
+    firstName: session.customer_details?.name || '',
+    value: (session.amount_total || 0) / 100,
+    currency: session.currency || 'eur',
+  }).catch((e) => console.error('[stripe-webhook] meta', e));
 
   // Omnya City: buy a better place
   try {

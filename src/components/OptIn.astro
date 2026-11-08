@@ -83,7 +83,11 @@ const { slug, free, word, small, cover, hero, heroMobile } = Astro.props;
       var name = form.elements.name.value.trim(), email = form.elements.email.value.trim();
       if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = 'Write your name and a real email.'; err.hidden = false; return; }
       err.hidden = true;
-      var sent = fetch('/api/optin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, free: free, page: slug, company: form.elements.company.value, k: new URLSearchParams(location.search).get('k') || '' }) })
+      // Meta Lead (8/11): only if the visitor accepted cookies; the same event_id goes to the server (no double count)
+      var eid = 'lead_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      var ads = !!(window.omnyaTrack && window.omnyaTrack('Lead', { content_name: free }, eid));
+      var fbp = (document.cookie.match(/(?:^|; )_fbp=([^;]+)/) || [])[1] || '';
+      var sent = fetch('/api/optin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, free: free, page: slug, company: form.elements.company.value, k: new URLSearchParams(location.search).get('k') || '', cv: 'v1', nl: false, ads: ads, eid: eid, fbp: ads ? fbp : '' }) })
         .then(function (r) { return r.ok; }).catch(function () { return false; });
       oil.querySelector('[data-oil-em]').textContent = 'to ' + email;
       oil.querySelector('[data-oil-nm]').textContent = ', ' + name.split(' ')[0];

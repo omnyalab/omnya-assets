@@ -1,9 +1,13 @@
 // POST /api/optin — the free blueprint form (E3, 7/11): saves the name and email and sends the PDF.
-// The form promises "only the email with your blueprint, no spam and nothing else", so this list
-// is for our records and counts, not for newsletters. GET ?key=IG_ADMIN_KEY → the list as CSV.
+// Each row keeps the consent (date, exact checkbox text, page): with the v1 text ("only the email with your
+// blueprint") the person is NOT in the newsletter (api/_lib/newsletter.js). The emails are never sold.
+// GET ?key=IG_ADMIN_KEY → everyone as CSV; &list=newsletter → only who accepted the newsletter and didn't leave.
+// Meta (8/11): if the visitor accepted cookies, a server Lead with the same event_id as the browser one.
 import { sendMail } from './_lib/mail.js';
 import { host } from './_lib/config.js';
 import { redis, hasStore } from './_lib/store.js';
+import { CONSENT_TEXTS, OFF_KEY, unsubUrl } from './_lib/newsletter.js';
+import { metaEvent } from './_lib/meta.js';
 
 const SITE = 'https://www.omnyalab.com';
 const FREE = {
@@ -36,9 +40,22 @@ export async function POST(request) {
   if (b.company) return json({ ok: true }); // the hidden field: a bot filled it
   if (!f || !name || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return json({ error: 'name, email and blueprint needed' }, 400);
 
-  const row = { at: Date.now(), name, email, free: b.free, page: String(b.page || '').slice(0, 40), k: String(b.k || '').slice(0, 20) };
+  const page = String(b.page || '').slice(0, 40);
+  const cv = CONSENT_TEXTS[b.cv] ? b.cv : 'v1'; // the checkbox version the form showed
+  const consent = { at: new Date().toISOString(), version: cv, text: CONSENT_TEXTS[cv].text, page, newsletter: CONSENT_TEXTS[cv].newsletter && b.nl === true };
+  const row = { at: Date.now(), name, email, free: b.free, page, k: String(b.k || '').slice(0, 20), consent };
   if (hasStore()) {
-    try { await redis('LPUSH', KEY, JSON.stringify(row)); } catch (e) { console.error('[optin] store', e); }
+    try {
+      await redis('LPUSH', KEY, JSON.stringify(row));
+      if (consent.newsletter) await redis('SREM', OFF_KEY, email); // signed up again: back in
+    } catch (e) { console.error('[optin] store', e); }
+  }
+  if (b.ads === true && /^[a-z0-9_-]{6,60}$/i.test(String(b.eid || ''))) {
+    await metaEvent({
+      name: 'Lead', id: String(b.eid), url: `https://www.omnyalab.com/${page}`, email, firstName: name, content: b.free,
+      ip: (request.headers.get('x-forwarded-for') || '').split(',')[0].trim(), ua: request.headers.get('user-agent') || '',
+      fbp: String(b.fbp || '').slice(0, 120) || undefined,
+    }).catch((e) => console.error('[optin] meta', e));
   }
   try {
     await sendMail({
@@ -59,7 +76,16 @@ export async function GET(request) {
   const q = new URL(request.url).searchParams;
   const key = process.env.IG_ADMIN_KEY;
   if (!key || q.get('key') !== key) return new Response('Not found', { status: 404 });
-  const rows = hasStore() ? (await redis('LRANGE', KEY, 0, -1)).map((r) => JSON.parse(r)) : [];
-  const csv = ['date,name,email,blueprint,page,word', ...rows.map((r) => [new Date(r.at).toISOString(), r.name, r.email, r.free, r.page, r.k].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','))].join('\n');
+  let rows = hasStore() ? (await redis('LRANGE', KEY, 0, -1)).map((r) => JSON.parse(r)) : [];
+  const cell = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  if (q.get('list') === 'newsletter') {
+    // only who ticked a newsletter text, the latest sign-up per email, minus who unsubscribed
+    const off = new Set(hasStore() ? await redis('SMEMBERS', OFF_KEY) : []);
+    const seen = new Set();
+    rows = rows.filter((r) => r.consent?.newsletter && !off.has(r.email) && !seen.has(r.email) && seen.add(r.email));
+    const csv = ['email,name,consent_date,consent_text,page,unsubscribe_link', ...rows.map((r) => [r.email, r.name, r.consent.at, r.consent.text, r.consent.page, unsubUrl(r.email)].map(cell).join(','))].join('\n');
+    return new Response(csv, { headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename="omnya-newsletter.csv"' } });
+  }
+  const csv = ['date,name,email,blueprint,page,word,consent_version,newsletter', ...rows.map((r) => [new Date(r.at).toISOString(), r.name, r.email, r.free, r.page, r.k, r.consent?.version || 'v1', r.consent?.newsletter ? 'yes' : 'no'].map(cell).join(','))].join('\n');
   return new Response(csv, { headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename="omnya-optin.csv"' } });
 }

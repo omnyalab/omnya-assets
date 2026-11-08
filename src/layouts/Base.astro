@@ -84,6 +84,8 @@ const links = sampleLinks(lang);
     <slot name="head" />
     <ClientRouter fallback="none" />
     {import.meta.env.PROD && <script is:inline defer src="/_vercel/insights/script.js"></script>}
+    <!-- cookie banner + Meta Pixel, the pixel only after Accept (8/11) -->
+    <script is:inline defer src="/consent.js"></script>
   </head>
   <body>
     {/* 7/11, Nico: the funnel pages from the reels (no header) open straight away, without the house intro */}
