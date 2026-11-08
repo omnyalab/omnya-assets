@@ -245,4 +245,4 @@ requestAnimationFrame(frame);
 document.documentElement.classList.add('ready');
 window.__readyAt = performance.now();
 start().catch((e) => { console.error(e); show('find'); });
-window.__city = { W, view, place, flyTo, lots };
+window.__city = { W, view, place, flyTo, lots, camera };
