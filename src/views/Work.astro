@@ -14,7 +14,7 @@ const ar = (s: string) => (s === 'tall' ? '4 / 5' : s === 'wide' ? '3 / 2' : '16
 const sizes = ['(min-width: 900px) 58vw, calc(100vw - 32px)', '(min-width: 900px) 34vw, 84vw', '(min-width: 900px) 34vw, 84vw', '(min-width: 900px) 50vw, calc(100vw - 32px)'];
 ---
 
-<Base page="work" title={T.work.title} description={T.work.description}>
+<Base page="work" title={T.work.title} seoTitle={T.seo.work.title} description={T.seo.work.description}>
   <section class="phead wrap">
     <div class="work__head">
       <h1 class="t-display work__title" data-split="intro">{T.work.titleA}{' '}<span class="mute">{T.work.titleB}</span></h1>

@@ -79,7 +79,7 @@ const buyData = (b: { id: string; a: string; b: string; price: string }) => ({
 const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mobile.webp', '/learn/dev_dusk_mobile.webp'];
 ---
 
-<Base page="learn" title={tower ? L.towerA : crestaPage ? `${L.crestaA} ${L.crestaB}` : blueprint ? L.freeA : w ? `${L.heroA} ${L.heroB} · ${w.label}` : `${L.heroA} ${L.heroB}`} description={L.description} noindex={!!w}>
+<Base page="learn" title={tower ? L.towerA : crestaPage ? `${L.crestaA} ${L.crestaB}` : blueprint ? L.freeA : w ? `${L.heroA} ${L.heroB} · ${w.label}` : `${L.heroA} ${L.heroB}`} seoTitle={!tower && !crestaPage && !blueprint && !w ? T.seo.learn.title : undefined} description={L.description} noindex={!!w}>
   <!-- Hero: the 3D model over the final image, full screen -->
     {
     tower && (

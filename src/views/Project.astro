@@ -29,6 +29,23 @@ const filmNote = p.subtitles === false ? T.project.filmNoteMusic : T.project.fil
 const { stills, films } = deliverables(p);
 const { dw, dh } = dims(p.cover);
 const nd = dims(next.cover);
+// Search snippet: the project's own description, cut at a word near 158 characters
+const snippet = (() => {
+  const d = desc ?? '';
+  if (!d) return P.description(p.title, cat);
+  if (d.length <= 158) return d;
+  const cut = d.slice(0, 158);
+  return cut.slice(0, cut.lastIndexOf(' ')).replace(/[,;:.]$/, '') + '…';
+})();
+const crumbs = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: T.seo.breadcrumbHome, item: new URL(localize('/', lang), Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: T.seo.breadcrumbWork, item: new URL(localize('/work', lang), Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: p.title, item: new URL(localize(href(p), lang), Astro.site).href },
+  ],
+};
 
 // Build the page rhythm: big stills alternated with films, verticals paired.
 type Block =
@@ -67,8 +84,9 @@ const stillSizes: Record<string, string> = {
 };
 ---
 
-<Base page="project" title={p.title} description={P.description(p.title, cat)} og={`/og/${slug(p)}.jpg`} ogAlt={alt(p, lang)}>
+<Base page="project" title={p.title} seoTitle={T.seo.project(p.title)} description={snippet} og={`/og/${slug(p)}.jpg`} ogAlt={alt(p, lang)}>
   <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(crumbs)} />
     <link rel="preload" as="image" imagesrcset={srcset(p.cover)} imagesizes="(max-width: 899px) 75vw, 100vw" fetchpriority="high" />
   </Fragment>
 

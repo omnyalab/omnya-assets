@@ -8,11 +8,14 @@ import { sampleLinks } from '../lib/contact';
 import { t, langFromPath, localize, langs } from '../i18n';
 import { alt } from '../lib/alts';
 import { projects } from '../lib/data';
+import { contact } from '../lib/contact';
 import '../styles/global.css';
 
 interface Props {
   page: string;
   title?: string;
+  /** Full <title> for search, used as is (keyword-led); the visible page titles stay untouched. */
+  seoTitle?: string;
   description?: string;
   /** Social preview, 1200x630 (generated in public/og by scripts/make-og.mjs). */
   og?: string;
@@ -26,12 +29,49 @@ interface Props {
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const defaultOgAlt = `Omnya Lab, ${alt(projects.find((p) => p.id === '01_penthouse_dubai')!, lang)}`;
-const { page, title, description = T.siteDescription, og = '/og/omnya-lab.jpg', ogAlt = defaultOgAlt, footer = true, header = true, noindex = false } = Astro.props;
-const fullTitle = title ? `${title} | Omnya Lab` : T.siteTitle;
+const { page, title, seoTitle, description = T.siteDescription, og = '/og/omnya-lab.jpg', ogAlt = defaultOgAlt, footer = true, header = true, noindex = false } = Astro.props;
+const fullTitle = seoTitle ?? (title ? `${title} | Omnya Lab` : T.siteTitle);
 const path = Astro.url.pathname;
 const canonical = new URL(localize(path, lang), Astro.site);
 const ogImage = new URL(og, Astro.site);
 const links = sampleLinks(lang);
+// Structured data: who the studio is, for Google's knowledge panel and rich results (8/11)
+const site = Astro.site!.origin;
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'ProfessionalService',
+      '@id': `${site}/#studio`,
+      name: 'Omnya Lab',
+      alternateName: 'Omnya',
+      url: `${site}/`,
+      logo: `${site}/apple-touch-icon.png`,
+      image: `${site}/og/omnya-lab.jpg`,
+      description: T.siteDescription,
+      email: contact.email,
+      telephone: contact.phoneHref.replace('tel:', ''),
+      vatID: `IT${contact.vat}`,
+      priceRange: '€€',
+      areaServed: 'Worldwide',
+      knowsAbout: T.seo.knowsAbout,
+      founder: { '@type': 'Person', name: 'Nicola Ghizzo', jobTitle: 'Founder and Creative Director', sameAs: [contact.linkedin] },
+      sameAs: [contact.instagram],
+      address: [
+        { '@type': 'PostalAddress', addressLocality: 'Venezia', addressRegion: 'Veneto', addressCountry: 'IT' },
+        { '@type': 'PostalAddress', streetAddress: 'Dubai Design District', addressLocality: 'Dubai', addressCountry: 'AE' },
+      ],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${site}/#website`,
+      url: `${site}/`,
+      name: 'Omnya Lab',
+      inLanguage: ['en', 'it'],
+      publisher: { '@id': `${site}/#studio` },
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -81,6 +121,7 @@ const links = sampleLinks(lang);
     <link rel="preload" as="font" type="font/woff2" href="/fonts/sfprodisplay-regular.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/sfprodisplay-semibold.woff2" crossorigin />
     <link rel="preload" as="image" href="/brand/OmnyaLab_Logo_Black.svg" fetchpriority="high" />
+    {page !== '404' && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
     <slot name="head" />
     <ClientRouter fallback="none" />
     {import.meta.env.PROD && <script is:inline defer src="/_vercel/insights/script.js"></script>}

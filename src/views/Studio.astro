@@ -49,7 +49,7 @@ const books = L.books.map((b) => ({
 const webMail = `mailto:${contact.email}?subject=${encodeURIComponent(S.webSubject)}`;
 ---
 
-<Base page="studio" title={S.title} description={S.description}>
+<Base page="studio" title={S.title} seoTitle={T.seo.studio.title} description={T.seo.studio.description}>
   <!-- 1. Opening (2/11): two studios, one team, the globe between Venice and Dubai -->
   <section class="st-intro st-globe wrap">
     <Duo as="h1" size="h1" class="st-intro__title" a={S.introA} b={S.introB} intro />
