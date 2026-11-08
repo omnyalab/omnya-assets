@@ -292,6 +292,8 @@ export function buildCity(scene, styleKey, opts = {}) {
   // ---- layout
   const NB = 7, BW = 44, BD = 30, PX = 54, PZ = 40, LW = 11, LD = 15;
   const R = rng(hashStr('omnya-city-' + styleKey));
+  const Rmain = R;
+  const parkBlocks = []; // Part 3 (jobs())
   let curLW = LW, curLD = LD, force = null;
   const NBX = st.mix ? 8 : NB, NBZ = st.mix ? 6 : NB, ROAD = PX - BW;
   const colW = {}, rowD = {}, colX = {}, rowZ = {};
@@ -428,7 +430,12 @@ export function buildCity(scene, styleKey, opts = {}) {
     put('box', TX('paving', 'matte'), st.sidewalk, [cx, .15, cz], [bw + 2, .3, bd + 2]);
     if (i === 0 && j === 0) { plaza(cx, cz); continue; }
     const dist = Math.max(Math.abs(i), Math.abs(j));
-    if (dist > 1 && R() < (st.mix ? .11 : .07)) { park(cx, cz, bw, bd); continue; }
+    if (dist > 1 && R() < (st.mix ? .11 : .07)) {
+      // Part 3: the parks near the fountain may become the places where people work (jobs()); same R() calls, nothing moves
+      if (DIS.jobs && dist <= 5) { const mm = mute; mute = true; park(cx, cz, bw, bd); mute = mm; parkBlocks.push({ i, j, cx, cz, bw, bd }); }
+      else park(cx, cz, bw, bd);
+      continue;
+    }
     // isolati diversi: 3, 4 o 5 case per fila, a volte mezzo isolato a giardinetto
     const cols = st.mix ? Math.max(2, Math.min(6, Math.round(bw / (9.5 + R() * 2.5)))) : 4, lw = bw / cols, ld = bd / 2;
     const pocket = st.mix && dist > 1 && R() < .14;
@@ -480,7 +487,7 @@ export function buildCity(scene, styleKey, opts = {}) {
     for (let k = 0; k < 9; k++) tree(cx + (R() - .5) * (BW - 6), cz + (R() - .5) * (LD - 5), .7 + R() * .4);
     for (let k = 0; k < 12; k++) put('ico', 'flat', ['#FF4D8D', '#FFD60A', '#FFFFFF', '#B983FF'][k % 4], [cx - 16 + k * 2.8, .75, cz + 5.5], [.6, .5, .6]);
   }
-  function park(cx, cz, BW = 44, BD = 30) {
+  function park(cx, cz, BW = 44, BD = 30, R = Rmain) {
     put('box', 'flat', pick(R, st.lawn), [cx, .45, cz], [BW, .3, BD]);
     put('box', 'matte', st.plaza, [cx, .62, cz], [BW, .06, 3]);
     put('box', 'matte', st.plaza, [cx, .62, cz], [3, .06, BD]);
@@ -1116,23 +1123,48 @@ export function buildCity(scene, styleKey, opts = {}) {
   // ("because you asked"), the Omnya Café, a building site with a crane; the beach club on the beach east of the seafront villas.
   // Transport: T1 a monorail around the city, T2 yellow buses and stops on the boulevards (both can be on).
   function jobs() {
-    const Rj = rng(hashStr('omnya-jobs-p3')), lite = !!opts.lite, z0 = ext.z, zr = seaZ - 54, ASP = '#55575C';
-    const lot = (x, z, w, d, c = '#EFE4CC') => put('box', TX('paving', 'matte'), c, [x, .16, z], [w, .12, d], [0, 0, 0], null, 'XYZ', true);
-    // --- the Omnya Tower HQ
-    { const x = 165, z = z0 + 58, fh = 3.4, floors = 56, b0 = 6, Ht = floors * fh, w = 24, hq = DIS.hq || 'J1';
-      lot(x, z, 70, 70, '#E9E2D2');
-      put('box', 'matte', '#F4EEE2', [x, 3, z], [44, 6, 40]); // lobby podium
-      put('box', 'glass', st.glass, [x, 2.6, z + 20.1], [36, 4, .1]);
-      for (const s of [-1, 1]) for (let k = 0; k < (lite ? 2 : 5); k++) palm(x + s * 30, z - 26 + k * 13, 1.2);
+    const Rj = rng(hashStr('omnya-jobs-p3')), lite = !!opts.lite;
+    const lot = (x, z, w, d, c = '#EFE4CC') => put('box', TX('paving', 'matte'), c, [x, .34, z], [w, .1, d], [0, 0, 0], null, 'XYZ', true);
+    // 8/11 v2 (Nico: the centre, nothing in front of the sea): the parks closest to the fountain become the places where people
+    // work, in this order; the other parks are drawn again as parks. No house moves.
+    const P = parkBlocks.slice().sort((a, b) => Math.hypot(a.cx, a.cz) - Math.hypot(b.cx, b.cz));
+    const order = ['market', 'cafe', 'hq', 'station', 'site'];
+    P.forEach((B, k) => { if (k >= order.length) park(B.cx, B.cz, B.bw, B.bd, Rj); });
+    const at = Object.fromEntries(order.map((k, i) => [k, P[i]]).filter(([, B]) => B));
+    // --- the supermarket (because you asked), with its car park
+    if (at.market) { const { cx: x, cz: z, bw, bd } = at.market, w = bw - 4, d = bd - 4, hd = d * .55;
+      lot(x, z, w, d, '#6A6C70');
+      put('box', 'matte', '#F6F3EC', [x, 4.5, z - d / 2 + hd / 2], [w, 9, hd]);
+      put('box', 'matte', '#D3362B', [x, 9.4, z - d / 2 + hd / 2], [w + .4, 1.4, hd + .4]);
+      put('box', 'glass', st.glass, [x, 3, z - d / 2 + hd + .05], [w * .5, 4.6, .1]);
+      put('box', 'matte', '#D3362B', [x, 6.2, z - d / 2 + hd + 2], [w * .55, .4, 4]);
+      for (let k = 0; k < Math.floor(w / 7); k++) if (Rj() < .65) car(x - w / 2 + 4 + k * 7, z + d / 2 - 5, 0, pick(Rj, ['#F2F2F0', '#16181C', '#B9BEC4', '#D3141B', '#1F4E8C', '#C9B48A']));
+      for (let k = 0; k < 10; k++) person(x - w / 4 + Rj() * w / 2, .3, z - d / 2 + hd + 4 + Rj() * 3);
+      jobsAt.market = { x, z, y: 20 };
+    }
+    // --- the Omnya Café: terrace with yellow umbrellas, trees around
+    if (at.cafe) { const { cx: x, cz: z, bw, bd } = at.cafe;
+      lot(x, z, bw - 4, bd - 4);
+      put('box', 'matte', '#FFF6E2', [x, 3, z - bd / 4], [16, 6, 10]);
+      for (let k = 0; k < 8; k++) put('box', 'matte', k % 2 ? '#FFFFFF' : '#FFD21F', [x - 7 + k * 2, 5.4, z - bd / 4 + 6], [2, .3, 3], [-.35, 0, 0]);
+      for (let a = 0; a < 3; a++) for (let b = 0; b < 2; b++) { const ux = x - 12 + a * 12, uz = z + 3 + b * 7;
+        put('cyl', 'matte', '#FFFFFF', [ux, 1.7, uz], [.08, 2, .08]); put('cone', 'flat', b ? '#FFFFFF' : '#FFD21F', [ux, 2.8, uz], [3, .5, 3]); put('cyl', 'matte', '#FFFFFF', [ux, 1.1, uz], [1.1, .08, 1.1]); person(ux + 1.3, .4, uz); }
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) tree(x + sx * (bw / 2 - 4), z + sz * (bd / 2 - 4), .8);
+      jobsAt.cafe = { x, z, y: 14 };
+    }
+    // --- the Omnya Tower HQ: in the middle of the city, the skyline
+    if (at.hq) { const { cx: x, cz: z, bw, bd } = at.hq, fh = 3.4, floors = 56, b0 = 6, Ht = floors * fh, w = Math.min(24, bd - 8), hq = DIS.hq || 'J1';
+      lot(x, z, bw - 4, bd - 4, '#E9E2D2');
+      put('box', 'matte', '#F4EEE2', [x, 3, z], [w + 12, 6, w + 6]);
       const offices = [];
-      if (hq === 'J2') { // stone and gold, stepped like the Ep.1 towers, a gold crown
-        const segs = [[0, .55, 30], [.55, .85, 25], [.85, 1, 20]];
+      if (hq === 'J2') {
+        const segs = [[0, .55, w + 4], [.55, .85, w], [.85, 1, w - 4]];
         for (const [a, b, ww] of segs) { const ya = b0 + a * Ht, yb = b0 + b * Ht;
           put('box', 'matte', '#E6DCC6', [x, (ya + yb) / 2, z], [ww, yb - ya, ww]);
           for (let f = Math.ceil(a * floors); f < b * floors; f += lite ? 3 : 1) put('box', 'glass', '#2A3644', [x, b0 + f * fh + 1.6, z], [ww + .2, 1.5, ww + .2], [0, 0, 0], null, 'XYZ', true);
           put('box', 'matte', '#E2B53A', [x, yb, z], [ww + 1.6, 1.2, ww + 1.6]); }
         put('hip', 'flat', '#D9A520', [x, b0 + Ht + 8, z], [18, 16, 18]); put('cyl', 'matte', '#D9A520', [x, b0 + Ht + 24, z], [.6, 18, .6]);
-      } else { // J1: black glass with gold fins and a lit gold crown
+      } else {
         put('box', 'matte', '#1E2833', [x, b0 + Ht / 2, z], [w, Ht, w]);
         for (let k = -1; k <= 1; k++) for (const [fx, fz, ry] of [[k * 8, w / 2 + .3, 0], [w / 2 + .3, k * 8, Math.PI / 2], [k * 8, -w / 2 - .3, 0], [-w / 2 - .3, k * 8, Math.PI / 2]])
           put('box', 'matte', '#C9A34A', [x + fx, b0 + Ht / 2, z + fz], [.35, Ht, .5], [0, ry, 0]);
@@ -1141,61 +1173,34 @@ export function buildCity(scene, styleKey, opts = {}) {
         put('box', 'matte', '#C9A34A', [x, b0 + Ht + 6.6, z], [w + 1, 1.2, w + 1]);
         put('cyl', 'matte', '#C9A34A', [x, b0 + Ht + 20, z], [.5, 26, .5]);
       }
-      // the 10 offices: two columns of five big windows on the side facing the sea, near the top; a bought one is lit gold
-      const lit = DIS.hqLit || 0, wz = z + (hq === 'J2' ? 12.6 : w / 2 + .5);
+      const lit = DIS.hqLit || 0, wz = z + (hq === 'J2' ? w / 2 + .6 : w / 2 + .5);
       for (let i = 0; i < 10; i++) { const row = Math.floor(i / 2), col = i % 2, y = b0 + Ht * (hq === 'J2' ? .6 : .74) + row * fh * 2.2, ox = (col ? 1 : -1) * 4.6;
         put('box', i < lit ? 'pent' : 'glass', i < lit ? '#FFD27A' : '#3A4A5C', [x + ox, y, wz], [7, fh * 1.6, .4], [0, 0, 0], null, 'XYZ', true);
         offices.push({ x: x + ox, y, z: wz + .5, i }); }
       jobsAt.hq = { x, z, y: b0 + Ht + 30, offices };
     }
-    // --- the supermarket (because you asked), with its car park
-    { const x = -185, z = z0 + 48;
-      lot(x, z + 8, 80, 66, '#6A6C70');
-      put('box', 'matte', '#F6F3EC', [x, 5, z - 6], [64, 10, 32]);
-      put('box', 'matte', '#D3362B', [x, 10.4, z - 6], [64.4, 1.6, 32.4]);
-      put('box', 'glass', st.glass, [x, 3.4, z + 10.1], [30, 5.6, .1]);
-      put('box', 'matte', '#D3362B', [x, 7, z + 12.5], [34, .5, 5]);
-      for (let r = 0; r < 2; r++) for (let k = 0; k < 9; k++) { const cx = x - 32 + k * 8, cz = z + 22 + r * 11;
-        put('box', 'flat', '#FFFFFF', [cx + 4, .25, cz], [.25, .05, 6], [0, 0, 0], null, 'XYZ', true);
-        if (Rj() < .6) car(cx, cz, r ? 0 : Math.PI, pick(Rj, ['#F2F2F0', '#16181C', '#B9BEC4', '#D3141B', '#1F4E8C', '#C9B48A'])); }
-      for (let k = 0; k < 14; k++) person(x - 16 + Rj() * 32, .2, z + 13 + Rj() * 6);
-      jobsAt.market = { x, z: z - 6, y: 22 };
+    // --- the central metro station (T1 stops here too)
+    if (at.station) { const { cx: x, cz: z, bw, bd } = at.station;
+      lot(x, z, bw - 4, bd - 4);
+      put('box', 'matte', '#F4EEE2', [x, 4, z], [bw - 10, 8, bd - 12]);
+      put('box', 'glass', st.glass, [x, 8.6, z], [bw - 12, 1.4, bd - 14]);
+      put('box', 'flat', '#FFD21F', [x, 9.6, z], [bw - 8, .6, bd - 10]);
+      for (let k = 0; k < 12; k++) person(x - bw / 3 + Rj() * bw * .66, .4, z + bd / 2 - 5 + Rj() * 2);
+      jobsAt.station = { x, z, y: 18 };
     }
-    // --- the Omnya Café: terrace with umbrellas on the corner of the marina street
-    { const x = -75, z = z0 + 36;
-      lot(x, z + 4, 30, 30);
-      put('box', 'matte', '#FFF6E2', [x, 3, z - 4], [16, 6, 12]);
-      for (let k = 0; k < 8; k++) put('box', 'matte', k % 2 ? '#FFFFFF' : '#FFD21F', [x - 7 + k * 2, 5.4, z + 2.6], [2, .3, 3], [-.35, 0, 0]);
-      put('box', 'glass', st.glass, [x, 2.4, z + 2.05], [12, 3.4, .1]);
-      for (const [dx, dz] of [[-9, 8], [-3, 9], [3, 9], [9, 8], [-6, 13], [6, 13]]) { put('cyl', 'matte', '#FFFFFF', [x + dx, 1.5, z + dz], [.08, 2, .08]); put('cone', 'flat', pick(Rj, ['#FFD21F', '#FFFFFF', '#E0402E']), [x + dx, 2.6, z + dz], [3, .5, 3]); put('cyl', 'matte', '#FFFFFF', [x + dx, .9, z + dz], [1.1, .08, 1.1]); person(x + dx + 1.2, .2, z + dz); }
-      jobsAt.cafe = { x, z, y: 14 };
-    }
-    // --- the building site: a half-built tower, a crane, a fence
-    { const x = 430, z = z0 + 52;
-      lot(x, z, 56, 56, '#C9B48A');
-      put('box', 'matte', '#BFC3C7', [x, 18, z], [8, 36, 8]);
-      for (let f = 0; f < 9; f++) { put('box', 'matte', '#D7DADD', [x, 1 + f * 4, z], [26, .6, 26], [0, 0, 0], null, 'XYZ', true);
-        if (!lite) for (const [px, pz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) put('box', 'matte', '#A9AEB3', [x + px * 12, 3 + f * 4, z + pz * 12], [.8, 4, .8], [0, 0, 0], null, 'XYZ', true); }
-      const cx = x + 22, cz = z - 18;
-      put('box', 'matte', '#F2B705', [cx, 32, cz], [2, 64, 2]);
-      put('box', 'matte', '#F2B705', [cx - 18, 63, cz], [52, 1.6, 1.6]);
-      put('box', 'matte', '#3A3530', [cx + 9, 61.5, cz], [6, 3, 3]);
-      put('cyl', 'matte', '#3A3530', [cx - 30, 52, cz], [.12, 22, .12]);
-      put('box', 'matte', '#8A6A3A', [cx - 30, 40.5, cz], [5, 1, 3]);
-      for (const s of [-1, 1]) { put('box', 'flat', '#F2B705', [x, 1.2, z + s * 27], [54, 2.4, .2]); put('box', 'flat', '#F2B705', [x + s * 27, 1.2, z], [.2, 2.4, 54]); }
-      for (let k = 0; k < 8; k++) person(x - 20 + Rj() * 40, .2, z + 16 + Rj() * 8);
-      jobsAt.site = { x, z, y: 46 };
-    }
-    // --- the beach club, east of the seafront villas, on the sand
-    { const x = 600, z = seaZ - 22;
-      put('box', 'matte', '#C79B6B', [x, .4, z], [52, .6, 30]);
-      put('box', 'pool', st.pool, [x - 8, .75, z], [24, .1, 12]);
-      put('box', 'matte', '#FFFFFF', [x + 16, 2.6, z - 8], [12, 4, 8]); put('box', 'flat', '#FFD21F', [x + 16, 4.9, z - 8], [14, .6, 10]);
-      for (let k = 0; k < 7; k++) for (const r of [0, 1]) { const ux = x - 22 + k * 7, uz = z + 18 + r * 7;
-        put('box', 'matte', '#FFFFFF', [ux, .5, uz], [1.6, .3, 3.6]); if (k % 2 === r) { put('cyl', 'matte', '#FFFFFF', [ux + 1.6, 1.6, uz], [.08, 2.6, .08]); put('cone', 'flat', '#FFD21F', [ux + 1.6, 3, uz], [3.2, .5, 3.2]); } }
-      for (let k = 0; k < (lite ? 3 : 7); k++) palm(x - 26 + k * 9, z - 18, 1.3);
-      for (let k = 0; k < 12; k++) person(x - 20 + Rj() * 44, .7, z - 10 + Rj() * 34);
-      jobsAt.club = { x, z, y: 14 };
+    // --- the building site: a half-built tower and a crane
+    if (at.site) { const { cx: x, cz: z, bw, bd } = at.site, s2 = Math.min(bw, bd) - 10;
+      lot(x, z, bw - 4, bd - 4, '#C9B48A');
+      put('box', 'matte', '#BFC3C7', [x, 16, z], [6, 32, 6]);
+      for (let f = 0; f < 8; f++) put('box', 'matte', '#D7DADD', [x, 1 + f * 4, z], [s2, .6, s2], [0, 0, 0], null, 'XYZ', true);
+      const cx = x + bw / 2 - 6, cz = z - bd / 2 + 6;
+      put('box', 'matte', '#F2B705', [cx, 30, cz], [1.8, 60, 1.8]);
+      put('box', 'matte', '#F2B705', [cx - 16, 59, cz], [46, 1.4, 1.4]);
+      put('box', 'matte', '#3A3530', [cx + 8, 57.6, cz], [5, 3, 3]);
+      put('cyl', 'matte', '#3A3530', [cx - 26, 48, cz], [.12, 20, .12]);
+      for (const sg of [-1, 1]) { put('box', 'flat', '#F2B705', [x, 1.4, z + sg * (bd / 2 - 2)], [bw - 4, 2.2, .2]); put('box', 'flat', '#F2B705', [x + sg * (bw / 2 - 2), 1.4, z], [.2, 2.2, bd - 4]); }
+      for (let k = 0; k < 6; k++) person(x - bw / 3 + Rj() * bw * .66, .4, z + bd / 2 - 6);
+      jobsAt.site = { x, z, y: 42 };
     }
     // --- T1: a monorail around the city, a yellow train, four stations
     const tr = DIS.transit || '';
