@@ -9,7 +9,7 @@ const KEY = 'Z';
 export const districtOf = (dist) => (dist <= 1 ? 'Downtown' : dist <= 3 ? 'Midtown' : dist <= 5 ? 'Garden District' : 'Outskirts');
 /** The name of a place: a lot, a villa in Omnyawood or a floor of The Residences. */
 export const PREM = 100000; // house numbers of the places that are only bought
-export const placeName = (P) => (!P ? 'New district' : P.town ? 'Townhouse on the water · The Residences' : P.sea ? 'Seafront villa · The Beach' : P.floor ? (P.pent ? 'Penthouse · The Residences' : `Floor ${P.f} · The Residences`) : P.hills ? (P.premium ? 'Omnyawood · top terrace' : 'Omnyawood') : districtOf(P.dist));
+export const placeName = (P) => (!P ? 'New district' : P.newTower ? (P.pent ? 'Penthouse · The Green Towers' : `Floor ${P.f} · The Green Towers`) : P.town ? 'Townhouse on the water · The Residences' : P.sea ? 'Seafront villa · The Beach' : P.floor ? (P.pent ? 'Penthouse · The Residences' : `Floor ${P.f} · The Residences`) : P.hills ? (P.premium ? 'Omnyawood · top terrace' : 'Omnyawood') : districtOf(P.dist));
 
 /** The seed of a person's house: the reel used hashStr('@name'). */
 export const seedOf = (u) => hashStr('@' + u);
@@ -19,9 +19,9 @@ export const seedOf = (u) => hashStr('@' + u);
 // Flip it here AND in api/_lib/city.js (EP2_LIVE) the day the Ep.2 reel goes out, then push.
 export const EP2_LIVE = true;
 const EP2 = { hills: true, river: true, marina: true, residences: true, refresh: true, sea: true }; // sea: the 7/11 seafront
-// Part 3 (8/11): jobs. Off until Nico picks from the board; ?p3=J1T1 (or J2T2, J1T1T2…) previews it.
-const P3 = (() => { try { const q = new URLSearchParams(location.search).get('p3'); return q ? { jobs: true, grid2: q.includes('G'), hq: q.includes('J2') ? 'J2' : 'J1', transit: q, hqLit: 3 } : {}; } catch { return {}; } })();
-Object.assign(EP2, P3);
+// Part 3 (8/11, approved by Nico): the jobs (supermarket, café, Omnya Tower, underground metro, building site, shops), blocks
+// of every size, two more rows of houses to the north, 8 new green towers on the left. Live for everyone.
+Object.assign(EP2, { jobs: true, grid2: true, hq: 'J1' });
 
 export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').matches, districts = EP2_LIVE ? EP2 : {}, towerFloors } = {}) {
   const ep2Look = Object.values(districts).some((v) => v === true); // the reel renders always get the new look
@@ -110,7 +110,7 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
   const newT = city.residencesNew || [];
   if (premium.length === 43) for (const t of newT) premium.push({ floor: true, pent: true, newTower: true, x: t.x, z: t.z, y: 6.4 + (t.floors - 0.5) * 3.4, f: t.floors, lw: 30, ld: 24, yaw: 0 });
   const extraFloors = [];
-  for (const t of newT) for (let f = t.floors - 1; f >= 1; f--) extraFloors.push({ floor: true, f, x: t.x, z: t.z, y: 6.4 + (f - 0.5) * 3.4, lw: 30, ld: 24, yaw: 0 });
+  for (const t of newT) for (let f = t.floors - 1; f >= 1; f--) extraFloors.push({ floor: true, newTower: true, f, x: t.x, z: t.z, y: 6.4 + (f - 0.5) * 3.4, lw: 30, ld: 24, yaw: 0 });
   for (const P of premium) P.premium = true;
   for (const F of floors) if (F.f === city.residences[F.tower].floors) F.pent = true; // every tower's top floor is a penthouse
   const freeFloors = floors.filter((F) => !F.premium), freeVillas = city.hillLots.filter((L) => !L.premium);

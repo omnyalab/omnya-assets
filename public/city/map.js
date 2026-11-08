@@ -14,7 +14,7 @@ const EL = 0.98; // elevation (rad), the reel's top-down look
 // 8/11 (Nico: the map opens on everything): on phones the camera looks from the west, so the long city fits a tall screen
 const AZ = mobile ? -1.82 : -0.28;
 // 8/11: the map opens on the whole city (old town, Omnyawood, The Residences, the sea, the yacht and the island)
-const ALL = mobile ? { x: -380, z: 170, d: 2600 } : { x: -170, z: 140, d: 1650 };
+const ALL = mobile ? { x: -380, z: 120, d: 2700 } : { x: -200, z: 60, d: 1700 }; // 8/11: the city is bigger to the north
 const view = { ...ALL };
 const lim = () => ({ x: 1050, z: (W.ext.zn || W.ext.z) * 0.95 + 160, zs: 560 }); // 7/11: down to the sea, the yacht and the island // Ep.2: Omnyawood to the east, The Residences to the west
 let anim = null, dirty = true;
@@ -97,10 +97,13 @@ for (const [item, P, y] of [['yacht', W.yachtAt, 30], ['island', W.islandAt, 34]
 }
 // Part 3 (8/11): the places where people work, a name over each (only when the jobs are on)
 const J = W.jobsAt || {};
-for (const [k, t, sub] of [['hq', 'OMNYA TOWER HQ', '10 offices · be the CEO'], ['market', 'SUPERMARKET', 'because you asked'], ['cafe', 'OMNYA CAFÉ', 'dishwasher wanted'], ['station', 'OMNYA METRO', 'central station'], ['site', 'BUILDING SITE', 'builders wanted']]) {
+const jobLabels = {};
+for (const [k, t, sub] of [['hq', 'OMNYA TOWER', 'CEO wanted'], ['market', 'SUPERMARKET', 'comment what we build next'], ['cafe', 'OMNYA CAFÉ', 'workers wanted'], ['station', 'OMNYA METRO', 'central station'], ['site', 'BUILDING SITE', 'builders wanted']]) {
   const P = J[k]; if (!P) continue;
-  const sp = makeGoldLabel(THREE, t, sub); sp.scale.multiplyScalar(mobile ? .42 : .3); sp.center.set(.5, -.25); sp.position.set(P.x, P.y, P.z); scene.add(sp);
+  const sp = makeGoldLabel(THREE, t, sub); sp.scale.multiplyScalar(mobile ? .26 : .3); sp.center.set(.5, -.25); sp.position.set(P.x, P.y, P.z); scene.add(sp); jobLabels[k] = sp;
 }
+// the CEO's name over the tower once someone has the job (only one)
+function jobsDraw(tops = {}) { if (jobLabels.hq && tops.ceo) { jobLabels.hq.set(`CEO: @${tops.ceo.toUpperCase()}`, 'Omnya Tower'); dirty = true; } }
 function auctionsDraw(a = {}) {
   for (const item of ['yacht', 'island']) {
     const A = a[item] || {}, word = item === 'yacht' ? 'Yacht' : 'Island';
@@ -189,6 +192,7 @@ async function start() {
   const [h] = await Promise.all([getJSON('/api/city/houses'), k ? null : Promise.resolve()]);
   draw(h.houses || [], h.ep2);
   auctionsDraw(h.auctions);
+  jobsDraw((h.forSale || {}).jobs);
   if (!k) return show('find');
   const p = await getJSON(`/api/city/peek?k=${encodeURIComponent(k)}`);
   if (p.house) return landOn(p.house);

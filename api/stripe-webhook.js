@@ -77,7 +77,7 @@ export async function POST(request) {
     await sendMail({
       to: host.email,
       subject: r.error ? `[city] ${kind} paid, NOT moved (${r.error})${refunded ? ', refunded' : ''}` : `[city] @${u} bought the ${kind}`,
-      text: r.error ? `@${u}: ${r.error}. ${refunded ? 'Refunded automatically.' : 'Refund by hand.'}` : `@${u} moved from house #${r.house.from} to #${r.house.n}.${r.moved ? `\n@${r.moved.u} lived there and moved to #${r.moved.to}.` : ''}\nhttps://www.omnyalab.com/city/@${u}`,
+      text: r.error ? `@${u}: ${r.error}. ${refunded ? 'Refunded automatically.' : 'Refund by hand.'}` : r.job ? `@${u} is now ${r.job}.\nhttps://www.omnyalab.com/city/@${u}` : `@${u} moved from house #${r.house.from} to #${r.house.n}.${r.moved ? `\n@${r.moved.u} lived there and moved to #${r.moved.to}.` : ''}\nhttps://www.omnyalab.com/city/@${u}`,
     }).catch(() => {});
     return new Response('ok');
   }

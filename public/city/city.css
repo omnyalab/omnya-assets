@@ -364,3 +364,28 @@ html:has(#ocb) body { padding-bottom: 100px; }
 @media (min-width: 900px) { html:has(#ocb) .sheet { bottom: 28px; } html #ocb { left: auto; right: 20px; } }
 .ux .pl.gold .pr strong { font-size: 19px; white-space: nowrap; }
 .ux .pl .pr em { white-space: nowrap; }
+
+/* 8/11 Part 3: the character next to the name, the job line, the Places | Jobs tabs in MOVE UP */
+.me { display: flex; align-items: center; gap: 12px; }
+.me .av { width: 72px; height: 72px; flex: none; }
+.av svg { width: 100%; height: 100%; display: block; }
+.jobline { display: flex; align-items: center; gap: 10px; margin: 12px 0 4px; padding: 9px 12px; border: 2px solid #1a120c; border-radius: 14px; background: #fff4c9; text-align: left; font: 600 14px/1.3 -apple-system, BlinkMacSystemFont, sans-serif; }
+.jobline > div { min-width: 0; } .jobline b { font-weight: 800; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.jobline small { display: block; color: #6f655b; font-weight: 600; font-size: 12px; }
+.jobline .chg { margin-left: auto; flex: none; font: 800 12px/1 -apple-system, sans-serif; border: 2px solid #ffd21f; border-radius: 999px; padding: 9px 12px; background: #1a120c; color: #ffd21f; cursor: pointer; }
+.ux .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #efe6d2; border: 2.5px solid #1a120c; border-radius: 16px; padding: 4px; margin: 12px 0 8px; }
+.ux .tabs button { appearance: none; border: 2px solid transparent; background: none; padding: 10px 0; border-radius: 11px; font: 800 15px/1 -apple-system, sans-serif; color: #6f655b; cursor: pointer; }
+.ux .tabs button.on { background: #ffd21f; color: #1a120c; border-color: #1a120c; box-shadow: 0 2px 0 #1a120c; }
+.ux .pick label:has(.av) { grid-template-columns: 24px 44px minmax(0, 1fr) auto; }
+.ux .pick label .av { width: 44px; height: 44px; }
+.ux .pick label:has(.av) > div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ux .pick label:has(.av) > div > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ux .pick label.off { opacity: .55; cursor: default; }
+.ux .shot.job { background: radial-gradient(circle at 50% 70%, #fff4c9, #ffd21f 70%); }
+.ux .shot .bigav { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); width: 120px; height: 120px; filter: drop-shadow(0 4px 0 #1a120c); }
+@media (max-width: 899px) {
+  .me .av { width: 56px; height: 56px; }
+  .ux .pick label:has(.av) { grid-template-columns: 20px 38px minmax(0, 1fr) auto; gap: 8px; }
+  .ux .pick label .av { width: 38px; height: 38px; }
+  .ux .shot .bigav { width: 96px; height: 96px; }
+}

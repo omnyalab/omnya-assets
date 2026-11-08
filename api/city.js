@@ -9,7 +9,7 @@
 //   GET  /api/city/auction                → the yacht and the island: leader, bid, minimum, end (closes them when the time is up)
 //   POST /api/city/bid { item, u, amount } → { url } : Stripe Checkout that only holds the money (see api/_lib/city.js)
 import Stripe from 'stripe';
-import { cleanName, linkFor, peek, reserve, allHouses, houseOf, onLot, heal, neighbourOf, ep2From, forSale, stockOf, PRICES, TITLES,
+import { cleanName, linkFor, peek, reserve, allHouses, houseOf, onLot, heal, neighbourOf, jobOf, ep2From, forSale, stockOf, PRICES, TITLES,
   AUCTIONS, auctionState, minBid, auctionOpen, closeAuction, markAuction, publicAuctions } from './_lib/city.js';
 import { sendMail } from './_lib/mail.js';
 import { host } from './_lib/config.js';
@@ -152,7 +152,7 @@ export async function GET(request) {
       const h = u ? await houseOf(u) : null;
       if (!h) return json({ error: 'none' }, 404);
       const next = await neighbourOf(h.n);
-      return json({ house: pub(h), neighbour: next }, 200, 'public, max-age=0, s-maxage=5');
+      return json({ house: pub(h), neighbour: next, job: await jobOf(u) }, 200, 'public, max-age=0, s-maxage=5');
     }
     return json({ error: 'action' }, 404);
   } catch (e) {

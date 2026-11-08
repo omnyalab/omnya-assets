@@ -1,5 +1,6 @@
 // /city/@username: one house on its lot, the camera turns around it (drag), the neighbours stay drawn around.
 import { makeWorld, makeFrame, placeName, seedOf, getJSON } from './world.js';
+import { cityAvatar, TOP_JOBS, workplaceOf, rightNow } from './avatar.js';
 
 const $ = (id) => document.getElementById(id);
 const raw = decodeURIComponent(location.pathname.split('/').filter(Boolean)[1] || '');
@@ -69,13 +70,24 @@ async function start() {
   document.title = `@${u}'s house in Omnya City`;
   $('name').textContent = '@' + u;
   // 8/11: a bought place shows its number among its kind (#3 of the top villas), not the inner 100,012
-  const R = [[100000, 3], [100003, 10], [100013, 20], [100033, 10]].find(([a, k]) => n >= a && n < a + k);
+  const R = [[100000, 3], [100003, 10], [100013, 20], [100033, 10], [100043, 8]].find(([a, k]) => n >= a && n < a + k);
   const shown = R ? n - R[0] + 1 : n;
   $('num').textContent = '#' + shown.toLocaleString('en');
   $('dist').textContent = placeName(W.placeOf(n, all.ep2));
   $('nb').innerHTML = h.neighbour ? `<a href="/city/@${h.neighbour}">@${h.neighbour}</a>` : 'Still free';
   // 8/11: long names shrink to stay on one line (they broke mid-word on phones)
   fitOne($('nb')); addEventListener('resize', () => fitOne($('nb')));
+  // 8/11 Part 3: the character (its look comes from the job) and the job line with what it is doing right now
+  const job = h.job || null, T = TOP_JOBS.find((t) => t.id === job);
+  $('av').innerHTML = cityAvatar(u, job || 'worker');
+  const wp = workplaceOf(u);
+  $('jobt').textContent = T ? T.title : `Worker · ${wp[1]}`;
+  $('jobnow').textContent = `right now: ${rightNow(T ? T.at : wp[0])}`;
+  $('jobline').hidden = false;
+  const tops = (all.forSale && all.forSale.jobs) || {};
+  $('jobs').innerHTML = TOP_JOBS.map((t) => { const who = tops[t.id], mine = who === u, off = who && !mine;
+    const tag = mine ? 'Your job' : off ? `Taken by @${who}` : t.only || 'Only 1 left';
+    return `<label class="${off || mine ? 'off' : ''}${t.gold ? ' gold' : ''}" data-job="${t.id}" data-href="/api/city/buy?kind=job_${t.id}&u=${encodeURIComponent(u)}" data-btn="Become the ${t.title.split(' · ')[0]} · ${t.price}"><i></i><span class="av">${cityAvatar(u, t.id)}</span><div>${t.title}<span>${t.line}</span><em class="tag">${tag}</em></div><strong>${t.price}<s>${t.was}</s></strong></label>`; }).join('');
   $('loading').hidden = true;
   $('found').hidden = false;
   ready();
@@ -83,8 +95,8 @@ async function start() {
   // 7/11 upsell (board approved by Nico): MOVE UP opens the place picker, only with what is still for sale
   const sale = all.forSale || {};
   const left = sale.left || {};
-  const mine = { penthouse: !!L.pent, villa: !!(L.hills && L.premium), fountain: !L.floor && !L.hills && !L.town && !L.sea && n <= 8, town: !!L.town, sea: !!L.sea, sky: !!L.pent };
-  const open = Object.fromEntries(['fountain', 'sky', 'villa', 'town', 'sea', 'penthouse'].map((k) => [k, !!sale[k] && !mine[k] && (left[k] ?? 1) > 0]));
+  const mine = { np: !!L.newTower, penthouse: !!L.pent, villa: !!(L.hills && L.premium), fountain: !L.floor && !L.hills && !L.town && !L.sea && n <= 8, town: !!L.town, sea: !!L.sea, sky: !!L.pent };
+  const open = Object.fromEntries(['fountain', 'sky', 'np', 'villa', 'town', 'sea', 'penthouse'].map((k) => [k, !!sale[k] && !mine[k] && (left[k] ?? 1) > 0]));
   const auc = all.auctions || {};
   for (const k of ['yacht', 'island']) open[k] = !!auc[k] && !auc[k].done; // 7/11: one of each, by auction (only "View")
   const where = `#${shown.toLocaleString('en')} in ${placeName(L)}`;
@@ -103,7 +115,7 @@ async function start() {
     document.querySelectorAll(`[data-left="${k}"]`).forEach((e) => (e.textContent = txt));
     document.querySelectorAll(`[data-bar="${k}"]`).forEach((e) => (e.style.width = bar + '%'));
     document.querySelectorAll(`[data-left-tag="${k}"]`).forEach((e) => (txt ? (e.textContent = txt) : e.remove()));
-    document.querySelectorAll(`[data-left-line="${k}"]`).forEach((e) => (e.textContent = !['penthouse', 'sky', 'town', 'sea', 'fountain'].includes(k) && nLeft && !(T && k === 'town' && T.no > 1) ? ` · only ${nLeft} left` : ''));
+    document.querySelectorAll(`[data-left-line="${k}"]`).forEach((e) => (e.textContent = !['penthouse', 'sky', 'town', 'sea', 'fountain', 'np'].includes(k) && nLeft && !(T && k === 'town' && T.no > 1) ? ` · only ${nLeft} left` : ''));
     if (k === 'yacht' || k === 'island') { const A = auc[k] || {}; const t = A.leader ? `Top bid €${(A.bid / 100).toFixed(2)}` : 'Starts at €3.99';
       document.querySelectorAll(`[data-left-line="${k}"]`).forEach((e) => (e.textContent = ` · ${t}`));
       // 8/11 (Nico): the cards say the price like the others, and the same counter line
@@ -160,6 +172,20 @@ function ready() { requestAnimationFrame(() => document.body.classList.replace('
 setTimeout(ready, 4000); // never stay hidden
 
 // ---- dialogs: MOVE UP (places) and the book (Full City / Everything) ----
+function pickJob(l) {
+  if (l.classList.contains('off')) return;
+  document.querySelectorAll('#jobs label').forEach((x) => x.classList.toggle('on', x === l));
+  const sh = $('shot'); sh.style.backgroundImage = ''; sh.classList.add('job');
+  sh.querySelector('.bigav')?.remove(); sh.insertAdjacentHTML('beforeend', `<span class="bigav">${cityAvatar(u, l.dataset.job)}</span>`);
+  $('shotname').textContent = l.querySelector('div').firstChild.textContent;
+  $('movego').href = l.dataset.href; $('movego').textContent = l.dataset.btn; $('movego').target = '';
+}
+function showTab(tab) {
+  document.querySelectorAll('#move [data-tab]').forEach((b) => b.classList.toggle('on', b.dataset.tab === tab));
+  document.querySelectorAll('#move [data-pane]').forEach((p) => (p.hidden = p.dataset.pane !== tab));
+  if (tab === 'jobs') { const l = document.querySelector('#jobs label.on:not(.off)') || document.querySelector('#jobs label:not(.off)'); if (l) pickJob(l); else $('movego').removeAttribute('href'); }
+  else { $('shot').classList.remove('job'); $('shot').querySelector('.bigav')?.remove(); const l = document.querySelector('#move .pick[data-g="move"] label.on') || document.querySelector('#move .pick[data-g="move"] label'); if (l) pickPlace(l); }
+}
 function pickPlace(l) {
   document.querySelectorAll('#move label').forEach((x) => x.classList.toggle('on', x === l));
   $('shot').style.backgroundImage = `url(${l.dataset.img})`;
@@ -169,8 +195,9 @@ function pickPlace(l) {
   $('movego').target = l.dataset.stripe ? '_blank' : '';
 }
 let lastFocus = null;
-function openDialog(id, pick) {
+function openDialog(id, pick, tab) {
   lastFocus = document.activeElement;
+  if (id === 'move') showTab(tab || 'places');
   document.querySelectorAll('.ux.dim').forEach((d) => (d.hidden = d.id !== id));
   document.documentElement.classList.add('locked');
   if (pick) { const l = document.querySelector(`#move label[data-place="${pick}"]`); if (l) pickPlace(l); }
@@ -185,12 +212,15 @@ document.addEventListener('click', (e) => {
   const v = e.target.closest('[data-view]');
   if (v) { e.preventDefault(); location.href = v.dataset.view; return; }
   const o = e.target.closest('[data-open]');
-  if (o) { e.preventDefault(); return openDialog(o.dataset.open, o.dataset.pick); }
+  if (o) { e.preventDefault(); return openDialog(o.dataset.open, o.dataset.pick, o.dataset.tab); }
+  const tb = e.target.closest('#move .tabs [data-tab]');
+  if (tb) { e.preventDefault(); return showTab(tb.dataset.tab); }
   if (e.target.closest('[data-close]') || e.target.classList.contains('dim')) { e.preventDefault(); return closeDialog(); }
   const l = e.target.closest('.pick label');
   if (!l) return;
   const g = l.closest('.pick');
   if (g.dataset.g === 'move') return pickPlace(l);
+  if (g.dataset.g === 'jobs') return pickJob(l);
   g.querySelectorAll('label').forEach((x) => x.classList.toggle('on', x === l));
   const go = g.parentElement.querySelector('.bookgo');
   if (go) { go.href = l.dataset.go; go.textContent = `Get it · €${l.dataset.p}`; }

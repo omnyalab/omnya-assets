@@ -18,6 +18,7 @@ Object.assign(up, {
   // 7/11: the fountain Payment Link was deactivated on Stripe, so it goes through our own Checkout like the penthouses
   fountain: { ...up.fountain, checkout: '', buy: '/api/city/buy?kind=fountain' },
   sky: { title: 'The penthouse', price: '€0.99', was: '€19', buy: '/api/city/buy?kind=sky' }, // 7/11: 3 new penthouses on the roofs
+  np: { title: 'A penthouse in the green towers', price: '€1.99', was: '€19', buy: '/api/city/buy?kind=np' }, // 8/11: the 8 new towers
   yacht: { title: 'The Yacht', view: '/city/yacht' },
   island: { title: 'The Island', view: '/city/island' },
 });
@@ -25,6 +26,7 @@ const book = `<span class="bk4" aria-hidden="true"><span class="b"><span class="
 const places = [
   { id: 'fountain', img: '/city/up/fountain.jpg', name: 'By the fountain', pick: 'A house by the fountain', line: 'Downtown, one of the first 8 houses', card: 'Downtown, one of the first 8 houses of the city.' },
   { id: 'sky', img: '/city/up/penthouse.jpg', name: 'The penthouse', line: 'Top floor of a tower in The Residences', card: 'Top floor of a tower in The Residences, the whole city below.' },
+  { id: 'np', img: '/city/up/np.jpg', name: 'Green towers', pick: 'A penthouse in the green towers', line: 'New towers in the park, roof garden', card: 'The top floor of a new tower in the park, garden and pool on the roof.' },
   { id: 'villa', img: '/city/up/villa.jpg', name: 'A top villa', pick: 'A top villa in Omnyawood', line: 'Pool and view, under the letters', card: 'Omnyawood, the top terrace under the letters, with the pool.' },
   { id: 'town', img: '/city/up/town.jpg', name: 'On the water', pick: 'A townhouse on the water', line: 'The Residences, garden on the beach', card: 'A townhouse on the beach of The Residences, the sea in front.' },
   { id: 'sea', img: '/city/up/sea.jpg', name: 'Seafront villa', pick: 'A seafront villa', line: 'Pool on the beach, by the marina', card: 'A villa on the beach by the marina, the pool facing the sea.' },
@@ -60,12 +62,13 @@ const pickBook = `<div class="pick" data-g="book">
         <div id="found" hidden>
           <button class="mv" type="button" data-open="move" data-up>MOVE UP ↑</button>
           <p class="k" style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--roof)">Omnya City</p>
-          <h1 class="lil" id="name"></h1>
+          <div class="me"><span class="av" id="av" aria-hidden="true"></span><h1 class="lil" id="name"></h1></div>
           <div class="facts">
             <div><small>House</small><b id="num"></b></div>
             <div><small>District</small><b id="dist"></b></div>
             <div><small>Neighbour</small><b id="nb"></b></div>
           </div>
+          <div class="jobline" id="jobline" hidden><div><b id="jobt"></b><small id="jobnow"></small></div><button class="chg" type="button" data-open="move" data-tab="jobs">Better job ↑</button></div>
           <div class="row">
             <button class="btn" id="share" type="button">Share my house</button>
             <button class="btn up" type="button" data-open="move" data-up>Move up<span class="lg">&nbsp;my house</span>&nbsp;↑</button>
@@ -125,14 +128,22 @@ const pickBook = `<div class="pick" data-g="book">
         <span class="stamp">MOVE UP ↑</span>
         <div class="shot" id="shot" style="background-image:url(/city/up/penthouse.jpg)"><span class="left" id="shotname">The penthouse</span></div>
         <p class="kick" data-where-kick></p>
+        <div class="tabs" role="tablist"><button type="button" class="on" data-tab="places">Places</button><button type="button" data-tab="jobs">Jobs</button></div>
+        <div data-pane="places">
         <h2>Get a top spot</h2>
         <p class="sub">Your house can move to one of the <b>best places in the city</b>. Same name, new address.</p>
         <div class="pick" data-g="move">
           {places.map((p, i) => (
             <label class={`${i === 0 ? 'on' : ''}${p.gold ? ' gold' : ''}`} data-place={p.id} data-img={p.img} data-name={p.name} data-href={up[p.id].view || up[p.id].buy || up[p.id].checkout || cityWhatsApp} data-stripe={up[p.id].checkout ? '1' : ''} data-buy={up[p.id].buy ? '1' : ''} data-btn={up[p.id].view ? 'View it' : `Move my house · ${up[p.id].price}`} data-title={up[p.id].title}>
-              <i></i><div>{p.pick || p.name}<span>{p.line}<span data-left-line={p.id}></span></span>{['fountain', 'sky', 'sea', 'town'].includes(p.id) && <em class="tag" data-left-tag={p.id}></em>}</div>{up[p.id].view ? <strong class="view">View</strong> : <strong>{up[p.id].price}<s>{up[p.id].was}</s></strong>}
+              <i></i><div>{p.pick || p.name}<span>{p.line}<span data-left-line={p.id}></span></span>{['fountain', 'sky', 'sea', 'town', 'np'].includes(p.id) && <em class="tag" data-left-tag={p.id}></em>}</div>{up[p.id].view ? <strong class="view">View</strong> : <strong>{up[p.id].price}<s>{up[p.id].was}</s></strong>}
             </label>
           ))}
+        </div>
+        </div>
+        <div data-pane="jobs" hidden>
+          <h2>Get a better job</h2>
+          <p class="sub">Everyone starts as a worker. The top jobs are <b>only one each</b>, on your house and on the map.</p>
+          <div class="pick" data-g="jobs" id="jobs"></div>
         </div>
         <a class="btn" id="movego" href={up.fountain.buy} rel="noopener">Move my house · €0.99</a>
         <button class="no" type="button" data-close>No thanks, I'll keep my free house</button>

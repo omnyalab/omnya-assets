@@ -150,10 +150,17 @@ export const EP2_LIVE = true;
 export const PREM = 100000;
 // 7/11 (Nico): 20 townhouses on the water at €0.99 (tranches of 6, 6, 8) and 10 seafront villas at €2.99 (2 at a time).
 // Same order as `premium` in public/city/world.js (appended after the 13 places sold on 6/11).
-const RANGE = { penthouse: [PREM, PREM + 3], villa: [PREM + 3, PREM + 13], town: [PREM + 13, PREM + 33], sea: [PREM + 33, PREM + 43] };
+const RANGE = { penthouse: [PREM, PREM + 3], villa: [PREM + 3, PREM + 13], town: [PREM + 13, PREM + 33], sea: [PREM + 33, PREM + 43], np: [PREM + 43, PREM + 51] };
+// 8/11 Part 3 (Nico): the 8 penthouses of the new green towers (€1.99) and the top jobs, one person each (CEO €3.99,
+// captain and managers €1.99, metro driver and head gardener €0.99). Same order as TOP_JOBS in public/city/avatar.js.
+//   omnya:city:top:<job>   the username who has that job (SET NX: only one)      omnya:city:jobof:<u>   that person's top job
+export const JOB_IDS = ['ceo', 'captain', 'mmarket', 'mcafe', 'msite', 'driver', 'gardener'];
+export const JOB_TITLES = { ceo: 'CEO of Omnya Tower', captain: 'Captain of the Marina', mmarket: 'Supermarket manager', mcafe: 'Café manager', msite: 'Site manager', driver: 'Metro driver', gardener: 'Head gardener' };
+export async function jobTops() { const o = {}; for (const j of JOB_IDS) o[j] = (await cmd('GET', `${P}top:${j}`)) || null; return o; }
+export async function jobOf(u) { return (await cmd('GET', `${P}jobof:${u}`)) || null; }
 export const TRANCHES = { town: [6, 6, 8], sea: [2, 2, 2, 2, 2] };
-export const PRICES = { town: 99, sea: 299, sky: 99, fountain: 99 }; // cents, sold with our own Stripe Checkout (api/city.js → buy)
-export const TITLES = { town: 'A townhouse on the water', sea: 'A seafront villa', sky: 'The penthouse', fountain: 'A house by the fountain' };
+export const PRICES = { town: 99, sea: 299, sky: 99, fountain: 99, np: 199, job_ceo: 399, job_captain: 199, job_mmarket: 199, job_mcafe: 199, job_msite: 199, job_driver: 99, job_gardener: 99 }; // cents, sold with our own Stripe Checkout (api/city.js → buy)
+export const TITLES = { town: 'A townhouse on the water', sea: 'A seafront villa', sky: 'The penthouse', fountain: 'A house by the fountain', np: 'A penthouse in the green towers', job_ceo: 'CEO of Omnya Tower', job_captain: 'Captain of the Marina', job_mmarket: 'Supermarket manager', job_mcafe: 'Café manager', job_msite: 'Site manager', job_driver: 'Metro driver', job_gardener: 'Head gardener' };
 /** Where the current tranche stands: { no, left, size, upTo } (upTo = how many are out so far, e.g. 12). */
 export function tranche(kind, left) {
   const t = TRANCHES[kind], total = t.reduce((a, b) => a + b, 0), sold = total - left;
@@ -184,13 +191,13 @@ export async function forSale() {
   if (!EP2_LIVE) return { penthouse: false, villa: false, fountain: false, left: { penthouse: 0, villa: 0, fountain: 0 } };
   const count = async (kind) => { const [a, b] = RANGE[kind]; let k = 0; for (let n = a; n < b; n++) if (!(await onLot(n))) k++; return k; };
   const fountainLeft = async () => { let k = 0; for (const n of FOUNTAIN) if (!(await isPaid(await onLot(n)))) k++; return k; };
-  const [p, v, f, t, s, k] = await Promise.all([count('penthouse'), count('villa'), fountainLeft(), count('town'), count('sea'), (async () => { let c = 0; for (const n of SKY) if (!(await isPaid(await onLot(n)))) c++; return c; })()]);
-  return { penthouse: p > 0, villa: v > 0, fountain: f > 0, town: t > 0, sea: s > 0, sky: k > 0, left: { penthouse: p, villa: v, fountain: f, town: t, sea: s, sky: k },
+  const [p, v, f, t, s, k, np, jobs] = await Promise.all([count('penthouse'), count('villa'), fountainLeft(), count('town'), count('sea'), (async () => { let c = 0; for (const n of SKY) if (!(await isPaid(await onLot(n)))) c++; return c; })(), count('np'), jobTops()]);
+  return { penthouse: p > 0, villa: v > 0, fountain: f > 0, town: t > 0, sea: s > 0, sky: k > 0, np: np > 0, jobs, left: { penthouse: p, villa: v, fountain: f, town: t, sea: s, sky: k, np },
     tranche: { town: tranche('town', t), sea: tranche('sea', s) } };
 }
 
 /** Moves a buyer to the first free penthouse or top villa. kind: 'penthouse' | 'villa'. */
-export async function stockOf(kind) { if (kind === 'sky' || kind === 'fountain') return (await forSale()).left[kind]; const [a, b] = RANGE[kind] || [0, 0]; let k = 0; for (let n = a; n < b; n++) if (!(await onLot(n))) k++; return k; }
+export async function stockOf(kind) { if (String(kind).startsWith('job_')) return (await cmd('GET', `${P}top:${kind.slice(4)}`)) ? 0 : 1; if (kind === 'sky' || kind === 'fountain') return (await forSale()).left[kind]; const [a, b] = RANGE[kind] || [0, 0]; let k = 0; for (let n = a; n < b; n++) if (!(await onLot(n))) k++; return k; }
 
 // 8/11: one purchase at a time. On 7/11 two fountain payments arrived together and both got house #5.
 export async function upgrade(u, kind) { return withLock('upgrade', () => upgradeNow(u, kind)); }
@@ -236,6 +243,15 @@ async function upgradeNow(u, kind) {
     await cmd('ZADD', `${P}houses`, n, u);
     await cmd('SADD', `${P}paid`, u);
     return { house: { u, from: me.n, n }, moved };
+  }
+  if (String(kind).startsWith('job_')) { // 8/11: a top job, one person only; a new top job replaces your old one
+    const j = kind.slice(4);
+    if (!JOB_IDS.includes(j)) return { error: 'kind' };
+    if ((await cmd('SET', `${P}top:${j}`, u, 'NX')) !== 'OK') return (await cmd('GET', `${P}top:${j}`)) === u ? { error: 'already has it' } : { error: 'sold out' };
+    const old = await jobOf(u);
+    if (old && old !== j) await cmd('DEL', `${P}top:${old}`);
+    await cmd('SET', `${P}jobof:${u}`, j);
+    return { job: j, house: { u, from: me.n, n: me.n } };
   }
   if (!RANGE[kind]) return { error: 'kind' };
   if (me.n >= RANGE[kind][0] && me.n < RANGE[kind][1]) return { error: 'already has one' };
