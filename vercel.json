@@ -187,8 +187,13 @@
     },
     {
       "source": "/it/tower",
-      "destination": "/it/the-tower-blueprint",
-      "permanent": true
+      "destination": "/the-tower-blueprint",
+      "permanent": false
+    },
+    {
+      "source": "/it/the-tower-blueprint",
+      "destination": "/the-tower-blueprint",
+      "permanent": false
     },
     {
       "source": "/work/corfu-resort",
