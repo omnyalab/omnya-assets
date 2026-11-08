@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/privacy-policy-it",
+      "destination": "/it/privacy-policy",
+      "permanent": true
+    },
+    {
       "source": "/home",
       "destination": "/",
       "permanent": true
