@@ -9,7 +9,7 @@
 //   GET  /api/city/auction                → the yacht and the island: leader, bid, minimum, end (closes them when the time is up)
 //   POST /api/city/bid { item, u, amount } → { url } : Stripe Checkout that only holds the money (see api/_lib/city.js)
 import Stripe from 'stripe';
-import { cleanName, linkFor, peek, reserve, allHouses, houseOf, onLot, heal, neighbourOf, jobOf, ep2From, forSale, stockOf, PRICES, TITLES,
+import { cleanName, linkFor, peek, reserve, allHouses, houseOf, onLot, heal, neighbourOf, jobOf, lookOf, ep2From, forSale, stockOf, PRICES, TITLES,
   AUCTIONS, auctionState, minBid, auctionOpen, closeAuction, markAuction, publicAuctions } from './_lib/city.js';
 import { sendMail } from './_lib/mail.js';
 import { host } from './_lib/config.js';
@@ -126,7 +126,8 @@ export async function GET(request) {
       return json({ auctions: await publicAuctions(), now: Date.now() });
     }
     if (a === 'buy') {
-      const kind = q.get('kind'), u = cleanName(q.get('u'));
+      const kind = q.get('kind'), u = cleanName(q.get('u')), look = /^s[0-7]h[0-5]c[0-7]b[0-2]g[01]$/.test(q.get('look') || '') ? q.get('look') : '';
+      if (kind === 'look' && !look) return Response.redirect(`${SITE}/city/@${u}`, 303);
       const back = `${SITE}/city/@${u}`;
       if (!PRICES[kind] || !u || !(await houseOf(u))) return Response.redirect(`${SITE}/city`, 303);
       if (!(await stockOf(kind))) return Response.redirect(`${back}?sold=${kind}`, 303);
@@ -135,8 +136,8 @@ export async function GET(request) {
       const s = await stripe.checkout.sessions.create({
         mode: 'payment',
         line_items: [{ quantity: 1, price_data: { currency: 'eur', unit_amount: PRICES[kind], product_data: { name } } }],
-        payment_intent_data: { description: `${name} for @${u}`, metadata: { buy: kind, u } },
-        metadata: { buy: kind, u },
+        payment_intent_data: { description: `${name} for @${u}`, metadata: { buy: kind, u, ...(look ? { look } : {}) } },
+        metadata: { buy: kind, u, ...(look ? { look } : {}) },
         client_reference_id: u.replace(/\./g, '-'),
         success_url: `${back}?moved=${kind}`,
         cancel_url: back,
@@ -152,7 +153,7 @@ export async function GET(request) {
       const h = u ? await houseOf(u) : null;
       if (!h) return json({ error: 'none' }, 404);
       const next = await neighbourOf(h.n);
-      return json({ house: pub(h), neighbour: next, job: await jobOf(u) }, 200, 'public, max-age=0, s-maxage=5');
+      return json({ house: pub(h), neighbour: next, job: await jobOf(u), look: await lookOf(u) }, 200, 'public, max-age=0, s-maxage=5');
     }
     return json({ error: 'action' }, 404);
   } catch (e) {

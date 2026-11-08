@@ -71,7 +71,7 @@ export async function POST(request) {
   // 7/11 Omnya City: townhouse on the water / seafront villa, bought with our own Checkout (metadata.buy)
   if (session.metadata?.buy) {
     const { buy: kind, u } = session.metadata;
-    const r = await upgrade(u, kind).catch((e) => ({ error: e.message }));
+    const r = await upgrade(u, kind, session.metadata.look).catch((e) => ({ error: e.message }));
     let refunded = false;
     if (r.error && session.payment_intent) refunded = !!(await stripe.refunds.create({ payment_intent: session.payment_intent }).catch(() => null)); // sold out meanwhile: money back
     await sendMail({

@@ -51,27 +51,27 @@ const pickBook = `<div class="pick" data-g="book">
         <canvas id="c" aria-label="The house in 3D"></canvas>
         <header class="top">
           <a href="/city" style="pointer-events:auto">← The city</a>
+          <a href="https://www.instagram.com/omnyalab/" target="_blank" rel="noopener" style="pointer-events:auto">@omnyalab</a>
         </header>
-        <button class="gb" type="button" data-open="book" aria-label="The Full City Guide" set:html={book} />
         <span class="hint" id="hint">Drag to turn it</span>
       </div>
 
-      <div class="duo">
+      <div class="duo solo">
       <article class="card" id="card">
         <div class="loading" id="loading"><i></i>Finding the house…</div>
         <div id="found" hidden>
-          <button class="mv" type="button" data-open="move" data-up>MOVE UP ↑</button>
+          <button class="mv" type="button" data-goto="up" data-up>MOVE UP ↑</button>
           <p class="k" style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--roof)">Omnya City</p>
           <div class="me"><span class="av" id="av" aria-hidden="true"></span><h1 class="lil" id="name"></h1></div>
           <div class="facts">
             <div><small>House</small><b id="num"></b></div>
             <div><small>District</small><b id="dist"></b></div>
-            <div><small>Neighbour</small><b id="nb"></b></div>
+            <div><small>Job</small><b id="jobt"></b><small class="jw" id="jobwhere"></small></div>
           </div>
-          <div class="jobline" id="jobline" hidden><div><b id="jobt"></b><small id="jobnow"></small></div><button class="chg" type="button" data-open="move" data-tab="jobs">Better job ↑</button></div>
+          <button class="charline" id="charline" type="button" data-open="look" hidden><span class="avs" id="avs" aria-hidden="true"></span><span class="ct"><b>Change your character</b><small id="jobnow"></small></span><span class="chg">Change</span></button>
           <div class="row">
             <button class="btn" id="share" type="button">Share my house</button>
-            <button class="btn up" type="button" data-open="move" data-up>Move up<span class="lg">&nbsp;my house</span>&nbsp;↑</button>
+            <button class="btn up" type="button" data-goto="up" data-up>Move up<span class="lg">&nbsp;my house</span>&nbsp;↑</button>
           </div>
         </div>
         <div id="none" class="empty" hidden>
@@ -80,26 +80,14 @@ const pickBook = `<div class="pick" data-g="book">
           <a class="btn" href="/city" style="margin-top:14px">See the city</a>
         </div>
       </article>
-      <article class="card ux buy">
-        <span class="stamp">FULL GUIDE</span>
-        <div class="buy__in">
-          <button class="buy__bk" type="button" data-open="book" aria-label="The Full City Guide" set:html={book} />
-          <div class="buy__tx">
-            <p class="kick" data-kick>2,000 followers offer · until Sunday</p>
-            <h2>Build a city like this</h2>
-            <p class="sub">Every prompt we gave Claude to build Omnya City.</p>
-          </div>
-        </div>
-        <Fragment set:html={pickBook} />
-        <a class="btn bookgo" href="/go/full-city?k=city">Get it · €1.99</a>
-      </article>
       </div>
 
       <section class="ux sec" id="up" hidden>
         <button class="stamp" type="button" data-open="move">MOVE UP ↑</button>
         <h2>Get a top spot</h2>
         <p class="sub">Your free house is <b data-where></b>. From €0.99 it moves to one of the best places in the city, and stays yours.</p>
-        <div class="three">
+        <div class="tabs stabs" role="tablist"><button type="button" class="on" data-stab="places">Places</button><button type="button" data-stab="jobs">Jobs</button></div>
+        <div class="three" data-spane="places">
           {places.map((p, i) => (
             <button class={`pl${i === 0 ? ' hot' : ''}${p.gold ? ' gold' : ''}`} type="button" data-open={up[p.id].view ? undefined : 'move'} data-pick={p.id} data-place={p.id} data-view={up[p.id].view}>
               <img class="im" src={p.img} alt="" loading="lazy" width="800" height="622" />
@@ -115,11 +103,39 @@ const pickBook = `<div class="pick" data-g="book">
             </button>
           ))}
         </div>
+        <div class="three jobsgrid" id="jobcards" data-spane="jobs" hidden></div>
       </section>
+
+      <article class="card ux buy low">
+        <span class="stamp">FULL GUIDE</span>
+        <div class="buy__in">
+          <button class="buy__bk" type="button" data-open="book" aria-label="The Full City Guide" set:html={book} />
+          <div class="buy__tx">
+            <p class="kick" data-kick>2,000 followers offer · until Sunday</p>
+            <h2>Build a city like this</h2>
+            <p class="sub">Every prompt we gave Claude to build Omnya City.</p>
+          </div>
+        </div>
+        <Fragment set:html={pickBook} />
+        <a class="btn bookgo" href="/go/full-city?k=city">Get it · €1.99</a>
+      </article>
 
       <footer class="foot">
         <a href="/city">See the whole city →</a>
       </footer>
+    </div>
+
+    <div class="ux dim" id="look" hidden>
+      <button class="x" type="button" data-close aria-label="Close">×</button>
+      <div class="card" role="dialog" aria-modal="true" aria-label="Change your character">
+        <span class="stamp">NEW LOOK</span>
+        <div class="lookav" id="lookav"></div>
+        <h2>Change your character</h2>
+        <p class="sub">Your face on your house and on the map. Pick everything, you pay only when you save.</p>
+        <div class="lookopts" id="lookopts"></div>
+        <a class="btn" id="lookgo" href="#">Save my character · €0.99</a>
+        <button class="no" type="button" data-close>Keep it as it is</button>
+      </div>
     </div>
 
     <div class="ux dim" id="move" hidden>

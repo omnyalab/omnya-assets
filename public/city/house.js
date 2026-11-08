@@ -1,6 +1,6 @@
 // /city/@username: one house on its lot, the camera turns around it (drag), the neighbours stay drawn around.
 import { makeWorld, makeFrame, placeName, seedOf, getJSON } from './world.js';
-import { cityAvatar, TOP_JOBS, workplaceOf, rightNow } from './avatar.js';
+import { cityAvatar, TOP_JOBS, workplaceOf, rightNow, LOOK_OPTS, parseLook, lookCode, defaultLook } from './avatar.js';
 
 const $ = (id) => document.getElementById(id);
 const raw = decodeURIComponent(location.pathname.split('/').filter(Boolean)[1] || '');
@@ -74,20 +74,43 @@ async function start() {
   const shown = R ? n - R[0] + 1 : n;
   $('num').textContent = '#' + shown.toLocaleString('en');
   $('dist').textContent = placeName(W.placeOf(n, all.ep2));
-  $('nb').innerHTML = h.neighbour ? `<a href="/city/@${h.neighbour}">@${h.neighbour}</a>` : 'Still free';
-  // 8/11: long names shrink to stay on one line (they broke mid-word on phones)
-  fitOne($('nb')); addEventListener('resize', () => fitOne($('nb')));
+
   // 8/11 Part 3: the character (its look comes from the job) and the job line with what it is doing right now
   const job = h.job || null, T = TOP_JOBS.find((t) => t.id === job);
-  $('av').innerHTML = cityAvatar(u, job || 'worker');
+  // 8/11 (Nico): the job takes the neighbour's box; the line under it changes the character (€0.99 at save)
+  const look = h.look || null, myJob = job || 'worker'; window.__look = look;
+  $('av').innerHTML = cityAvatar(u, myJob, look);
   const wp = workplaceOf(u);
-  $('jobt').textContent = T ? T.title : `Worker · ${wp[1]}`;
+  $('jobt').textContent = T ? T.title.split(' · ')[0] : 'Worker';
+  $('jobwhere').textContent = T ? (T.title.split(' · ')[1] || '') : wp[1];
+  fitOne($('jobt')); addEventListener('resize', () => fitOne($('jobt')));
   $('jobnow').textContent = `right now: ${rightNow(T ? T.at : wp[0])}`;
-  $('jobline').hidden = false;
+  const peek = [[2, 4, 3, 2, 1], [5, 3, 0, 0, 0], [1, 1, 4, 1, 0]].map(([s2, h2, c2, b2, g2]) => cityAvatar(u + s2, myJob, { s: s2, h: h2, c: c2, b: b2, g: g2 }));
+  $('avs').innerHTML = peek.map((v) => `<i>${v}</i>`).join('');
+  $('charline').hidden = false;
+  // the look editor
+  const cur = parseLook(look) || defaultLook(u);
+  const ROWS = [['s', 'Skin'], ['h', 'Hair'], ['c', 'Hair colour'], ['b', 'Beard'], ['g', 'Glasses']];
+  const drawLook = () => {
+    $('lookav').innerHTML = cityAvatar(u, myJob, cur);
+    $('lookopts').innerHTML = ROWS.map(([k, name]) => `<div class="lrow"><small>${name}</small><div>${LOOK_OPTS[k].map((v, i) => {
+      const prev = k === 's' || k === 'c' ? `<i style="background:${v}"></i>` : `<span>${cityAvatar(u, myJob, { ...cur, [k]: i })}</span>`;
+      return `<button type="button" class="${cur[k] === i ? 'on' : ''}" data-lk="${k}" data-lv="${i}" aria-label="${name} ${i + 1}">${prev}</button>`; }).join('')}</div></div>`).join('');
+    const same = look && lookCode(cur) === look;
+    $('lookgo').href = same ? '#' : `/api/city/buy?kind=look&u=${encodeURIComponent(u)}&look=${lookCode(cur)}`;
+    $('lookgo').textContent = same ? 'This is your character' : 'Save my character · €0.99';
+  };
+  drawLook();
+  $('lookopts').addEventListener('click', (e) => { const b = e.target.closest('[data-lk]'); if (!b) return; cur[b.dataset.lk] = +b.dataset.lv; drawLook(); });
+  // the jobs in the "Get a top spot" section, under the Jobs tab
+  const tops0 = (all.forSale && all.forSale.jobs) || {};
+  $('jobcards').innerHTML = TOP_JOBS.map((t) => { const who = tops0[t.id], mine = who === u;
+    const tag = mine ? 'Your job' : who ? `Taken by @${who}` : t.only || 'Only 1 left';
+    return `<button class="pl jobc${t.gold ? ' gold' : ''}${who && !mine ? ' off' : ''}" type="button" ${who ? '' : `data-open="move" data-tab="jobs" data-pickjob="${t.id}"`}><span class="im jav">${cityAvatar(u, t.id, look)}</span><div class="bd"><span class="cnt">${tag}</span><div class="bar"><i style="width:${who ? 100 : 96}%"></i></div><b>${t.title.split(' · ')[0]}</b><p>${t.line}</p><div class="pr"><span><strong>${who ? '—' : t.price}</strong>${who ? '' : `<s>${t.was}</s>`}</span><em>${mine ? 'Yours' : who ? 'Taken' : 'Take'}</em></div></div></button>`; }).join('');
   const tops = (all.forSale && all.forSale.jobs) || {};
   $('jobs').innerHTML = TOP_JOBS.map((t) => { const who = tops[t.id], mine = who === u, off = who && !mine;
     const tag = mine ? 'Your job' : off ? `Taken by @${who}` : t.only || 'Only 1 left';
-    return `<label class="${off || mine ? 'off' : ''}${t.gold ? ' gold' : ''}" data-job="${t.id}" data-href="/api/city/buy?kind=job_${t.id}&u=${encodeURIComponent(u)}" data-btn="Become the ${t.title.split(' · ')[0]} · ${t.price}"><i></i><span class="av">${cityAvatar(u, t.id)}</span><div>${t.title}<span>${t.line}</span><em class="tag">${tag}</em></div><strong>${t.price}<s>${t.was}</s></strong></label>`; }).join('');
+    return `<label class="${off || mine ? 'off' : ''}${t.gold ? ' gold' : ''}" data-job="${t.id}" data-href="/api/city/buy?kind=job_${t.id}&u=${encodeURIComponent(u)}" data-btn="Become the ${t.title.split(' · ')[0]} · ${t.price}"><i></i><span class="av">${cityAvatar(u, t.id, look)}</span><div>${t.title}<span>${t.line}</span><em class="tag">${tag}</em></div><strong>${t.price}<s>${t.was}</s></strong></label>`; }).join('');
   $('loading').hidden = true;
   $('found').hidden = false;
   ready();
@@ -138,7 +161,8 @@ async function start() {
   } else {
     document.querySelectorAll('[data-up]').forEach((e) => e.remove()); // nothing left to buy: no MOVE UP
   }
-  document.querySelector('.three')?.style.setProperty('--n', document.querySelectorAll('.three .pl').length);
+  document.querySelector('.three[data-spane="places"]')?.style.setProperty('--n', document.querySelectorAll('.three[data-spane="places"] .pl').length);
+  $('jobcards').style.setProperty('--n', 4);
 
   $('share').addEventListener('click', async (e) => {
     const btn = e.currentTarget;
@@ -176,7 +200,7 @@ function pickJob(l) {
   if (l.classList.contains('off')) return;
   document.querySelectorAll('#jobs label').forEach((x) => x.classList.toggle('on', x === l));
   const sh = $('shot'); sh.style.backgroundImage = ''; sh.classList.add('job');
-  sh.querySelector('.bigav')?.remove(); sh.insertAdjacentHTML('beforeend', `<span class="bigav">${cityAvatar(u, l.dataset.job)}</span>`);
+  sh.querySelector('.bigav')?.remove(); sh.insertAdjacentHTML('beforeend', `<span class="bigav">${cityAvatar(u, l.dataset.job, window.__look || null)}</span>`);
   $('shotname').textContent = l.querySelector('div').firstChild.textContent;
   $('movego').href = l.dataset.href; $('movego').textContent = l.dataset.btn; $('movego').target = '';
 }
@@ -195,9 +219,10 @@ function pickPlace(l) {
   $('movego').target = l.dataset.stripe ? '_blank' : '';
 }
 let lastFocus = null;
-function openDialog(id, pick, tab) {
+function openDialog(id, pick, tab, job) {
   lastFocus = document.activeElement;
   if (id === 'move') showTab(tab || 'places');
+  if (job) { const l = document.querySelector(`#jobs label[data-job="${job}"]`); if (l) pickJob(l); }
   document.querySelectorAll('.ux.dim').forEach((d) => (d.hidden = d.id !== id));
   document.documentElement.classList.add('locked');
   if (pick) { const l = document.querySelector(`#move label[data-place="${pick}"]`); if (l) pickPlace(l); }
@@ -212,7 +237,11 @@ document.addEventListener('click', (e) => {
   const v = e.target.closest('[data-view]');
   if (v) { e.preventDefault(); location.href = v.dataset.view; return; }
   const o = e.target.closest('[data-open]');
-  if (o) { e.preventDefault(); return openDialog(o.dataset.open, o.dataset.pick, o.dataset.tab); }
+  if (o) { e.preventDefault(); return openDialog(o.dataset.open, o.dataset.pick, o.dataset.tab, o.dataset.pickjob); }
+  const gt = e.target.closest('[data-goto]');
+  if (gt) { e.preventDefault(); return document.getElementById(gt.dataset.goto)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  const st2 = e.target.closest('[data-stab]');
+  if (st2) { e.preventDefault(); document.querySelectorAll('[data-stab]').forEach((b) => b.classList.toggle('on', b === st2)); document.querySelectorAll('[data-spane]').forEach((p) => (p.hidden = p.dataset.spane !== st2.dataset.stab)); return; }
   const tb = e.target.closest('#move .tabs [data-tab]');
   if (tb) { e.preventDefault(); return showTab(tb.dataset.tab); }
   if (e.target.closest('[data-close]') || e.target.classList.contains('dim')) { e.preventDefault(); return closeDialog(); }

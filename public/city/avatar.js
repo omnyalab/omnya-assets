@@ -17,10 +17,18 @@ const LOOK = {
   gardener: { top: '#5C8A3A', acc: '#E8C25A', hat: 'straw', extra: 'apron', hair: 'long', hc: '#B5762E', freckles: true },
 };
 
-export function cityAvatar(u, job = 'worker') {
-  const h = hashU(u), r = (k) => (h >>> (k * 3)) & 7;
-  const L = LOOK[job] || LOOK.worker, id = `a${h.toString(36)}${job}`;
-  const SK = SKINS[r(1)];
+// 8/11: a look chosen on the house page (€0.99), e.g. "s2h3c1b0g1": skin, hair style, hair colour, beard, glasses
+export const HAIR_STYLES = ['short', 'swept', 'curly', 'long', 'bun', 'bald'];
+export const LOOK_OPTS = { s: SKINS, h: HAIR_STYLES, c: HAIRS, b: ['none', 'stubble', 'full'], g: ['no', 'yes'] };
+export function parseLook(code) { const m = /^s([0-7])h([0-5])c([0-7])b([0-2])g([01])$/.exec(code || ''); return m ? { s: +m[1], h: +m[2], c: +m[3], b: +m[4], g: +m[5] } : null; }
+export const lookCode = (o) => `s${o.s}h${o.h}c${o.c}b${o.b}g${o.g}`;
+export function defaultLook(u) { const h = hashU(u), r = (k) => (h >>> (k * 3)) & 7; return { s: r(1), h: r(3) % 5, c: r(2), b: 0, g: 0 }; }
+
+export function cityAvatar(u, job = 'worker', look = null) {
+  const h = hashU(u), r = (k) => (h >>> (k * 3)) & 7, my = typeof look === 'string' ? parseLook(look) : look;
+  const L0 = LOOK[job] || LOOK.worker, id = `a${h.toString(36)}${job}${my ? lookCode(my) : ''}`;
+  const L = my ? { ...L0, hair: HAIR_STYLES[my.h], hc: HAIRS[my.c], beard: ['', 'stubble', 'full'][my.b], bc: HAIRS[my.c], glasses: !!my.g, mustache: false } : L0;
+  const SK = SKINS[my ? my.s : r(1)];
   const style = L.hair || ['short', 'swept', 'curly', 'long', 'bun'][r(3) % 5];
   const HC = L.hc || HAIRS[r(2)];
   const hair = {

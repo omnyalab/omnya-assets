@@ -159,8 +159,8 @@ export const JOB_TITLES = { ceo: 'CEO of Omnya Tower', captain: 'Captain of the 
 export async function jobTops() { const o = {}; for (const j of JOB_IDS) o[j] = (await cmd('GET', `${P}top:${j}`)) || null; return o; }
 export async function jobOf(u) { return (await cmd('GET', `${P}jobof:${u}`)) || null; }
 export const TRANCHES = { town: [6, 6, 8], sea: [2, 2, 2, 2, 2] };
-export const PRICES = { town: 99, sea: 299, sky: 99, fountain: 99, np: 199, job_ceo: 399, job_captain: 199, job_mmarket: 199, job_mcafe: 199, job_msite: 199, job_driver: 99, job_gardener: 99 }; // cents, sold with our own Stripe Checkout (api/city.js → buy)
-export const TITLES = { town: 'A townhouse on the water', sea: 'A seafront villa', sky: 'The penthouse', fountain: 'A house by the fountain', np: 'A penthouse in the green towers', job_ceo: 'CEO of Omnya Tower', job_captain: 'Captain of the Marina', job_mmarket: 'Supermarket manager', job_mcafe: 'Café manager', job_msite: 'Site manager', job_driver: 'Metro driver', job_gardener: 'Head gardener' };
+export const PRICES = { look: 99, town: 99, sea: 299, sky: 99, fountain: 99, np: 199, job_ceo: 399, job_captain: 199, job_mmarket: 199, job_mcafe: 199, job_msite: 199, job_driver: 99, job_gardener: 99 }; // cents, sold with our own Stripe Checkout (api/city.js → buy)
+export const TITLES = { look: 'A new look for your character', town: 'A townhouse on the water', sea: 'A seafront villa', sky: 'The penthouse', fountain: 'A house by the fountain', np: 'A penthouse in the green towers', job_ceo: 'CEO of Omnya Tower', job_captain: 'Captain of the Marina', job_mmarket: 'Supermarket manager', job_mcafe: 'Café manager', job_msite: 'Site manager', job_driver: 'Metro driver', job_gardener: 'Head gardener' };
 /** Where the current tranche stands: { no, left, size, upTo } (upTo = how many are out so far, e.g. 12). */
 export function tranche(kind, left) {
   const t = TRANCHES[kind], total = t.reduce((a, b) => a + b, 0), sold = total - left;
@@ -197,11 +197,12 @@ export async function forSale() {
 }
 
 /** Moves a buyer to the first free penthouse or top villa. kind: 'penthouse' | 'villa'. */
-export async function stockOf(kind) { if (String(kind).startsWith('job_')) return (await cmd('GET', `${P}top:${kind.slice(4)}`)) ? 0 : 1; if (kind === 'sky' || kind === 'fountain') return (await forSale()).left[kind]; const [a, b] = RANGE[kind] || [0, 0]; let k = 0; for (let n = a; n < b; n++) if (!(await onLot(n))) k++; return k; }
+export async function stockOf(kind) { if (kind === 'look') return 1; if (String(kind).startsWith('job_')) return (await cmd('GET', `${P}top:${kind.slice(4)}`)) ? 0 : 1; if (kind === 'sky' || kind === 'fountain') return (await forSale()).left[kind]; const [a, b] = RANGE[kind] || [0, 0]; let k = 0; for (let n = a; n < b; n++) if (!(await onLot(n))) k++; return k; }
 
 // 8/11: one purchase at a time. On 7/11 two fountain payments arrived together and both got house #5.
-export async function upgrade(u, kind) { return withLock('upgrade', () => upgradeNow(u, kind)); }
-async function upgradeNow(u, kind) {
+export async function upgrade(u, kind, extra) { return withLock('upgrade', () => upgradeNow(u, kind, extra)); }
+export async function lookOf(u) { return (await cmd('GET', `${P}look:${u}`)) || null; }
+async function upgradeNow(u, kind, extra) {
   if (!EP2_LIVE) return { error: 'Ep.2 not live yet' };
   const me = await houseOf(u);
   if (!me) return { error: 'no house' };
@@ -244,6 +245,11 @@ async function upgradeNow(u, kind) {
     await cmd('SADD', `${P}paid`, u);
     return { house: { u, from: me.n, n }, moved };
   }
+  if (kind === 'look') { // 8/11: the character's new look, paid at save
+    if (!/^s[0-7]h[0-5]c[0-7]b[0-2]g[01]$/.test(extra || '')) return { error: 'look' };
+    await cmd('SET', `${P}look:${u}`, extra);
+    return { job: 'a new look', house: { u, from: me.n, n: me.n } };
+  }
   if (String(kind).startsWith('job_')) { // 8/11: a top job, one person only; a new top job replaces your old one
     const j = kind.slice(4);
     if (!JOB_IDS.includes(j)) return { error: 'kind' };
@@ -266,9 +272,9 @@ async function upgradeNow(u, kind) {
 // Two people on the same fountain house (#5): whoever bought later gets a townhouse on the water for free, as our sorry.
 // @jakesplosion, house #1 of the city, was pushed to #484 in Midtown by the old freeVilla bug: a townhouse on the water too.
 // Runs from /api/city/houses at most once every 10 minutes and does nothing once everything is in place.
-const GIFTS = [{ u: 'jakesplosion', from: 484 }];
-async function giveTownhouse(u, h, why) {
-  const n = await firstFree('town');
+const GIFTS = [{ u: 'jakesplosion', from: 484 }, { u: 'gghizzoo', from: 507, kind: 'np' }]; // 8/11: Nico's own house goes to a penthouse of the green towers
+async function giveTownhouse(u, h, why, kind = 'town') {
+  const n = await firstFree(kind);
   if (!n) return null;
   await cmd('SET', `${P}u:${u}`, JSON.stringify({ ...h, n, from: h.n, gift: why, moved: Date.now() }));
   await cmd('ZADD', `${P}houses`, n, u);
@@ -286,7 +292,7 @@ export async function heal() {
     }
     for (const g of GIFTS) {
       const h = await houseOf(g.u);
-      if (h && h.n === g.from) { const n = await giveTownhouse(g.u, h, 'first'); if (n) done.push({ u: g.u, from: g.from, to: n }); }
+      if (h && h.n === g.from) { const n = await giveTownhouse(g.u, h, 'first', g.kind || 'town'); if (n) done.push({ u: g.u, from: g.from, to: n }); }
     }
     return done;
   });
