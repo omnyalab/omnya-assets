@@ -60,10 +60,10 @@ import OptIn from '../components/OptIn.astro';
           <li><i></i><div><b>Phones and delivery</b><span>how it opens on a phone, how it goes online and what to charge</span></div><em>Included</em></li>
         </ul>
         <div class="x3-pay">
-          <div class="x3-pay__price" data-deal><small>Today</small><b>€1.99</b><s>€19</s><span>−90%</span></div><div class="x3-pay__price" data-after hidden><b>€19</b></div>
+          <div class="x3-pay__price" data-deal><small>Today</small><b>€1.99</b><s>€19</s><span>−90%</span></div><div class="x3-pay__price" data-after hidden><b>€5.99</b></div>
           <a class="x3-cta" href={full}><span>Get the Full Blueprint</span><i>→</i></a>
         </div>
-        <p class="x3-pay__note"><span data-deal>Until Sunday 8 November at midnight, then it goes back to €19. </span>The PDF arrives right after payment.</p>
+        <p class="x3-pay__note"><span data-deal>Until Sunday 8 November at midnight, then €5.99. </span>The PDF arrives right after payment.</p>
       </div>
     </div>
   </div>
@@ -136,7 +136,7 @@ import OptIn from '../components/OptIn.astro';
 <p class="x3-foot">OMNYA LAB</p>
 </div>
 <script is:inline define:vars={{ until: fullTowerDeal.until }}>
-  // After Sunday the €19 version shows by itself
+  // After Sunday the €5.99 version shows by itself
   if (Date.now() >= Date.parse(until)) {
     document.querySelectorAll('.x3 [data-deal]').forEach((el) => (el.hidden = true));
     document.querySelectorAll('.x3 [data-after]').forEach((el) => (el.hidden = false));

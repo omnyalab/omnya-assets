@@ -43,7 +43,8 @@ export const products: { id: ProductId; checkout: string }[] = [
   { id: 'sample', checkout: '' },
   { id: 'free', checkout: '/learn/free/omnya-lab-blueprint.pdf' },
   { id: 'free-tower', checkout: '/learn/free/omnya-lab-tower-blueprint.pdf' },
-  { id: 'full-tower', checkout: 'https://buy.stripe.com/aFa4gyckZh2M7xQ8ap8so0b' },
+  // €5.99 from Monday 9 November (Nico, 8/11); the old €19 link was https://buy.stripe.com/aFa4gyckZh2M7xQ8ap8so0b
+  { id: 'full-tower', checkout: 'https://buy.stripe.com/cNi9AS1GlfYI5pI4Yd8so0z' },
   { id: 'free-3d', checkout: '/learn/free/omnya-lab-3d-to-film-blueprint.pdf' },
   // €19 after Sunday 8 November; until then /go/full-3d sends to the €1.99 link (full3dDeal)
   { id: 'full-3d', checkout: 'https://buy.stripe.com/eVq8wO4SxeUE4lE1M18so0d' },
@@ -54,8 +55,8 @@ export const products: { id: ProductId; checkout: string }[] = [
 
 /**
  * The Full Tower Blueprint launch price: €1.99 instead of €19 because we hit 1,000 followers (5/11; €4.99 for 500 on 4/11),
- * until Sunday 8 November at midnight, Rome time. After that the page shows €19 and /go/full-tower
- * sends to the €19 link by itself, so the offer really ends.
+ * until Sunday 8 November at midnight, Rome time. After that the page shows `then` (€5.99, Nico 8/11, not €19)
+ * and /go/full-tower sends to the €5.99 link by itself. 3D and City keep €19 after the offer.
  */
 export const fullTowerDeal = {
   until: '2026-11-08T23:59:59+01:00',
@@ -63,14 +64,15 @@ export const fullTowerDeal = {
   price: 1.99,
   was: 19,
   off: 90,
+  then: 5.99,
 };
 export const dealOn = (now = Date.now()) => now < Date.parse(fullTowerDeal.until);
 
 /** The Full Blueprint (How to make a 3D that sells with AI, 4/11): the same launch, €1.99 until the same Sunday. */
-export const full3dDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.com/5kQaEW1Gl9Akg4m62h8so0f' };
+export const full3dDeal = { ...fullTowerDeal, then: 19, checkout: 'https://buy.stripe.com/5kQaEW1Gl9Akg4m62h8so0f' };
 
 /** The Full City Blueprint (5/11): the same 1,000 followers launch, €1.99 until Sunday. */
-export const fullCityDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.com/4gMfZg3Ot3bWbO6duJ8so0g' };
+export const fullCityDeal = { ...fullTowerDeal, then: 19, checkout: 'https://buy.stripe.com/4gMfZg3Ot3bWbO6duJ8so0g' };
 
 /** All three playbooks: €79 again from 7/11 (Nico: the €39 price is only for "Everything we teach" after a free blueprint). The 6/11 €39 deal is off. */
 export const bundleDeal = { ...fullTowerDeal, until: '2026-11-07T00:00:00+01:00', checkout: '' };

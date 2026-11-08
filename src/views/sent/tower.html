@@ -202,10 +202,10 @@ function tk(){var t=Math.max(0,end-Date.now())/1e3;document.querySelectorAll('.t
 tk();setInterval(tk,1000);
 document.querySelectorAll('form').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();location.href=f.dataset.go}));
 </script><script>
-// After Sunday 8 November (Rome) the Full guide is €19: the page says so by itself, like the funnel pages.
+// After Sunday 8 November (Rome) the Full Tower guide is €5.99 (Nico 8/11): the page says so by itself, like the funnel pages.
 (function(){var until=Date.parse('2026-11-08T23:59:59+01:00');if(Date.now()<until)return;
-var o=document.querySelector('.pick label[data-p="1.99"]');if(!o)return;o.dataset.p='19';
-o.querySelector('strong').innerHTML='€19';
+var o=document.querySelector('.pick label[data-p="1.99"]');if(!o)return;o.dataset.p='5.99';
+o.querySelector('strong').innerHTML='€5.99';
 document.querySelectorAll('.uc .x3-kick').forEach(function(k){k.textContent='Everything you get'});
-var g=document.getElementById('go');if(g&&/1\.99/.test(g.textContent))g.textContent='Get it · €19 →';})();
+var g=document.getElementById('go');if(g&&/1\.99/.test(g.textContent))g.textContent='Get it · €5.99 →';})();
 </script><script defer src="/_vercel/insights/script.js"></script></body></html>

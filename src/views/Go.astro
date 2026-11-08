@@ -27,7 +27,7 @@ function offerName() {
   const a = offer.a.charAt(0).toLowerCase() + offer.a.slice(1);
   return `${a} (${offer.price})`;
 }
-// The Full Tower Blueprint: the launch link until Sunday 8 November, then the €19 one (4/11)
+// The Full Tower Blueprint: the launch link until Sunday 8 November, then the €5.99 one (8/11)
 const deal = id === 'full-tower' ? { link: fullTowerDeal.checkout, until: fullTowerDeal.until } : id === 'full-3d' ? { link: full3dDeal.checkout, until: full3dDeal.until } : id === 'full-city' ? { link: fullCityDeal.checkout, until: fullCityDeal.until } : id === 'bundle' ? { link: bundleDeal.checkout, until: bundleDeal.until } : null;
 const fallbacks = Object.fromEntries(['', '3d', 'ai', 'claude', 'dubai'].map((k) => [k, fallback(id, lang, said, k || undefined)]));
 ---
