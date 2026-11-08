@@ -300,7 +300,7 @@ export function buildCity(scene, styleKey, opts = {}) {
   // west side, malls, car parks, gas stations and a highway in the north. Only with districts.grid2 (preview ?p3=G…).
   const G2 = !!(st.mix && opts.districts && opts.districts.grid2), Rg = rng(hashStr('omnya-grid2'));
   // 8/11 (Nico: "a disaster, it was better before"): no skyscrapers, no highway, no malls in the north, no growth to the north (G3 off)
-  const G3 = false, NZN = G3 ? NBZ + 4 : NBZ;
+  const G3 = false, NZN = G3 ? NBZ + 4 : G2 ? NBZ + 2 : NBZ; // 8/11: two more rows of houses to the north (more places, Nico)
   const CARC = ['#F2F2F0', '#16181C', '#B9BEC4', '#D3141B', '#1F4E8C', '#C9B48A', '#2E3B33', '#F2F2F0'];
   const colW = {}, rowD = {}, colX = {}, rowZ = {};
   for (let i = -NBX; i <= NBX; i++) colW[i] = (!st.mix || Math.abs(i) <= 1) ? BW : pick(R, [34, 44, 44, 56, 62]);
@@ -318,9 +318,10 @@ export function buildCity(scene, styleKey, opts = {}) {
   for (let j = 1; j <= NBZ; j++) { rowZ[j] = rowZ[j - 1] + rowD[j - 1] / 2 + (PZ - BD) + rowD[j] / 2; rowZ[-j] = rowZ[-j + 1] - rowD[-j + 1] / 2 - (PZ - BD) - rowD[-j] / 2; }
   for (let j = NBZ + 1; j <= NZN; j++) rowZ[-j] = rowZ[-j + 1] - rowD[-j + 1] / 2 - (PZ - BD) - rowD[-j] / 2;
   const RZ = PZ - BD;
-  const onDiag = (x, z, m) => Math.abs(z - (150 - .55 * x)) / 1.1413 < m && Math.abs(x) < 470;
+  const DIAG = false; // 8/11 (Nico): the diagonal line is gone
+  const onDiag = (x, z, m) => DIAG && Math.abs(z - (150 - .55 * x)) / 1.1413 < m && Math.abs(x) < 470;
   const block = (i, j) => ({ x: colX[i], z: rowZ[j], w: colW[i], d: rowD[j] });
-  const ext = st.mix ? { x: colX[NBX] + colW[NBX] / 2 + ROAD / 2, z: rowZ[NBZ] + rowD[NBZ] / 2 + RZ / 2, zn: G3 ? -(rowZ[-NZN] - rowD[-NZN] / 2 - RZ / 2) : undefined } : { x: NB * PX + PX / 2, z: NB * PZ + PZ / 2 };
+  const ext = st.mix ? { x: colX[NBX] + colW[NBX] / 2 + ROAD / 2, z: rowZ[NBZ] + rowD[NBZ] / 2 + RZ / 2, zn: G2 ? -(rowZ[-NZN] - rowD[-NZN] / 2 - RZ / 2) : undefined } : { x: NB * PX + PX / 2, z: NB * PZ + PZ / 2 };
   const lots = [];
 
   // la citta ha una forma: un ovale di isolati che finisce nei campi
@@ -346,6 +347,8 @@ export function buildCity(scene, styleKey, opts = {}) {
   const RES = { x0: -940, x1: -652, z0: 150, z1: seaZ - 60 };
   // the towers of The Residences: [x, z, floors, main]; the main one has the penthouse
   const RES_T = [[-690, 335, 40, 1, 'B'], [-755, 245, 36, 0, 'A'], [-820, 340, 34, 0, 'C'], [-880, 240, 32, 0, 'A'], [-700, 190, 30, 0, 'C'], [-900, 345, 30, 0, 'B']];
+  // 8/11: new towers north of The Residences (Part 3 preview): D black and gold, E white terraces with gardens, F terracotta art deco
+  const RES_N = [[-700, 90, 44, 0, 'G'], [-790, 40, 38, 0, 'E'], [-880, 95, 34, 0, 'F'], [-710, -30, 48, 0, 'D'], [-820, -80, 42, 0, 'G'], [-900, -20, 36, 0, 'E'], [-720, -150, 40, 0, 'F'], [-850, -190, 46, 0, 'G']];
   const inRect = (x, z, a, b, c, d) => x > a && x < b && z > c && z < d;
   const inDist = (x, z) => (DIS.hills && Math.hypot(x - HILL.cx, z - HILL.cz) < HILL.r0 * 1.09 + 40)
     || (DIS.marina && inRect(x, z, -340, 560, seaZ - 130, seaZ + 10)) || (DIS.residences && inRect(x, z, RES.x0 - 30, RES.x1 + 20, RES.z0 - 30, seaZ))
@@ -479,7 +482,7 @@ export function buildCity(scene, styleKey, opts = {}) {
       for (let c = 0; c < cols; c++) {
         const x = cx - bw / 2 + lw * (c + .5), z = cz + (r ? ld / 2 : -ld / 2), yaw = r ? 0 : Math.PI;
         if (G2 && onDiag(x, z, 9)) continue; // the diagonal avenue
-        lots.push({ i, j, r, c, x, z, yaw, dist, lw, ld });
+        lots.push({ i, j, r, c, x, z, yaw, dist, lw, ld, extra: j < -NBZ }); // extra: the rows added on 8/11 come after every old lot
       }
     }
   }
@@ -495,7 +498,7 @@ export function buildCity(scene, styleKey, opts = {}) {
     house(base, L.seed, L.dist); L.type = house.prev;
   });
 
-  if (G2) { // the diagonal avenue: asphalt, a green middle with trees, across the whole city
+  if (G2 && DIAG) { // the diagonal avenue: asphalt, a green middle with trees, across the whole city
     const x0 = -470, x1 = 470, z0 = 150 - .55 * x0, z1 = 150 - .55 * x1, L = Math.hypot(x1 - x0, z1 - z0), ry = Math.atan2(x1 - x0, z1 - z0);
     put('box', TX('asphalt', 'matte'), st.asphalt, [0, .36, 150], [14, .1, L], [0, ry, 0], null, 'XYZ', true);
     put('box', 'flat', '#7DBE5A', [0, .44, 150], [2.6, .12, L], [0, ry, 0], null, 'XYZ', true);
@@ -1095,6 +1098,11 @@ export function buildCity(scene, styleKey, opts = {}) {
   }
   // the towers, in the look of the Ep.1 reel: A blue glass with white slabs and a spire, B stone with gold bands, stepped,
   // gold top (the main one has the lit penthouse), C a white cylinder with teal glass strips and trees on the roof
+  function roofGarden(x, y, z, w) { // a lawn, a pool and small trees on the roof
+    put('box', TX('grass', 'matte'), '#8CC460', [x, y + .2, z], [w, .4, w]);
+    put('box', 'pool', st.pool, [x - w * .15, y + .45, z], [w * .45, .1, w * .3]);
+    if (!opts.lite) for (let q = 0; q < 4; q++) put('ico', 'flat', '#4FA85A', [x + w * .3, y + 1.8, z - w * .3 + q * w * .2], [2.4, 2.4, 2.4], [q, q, 0]);
+  }
   function residence(x, z, floors, main, type) {
     const fh = 3.4, y0 = 1.2, Ht = floors * fh, lite = !!opts.lite, every = lite ? 3 : 1;
     // podium: shops with awnings on the ground floor, planters, palms
@@ -1122,6 +1130,31 @@ export function buildCity(scene, styleKey, opts = {}) {
       else put('box', 'pent', '#FFD27A', [x, b0 + Ht - 2, z], [18.3, 3.4, 18.3]); // 7/11: the penthouse of the other stone towers, lit
       put('hip', 'flat', '#D9A520', [x, b0 + Ht + (main ? 9 : 5), z], [14, 12, 14]);
       put('cyl', 'matte', '#D9A520', [x, b0 + Ht + (main ? 20 : 16), z], [.5, 10, .5]);
+    } else if (type === 'D') { // black glass, gold fins, a lit gold crown
+      const w = 24; put('box', 'matte', '#1E2833', [x, b0 + Ht / 2, z], [w, Ht, w]);
+      for (let k = -1; k <= 1; k++) for (const [fx, fz, ry] of [[k * 8, w / 2 + .3, 0], [w / 2 + .3, k * 8, Math.PI / 2], [k * 8, -w / 2 - .3, 0], [-w / 2 - .3, k * 8, Math.PI / 2]]) put('box', 'matte', '#C9A34A', [x + fx, b0 + Ht / 2, z + fz], [.35, Ht, .5], [0, ry, 0]);
+      put('box', 'pent', '#FFD27A', [x, b0 + Ht - 2, z], [w + .3, 3.6, w + .3]); put('box', 'matte', '#C9A34A', [x, b0 + Ht + .6, z], [w + 1, 1.2, w + 1]);
+      for (let f = 3; f < floors - 2; f += lite ? 8 : 4) for (const [cx2, cz2] of [[1, 1], [-1, 1], [1, -1], [-1, -1]]) { put('box', 'matte', '#F2EDE2', [x + cx2 * (w / 2 + 1.6), b0 + f * fh, z + cz2 * (w / 2 + 1.6)], [4, .5, 4], [0, 0, 0], null, 'XYZ', true); put('ico', 'flat', pick(Rd0, ['#4FA85A', '#5DB866', '#3F9A52']), [x + cx2 * (w / 2 + 1.6), b0 + f * fh + 1.6, z + cz2 * (w / 2 + 1.6)], [3.6, 3, 3.6], [f, f, 0], null, 'XYZ', true); }
+      roofGarden(x, b0 + Ht + 1.2, z, w - 2);
+    } else if (type === 'E') { // white terraces stepping back, trees on every step
+      const steps = 4; for (let k = 0; k < steps; k++) { const ya = b0 + Ht * k / steps, yb = b0 + Ht * (k + 1) / steps, w = 30 - k * 5;
+        put('box', 'matte', '#F7F5F1', [x, (ya + yb) / 2, z], [w, yb - ya, w]); put('box', 'glass', st.glass, [x, (ya + yb) / 2, z], [w + .1, (yb - ya) * .7, w - 6]);
+        for (let f = Math.ceil(floors * k / steps); f < floors * (k + 1) / steps; f += lite ? 3 : 1) put('box', 'matte', '#FFFFFF', [x, b0 + f * fh, z], [w + 1, .35, w + 1], [0, 0, 0], null, 'XYZ', true);
+        if (!lite) for (let q = 0; q < 4; q++) put('ico', 'flat', '#4FA85A', [x + (q % 2 ? 1 : -1) * (w / 2 - 1.5), yb + 1.5, z + (q < 2 ? 1 : -1) * (w / 2 - 1.5)], [3, 2.6, 3]); }
+      put('box', 'pent', '#FFD27A', [x, b0 + Ht + 1.5, z], [12, 3, 12]); roofGarden(x, b0 + Ht + 3.1, z, 10);
+    } else if (type === 'F') { // terracotta art deco: setbacks, white vertical fins
+      const segs = [[0, .6, 28], [.6, .86, 22], [.86, 1, 16]];
+      for (const [a, b, w] of segs) { const ya = b0 + a * Ht, yb = b0 + b * Ht;
+        put('box', 'matte', '#C9744F', [x, (ya + yb) / 2, z], [w, yb - ya, w]);
+        for (let k = -2; k <= 2; k++) for (const s2 of [-1, 1]) { put('box', 'matte', '#F4EEE2', [x + k * w / 5.5, (ya + yb) / 2, z + s2 * (w / 2 + .2)], [.8, yb - ya, .5]); put('box', 'matte', '#F4EEE2', [x + s2 * (w / 2 + .2), (ya + yb) / 2, z + k * w / 5.5], [.5, yb - ya, .8]); } }
+      put('box', 'pent', '#FFD27A', [x, b0 + Ht - 2, z], [16.3, 3.6, 16.3]); put('cone', 'flat', '#F4EEE2', [x, b0 + Ht + 6, z], [8, 12, 8]);
+      if (!lite) for (const [a, b, w] of segs) { const yb = b0 + b * Ht; for (let q = 0; q < 8; q++) { const t = q / 8 * Math.PI * 2; put('ico', 'flat', '#4FA85A', [x + Math.sin(t) * (w / 2 + .5), yb + 1.4, z + Math.cos(t) * (w / 2 + .5)], [2.6, 2.4, 2.6], [q, q, 0]); } }
+    } else if (type === 'G') { // a vertical forest: white slabs that stick out, trees on every balcony, all the way up
+      const w = 22; put('box', 'glass', st.glass, [x, b0 + Ht / 2, z], [w, Ht, w]);
+      for (let f = 1; f <= floors; f += lite ? 3 : 1) { const y = b0 + f * fh, o = (f % 2 ? 1.4 : -1.4);
+        put('box', 'matte', '#FAF8F3', [x + o, y, z - o], [w + 5, .5, w + 5], [0, 0, 0], null, 'XYZ', true);
+        if (!lite || f % 6 === 1) for (let q = 0; q < (lite ? 4 : 8); q++) { const t = q / (lite ? 4 : 8) * Math.PI * 2 + f; put('ico', 'flat', pick(Rd0, ['#4FA85A', '#5DB866', '#3F9A52', '#6CC070']), [x + o + Math.sin(t) * (w / 2 + 1.4), y + 1.5, z - o + Math.cos(t) * (w / 2 + 1.4)], [3.6, 3.4, 3.6], [q, f, 0], null, 'XYZ', true); } }
+      put('box', 'pent', '#FFD27A', [x, b0 + Ht - 1.7, z], [w + .3, 3, w + .3]); roofGarden(x, b0 + Ht + .4, z, w);
     } else {
       const R = 12;
       put('disc', 'matte', '#F2F2EE', [x, b0 + Ht / 2, z], [R * 2, Ht, R * 2]);
@@ -1279,14 +1312,33 @@ export function buildCity(scene, styleKey, opts = {}) {
         offices.push({ x: x + ox, y, z: wz + .5, i }); }
       jobsAt.hq = { x, z, y: b0 + Ht + 30, offices };
     }
-    // --- the central metro station (T1 stops here too)
+    // --- the metro is underground: a square with big stairs going down, a glass roof over them, yellow M posts;
+    // small stairs on the street corners around the centre
+    const stairs = (x, z, w, d, ry = 0) => { const b = new THREE.Matrix4().makeRotationY(ry).setPosition(x, 0, z);
+      put('box', 'matte', '#2A2622', [0, .37, 0], [w, .06, d], [0, 0, 0], b, 'XYZ', true);
+      for (let k = 0; k < 6; k++) put('box', 'matte', '#8A847A', [0, .41, -d / 2 + (k + .5) * d / 6], [w - .6, .03, .35], [0, 0, 0], b, 'XYZ', true);
+      for (const sx of [-1, 1]) put('box', 'matte', '#D9D4C8', [sx * (w / 2 + .2), .9, 0], [.4, 1.1, d], [0, 0, 0], b, 'XYZ', true);
+      put('box', 'matte', '#3A3530', [w / 2 + 1, 2.2, d / 2 + .6], [.3, 4.4, .3], [0, 0, 0], b); put('box', 'flat', '#FFD21F', [w / 2 + 1, 4.8, d / 2 + .6], [1.8, 1.8, .5], [0, 0, 0], b); };
     if (at.station) { const { cx: x, cz: z, bw, bd } = at.station;
       lot(x, z, bw - 4, bd - 4);
-      put('box', 'matte', '#F4EEE2', [x, 4, z], [bw - 10, 8, bd - 12]);
-      put('box', 'glass', st.glass, [x, 8.6, z], [bw - 12, 1.4, bd - 14]);
-      put('box', 'flat', '#FFD21F', [x, 9.6, z], [bw - 8, .6, bd - 10]);
-      for (let k = 0; k < 12; k++) person(x - bw / 3 + Rj() * bw * .66, .4, z + bd / 2 - 5 + Rj() * 2);
-      jobsAt.station = { x, z, y: 18 };
+      for (const sx of [-1, 1]) { stairs(x + sx * bw / 5, z, 8, 14); put('box', 'glass', st.glass, [x + sx * bw / 5, 4, z], [9, .3, 15]); put('box', 'matte', '#FFFFFF', [x + sx * bw / 5, 2.2, z - 7], [9, .3, .3]); }
+      for (let k = 0; k < 14; k++) person(x - bw / 3 + Rj() * bw * .66, .4, z + bd / 2 - 6 + Rj() * 3);
+      for (const sx of [-1, 1]) for (const sz of [-1, 1]) tree(x + sx * (bw / 2 - 4), z + sz * (bd / 2 - 4), .8);
+      jobsAt.station = { x, z, y: 14 };
+    }
+    for (const [i, j] of [[2, 2], [-2, 2], [2, -2], [-2, -2], [0, 3], [0, -3], [3, 0], [-3, 0]]) { if (!inCity(i, j)) continue; const b = block(i, j);
+      stairs(b.x - b.w / 2 + 3, b.z - b.d / 2 - 1.2, 3, 6, Math.PI / 2); }
+    // --- 8/11 (Nico): more towers on the left, in new styles, north of The Residences along the river; their penthouses are for sale
+    for (const t of RES_N) residence(...t);
+    { // a park around the new towers: lawns, a lake with a jetty, winding paths, palms and trees
+      const zs = RES_N.map((t) => t[1]), z0 = Math.min(...zs) - 45, z1 = Math.max(...zs) + 45, zc = (z0 + z1) / 2;
+      put('box', TX('grass', 'matte'), '#8CC460', [-800, .12, zc], [300, .2, z1 - z0]);
+      { let px = -800, pz = z0 + 6; for (let k = 1; k <= 140; k++) { const t = k / 140, x = -800 + Math.sin(t * 9) * 110, zz = z0 + 6 + t * (z1 - z0 - 12); put('box', TX('paving', 'matte'), '#EFE4CC', [(x + px) / 2, .24, (zz + pz) / 2], [4.5, .1, Math.hypot(x - px, zz - pz) + 1], [0, Math.atan2(x - px, zz - pz), 0], null, 'XYZ', true); px = x; pz = zz; } }
+      put('disc', 'flat', '#E8D6A6', [-770, .2, zc - 20], [74, .2, 46]); put('disc', 'water', st.sea, [-770, .3, zc - 20], [66, .2, 38]);
+      put('box', 'matte', '#C79B6B', [-742, .55, zc - 20], [16, .3, 3]); boat(-731, zc - 14, 1.2, .8);
+      for (const [tx, tz] of RES_N) for (let k = 0; k < (lite ? 6 : 12); k++) { const a = k / (lite ? 6 : 12) * Math.PI * 2; palm(tx + Math.sin(a) * 30, tz + Math.cos(a) * 27, 1.2 + (k % 3) * .15); }
+      for (let k = 0; k < (lite ? 30 : 90); k++) { const x = -945 + Rj() * 290, zz = z0 + Rj() * (z1 - z0); if (RES_N.some(([tx, tz]) => Math.hypot(x - tx, zz - tz) < 34) || Math.hypot(x + 770, (zz - zc + 20) * 1.6) < 42) continue; tree(x, zz, .7 + Rj() * .5); }
+      for (let k = 0; k < (lite ? 0 : 30); k++) person(-930 + Rj() * 260, .3, z0 + Rj() * (z1 - z0));
     }
     // --- the building site: a half-built tower and a crane
     if (at.site) { const { cx: x, cz: z, bw, bd } = at.site, s2 = Math.min(bw, bd) - 10;
@@ -1303,7 +1355,7 @@ export function buildCity(scene, styleKey, opts = {}) {
       jobsAt.site = { x, z, y: 42 };
     }
     // --- T1: a monorail around the city, a yellow train, four stations
-    const tr = DIS.transit || '';
+    const tr = ''; // 8/11 (Nico): no train above the streets, the metro runs underground (see the station and the stairs)
     if (tr.includes('T1')) {
       const X = ext.x + 26, Z = ext.z + 8, ZN = (ext.zn ?? ext.z) + 8, yb = 13, line = [[-X, -ZN], [X, -ZN], [X, Z], [-X, Z], [-X, -ZN]];
       for (let s = 0; s < 4; s++) { const [ax, az] = line[s], [bx, bz] = line[s + 1], L = Math.hypot(bx - ax, bz - az), ry = Math.atan2(bx - ax, bz - az);
@@ -1381,5 +1433,5 @@ export function buildCity(scene, styleKey, opts = {}) {
     M.water.envMapIntensity = 1.2 * (1 - k * .7); M.pool.envMapIntensity = M.water.envMapIntensity; };
   // 7/11: the 20 townhouses for sale are the ones closest to the river (the end of the row)
   const townLots = townAll.slice(-20).reverse().map((t, k) => ({ town: true, c: k, x: t.x, y: 0, z: t.z - 2, yaw: 0, lw: 8.6, ld: 19, dist: 9 }));
-  return { jobsAt, townLots, seaLots, yachtAt, islandAt, lots, hillLots, hl, PX, PZ, ext, seaZ, stats, makeHouse, makeHouses, makeModels, makeWith, st, setDetail, setNight, inCity, block, HILL, RES, residences: DIS.residences ? RES_T.map(([x, z, floors, main]) => ({ x, z, floors, main: !!main })) : [] };
+  return { jobsAt, townLots, seaLots, yachtAt, islandAt, lots, hillLots, hl, PX, PZ, ext, seaZ, stats, makeHouse, makeHouses, makeModels, makeWith, st, setDetail, setNight, inCity, block, HILL, RES, residences: DIS.residences ? RES_T.map(([x, z, floors, main]) => ({ x, z, floors, main: !!main })) : [], residencesNew: DIS.jobs ? RES_N.map(([x, z, floors]) => ({ x, z, floors })) : [] };
 }

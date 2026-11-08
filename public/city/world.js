@@ -83,10 +83,12 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
     }
   }
   // lots from the centre outwards; ties broken by angle so the order never changes
-  const lots = merged.sort((l, m) => {
+  const byDist = (l, m) => {
     const d = Math.hypot(l.x, l.z) - Math.hypot(m.x, m.z);
     return Math.abs(d) > 0.01 ? d : Math.atan2(l.z, l.x) - Math.atan2(m.z, m.x);
-  });
+  };
+  // 8/11: the rows added to the north come after every old lot, so nobody's number changes place in the order
+  const lots = [...merged.filter((L) => !L.extra).sort(byDist), ...merged.filter((L) => L.extra).sort(byDist)];
   lots.forEach((L, k) => (L.n = k + 1));
   // Ep.2 (6/11/2026): from the first house reserved after Ep.2 went live (the API keeps that number as ep2),
   // new people get the penthouse first, then a villa in Omnyawood, a floor lower, a villa… The houses before ep2 never move.
@@ -104,6 +106,11 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
   // 7/11 (Nico): 20 townhouses on the water (PREM+13…32, sold in tranches of 6, 6, 8) and 10 seafront villas (PREM+33…42, 2 at a time).
   // Appended at the end, so the 13 places already sold keep their numbers.
   if (premium.length === 13) premium.push(...(city.townLots || []), ...(city.seaLots || []));
+  // 8/11 (Part 3 preview): the penthouses of the new towers, for sale (PREM+43…); their other floors come after the last lot
+  const newT = city.residencesNew || [];
+  if (premium.length === 43) for (const t of newT) premium.push({ floor: true, pent: true, newTower: true, x: t.x, z: t.z, y: 6.4 + (t.floors - 0.5) * 3.4, f: t.floors, lw: 30, ld: 24, yaw: 0 });
+  const extraFloors = [];
+  for (const t of newT) for (let f = t.floors - 1; f >= 1; f--) extraFloors.push({ floor: true, f, x: t.x, z: t.z, y: 6.4 + (f - 0.5) * 3.4, lw: 30, ld: 24, yaw: 0 });
   for (const P of premium) P.premium = true;
   for (const F of floors) if (F.f === city.residences[F.tower].floors) F.pent = true; // every tower's top floor is a penthouse
   const freeFloors = floors.filter((F) => !F.premium), freeVillas = city.hillLots.filter((L) => !L.premium);
@@ -112,9 +119,9 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
   /** Where house number n lives. */
   function placeOf(n, ep2) {
     if (n >= PREM) return premium[n - PREM] || null;
-    if (!ep2 || n < ep2 || !seq.length) return lots[n - 1] || null; // before Ep.2 (or with the switch off): the old lots
+    if (!ep2 || n < ep2 || !seq.length) return lots[n - 1] || extraFloors[n - 1 - lots.length] || null; // before Ep.2 (or with the switch off): the old lots
     const i = n - ep2;
-    return seq[i] || lots[n - seq.length - 1] || null;
+    return seq[i] || lots[n - seq.length - 1] || extraFloors[n - seq.length - 1 - lots.length] || null;
   }
 
   let housesGroup = null;
