@@ -346,3 +346,21 @@ button.mv{border:3px solid #1a120c}
 .bidf{grid-template-columns:minmax(0,1fr)}
 .bidf .amt{grid-template-columns:48px minmax(0,1fr) 48px}
 .bidf input{width:100%}
+
+/* 8/11: house page, long neighbour names shrink to one line (house.js fitOne); auction cards show the price like the others */
+#nb { display: block; white-space: nowrap; overflow: hidden; }
+.ux .pl .pr small { display: block; font-size: 11px; font-weight: 600; color: #8a7f72; margin-top: 1px; }
+/* 8/11: the cookie banner (public/consent.js) in the cozy look on the City pages, low and thin */
+html #ocb { background: #fffaf0; color: #1a120c; border: 2.5px solid #1a120c; box-shadow: 4px 4px 0 #1a120c; -webkit-backdrop-filter: none; backdrop-filter: none; border-radius: 16px; padding: 10px 12px; max-width: 560px; display: flex; gap: 10px; align-items: center; font-size: 12px; bottom: max(10px, env(safe-area-inset-bottom)); }
+html #ocb p { color: #4a3b2c; margin: 0; flex: 1; line-height: 1.35; }
+html #ocb a { color: #1a120c; }
+html #ocb .r { display: flex; gap: 6px; flex: none; }
+html #ocb button { background: #fff; color: #1a120c; border: 2px solid #1a120c; padding: 8px 12px; font-size: 12px; }
+html #ocb button[data-v="yes"] { background: #ffd21f; }
+html #ocb .r button { min-width: 74px; }
+@media (max-width: 899px) { html #ocb .r { flex-direction: column; } }
+html:has(#ocb) .sheet { bottom: calc(max(10px, env(safe-area-inset-bottom)) + 96px); }
+html:has(#ocb) body { padding-bottom: 100px; }
+@media (min-width: 900px) { html:has(#ocb) .sheet { bottom: 28px; } html #ocb { left: auto; right: 20px; } }
+.ux .pl.gold .pr strong { font-size: 19px; white-space: nowrap; }
+.ux .pl .pr em { white-space: nowrap; }

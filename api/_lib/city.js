@@ -192,7 +192,9 @@ export async function forSale() {
 /** Moves a buyer to the first free penthouse or top villa. kind: 'penthouse' | 'villa'. */
 export async function stockOf(kind) { if (kind === 'sky' || kind === 'fountain') return (await forSale()).left[kind]; const [a, b] = RANGE[kind] || [0, 0]; let k = 0; for (let n = a; n < b; n++) if (!(await onLot(n))) k++; return k; }
 
-export async function upgrade(u, kind) {
+// 8/11: one purchase at a time. On 7/11 two fountain payments arrived together and both got house #5.
+export async function upgrade(u, kind) { return withLock('upgrade', () => upgradeNow(u, kind)); }
+async function upgradeNow(u, kind) {
   if (!EP2_LIVE) return { error: 'Ep.2 not live yet' };
   const me = await houseOf(u);
   if (!me) return { error: 'no house' };
@@ -242,6 +244,44 @@ export async function upgrade(u, kind) {
   await cmd('SET', `${P}u:${u}`, JSON.stringify({ ...me, n, from: me.n, bought: Date.now() }));
   await cmd('ZADD', `${P}houses`, n, u);
   return { house: { u, from: me.n, n } };
+}
+
+// ---------- 8/11/2026 (Nico): fixes for the people the 7/11 bugs moved ----------
+// Two people on the same fountain house (#5): whoever bought later gets a townhouse on the water for free, as our sorry.
+// @jakesplosion, house #1 of the city, was pushed to #484 in Midtown by the old freeVilla bug: a townhouse on the water too.
+// Runs from /api/city/houses at most once every 10 minutes and does nothing once everything is in place.
+const GIFTS = [{ u: 'jakesplosion', from: 484 }];
+async function giveTownhouse(u, h, why) {
+  const n = await firstFree('town');
+  if (!n) return null;
+  await cmd('SET', `${P}u:${u}`, JSON.stringify({ ...h, n, from: h.n, gift: why, moved: Date.now() }));
+  await cmd('ZADD', `${P}houses`, n, u);
+  return n;
+}
+export async function heal() {
+  if ((await cmd('SET', `${P}heal`, '1', 'NX', 'EX', 600)) !== 'OK') return [];
+  return withLock('upgrade', async () => {
+    const done = [];
+    for (const lot of [...FOUNTAIN, ...SKY]) {
+      const who = await cmd('ZRANGEBYSCORE', `${P}houses`, lot, lot);
+      if (who.length < 2) continue;
+      const hs = (await Promise.all(who.map(houseOf))).filter(Boolean).sort((a, b) => (a.bought || 0) - (b.bought || 0));
+      for (const h of hs.slice(1)) { const n = await giveTownhouse(h.u, h, 'sorry'); if (n) done.push({ u: h.u, from: lot, to: n }); }
+    }
+    for (const g of GIFTS) {
+      const h = await houseOf(g.u);
+      if (h && h.n === g.from) { const n = await giveTownhouse(g.u, h, 'first'); if (n) done.push({ u: g.u, from: g.from, to: n }); }
+    }
+    return done;
+  });
+}
+
+/** The neighbour shown on a house page: lot n + 1, or for a bought place the next one of the same kind (else the one before). */
+export async function neighbourOf(n) {
+  const r = n >= PREM && Object.values(RANGE).find(([a, b]) => n >= a && n < b);
+  if (!r) return onLot(n + 1);
+  for (const k of [n + 1, n - 1, n + 2, n - 2]) if (k >= r[0] && k < r[1]) { const w = await onLot(k); if (w) return w; }
+  return null;
 }
 
 // ---------- 7/11/2026: the yacht and the island, one of each, sold by auction ----------

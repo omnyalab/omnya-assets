@@ -106,7 +106,7 @@ const pickBook = `<div class="pick" data-g="book">
                 <b>{p.name}</b>
                 <p>{p.card}</p>
                 {up[p.id].view
-                  ? <div class="pr"><span><strong>???</strong></span><em>View</em></div>
+                  ? <div class="pr"><span><strong data-auc={p.id}>From €3.99</strong><small data-auc-sub={p.id}>no bids yet</small></span><em>Place a bid</em></div>
                   : <div class="pr"><span><strong>{up[p.id].price}</strong><s>{up[p.id].was}</s></span><em>Move here</em></div>}
               </div>
             </button>

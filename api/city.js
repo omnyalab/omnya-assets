@@ -9,7 +9,7 @@
 //   GET  /api/city/auction                → the yacht and the island: leader, bid, minimum, end (closes them when the time is up)
 //   POST /api/city/bid { item, u, amount } → { url } : Stripe Checkout that only holds the money (see api/_lib/city.js)
 import Stripe from 'stripe';
-import { cleanName, linkFor, peek, reserve, allHouses, houseOf, onLot, ep2From, forSale, stockOf, PRICES, TITLES,
+import { cleanName, linkFor, peek, reserve, allHouses, houseOf, onLot, heal, neighbourOf, ep2From, forSale, stockOf, PRICES, TITLES,
   AUCTIONS, auctionState, minBid, auctionOpen, closeAuction, markAuction, publicAuctions } from './_lib/city.js';
 import { sendMail } from './_lib/mail.js';
 import { host } from './_lib/config.js';
@@ -117,6 +117,7 @@ export async function GET(request) {
   try {
     if (a === 'houses') {
       await settleAuctions().catch((e) => console.error('[city] settle', e));
+      await heal().then((d) => d.length && console.log('[city] healed', JSON.stringify(d))).catch((e) => console.error('[city] heal', e));
       const [houses, ep2, sale, auctions] = await Promise.all([allHouses(), ep2From(), forSale(), publicAuctions()]);
       return json({ houses, ep2, forSale: sale, auctions }, 200, 'public, max-age=0, s-maxage=5, stale-while-revalidate=30');
     }
@@ -150,7 +151,7 @@ export async function GET(request) {
       const u = cleanName(q.get('u'));
       const h = u ? await houseOf(u) : null;
       if (!h) return json({ error: 'none' }, 404);
-      const next = await onLot(h.n + 1);
+      const next = await neighbourOf(h.n);
       return json({ house: pub(h), neighbour: next }, 200, 'public, max-age=0, s-maxage=5');
     }
     return json({ error: 'action' }, 404);

@@ -68,9 +68,14 @@ async function start() {
 
   document.title = `@${u}'s house in Omnya City`;
   $('name').textContent = '@' + u;
-  $('num').textContent = '#' + n.toLocaleString('en');
+  // 8/11: a bought place shows its number among its kind (#3 of the top villas), not the inner 100,012
+  const R = [[100000, 3], [100003, 10], [100013, 20], [100033, 10]].find(([a, k]) => n >= a && n < a + k);
+  const shown = R ? n - R[0] + 1 : n;
+  $('num').textContent = '#' + shown.toLocaleString('en');
   $('dist').textContent = placeName(W.placeOf(n, all.ep2));
   $('nb').innerHTML = h.neighbour ? `<a href="/city/@${h.neighbour}">@${h.neighbour}</a>` : 'Still free';
+  // 8/11: long names shrink to stay on one line (they broke mid-word on phones)
+  fitOne($('nb')); addEventListener('resize', () => fitOne($('nb')));
   $('loading').hidden = true;
   $('found').hidden = false;
   ready();
@@ -82,9 +87,9 @@ async function start() {
   const open = Object.fromEntries(['fountain', 'sky', 'villa', 'town', 'sea', 'penthouse'].map((k) => [k, !!sale[k] && !mine[k] && (left[k] ?? 1) > 0]));
   const auc = all.auctions || {};
   for (const k of ['yacht', 'island']) open[k] = !!auc[k] && !auc[k].done; // 7/11: one of each, by auction (only "View")
-  const where = `#${n.toLocaleString('en')} in ${placeName(L)}`;
+  const where = `#${shown.toLocaleString('en')} in ${placeName(L)}`;
   document.querySelectorAll('[data-where]').forEach((e) => (e.textContent = where));
-  document.querySelectorAll('[data-where-kick]').forEach((e) => (e.textContent = `Your house · #${n.toLocaleString('en')} · ${placeName(L)}`));
+  document.querySelectorAll('[data-where-kick]').forEach((e) => (e.textContent = `Your house · #${shown.toLocaleString('en')} · ${placeName(L)}`));
   const ref = u.replace(/\./g, '-');
   const tr = sale.tranche || {};
   for (const k of Object.keys(open)) {
@@ -92,7 +97,7 @@ async function start() {
     // the last "Only n remaining out of 20 · they're going fast"; seafront villas 2 at a time
     const T = tr[k];
     const nLeft = T ? T.left : left[k];
-    const txt = !nLeft || (T && k === 'town' && T.no === 1) ? '' : T && k === 'town' && T.no > 1 ? `Only ${nLeft} remaining out of ${T.upTo}${T.no === 3 ? ' · going fast' : ''}` : `Only ${nLeft} left`;
+    const txt = !nLeft ? '' : T && k === 'town' && T.no > 1 ? `Only ${nLeft} remaining out of ${T.upTo}${T.no === 3 ? ' · going fast' : ''}` : `Only ${nLeft} left`;
     // Nico 7/11: the bars look almost full on purpose
     const bar = nLeft ? Math.max(84, 100 - nLeft * 1.5) : 100;
     document.querySelectorAll(`[data-left="${k}"]`).forEach((e) => (e.textContent = txt));
@@ -100,7 +105,11 @@ async function start() {
     document.querySelectorAll(`[data-left-tag="${k}"]`).forEach((e) => (txt ? (e.textContent = txt) : e.remove()));
     document.querySelectorAll(`[data-left-line="${k}"]`).forEach((e) => (e.textContent = !['penthouse', 'sky', 'town', 'sea', 'fountain'].includes(k) && nLeft && !(T && k === 'town' && T.no > 1) ? ` · only ${nLeft} left` : ''));
     if (k === 'yacht' || k === 'island') { const A = auc[k] || {}; const t = A.leader ? `Top bid €${(A.bid / 100).toFixed(2)}` : 'Starts at €3.99';
-      document.querySelectorAll(`[data-left-line="${k}"]`).forEach((e) => (e.textContent = ` · ${t}`)); }
+      document.querySelectorAll(`[data-left-line="${k}"]`).forEach((e) => (e.textContent = ` · ${t}`));
+      // 8/11 (Nico): the cards say the price like the others, and the same counter line
+      document.querySelectorAll(`[data-left="${k}"]`).forEach((e) => (e.textContent = 'Only 1 · auction'));
+      document.querySelectorAll(`[data-auc="${k}"]`).forEach((e) => (e.textContent = A.leader ? `€${(A.bid / 100).toFixed(2)}` : 'From €3.99'));
+      document.querySelectorAll(`[data-auc-sub="${k}"]`).forEach((e) => (e.textContent = A.leader ? `top bid · @${A.leader}` : 'no bids yet')); }
     if (!open[k]) document.querySelectorAll(`[data-place="${k}"]`).forEach((e) => e.remove());
   }
   for (const l of document.querySelectorAll('#move label')) {
@@ -129,6 +138,13 @@ async function start() {
     }
     try { await navigator.clipboard.writeText(`${text} ${url}`); btn.textContent = 'Link copied'; } catch {}
   });
+}
+
+function fitOne(el) {
+  if (!el) return;
+  el.style.fontSize = '';
+  const box = el.clientWidth, w = el.scrollWidth;
+  if (w > box && box > 0) el.style.fontSize = `${Math.max(0.62, box / w) * parseFloat(getComputedStyle(el).fontSize)}px`;
 }
 
 function none() {

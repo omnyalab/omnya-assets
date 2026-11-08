@@ -11,15 +11,18 @@ const camera = new THREE.PerspectiveCamera(38, 1, 2, 9000);
 // ---------- camera: pan with one finger, zoom with two (or the wheel) ----------
 const mobile = matchMedia('(max-width: 899px)').matches;
 const EL = 0.98; // elevation (rad), the reel's top-down look
-const AZ = -0.28;
-const view = { x: 0, z: 0, d: mobile ? 620 : 520 };
+// 8/11 (Nico: the map opens on everything): on phones the camera looks from the west, so the long city fits a tall screen
+const AZ = mobile ? -1.82 : -0.28;
+// 8/11: the map opens on the whole city (old town, Omnyawood, The Residences, the sea, the yacht and the island)
+const ALL = mobile ? { x: -380, z: 170, d: 2600 } : { x: -170, z: 140, d: 1650 };
+const view = { ...ALL };
 const lim = () => ({ x: 1050, z: W.ext.z * 0.95 + 120, zs: 560 }); // 7/11: down to the sea, the yacht and the island // Ep.2: Omnyawood to the east, The Residences to the west
 let anim = null, dirty = true;
 function place() {
   const L = lim();
   view.x = Math.max(-L.x, Math.min(L.x, view.x));
   view.z = Math.max(-L.z, Math.min(L.zs, view.z));
-  view.d = Math.max(45, Math.min(1500, view.d));
+  view.d = Math.max(45, Math.min(3000, view.d));
   const h = Math.sin(EL) * view.d, r = Math.cos(EL) * view.d;
   camera.position.set(view.x + Math.sin(AZ) * r, h, view.z + Math.cos(AZ) * r);
   camera.lookAt(view.x, 0, view.z);
@@ -109,7 +112,8 @@ function draw(list, e2 = ep2) {
   owner.clear();
   for (const [u, n] of list) { const P = at(n); if (P) owner.set(P, { u, n }); }
   W.setHouses(list, ep2);
-  $('count').textContent = list.length ? `${list.length.toLocaleString('en')} ${list.length === 1 ? 'house' : 'houses'} · next: ${placeName(at(Math.max(0, ...list.map((h) => h[1])) + 1))}` : 'House #1 is still empty';
+  // 8/11 (Nico): the counter at the top is gone
+  if ($('count')) $('count').textContent = list.length ? `${list.length.toLocaleString('en')} ${list.length === 1 ? 'house' : 'houses'} · next: ${placeName(at(Math.max(0, ...list.map((h) => h[1])) + 1))}` : 'House #1 is still empty';
   dirty = true;
 }
 
@@ -184,7 +188,8 @@ async function start() {
   if (p.house) return landOn(p.house);
   if (!p.ok) { $('find-note').textContent = 'This link was already used. Search your name below.'; return show('find'); }
   $('me-name').textContent = '@' + p.u;
-  const next = (Math.max(0, ...houses.map((x) => x[1])) + 1);
+  // 8/11: only the free houses count (the bought places start at 100,000: "next" said "Townhouse on the water")
+  const next = (Math.max(0, ...houses.map((x) => x[1]).filter((n) => n < 100000)) + 1);
   const L = at(next);
   $('me-next').textContent = L ? `Next up: ${L.floor || L.hills ? '' : `lot #${next.toLocaleString('en')} in `}${placeName(L)}.` : '';
   show('reserve');
@@ -218,8 +223,8 @@ $('find').addEventListener('submit', async (e) => {
 function resize() { W.resize(camera); dirty = true; }
 addEventListener('resize', resize);
 resize();
-view.d *= 2.2; place();
-flyTo(0, mobile ? 30 : 0, mobile ? 620 : 520, 2600);
+view.d *= 1.15; place();
+flyTo(ALL.x, ALL.z, ALL.d, 2200);
 function frame(now) {
   if (anim) anim(now);
   if (pin.visible) { pin.children[0].position.y = 26 + Math.sin(now / 300) * 1.5; pin.rotation.y = now / 900; dirty = true; }
