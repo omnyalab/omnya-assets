@@ -15,7 +15,7 @@ Mentre navighi sul sito vengono raccolti in automatico alcuni dati tecnici, come
 ## 02 Come usiamo i tuoi dati
 Usiamo i dati raccolti per rispondere alle tue richieste, fornirti i servizi che ci chiedi, organizzare le chiamate, migliorare il sito e capire come i visitatori usano i nostri contenuti.
 
-Usiamo la tua email per mandarti quello che hai chiesto. Novità e offerte le mandiamo solo se hai spuntato la casella che lo dice, e in ognuna di quelle email c'è il link per cancellarti con un clic.
+Usiamo la tua email per mandarti quello che hai chiesto. Se la casella che hai spuntato lo dice, ogni tanto possiamo mandarti un aggiornamento, mai spam, e in ogni email c'è il link per cancellarti con un clic.
 
 Non vendiamo e non affittiamo mai la tua email né altri dati personali, e non li cediamo a terzi per le loro attività di marketing.
 

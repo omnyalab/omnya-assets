@@ -15,7 +15,7 @@ When you browse our website, limited technical data is collected automatically, 
 ## 02 How we use your information
 We use the information we collect to respond to your inquiries, deliver the services you request, schedule calls, improve our website and user experience, and understand how visitors interact with our content.
 
-We use your email to send you what you asked for. We send news and offers only if you ticked the box that says so, and every one of those emails has a link to unsubscribe in one click.
+We use your email to send you what you asked for. If the box you ticked says so, we may also send you an update now and then, never spam, and every email has a link to unsubscribe in one click.
 
 We never sell or rent your email address or any other personal information, and we do not share it with third parties for their own marketing purposes.
 

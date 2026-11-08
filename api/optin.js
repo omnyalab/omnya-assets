@@ -20,14 +20,14 @@ const KEY = 'omnya:optin';
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'Content-Type': 'application/json' } });
 
-function mailHtml(name, f) {
+function mailHtml(name, f, unsub) {
   return `<!doctype html><html><body style="margin:0;background:#05070a;font:16px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#fff">
 <div style="max-width:520px;margin:0 auto;padding:40px 24px">
 <p style="margin:0 0 28px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#2997ff;font-weight:700">Omnya Lab</p>
 <h1 style="margin:0 0 18px;font-size:28px;line-height:1.1;letter-spacing:-.02em">Here it is, ${esc(name)}.</h1>
 <p style="margin:0 0 26px;color:#ffffffc0">${esc(f.name)}, the method in five steps. Open it next to your screen and follow it step by step.</p>
 <p style="margin:0 0 30px"><a href="${SITE}${f.file}" style="display:inline-block;background:#2997ff;color:#fff;text-decoration:none;padding:14px 24px;border-radius:999px;font-weight:700">Download ${esc(f.name)}</a></p>
-<p style="margin:0;color:#ffffff80;font-size:13px">You get this because you asked for it on omnyalab.com. This is the only email we send you.</p>
+<p style="margin:0;color:#ffffff80;font-size:13px">You get this because you asked for it on omnyalab.com. No spam, ever. <a href="${unsub}" style="color:#ffffff80">Unsubscribe</a> in one click.</p>
 </div></body></html>`;
 }
 
@@ -62,8 +62,9 @@ export async function POST(request) {
       to: `${name} <${email}>`,
       replyTo: host.email,
       subject: `Your ${f.name.replace(/^The /, '')}`, // "Your Tower Blueprint", not "Your The Tower Blueprint"
-      html: mailHtml(name, f),
-      text: `Here it is, ${name}.\n\n${f.name}: ${SITE}${f.file}\n\nYou get this because you asked for it on omnyalab.com. This is the only email we send you.\n\nNico · Omnya Lab`,
+      html: mailHtml(name, f, unsubUrl(email)),
+      headers: { 'List-Unsubscribe': `<${unsubUrl(email)}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },
+      text: `Here it is, ${name}.\n\n${f.name}: ${SITE}${f.file}\n\nYou get this because you asked for it on omnyalab.com. No spam, ever. Unsubscribe in one click: ${unsubUrl(email)}\n\nNico · Omnya Lab`,
     });
   } catch (e) {
     console.error('[optin] mail', e);

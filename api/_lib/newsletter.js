@@ -9,7 +9,8 @@ const SITE = 'https://www.omnyalab.com';
 // Every checkbox text the opt-in has ever shown. Only versions with newsletter: true put people in the list.
 export const CONSENT_TEXTS = {
   v1: { newsletter: false, text: 'Only the email with your blueprint, no spam and nothing else. I accept the Privacy Policy.' },
-  // v2: added when Nico picks the new text in the board (blueprint + news and offers, one-click unsubscribe)
+  // v2 (Nico 8/11: one box like before, "no spam", no promise of offers): these people can get the newsletter
+  v2: { newsletter: true, text: 'Your blueprint by email, and now and then an update from us. No spam, unsubscribe in one click. I accept the Privacy Policy.' },
 };
 
 export const OFF_KEY = 'omnya:nl:off'; // Redis set of emails that unsubscribed

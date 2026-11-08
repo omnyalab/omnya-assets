@@ -27,7 +27,7 @@ const { slug, free, word, small, cover, hero, heroMobile } = Astro.props;
       <label class="oihp" aria-hidden="true">Company<input name="company" tabindex="-1" autocomplete="off" /></label>
       <input name="name" placeholder="Your first name" autocomplete="given-name" required maxlength="60" />
       <input name="email" type="email" placeholder="Your best email" autocomplete="email" required maxlength="120" />
-      <label class="oiag"><i>✓</i><span>Only the email with your blueprint, no spam and nothing else. I accept the <a href="/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
+      <label class="oiag"><i>✓</i><span>Your blueprint by email, and now and then an update from us. No spam, unsubscribe in one click. I accept the <a href="/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
       <p class="oierr" data-oi-err hidden></p>
       <button class="x3-btn x3-btn--blue">Send me the blueprint →</button>
     </form>
@@ -87,7 +87,7 @@ const { slug, free, word, small, cover, hero, heroMobile } = Astro.props;
       var eid = 'lead_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
       var ads = !!(window.omnyaTrack && window.omnyaTrack('Lead', { content_name: free }, eid));
       var fbp = (document.cookie.match(/(?:^|; )_fbp=([^;]+)/) || [])[1] || '';
-      var sent = fetch('/api/optin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, free: free, page: slug, company: form.elements.company.value, k: new URLSearchParams(location.search).get('k') || '', cv: 'v1', nl: false, ads: ads, eid: eid, fbp: ads ? fbp : '' }) })
+      var sent = fetch('/api/optin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, free: free, page: slug, company: form.elements.company.value, k: new URLSearchParams(location.search).get('k') || '', cv: 'v2', nl: true, ads: ads, eid: eid, fbp: ads ? fbp : '' }) })
         .then(function (r) { return r.ok; }).catch(function () { return false; });
       oil.querySelector('[data-oil-em]').textContent = 'to ' + email;
       oil.querySelector('[data-oil-nm]').textContent = ', ' + name.split(' ')[0];
