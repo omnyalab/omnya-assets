@@ -1,6 +1,81 @@
 {
   "redirects": [
     {
+      "source": "/home",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/home/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/it/home",
+      "destination": "/it",
+      "permanent": true
+    },
+    {
+      "source": "/about",
+      "destination": "/studio",
+      "permanent": true
+    },
+    {
+      "source": "/about/",
+      "destination": "/studio",
+      "permanent": true
+    },
+    {
+      "source": "/about-us",
+      "destination": "/studio",
+      "permanent": true
+    },
+    {
+      "source": "/chi-siamo",
+      "destination": "/it/studio",
+      "permanent": true
+    },
+    {
+      "source": "/portfolio",
+      "destination": "/work",
+      "permanent": true
+    },
+    {
+      "source": "/portfolio/",
+      "destination": "/work",
+      "permanent": true
+    },
+    {
+      "source": "/projects",
+      "destination": "/work",
+      "permanent": true
+    },
+    {
+      "source": "/progetti",
+      "destination": "/it/work",
+      "permanent": true
+    },
+    {
+      "source": "/services",
+      "destination": "/pricing",
+      "permanent": true
+    },
+    {
+      "source": "/servizi",
+      "destination": "/it/pricing",
+      "permanent": true
+    },
+    {
+      "source": "/contact-us",
+      "destination": "/contact",
+      "permanent": true
+    },
+    {
+      "source": "/contatti",
+      "destination": "/it/contact",
+      "permanent": true
+    },
+    {
       "source": "/learn/3D",
       "destination": "/the-blueprint",
       "permanent": true
