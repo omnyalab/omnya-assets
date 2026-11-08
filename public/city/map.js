@@ -95,6 +95,12 @@ for (const [item, P, y] of [['yacht', W.yachtAt, 30], ['island', W.islandAt, 34]
   const sp = makeGoldLabel(THREE, `${item === 'yacht' ? 'YACHT' : 'ISLAND'} OF ???`, 'tap to view');
   sp.scale.multiplyScalar(mobile ? .42 : .3); sp.center.set(.5, -.25); sp.position.set(P.x, y, P.z); scene.add(sp); gold[item] = sp;
 }
+// Part 3 (8/11): the places where people work, a name over each (only when the jobs are on)
+const J = W.jobsAt || {};
+for (const [k, t, sub] of [['hq', 'OMNYA TOWER HQ', '10 offices · be the CEO'], ['market', 'SUPERMARKET', 'because you asked'], ['cafe', 'OMNYA CAFÉ', 'barista wanted'], ['club', 'BEACH CLUB', 'lifeguard wanted'], ['site', 'BUILDING SITE', 'builders wanted'], ['train', 'OMNYA METRO', '']]) {
+  const P = J[k]; if (!P) continue;
+  const sp = makeGoldLabel(THREE, t, sub); sp.scale.multiplyScalar(mobile ? .42 : .3); sp.center.set(.5, -.25); sp.position.set(P.x, P.y, P.z); scene.add(sp);
+}
 function auctionsDraw(a = {}) {
   for (const item of ['yacht', 'island']) {
     const A = a[item] || {}, word = item === 'yacht' ? 'Yacht' : 'Island';

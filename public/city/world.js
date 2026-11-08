@@ -19,6 +19,9 @@ export const seedOf = (u) => hashStr('@' + u);
 // Flip it here AND in api/_lib/city.js (EP2_LIVE) the day the Ep.2 reel goes out, then push.
 export const EP2_LIVE = true;
 const EP2 = { hills: true, river: true, marina: true, residences: true, refresh: true, sea: true }; // sea: the 7/11 seafront
+// Part 3 (8/11): jobs. Off until Nico picks from the board; ?p3=J1T1 (or J2T2, J1T1T2…) previews it.
+const P3 = (() => { try { const q = new URLSearchParams(location.search).get('p3'); return q ? { jobs: true, hq: q.includes('J2') ? 'J2' : 'J1', transit: q, hqLit: 3 } : {}; } catch { return {}; } })();
+Object.assign(EP2, P3);
 
 export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').matches, districts = EP2_LIVE ? EP2 : {}, towerFloors } = {}) {
   const ep2Look = Object.values(districts).some((v) => v === true); // the reel renders always get the new look
@@ -167,7 +170,7 @@ export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').ma
     hemi.color.copy(day.hc).lerp(new THREE.Color('#5A6FB0'), k); hemi.groundColor.copy(day.hg).lerp(new THREE.Color('#1C2338'), k); hemi.intensity = day.hi * (1 + k * .15);
     city.setNight(k);
   }
-  return { yachtAt: city.yachtAt, islandAt: city.islandAt, THREE, renderer, setNight, sky, useEnv, placeOf, seq, floors, premium, hillLots: city.hillLots, scene, city, lots, setHouses, aimSun, resize, lotAt, ext: city.ext, setDetail: city.setDetail };
+  return { yachtAt: city.yachtAt, islandAt: city.islandAt, THREE, renderer, setNight, sky, useEnv, placeOf, seq, floors, premium, hillLots: city.hillLots, scene, city, lots, setHouses, aimSun, resize, lotAt, jobsAt: city.jobsAt, ext: city.ext, setDetail: city.setDetail };
 }
 
 /** Pin over a lot: a yellow disc with a stem, like the reel's marker. */
