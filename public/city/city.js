@@ -299,7 +299,8 @@ export function buildCity(scene, styleKey, opts = {}) {
   // Part 3 (8/11, Nico: "un'americanata"): G2 = blocks of every size, the city grows to the north (NZN rows), skyscrapers on the
   // west side, malls, car parks, gas stations and a highway in the north. Only with districts.grid2 (preview ?p3=G…).
   const G2 = !!(st.mix && opts.districts && opts.districts.grid2), Rg = rng(hashStr('omnya-grid2'));
-  const NZN = G2 ? NBZ + 4 : NBZ;
+  // 8/11 (Nico: "a disaster, it was better before"): no skyscrapers, no highway, no malls in the north, no growth to the north (G3 off)
+  const G3 = false, NZN = G3 ? NBZ + 4 : NBZ;
   const CARC = ['#F2F2F0', '#16181C', '#B9BEC4', '#D3141B', '#1F4E8C', '#C9B48A', '#2E3B33', '#F2F2F0'];
   const colW = {}, rowD = {}, colX = {}, rowZ = {};
   for (let i = -NBX; i <= NBX; i++) colW[i] = (!st.mix || Math.abs(i) <= 1) ? BW : pick(R, [34, 44, 44, 56, 62]);
@@ -319,7 +320,7 @@ export function buildCity(scene, styleKey, opts = {}) {
   const RZ = PZ - BD;
   const onDiag = (x, z, m) => Math.abs(z - (150 - .55 * x)) / 1.1413 < m && Math.abs(x) < 470;
   const block = (i, j) => ({ x: colX[i], z: rowZ[j], w: colW[i], d: rowD[j] });
-  const ext = st.mix ? { x: colX[NBX] + colW[NBX] / 2 + ROAD / 2, z: rowZ[NBZ] + rowD[NBZ] / 2 + RZ / 2, zn: G2 ? -(rowZ[-NZN] - rowD[-NZN] / 2 - RZ / 2) : undefined } : { x: NB * PX + PX / 2, z: NB * PZ + PZ / 2 };
+  const ext = st.mix ? { x: colX[NBX] + colW[NBX] / 2 + ROAD / 2, z: rowZ[NBZ] + rowD[NBZ] / 2 + RZ / 2, zn: G3 ? -(rowZ[-NZN] - rowD[-NZN] / 2 - RZ / 2) : undefined } : { x: NB * PX + PX / 2, z: NB * PZ + PZ / 2 };
   const lots = [];
 
   // la citta ha una forma: un ovale di isolati che finisce nei campi
@@ -446,8 +447,8 @@ export function buildCity(scene, styleKey, opts = {}) {
     put('box', TX('paving', 'matte'), st.sidewalk, [cx, .15, cz], [bw + 2, .3, bd + 2]);
     if (i === 0 && j === 0) { plaza(cx, cz); continue; }
     const dist = Math.max(Math.abs(i), Math.abs(j));
-    if (G2 && j >= -NBZ && (i <= -NBX + 1 || (i === -NBX + 2 && Math.abs(j) <= 3) || (i === -NBX + 3 && Math.abs(j) <= 1))) { skyBlock(cx, cz, bw, bd); continue; } // downtown on the west side
-    if (G2 && j <= -NBZ - 3) { mallBlock(cx, cz, bw, bd); continue; }            // malls, car parks, gas stations in the north
+    if (G3 && j >= -NBZ && (i <= -NBX + 1 || (i === -NBX + 2 && Math.abs(j) <= 3) || (i === -NBX + 3 && Math.abs(j) <= 1))) { skyBlock(cx, cz, bw, bd); continue; } // downtown on the west side
+    if (G3 && j <= -NBZ - 3) { mallBlock(cx, cz, bw, bd); continue; }            // malls, car parks, gas stations in the north
     if (dist > 1 && R() < (st.mix ? .11 : .07)) {
       // Part 3: the parks near the fountain may become the places where people work (jobs()); same R() calls, nothing moves
       if (DIS.jobs && dist <= 5) { const mm = mute; mute = true; park(cx, cz, bw, bd); mute = mm; parkBlocks.push({ i, j, cx, cz, bw, bd }); }
@@ -459,7 +460,7 @@ export function buildCity(scene, styleKey, opts = {}) {
     if (G2 && dist > 1) { const t = Rg(); cols = t < .3 ? Math.max(3, Math.round(bw / 7.4)) : t > .82 ? Math.max(1, Math.round(bw / 17)) : Math.max(2, Math.round(bw / 10.5)); }
     const lw = bw / cols, ld = bd / 2;
     const pocket = st.mix && dist > 1 && R() < .14;
-    if (G2 && dist > 1) { // lots of mixed widths in the same row and two different depths: no two blocks alike
+    if (G3 && dist > 1) { // lots of mixed widths in the same row and two different depths: no two blocks alike
       const sp = .32 + Rg() * .36, lds = [bd * sp, bd * (1 - sp)];
       const sets = [[6.5, 7.5, 8.5], [9, 10.5, 12, 14], [15, 18, 22, 26], [7, 9, 12, 16, 22]], set = pick(Rg, sets);
       for (let r = 0; r < 2; r++) {
@@ -508,8 +509,8 @@ export function buildCity(scene, styleKey, opts = {}) {
       for (let x = cx - w / 2 + 4; x < cx + w / 2 - 3; x += 3.4) { put('box', 'flat', '#FFFFFF', [x, .4, z], [.18, .04, 5], [0, 0, 0], null, 'XYZ', true);
         if (Rg() < fill) car(x + 1.7, z, r % 2 ? 0 : Math.PI, pick(Rg, CARC)); } }
   }
-  function mallBlock(cx, cz, w, d) {
-    const t = Rg();
+  function mallBlock(cx, cz, w, d, force = null) {
+    const t = force ?? Rg();
     if (t < .4) { // a big box store: building at the back, the car park in front
       const bd = d * .45, col = pick(Rg, [['#2C5A9E', '#FFD21F'], ['#D3362B', '#FFFFFF'], ['#E87A1E', '#FFFFFF'], ['#2E8B57', '#FFFFFF']]);
       put('box', 'matte', '#EDE8DE', [cx, 5.5, cz - d / 2 + bd / 2 + 1], [w - 4, 11, bd]);
@@ -548,7 +549,7 @@ export function buildCity(scene, styleKey, opts = {}) {
       const peak = Math.exp(-(((cz - 20) / 170) ** 2)) * Math.exp(-(((cx + 330) / 140) ** 2)); // tallest in the middle of downtown
       sky(x, cz, tw, td, 40 + peak * 190 + Rg() * 50, Math.floor(Rg() * 4)); }
   }
-  if (G2) { // the highway along the north edge, four lanes, cars, two ramps into the city
+  if (G3) { // the highway along the north edge, four lanes, cars, two ramps into the city
     const zH = -(ext.zn) - 34, L = 2600;
     put('box', TX('asphalt', 'matte'), '#4E5054', [0, .3, zH], [L, .1, 26], [0, 0, 0], null, 'XYZ', true);
     put('box', 'matte', '#C8C2B6', [0, .5, zH], [L, .4, 1.2], [0, 0, 0], null, 'XYZ', true);
@@ -1225,9 +1226,11 @@ export function buildCity(scene, styleKey, opts = {}) {
     // 8/11 v2 (Nico: the centre, nothing in front of the sea): the parks closest to the fountain become the places where people
     // work, in this order; the other parks are drawn again as parks. No house moves.
     const P = parkBlocks.slice().sort((a, b) => Math.hypot(a.cx, a.cz) - Math.hypot(b.cx, b.cz));
-    const order = ['market', 'cafe', 'hq', 'station', 'site'];
+    const order = ['market', 'cafe', 'hq', 'station', 'site', 'shop1', 'shop2', 'shop3', 'shop4'];
     P.forEach((B, k) => { if (k >= order.length) park(B.cx, B.cz, B.bw, B.bd, Rj); });
     const at = Object.fromEntries(order.map((k, i) => [k, P[i]]).filter(([, B]) => B));
+    // 8/11 (Nico: "just supermarkets and things like that"): more shops with their car parks on the next parks out
+    for (const [k, t] of [['shop1', .1], ['shop2', .5], ['shop3', .2], ['shop4', .6]]) if (at[k]) { const B = at[k]; mallBlock(B.cx, B.cz, B.bw, B.bd, t); }
     // --- the supermarket (because you asked), with its car park
     if (at.market) { const { cx: x, cz: z, bw, bd } = at.market, w = bw - 4, d = bd - 4, hd = d * .55;
       lot(x, z, w, d, '#6A6C70');
