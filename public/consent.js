@@ -43,17 +43,21 @@
 
   function banner() {
     if (!PIXEL || document.getElementById('ocb')) return;
-    var css = '#ocb{position:fixed;z-index:2147483000;left:12px;right:12px;bottom:12px;margin:0 auto;max-width:420px;box-sizing:border-box;padding:14px 14px 12px;border-radius:16px;background:rgba(20,20,22,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#fff;font:13px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Helvetica,Arial,sans-serif;box-shadow:0 12px 40px -12px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.12)}'
-      + '#ocb p{margin:0 0 10px;color:rgba(255,255,255,.82)}#ocb a{color:#fff;text-decoration:underline;text-underline-offset:2px}'
-      + '#ocb .r{display:grid;grid-template-columns:1fr 1fr;gap:8px}#ocb button{appearance:none;border:0;border-radius:999px;padding:10px 12px;font:600 13px/1 inherit;font-family:inherit;cursor:pointer;background:rgba(255,255,255,.14);color:#fff}'
-      + '#ocb button:focus-visible{outline:2px solid #2997ff;outline-offset:2px}@media (min-width:700px){#ocb{left:20px;right:auto;bottom:20px}}';
+    /* compact (8/11 round 2): ~80px tall on phones so it doesn't cover the main button; immune to the page's CSS */
+    var F = '-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Helvetica,Arial,sans-serif';
+    var css = '#ocb,#ocb *{box-sizing:border-box;margin:0;text-transform:none;letter-spacing:normal;font-family:' + F + ';-webkit-text-size-adjust:100%;text-size-adjust:100%}'
+      + '#ocb{position:fixed;z-index:2147483000;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));margin:0 auto;max-width:380px;padding:10px 10px 10px 14px;border-radius:14px;background:rgba(18,18,20,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:#fff;font-size:12px;line-height:1.4;box-shadow:0 10px 30px -10px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;gap:10px;animation:ocbIn .35s cubic-bezier(.2,.8,.2,1) both}'
+      + '#ocb p{flex:1 1 auto;min-width:0;font-size:12px;line-height:1.4;font-weight:400;color:rgba(255,255,255,.84)}#ocb a{color:#fff;text-decoration:underline;text-underline-offset:2px;white-space:nowrap}'
+      + '#ocb .r{flex:none;display:grid;grid-template-columns:1fr;gap:6px;width:84px}#ocb button{appearance:none;-webkit-appearance:none;border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:7px 0;font-size:12px;line-height:1;font-weight:600;cursor:pointer;background:rgba(255,255,255,.12);color:#fff;width:100%}'
+      + '#ocb button:focus-visible{outline:2px solid #2997ff;outline-offset:2px}@keyframes ocbIn{from{opacity:0;transform:translateY(12px)}}@media (prefers-reduced-motion:reduce){#ocb{animation:none}}'
+      + '@media (min-width:700px){#ocb{left:20px;right:auto;bottom:20px;width:380px}}';
     var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
     var d = document.createElement('div');
     d.id = 'ocb'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-label', 'Cookies');
     var it = /^\/it(\/|$)/.test(path);
     d.innerHTML = it
-      ? '<p>Usiamo un cookie di Meta per misurare le inserzioni e mostrarle a chi ci conosce già. Solo se dici sì. <a href="/it/privacy-policy#cookies">Privacy</a></p><div class="r"><button type="button" data-v="no">Rifiuta</button><button type="button" data-v="yes">Accetta</button></div>'
-      : '<p>We use a Meta cookie to measure our ads and show them to people who already know us. Only if you say yes. <a href="/privacy-policy#cookies">Privacy</a></p><div class="r"><button type="button" data-v="no">Reject</button><button type="button" data-v="yes">Accept</button></div>';
+      ? '<p>Usiamo un cookie di Meta per misurare le inserzioni, solo se dici sì. <a href="/it/privacy-policy#cookies">Privacy</a></p><div class="r"><button type="button" data-v="no">Rifiuta</button><button type="button" data-v="yes">Accetta</button></div>'
+      : '<p>We use a Meta cookie to measure our ads, only if you say yes. <a href="/privacy-policy#cookies">Privacy</a></p><div class="r"><button type="button" data-v="no">Reject</button><button type="button" data-v="yes">Accept</button></div>';
     d.addEventListener('click', function (e) {
       var v = e.target.getAttribute && e.target.getAttribute('data-v');
       if (!v) return;
