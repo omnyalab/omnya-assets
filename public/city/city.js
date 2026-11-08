@@ -299,10 +299,19 @@ export function buildCity(scene, styleKey, opts = {}) {
   const colW = {}, rowD = {}, colX = {}, rowZ = {};
   for (let i = -NBX; i <= NBX; i++) colW[i] = (!st.mix || Math.abs(i) <= 1) ? BW : pick(R, [34, 44, 44, 56, 62]);
   for (let j = -NBZ; j <= NBZ; j++) rowD[j] = (!st.mix || Math.abs(j) <= 1) ? BD : pick(R, [24, 30, 30, 38, 46]);
+  // Part 3 v3 (8/11, Nico: "the lots are all the same size"): blocks of very different widths and depths, the centre (3x3, the
+  // fountain houses) unchanged, the city keeps its size so the river, the hill, the towers and the sea stay where they are.
+  const G2 = !!(opts.districts && opts.districts.grid2), Rg = rng(hashStr('omnya-grid2'));
+  if (G2) {
+    const spread = (keys, total) => { const w = keys.map(() => pick(Rg, [.45, .6, .8, 1, 1.2, 1.6, 2.1])); const t = w.reduce((a, b) => a + b, 0); keys.forEach((k, n) => (colOrRow[k] = Math.max(20, w[n] * total / t))); };
+    let colOrRow = colW; for (const sg of [1, -1]) spread([2, 3, 4, 5, 6, 7, 8].map((k) => k * sg), 461 - (BW * 1.5 + ROAD * 1.5) - 7 * ROAD);
+    colOrRow = rowD; for (const sg of [1, -1]) spread([2, 3, 4, 5, 6].map((k) => k * sg), 284 - (BD * 1.5 + (PZ - BD) * 1.5) - 5 * (PZ - BD));
+  }
   colX[0] = 0; rowZ[0] = 0;
   for (let i = 1; i <= NBX; i++) { colX[i] = colX[i - 1] + colW[i - 1] / 2 + ROAD + colW[i] / 2; colX[-i] = colX[-i + 1] - colW[-i + 1] / 2 - ROAD - colW[-i] / 2; }
   for (let j = 1; j <= NBZ; j++) { rowZ[j] = rowZ[j - 1] + rowD[j - 1] / 2 + (PZ - BD) + rowD[j] / 2; rowZ[-j] = rowZ[-j + 1] - rowD[-j + 1] / 2 - (PZ - BD) - rowD[-j] / 2; }
   const RZ = PZ - BD;
+  const onDiag = (x, z, m) => Math.abs(z - (150 - .55 * x)) / 1.1413 < m && Math.abs(x) < 470;
   const block = (i, j) => ({ x: colX[i], z: rowZ[j], w: colW[i], d: rowD[j] });
   const ext = st.mix ? { x: colX[NBX] + colW[NBX] / 2 + ROAD / 2, z: rowZ[NBZ] + rowD[NBZ] / 2 + RZ / 2 } : { x: NB * PX + PX / 2, z: NB * PZ + PZ / 2 };
   const lots = [];
@@ -437,12 +446,15 @@ export function buildCity(scene, styleKey, opts = {}) {
       continue;
     }
     // isolati diversi: 3, 4 o 5 case per fila, a volte mezzo isolato a giardinetto
-    const cols = st.mix ? Math.max(2, Math.min(6, Math.round(bw / (9.5 + R() * 2.5)))) : 4, lw = bw / cols, ld = bd / 2;
+    let cols = st.mix ? Math.max(2, Math.min(6, Math.round(bw / (9.5 + R() * 2.5)))) : 4;
+    if (G2 && dist > 1) { const t = Rg(); cols = t < .3 ? Math.max(3, Math.round(bw / 7.4)) : t > .82 ? Math.max(1, Math.round(bw / 17)) : Math.max(2, Math.round(bw / 10.5)); }
+    const lw = bw / cols, ld = bd / 2;
     const pocket = st.mix && dist > 1 && R() < .14;
     for (let r = 0; r < 2; r++) {
       if (pocket && r === 1) { pocketPark(cx, cz + ld / 2, bw, ld); continue; }
       for (let c = 0; c < cols; c++) {
         const x = cx - bw / 2 + lw * (c + .5), z = cz + (r ? ld / 2 : -ld / 2), yaw = r ? 0 : Math.PI;
+        if (G2 && onDiag(x, z, 9)) continue; // the diagonal avenue
         lots.push({ i, j, r, c, x, z, yaw, dist, lw, ld });
       }
     }
@@ -459,6 +471,12 @@ export function buildCity(scene, styleKey, opts = {}) {
     house(base, L.seed, L.dist); L.type = house.prev;
   });
 
+  if (G2) { // the diagonal avenue: asphalt, a green middle with trees, across the whole city
+    const x0 = -470, x1 = 470, z0 = 150 - .55 * x0, z1 = 150 - .55 * x1, L = Math.hypot(x1 - x0, z1 - z0), ry = Math.atan2(x1 - x0, z1 - z0);
+    put('box', TX('asphalt', 'matte'), st.asphalt, [0, .36, 150], [14, .1, L], [0, ry, 0], null, 'XYZ', true);
+    put('box', 'flat', '#7DBE5A', [0, .44, 150], [2.6, .12, L], [0, ry, 0], null, 'XYZ', true);
+    for (let t = 8; t < L - 8; t += opts.lite ? 22 : 11) { const x = x0 + (x1 - x0) * t / L, z = z0 + (z1 - z0) * t / L; if (inCityW(x, z)) tree(x, z, .6); }
+  }
   function plaza(cx, cz) {
     put('box', 'matte', st.plaza, [cx, .4, cz], [BW, .2, BD]);
     if (st.houses === 'classic' || st.cozy) {

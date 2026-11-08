@@ -20,7 +20,7 @@ export const seedOf = (u) => hashStr('@' + u);
 export const EP2_LIVE = true;
 const EP2 = { hills: true, river: true, marina: true, residences: true, refresh: true, sea: true }; // sea: the 7/11 seafront
 // Part 3 (8/11): jobs. Off until Nico picks from the board; ?p3=J1T1 (or J2T2, J1T1T2…) previews it.
-const P3 = (() => { try { const q = new URLSearchParams(location.search).get('p3'); return q ? { jobs: true, hq: q.includes('J2') ? 'J2' : 'J1', transit: q, hqLit: 3 } : {}; } catch { return {}; } })();
+const P3 = (() => { try { const q = new URLSearchParams(location.search).get('p3'); return q ? { jobs: true, grid2: q.includes('G'), hq: q.includes('J2') ? 'J2' : 'J1', transit: q, hqLit: 3 } : {}; } catch { return {}; } })();
 Object.assign(EP2, P3);
 
 export function makeWorld(canvas, { mobile = matchMedia('(max-width: 899px)').matches, districts = EP2_LIVE ? EP2 : {}, towerFloors } = {}) {
