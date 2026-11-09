@@ -258,36 +258,31 @@ img[data-src], img[data-seeall-src], img[data-src-d]:not([src]) { visibility: hi
   position: fixed; top: 0; left: 0; right: 0; height: calc(100vh + 120px); height: calc(100lvh + 120px); z-index: 9700;
   background-color: var(--bg);
   background-image: radial-gradient(120% 70% at 12% -10%, rgba(232, 208, 172, 0.32), transparent 60%);
-  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform;
 }
-.pre.is-done { transform: translateY(-100%); pointer-events: none; }
+.pre.is-done { opacity: 0; pointer-events: none; transition: opacity 1s ease; }
 .pre.is-gone { display: none; }
 .pre__in {
-  height: 100vh; height: 100dvh;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px;
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s;
+  position: relative; height: 100vh; height: 100dvh;
+  display: grid; place-items: center;
 }
-.pre.is-done .pre__in { transform: translateY(-40px); opacity: 0; }
-
-/* The frame: the house is drawn line by line */
-.pre__frame { position: relative; width: min(300px, 80vw); aspect-ratio: 300 / 170; }
-@media (min-width: 700px) { .pre__frame { width: 560px; aspect-ratio: 560 / 320; } }
-.pre__sketch { position: absolute; inset: 0; width: 100%; height: 100%; }
-/* about 1px on screen whatever the frame size */
-.pre__sketch path { stroke-width: 1.9; stroke-dasharray: 1; stroke-dashoffset: 1; }
-@media (min-width: 700px) { .pre__sketch path { stroke-width: 1.05; } }
-.pre.is-drawing .pre__sketch path {
-  /* like a hand: each stroke accelerates and settles; the whole house in ~0.95s */
-  animation: preDraw 0.45s cubic-bezier(0.65, 0, 0.35, 1) both;
-  animation-delay: calc(var(--i) * 0.033s);
+.pre__in > * { grid-area: 1 / 1; }
+/* O9b (9/11): Images, Films, Interactive 3D flash by, then the logo, then the panel fades */
+.pre__word { font-size: clamp(2.6rem, 7.5vw, 7rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1; color: var(--ink); opacity: 0; text-align: center; padding-inline: 16px; }
+.pre__logo { width: min(37.3vw, 170px); opacity: 0; }
+.pre.is-drawing .pre__word { animation: preWord 0.42s ease both; animation-delay: calc(0.05s + 0.4s * var(--k)); }
+.pre.is-drawing .pre__logo { animation: preLogo 0.4s ease 1.25s both, preLogoOut 0.35s ease 1.95s forwards; }
+/* the logo is already gone when the panel fades, so it never mixes with the hero title underneath */
+@keyframes preLogoOut { to { opacity: 0; transform: translateY(-6px); } }
+@keyframes preWord { 0% { opacity: 0; transform: translateY(12%); } 25%, 75% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-12%); } }
+@keyframes preLogo { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+/* as the panel fades, the page under it pulls back into place */
+html.pre-settle main > :first-child { animation: preSettle 2s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+@keyframes preSettle { from { transform: scale(1.06); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .pre.is-drawing .pre__word { animation: none; }
+  .pre.is-drawing .pre__logo { animation: none; opacity: 1; }
+  html.pre-settle main > :first-child { animation: none; }
 }
-@keyframes preDraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
-
-/* The logo is uncovered left to right while the house is drawn, ending with it */
-.pre__logo { width: min(37.3vw, 170px); clip-path: inset(-10% 100% -10% 0); }
-.pre.is-drawing .pre__logo { animation: preLogo 0.85s cubic-bezier(0.65, 0, 0.35, 1) 0.1s both; }
-@keyframes preLogo { from { clip-path: inset(-10% 100% -10% 0); } to { clip-path: inset(-10% 0% -10% 0); } }
 
 /* Shared logo. Widths are 0.85x the old wordmark's: same height of the lowercase letters */
 .logo { position: relative; display: block; aspect-ratio: 831.16 / 175.29; }
@@ -2946,4 +2941,112 @@ main:has(.twhero) .lbundle { margin-top: 0; }
   .sure__fan.lfan { height: 170px; }
   .sure__fan .lfan__book { width: 100px; }
   .sure__fan .bk__t { font-size: 12.5px; }
+}
+
+/* ==========================================================================
+   Interactive 3D (8/11): first service. Home: two cards with a moving preview
+   (A2, no prices, soft shadow under). Prices: plain B1 rows, the description
+   moves into an "i" that opens a small card with a preview.
+   ========================================================================== */
+
+/* the "i" next to a name */
+.pinfo {
+  display: inline-flex; align-items: center; justify-content: center; flex: none; vertical-align: 0.35em;
+  width: 28px; height: 28px; padding: 0; border-radius: 50%; cursor: pointer;
+  border: 1px solid rgba(17, 17, 17, 0.16); background: rgba(255, 255, 255, 0.75); color: var(--ink);
+  font: italic 600 13px/1 Georgia, 'Times New Roman', serif; letter-spacing: 0;
+  box-shadow: 0 4px 10px -6px rgba(30, 24, 16, 0.35); transition: background 0.3s, color 0.3s, transform 0.3s var(--ease);
+}
+.pinfo:hover, .pinfo[aria-expanded='true'] { background: var(--ink); color: var(--bg); transform: scale(1.08); }
+.pinfo:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (max-width: 899px) { .pinfo { vertical-align: 0.1em; margin-left: 2px; } .ptable__q { align-items: center; } }
+.prices__try { margin-top: 26px; justify-self: start; }
+
+/* the card it opens: glass, the preview on top; a sheet from the bottom on phones */
+.pinfo-pop {
+  position: fixed; z-index: 95; width: min(360px, calc(100vw - 32px)); padding: 10px 10px 20px; border-radius: 22px;
+  background: rgba(255, 255, 255, 0.9); -webkit-backdrop-filter: blur(24px) saturate(1.4); backdrop-filter: blur(24px) saturate(1.4);
+  box-shadow: 0 2px 6px rgba(30, 24, 16, 0.08), 0 40px 90px -30px rgba(30, 24, 16, 0.55); color: var(--ink);
+  opacity: 0; transform: translateY(8px) scale(0.98); transform-origin: top left; transition: opacity 0.35s var(--ease), transform 0.5s var(--ease);
+}
+.pinfo-pop.is-open { opacity: 1; transform: none; }
+.pinfo-pop__media { aspect-ratio: 16 / 10; border-radius: 14px; overflow: hidden; background: #d9d3c9; margin-bottom: 14px; }
+.pinfo-pop__media video, .pinfo-pop__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pinfo-pop__name { display: flex; justify-content: space-between; gap: 16px; padding: 4px 10px 6px; font-size: var(--fs-sub); letter-spacing: -0.02em; line-height: 1.15; }
+.pinfo-pop__name span:last-child { white-space: nowrap; }
+.pinfo-pop__text { padding: 0 10px; font-size: 15px; line-height: 1.45; color: #3a3936; }
+.pinfo-pop__x {
+  position: absolute; top: 18px; right: 18px; z-index: 1; width: 34px; height: 34px; border-radius: 50%; border: 0; cursor: pointer;
+  background: rgba(17, 17, 17, 0.5); color: #fff; font-size: 20px; line-height: 1; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+.pinfo-pop:not(:has(.pinfo-pop__media)) .pinfo-pop__x { top: 10px; right: 10px; background: rgba(17, 17, 17, 0.08); color: var(--ink); }
+.pinfo-pop:not(:has(.pinfo-pop__media)) .pinfo-pop__name { padding-top: 12px; padding-right: 48px; }
+@media (max-width: 899px) {
+  .pinfo-pop { left: 12px !important; right: 12px; top: auto !important; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); width: auto; transform: translateY(24px); transform-origin: bottom center; }
+}
+@media (prefers-reduced-motion: reduce) { .pinfo-pop { transition: none; } }
+.pinfo { margin-left: 14px; }
+.pband .ptable--i3, .pband .ptable--packs { --cols: minmax(0, 1fr) auto !important; }
+.pinfo-pop { z-index: 1000; }
+@media (max-width: 899px) {
+  .pband .ptable--i3 .ptable__q, .pband .ptable--packs .ptable__q { min-width: 0; }
+  .pband .ptable__qn { white-space: nowrap; }
+  .pband .ptable--i3 .ptable__qn, .pband .ptable--packs .ptable__qn { font-size: min(var(--fs-sub), 4.8vw); }
+  .pband .ptable--i3 .ptable__price { font-size: var(--fs-sub); }
+  .pband .ptable--i3 tr.is-best .ptable__price { font-size: var(--fs-h3); }
+
+}
+/* the "i" centred on the words */
+.pinfo { vertical-align: middle; position: relative; top: -0.06em; }
+@media (max-width: 899px) {
+  .pinfo { vertical-align: middle; top: -0.04em; }
+}
+.statement:not(:has(.statement__title)) .statement__row { margin-top: 0; padding-left: 0; }
+.statement:not(:has(.statement__title)) .statement__line { font-size: clamp(1.75rem, 3.6vw, 3.25rem); line-height: 1.1; letter-spacing: -0.035em; max-width: 24ch; }
+@media (min-width: 900px) { .statement:not(:has(.statement__title)) { padding-bottom: clamp(40px, 6vw, 96px); } }
+
+/* Interactive 3D inside the work grids (8/11): the moving preview, a badge, "Try it free" */
+.i3card .frame__in { position: absolute; inset: 0; }
+.i3card video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.i3card .pcard__media { border-radius: 0; }
+.i3card__text { display: block; margin-top: 4px; color: var(--mute); font-size: var(--fs-small); }
+.i3card__view { width: 96px; height: 96px; margin: -48px 0 0 -48px; text-align: center; line-height: 1.15; }
+.i3card__view > span { max-width: 9ch; }
+.i3badge--pill {
+  position: absolute; left: 14px; top: 14px; display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 14px 0 12px;
+  border-radius: 999px; background: rgba(17, 17, 17, 0.5); color: #fff; font-size: var(--fs-small); letter-spacing: 0.01em;
+  -webkit-backdrop-filter: blur(14px) saturate(1.3); backdrop-filter: blur(14px) saturate(1.3); border: 1px solid rgba(255, 255, 255, 0.18);
+}
+.i3badge--pill i { width: 8px; height: 8px; border-radius: 50%; background: #ff8a5c; box-shadow: 0 0 0 0 rgba(255, 138, 92, 0.7); animation: i3pulse 1.8s infinite; }
+@keyframes i3pulse { 70% { box-shadow: 0 0 0 8px rgba(255, 138, 92, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 138, 92, 0); } }
+.i3badge--round {
+  position: absolute; right: 14px; top: 14px; width: clamp(84px, 8vw, 112px); aspect-ratio: 1; border-radius: 50%;
+  display: grid; place-items: center; color: #fff; background: rgba(17, 17, 17, 0.42);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3); backdrop-filter: blur(14px) saturate(1.3); border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.i3badge--round svg { position: absolute; inset: 0; width: 100%; height: 100%; animation: i3spin 16s linear infinite; }
+.i3badge--round text { font-size: 8.2px; letter-spacing: 0; fill: #fff; font-weight: 500; }
+.i3badge--round b { font-size: clamp(1.1rem, 1.6vw, 1.5rem); font-weight: 600; letter-spacing: -0.03em; }
+@keyframes i3spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .i3badge--round svg, .i3badge--pill i { animation: none; } }
+.ptable__from { font-size: 0.42em; letter-spacing: 0; color: var(--mute); margin-right: 0.3em; vertical-align: 0.55em; }
+.i3card .pcard__cap { display: block; }
+.i3card .pcard__title { white-space: nowrap; }
+/* struck price above or below the price, never before it (8/11) */
+.pband .ptable__price { display: flex; flex-direction: column !important; align-items: flex-end !important; justify-content: center; gap: 4px; }
+.pband .ptable__price .ptable__was { display: block !important; order: 1; margin: 0 !important; font-size: max(0.4em, 12px); line-height: 1; vertical-align: 0; text-align: right; }
+.pband .ptable__now { order: 2; white-space: nowrap; }
+.pband .ptable__price .ptable__save { order: 4; }
+.pband .ptable__from { vertical-align: 0.5em; }
+
+/* 9/11: "Price*" above every price, the saving pill under the price on every screen, the name centred in its card */
+.pband .ptable__price .ptable__save { display: inline-flex !important; margin: 8px 0 0 !important; height: 24px; padding: 0 11px; font-size: 12px; letter-spacing: 0.01em; font-weight: 500; }
+.pband .ptable tr.is-best .ptable__price .ptable__save { height: 26px; padding: 0 12px; font-size: 12.5px; letter-spacing: 0.01em; }
+.pband .ptable tbody .ptable__q { align-self: center; }
+.pband .ptable--i3 + .prices__star { margin-top: 18px; }
+@media (max-width: 899px) {
+  .pband .ptable thead { position: static; width: auto; height: auto; overflow: visible; clip: auto; display: block; }
+  .pband .ptable thead tr { display: flex; justify-content: space-between; padding: 0 16px 10px; border: 0; background: none; box-shadow: none; }
+  .pband .ptable thead th { font-size: var(--fs-small); color: var(--mute); font-weight: 400; white-space: nowrap; }
+  .pband .ptable thead th:nth-child(n+3) { display: none; }
 }

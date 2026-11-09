@@ -208,3 +208,88 @@ export function contactPage() {
   if (location.hash === '#book') open(false);
   onDestroy(() => btns.forEach((b) => b.removeEventListener('click', onClick)));
 }
+
+/* ---------- [data-lazyvideo]: a muted preview that loads and plays only while it is on screen ---------- */
+export function lazyVideos() {
+  const vids = document.querySelectorAll<HTMLVideoElement>('video[data-lazyvideo]');
+  if (!vids.length) return;
+  if (reduced) return;
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach((e) => {
+      const v = e.target as HTMLVideoElement;
+      if (e.isIntersecting) { v.preload = 'auto'; v.play().catch(() => {}); } else v.pause();
+    }),
+    { rootMargin: '200px 0px' }
+  );
+  vids.forEach((v) => io.observe(v));
+  onDestroy(() => io.disconnect());
+}
+
+/* ---------- Prices, the "i" next to a name: a small card with the description and a preview.
+   Next to the button on desktop (hover or click), a sheet from the bottom on phones. ---------- */
+export function priceInfo() {
+  const pop = document.querySelector<HTMLElement>('[data-info-pop]');
+  const btns = document.querySelectorAll<HTMLButtonElement>('[data-info]');
+  if (!pop || !btns.length) return;
+  const body = pop.querySelector<HTMLElement>('[data-info-body]')!;
+  let open: HTMLButtonElement | null = null;
+  let timer = 0;
+  let leave = 0;
+  if (fine) {
+    pop.addEventListener('mouseenter', () => window.clearTimeout(leave));
+    pop.addEventListener('mouseleave', () => { leave = window.setTimeout(close, 280); });
+  }
+  const place = (b: HTMLButtonElement) => {
+    if (!window.matchMedia('(min-width: 900px)').matches) { pop.style.left = ''; pop.style.top = ''; return; }
+    const r = b.getBoundingClientRect();
+    const w = pop.offsetWidth, h = pop.offsetHeight;
+    const left = Math.min(Math.max(16, r.left - 12), window.innerWidth - w - 16);
+    const below = r.bottom + 12;
+    const top = below + h < window.innerHeight - 16 ? below : Math.max(16, r.top - h - 12);
+    pop.style.left = `${left}px`; pop.style.top = `${top}px`;
+  };
+  const close = () => {
+    if (!open) return;
+    open.setAttribute('aria-expanded', 'false');
+    open = null;
+    pop.classList.remove('is-open');
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => { if (!open) { pop.hidden = true; body.innerHTML = ''; } }, 350);
+  };
+  const show = (b: HTMLButtonElement) => {
+    if (open === b) return;
+    if (open) open.setAttribute('aria-expanded', 'false');
+    const tpl = document.getElementById(`info-${b.dataset.info}`) as HTMLTemplateElement | null;
+    if (!tpl) return;
+    window.clearTimeout(timer);
+    body.innerHTML = '';
+    body.append(tpl.content.cloneNode(true));
+    pop.setAttribute('aria-label', b.getAttribute('aria-label') || '');
+    pop.hidden = false;
+    open = b;
+    b.setAttribute('aria-expanded', 'true');
+    place(b);
+    body.querySelector('video')?.play().catch(() => {});
+    requestAnimationFrame(() => pop.classList.add('is-open'));
+  };
+  btns.forEach((b) => {
+    b.setAttribute('aria-expanded', 'false');
+    b.addEventListener('click', (e) => { e.stopPropagation(); open === b ? close() : show(b); });
+    if (fine) {
+      b.addEventListener('mouseenter', () => { window.clearTimeout(leave); show(b); });
+      b.addEventListener('mouseleave', () => { leave = window.setTimeout(close, 280); });
+    }
+  });
+  pop.querySelector('[data-info-close]')?.addEventListener('click', close);
+  const outside = (e: Event) => { if (open && !pop.contains(e.target as Node)) close(); };
+  const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') { const b = open; close(); b?.focus(); } };
+  document.addEventListener('click', outside);
+  document.addEventListener('keydown', esc);
+  window.addEventListener('scroll', close, { passive: true });
+  onDestroy(() => {
+    document.removeEventListener('click', outside);
+    document.removeEventListener('keydown', esc);
+    window.removeEventListener('scroll', close);
+    pop.hidden = true;
+  });
+}

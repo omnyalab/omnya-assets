@@ -3,7 +3,7 @@ import { gsap, ScrollTrigger, fine, initLenis, lenis, preloaderExit, startScroll
 import { initPage, destroyPage } from './anim';
 import { leave, enter, type Mode } from './transition';
 import { initCursor, initSheet, initMenu, initHeaderLoop, initScrollbar, initScrollLinks, collectHeaderZones, initClocks, closeSheet, closeMenu } from './ui';
-import { home, work, project, contactPage, playOnView, hbars } from './pages';
+import { home, work, project, contactPage, playOnView, hbars, lazyVideos, priceInfo } from './pages';
 import { studio } from './studio';
 import { learn, thanksPage } from './learn';
 import { booker } from './booker';
@@ -100,5 +100,7 @@ document.addEventListener('astro:page-load', () => {
   if (page === 'studio') studio(intro);
   if (page === 'learn') learn();
   if (page === 'thanks') thanksPage();
+  lazyVideos();
+  priceInfo();
   booker();
 });

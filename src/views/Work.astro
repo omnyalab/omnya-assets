@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import I3dCard from '../components/I3dCard.astro';
 import { projects } from '../lib/data';
 import { t, langFromPath, localize } from '../i18n';
 import Duo from '../components/Duo.astro';
@@ -11,6 +12,13 @@ const T = t(lang);
 const filters = [{ key: 'all', label: T.work.all }, ...Object.entries(T.categories).map(([key, label]) => ({ key, label }))];
 const shape = (i: number, o: string) => (o === 'vertical' || i % 4 === 1 || i % 4 === 2 ? 'tall' : i % 4 === 3 ? 'wide' : '');
 const ar = (s: string) => (s === 'tall' ? '4 / 5' : s === 'wide' ? '3 / 2' : '16 / 10');
+// Interactive 3D inside the work (8/11, W2): first, with the turning round badge
+const w = 'first';
+const badge = 'round';
+type Item = { p?: (typeof projects)[number]; i3?: 'house' | 'tower' };
+const items: Item[] = projects.map((p) => ({ p }));
+if (w === 'first') items.unshift({ i3: 'tower' }, { i3: 'house' });
+else { items.splice(2, 0, { i3: 'house' }); items.splice(6, 0, { i3: 'tower' }); }
 const sizes = ['(min-width: 900px) 58vw, calc(100vw - 32px)', '(min-width: 900px) 34vw, 84vw', '(min-width: 900px) 34vw, 84vw', '(min-width: 900px) 50vw, calc(100vw - 32px)'];
 ---
 
@@ -36,9 +44,9 @@ const sizes = ['(min-width: 900px) 58vw, calc(100vw - 32px)', '(min-width: 900px
   <section class="wrap" aria-label={T.work.title}>
     <div class="wgrid" data-wgrid>
       {
-        projects.map((p, i) => {
-          const s = shape(i, p.cover.orientation);
-          return <ProjectCard project={p} slot={i % 4} sizes={sizes[i % 4]} kind="wcard" shape={s} ar={ar(s)} eager={i === 0} />;
+        items.map((it, i) => {
+          const s = shape(i, it.p ? it.p.cover.orientation : 'horizontal');
+          return it.i3 ? <I3dCard id={it.i3} slot={i % 4} kind="wcard" shape={s} ar={ar(s)} badge={badge} /> : <ProjectCard project={it.p!} slot={i % 4} sizes={sizes[i % 4]} kind="wcard" shape={s} ar={ar(s)} eager={i === 0} />;
         })
       }
     </div>

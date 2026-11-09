@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Duo from '../components/Duo.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import Arrow from '../components/Arrow.astro';
+import I3dCard from '../components/I3dCard.astro';
 import { projects, pad } from '../lib/data';
 import { sizes as dims } from '../lib/media';
 import { t, langFromPath, localize } from '../i18n';
@@ -26,6 +27,14 @@ const sizes = [
   '(min-width: 900px) 50vw, 92vw',
 ];
 const featured = projects.filter((p) => p.featured);
+// Interactive 3D inside the work (8/11, W2): first, with the turning round badge
+const w = 'first';
+const badge = 'round';
+type Item = { p?: (typeof featured)[number]; i3?: 'house' | 'tower' };
+const items: Item[] = featured.map((p) => ({ p }));
+if (w === 'first') items.unshift({ i3: 'tower' }, { i3: 'house' });
+else { items.splice(2, 0, { i3: 'house' }); items.splice(5, 0, { i3: 'tower' }); }
+
 // Learn on the home page (A1): the three playbook covers as a fan, like the bundle on Learn
 const books = ['white-to-real', 'reel', 'before-it-exists'].map((id) => `/studio/book_${id}_${lang}_mobile.webp`);
 // "See all the work": gallery shots from every project. Each row has its own
@@ -74,9 +83,6 @@ const rows = [
       <div class="hero__title wrap">
         <h1 class="t-h1" data-hero-title>{H.heroA}{' '}<span class="mute">{H.heroB}</span></h1>
       </div>
-      <a class="hero__cue" href="#statement" aria-label={H.scrollLabel} data-scroll-to>
-        <span class="hero__cue-in" data-fade="0.3" data-intro><span>{H.scroll}</span><i></i></span>
-      </a>
     </section>
   </div>
 
@@ -99,7 +105,7 @@ const rows = [
         <h2 id="work-title">{H.selected}</h2>
       </div>
       <div class="plist__grid">
-        {featured.map((p, i) => <ProjectCard project={p} slot={i % 7} sizes={sizes[i % 7]} />)}
+        {items.map((it, i) => (it.i3 ? <I3dCard id={it.i3} slot={i % 7} badge={badge} ar={it.i3 === 'house' ? '4 / 5' : undefined} /> : <ProjectCard project={it.p!} slot={i % 7} sizes={sizes[i % 7]} />))}
       </div>
     </section>
 

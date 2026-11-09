@@ -27,9 +27,28 @@ const saving = (q: string, price: string) => (/^\d+$/.test(q) && Number(q) > 1 ?
 // Films: the same seconds bought as 30-second films (60 s = two, 90–120 s = four), struck through
 const film30 = num(P.filmsRows[0][1]);
 const filmUnits = [1, 2, 4];
+// the 30-second film alone has a full price of its own, struck through like the others (Nico 9/11)
+const film30Full = 1190;
+const filmWas = (i: number) => (i === 0 ? film30Full : filmUnits[i] * film30);
 // Packs: the same images at the single price plus the film of the same length, struck through
 const packParts = [[8, 0], [15, 1], [25, 2]];
 const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packParts[i][1]][1]);
+// The "i" next to a name (8/11): the description and a moving preview in a small card, instead of text under the row
+type Media = { video?: string; img?: string; poster?: string };
+const byId = (id: string) => projects.find((p) => p.id === id);
+const i3Media: Media[] = [
+  { video: '/interactive/house.mp4', poster: '/interactive/house-start.webp' },
+  { video: '/interactive/tower.mp4', poster: '/interactive/tower.webp' },
+  { video: '/interactive/tower.mp4', poster: '/interactive/tower.webp' },
+];
+const filmMedia: Media[] = ['30', '60', '90'].map((n) => ({ video: `/prices/film-${n}.mp4`, poster: `/prices/film-${n}.webp` }));
+const packMedia: Media[] = ['02_villa_cape_town', '01_penthouse_dubai', '05_corfu_resort'].map((id) => ({ img: byId(id)?.gallery[0]?.mobile }));
+const infos: { id: string; name: string; price: string; text: string; media?: Media }[] = [
+  ...P.i3Rows.map(([name, , price, text], i) => ({ id: `i3-${i}`, name, price, text, media: i3Media[i] })),
+  ...P.i3Extras.map(([name, price, text], i) => ({ id: `i3x-${i}`, name, price, text })),
+  ...P.filmsRows.map(([len, price, use], i) => ({ id: `film-${i}`, name: `${len} ${P.filmsUnit}`, price, text: `${use}. ${P.filmsNoteShort}`, media: filmMedia[i] })),
+  ...P.launchRows.map(([name, price, what], i) => ({ id: `pack-${i}`, name, price, text: what, media: packMedia[i] })),
+];
 ---
 
 <Base page="pricing" title={P.title} seoTitle={T.seo.pricing.title} description={T.seo.pricing.description}>
@@ -42,38 +61,44 @@ const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packPa
 
   <!-- The price tables on a warm light band, each row a sheet of white glass; the best one in colour -->
   <div class="pband">
-  <!-- Images -->
-  <section class="prices wrap" aria-labelledby="images-title">
-    <h2 class="t-h3 prices__title" id="images-title" data-split>{P.imagesA}{' '}<span class="mute">{P.imagesB}</span></h2>
-    <table class="ptable ptable--images" data-fade>
-      <caption class="sr-only">{P.imagesA}, {P.imagesB}</caption>
+  <!-- Interactive 3D (8/11): first, launch offer with the full price struck through -->
+  <section class="prices wrap" aria-labelledby="i3-title">
+    <h2 class="t-h3 prices__title" id="i3-title" data-split>{P.i3A}{' '}<span class="mute">{P.i3B}</span></h2>
+    <table class="ptable ptable--films ptable--i3" data-fade>
+      <caption class="sr-only">{P.i3A}, {P.i3B}</caption>
       <thead>
-        <tr>{P.imagesCols.map((c) => <th scope="col">{c}</th>)}</tr>
+        <tr>{P.i3Cols.map((c) => <th scope="col">{c}</th>)}</tr>
       </thead>
       <tbody>
         {
-          P.imagesRows.map(([q, price, each], i) => (
-            <tr class:list={{ 'is-best': i === bestRow }}>
+          P.i3Rows.map(([name, was, price], i) => (
+            <tr class:list={{ 'is-best': i === P.i3Best }}>
               <th scope="row" class="ptable__q">
-                {i === bestRow && <span class="ptable__pill">{P.best}</span>}
-                <span class="ptable__qn">{q}{/^\d+$/.test(q) && <span class="ptable__unit">{q === '1' ? P.imagesUnit[0] : P.imagesUnit[1]}</span>}</span>
-                {saving(q, price) > 0 && <span class="ptable__save d-only">{P.save} {money(saving(q, price))}</span>}
+                {i === P.i3Best && <span class="ptable__pill">{P.recommended}</span>}
+                <span class="ptable__qn">{name}<button type="button" class="pinfo" data-info={`i3-${i}`} aria-label={`${P.info} ${name}`}><span aria-hidden="true">i</span></button></span>
               </th>
               <td class="ptable__price">
-                {perUnit(q) > 1 && <s class="ptable__was">{money(perUnit(q) * single)}</s>}
-                {price}
-                {saving(q, price) > 0 && <span class="ptable__save m-only">{P.save} {money(saving(q, price))}</span>}
+                <s class="ptable__was">{was}</s>
+                <span class="ptable__now">{price}</span>
+                <span class="ptable__save">{P.save} {money(num(was) - num(price))}</span>
               </td>
-              <td class="ptable__each" data-label={P.imagesCols[2]}>{each}</td>
+            </tr>
+          ))
+        }
+        {
+          P.i3Extras.map(([name, price], i) => (
+            <tr class="ptable__extra">
+              <th scope="row" class="ptable__q">
+                <span class="ptable__qn">{name}<button type="button" class="pinfo" data-info={`i3x-${i}`} aria-label={`${P.info} ${name}`}><span aria-hidden="true">i</span></button></span>
+              </th>
+              <td class="ptable__price"><span class="ptable__now">{price}</span></td>
             </tr>
           ))
         }
       </tbody>
     </table>
-    <p class="prices__note d-only" data-fade>{P.imagesNote}</p>
-    <p class="prices__star d-only" data-fade>{P.imagesStar}</p>
-    <p class="prices__note m-only" data-fade>{P.imagesNoteShort}</p>
-    <p class="prices__star m-only" data-fade>{P.imagesStarShort}</p>
+    <p class="prices__star" data-fade>{P.i3Star}</p>
+    <a class="btn btn--sm prices__try" href="/demo/hold-to-build/" data-astro-reload data-fade>{P.tryLive} <Arrow /></a>
   </section>
 
   <!-- Films -->
@@ -90,13 +115,12 @@ const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packPa
             <tr class:list={{ 'is-best': i === P.filmsBest }}>
               <th scope="row" class="ptable__q">
                 {i === P.filmsBest && <span class="ptable__pill">{P.recommended}</span>}
-                <span class="ptable__qn">{len}<span class="ptable__unit">{P.filmsUnit}</span></span>
-                {filmUnits[i] > 1 && <span class="ptable__save d-only">{P.save} {money(filmUnits[i] * film30 - num(price))}</span>}
+                <span class="ptable__qn">{len}<button type="button" class="pinfo" data-info={`film-${i}`} aria-label={`${P.info} ${`${len} ${P.filmsUnit}`}`}><span aria-hidden="true">i</span></button><span class="ptable__unit">{P.filmsUnit}</span></span>
               </th>
               <td class="ptable__price">
-                {filmUnits[i] > 1 && <s class="ptable__was">{money(filmUnits[i] * film30)}</s>}
-                {price}
-                {filmUnits[i] > 1 && <span class="ptable__save m-only">{P.save} {money(filmUnits[i] * film30 - num(price))}</span>}
+                <s class="ptable__was">{money(filmWas(i))}</s>
+                <span class="ptable__now">{price}</span>
+                <span class="ptable__save">{P.save} {money(filmWas(i) - num(price))}</span>
               </td>
               <td class="ptable__each">{use}</td>
             </tr>
@@ -111,26 +135,24 @@ const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packPa
   <!-- Launch packages -->
   <section class="prices wrap" aria-labelledby="launch-title">
     <h2 class="t-h3 prices__title" id="launch-title" data-split>{P.launchA}{' '}<span class="mute">{P.launchB}</span></h2>
-    <table class="ptable ptable--films ptable--launch ptable--desc" data-fade>
+    <table class="ptable ptable--films ptable--packs" data-fade>
       <caption class="sr-only">{P.launchA}, {P.launchB}</caption>
       <thead>
         <tr>{P.launchCols.slice(0, 2).map((c) => <th scope="col">{c}</th>)}</tr>
       </thead>
       <tbody>
         {
-          P.launchRows.map(([name, price, what], i) => (
+          P.launchRows.map(([name, price], i) => (
             <tr class:list={{ 'is-best': i === P.launchBest }}>
               <th scope="row" class="ptable__q">
                 {i === P.launchBest && <span class="ptable__pill">{P.recommended}</span>}
-                <span class="ptable__qn">{name}</span>
-                <span class="ptable__save d-only">{P.save} {money(packWas(i) - num(price))}</span>
+                <span class="ptable__qn">{name}<button type="button" class="pinfo" data-info={`pack-${i}`} aria-label={`${P.info} ${name}`}><span aria-hidden="true">i</span></button></span>
               </th>
               <td class="ptable__price">
                 <s class="ptable__was">{money(packWas(i))}</s>
-                {price}
-                <span class="ptable__save m-only">{P.save} {money(packWas(i) - num(price))}</span>
+                <span class="ptable__now">{price}</span>
+                <span class="ptable__save">{P.save} {money(packWas(i) - num(price))}</span>
               </td>
-              <td class="ptable__each">{what}</td>
             </tr>
           ))
         }
@@ -138,29 +160,40 @@ const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packPa
     </table>
     <p class="prices__note prices__note--desk" data-fade>{P.launchNote}</p>
     <p class="prices__note m-only" data-fade>{P.launchNoteShort}</p>
-    <p class="t-sub prices__volume" data-fade>{P.volume}</p>
-    <p class="prices__star" data-fade>{P.note}</p>
   </section>
-  <!-- Virtual staging -->
-  <section class="prices wrap" aria-labelledby="staging-title">
-    <h2 class="t-h3 prices__title" id="staging-title" data-split>{P.stagingA}{' '}<span class="mute">{P.stagingB}</span></h2>
-    <table class="ptable ptable--films ptable--staging ptable--desc" data-fade>
-      <caption class="sr-only">{P.stagingA}, {P.stagingB}</caption>
+  <!-- Images -->
+  <section class="prices wrap" aria-labelledby="images-title">
+    <h2 class="t-h3 prices__title" id="images-title" data-split>{P.imagesA}{' '}<span class="mute">{P.imagesB}</span></h2>
+    <table class="ptable ptable--images" data-fade>
+      <caption class="sr-only">{P.imagesA}, {P.imagesB}</caption>
       <thead>
-        <tr>{P.stagingCols.slice(0, 2).map((c) => <th scope="col">{c}</th>)}</tr>
+        <tr>{P.imagesCols.map((c) => <th scope="col">{c}</th>)}</tr>
       </thead>
       <tbody>
         {
-          P.stagingRows.map(([name, price, what]) => (
-            <tr>
-              <th scope="row" class="ptable__q"><span class="ptable__qn">{name}</span></th>
-              <td class="ptable__price">{price}</td>
-              <td class="ptable__each">{what}</td>
+          P.imagesRows.map(([q, price, each], i) => (
+            <tr class:list={{ 'is-best': i === bestRow }}>
+              <th scope="row" class="ptable__q">
+                {i === bestRow && <span class="ptable__pill">{P.best}</span>}
+                <span class="ptable__qn">{q}{/^\d+$/.test(q) && <span class="ptable__unit">{q === '1' ? P.imagesUnit[0] : P.imagesUnit[1]}</span>}</span>
+              </th>
+              <td class="ptable__price">
+                {perUnit(q) > 1 && <s class="ptable__was">{money(perUnit(q) * single)}</s>}
+                <span class="ptable__now">{price}</span>
+                {saving(q, price) > 0 && <span class="ptable__save">{P.save} {money(saving(q, price))}</span>}
+              </td>
+              <td class="ptable__each" data-label={P.imagesCols[2]}>{each}</td>
             </tr>
           ))
         }
       </tbody>
     </table>
+    <p class="prices__note d-only" data-fade>{P.imagesNote}</p>
+    <p class="prices__star d-only" data-fade>{P.imagesStar}</p>
+    <p class="prices__note m-only" data-fade>{P.imagesNoteShort}</p>
+    <p class="prices__star m-only" data-fade>{P.imagesStarShort}</p>
+    <p class="t-sub prices__volume" data-fade>{P.volume}</p>
+    <p class="prices__star" data-fade>{P.note}</p>
   </section>
 
   </div>
@@ -197,6 +230,26 @@ const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packPa
       {P.termsFigs.map(([n, l]) => <li><span class="pfig__n">{n}</span><span class="pfig__l">{l}</span></li>)}
     </ol>
   </section>
+
+
+  <!-- what the "i" buttons open: one card, filled from these templates -->
+  {
+    infos.map((f) => (
+      <template id={`info-${f.id}`}>
+        {f.media && (
+          <div class="pinfo-pop__media">
+            {f.media.video ? <video src={f.media.video} poster={f.media.poster} muted playsinline loop autoplay></video> : <img src={f.media.img} alt="" />}
+          </div>
+        )}
+        <p class="pinfo-pop__name"><span>{f.name}</span><span>{f.price}</span></p>
+        <p class="pinfo-pop__text">{f.text}</p>
+      </template>
+    ))
+  }
+  <div class="pinfo-pop" role="dialog" hidden data-info-pop>
+    <button type="button" class="pinfo-pop__x" aria-label={P.close} data-info-close><span aria-hidden="true">×</span></button>
+    <div data-info-body></div>
+  </div>
 
   <EndCta second="work" />
 </Base>

@@ -1,0 +1,53 @@
+---
+// An interactive 3D in the work grids (8/11): looks like a project card, but the
+// picture is a moving preview, it carries an "Interactive 3D" badge and opens the live 3D.
+import Arrow from './Arrow.astro';
+import { t, langFromPath } from '../i18n';
+
+interface Props {
+  id: 'house' | 'tower';
+  slot: number;
+  kind?: 'pcard' | 'wcard';
+  shape?: string;
+  ar?: string;
+  badge?: 'pill' | 'round';
+}
+const { id, slot, kind = 'pcard', shape, ar = '16 / 10', badge = 'round' } = Astro.props;
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang);
+const I = T.i3d;
+const it = I.items[id];
+const media = {
+  house: { href: '/demo/hold-to-build/', video: '/interactive/house.mp4', poster: '/interactive/house-start.webp', cat: 'luxury' },
+  tower: { href: '/demo/choose-your-floor/', video: '/interactive/tower.mp4', poster: '/interactive/tower.webp', cat: 'real-estate' },
+}[id];
+---
+
+<a href={media.href} data-astro-reload class:list={['pcard', kind, 'i3card']} data-slot={slot} data-o="horizontal" data-cat={media.cat} data-shape={shape} data-cursor={I.try}>
+  <div class="pcard__media">
+    <div class="frame pcard__frame" style={`--ar: ${ar}`}>
+      <div class="frame__in">
+        <video muted playsinline loop preload="none" poster={media.poster} aria-label={it.alt} data-lazyvideo>
+          <source src={media.video} type="video/mp4" />
+        </video>
+      </div>
+    </div>
+    {badge === 'pill' ? (
+      <span class="i3badge i3badge--pill"><i aria-hidden="true"></i>{I.badge}</span>
+    ) : (
+      <span class="i3badge i3badge--round" aria-label={I.badge}>
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <defs><path id={`i3c-${id}-${slot}`} d="M50,50 m-38,0 a38,38 0 1,1 76,0 a38,38 0 1,1 -76,0" /></defs>
+          <text><textPath href={`#i3c-${id}-${slot}`} textLength="236" lengthAdjust="spacing">{I.ring}</textPath></text>
+        </svg>
+        <b>3D</b>
+      </span>
+    )}
+    {/* like "View" on the other cards: the desktop cursor says it, on phones the circle shows mid-screen */}
+    <span class="pcard__view i3card__view" aria-hidden="true"><span>{I.try}</span></span>
+  </div>
+  <div class="pcard__cap">
+    <span class="pcard__title">{it.name}<Arrow diag class="pcard__arrow" /></span>
+    <span class="i3card__text">{it.text}</span>
+  </div>
+</a>

@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en" class="lock">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Watch it rise · Omnya Lab</title>
+<meta name="description" content="An interactive 3D house by Omnya Lab: scroll, and it goes up from the drawing to the front door.">
+<!-- Web version (8/11): the same 960 frames as AVIF, 1280 px on computers, a vertical cut at 540 px on phones (one frame in two),
+     the first frame shown at once, then the milestones, then ever denser passes. -->
+<link rel="preload" as="image" href="d/0000.avif" fetchpriority="high">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=JetBrains+Mono:wght@500;600&family=Inter+Tight:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0b0c0b; --white:#fbf8f1; --soft:rgba(251,248,241,.82); --gold:#e9c46a;
+    --glass:rgba(20,22,20,.38); --line:rgba(255,255,255,.18); --blue:#0a84ff;
+    --font:"Fraunces",Georgia,"Times New Roman",serif;
+    --text:"Inter Tight","SF Pro Text",-apple-system,BlinkMacSystemFont,Arial,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+    --sf:"SF Pro Display",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--ink)}
+  body{background:var(--ink);color:var(--white);font-family:var(--text);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+  /* ---------- barra in alto ---------- */
+  .bar{position:fixed;inset:0 0 auto;z-index:20;display:flex;align-items:center;justify-content:space-between;
+       padding:22px clamp(20px,3vw,44px);pointer-events:none}
+  .brand{display:flex;align-items:center;gap:12px;font-family:var(--sf);pointer-events:auto;text-shadow:0 1px 14px rgba(0,0,0,.35)}
+  .brand b{font-weight:700;font-size:25px;letter-spacing:-.03em}
+  .brand i{display:block;width:1.5px;height:22px;background:rgba(255,255,255,.6)}
+  .brand span{font-weight:600;font-size:25px;letter-spacing:-.025em;color:var(--gold)}
+  .bar nav{display:flex;gap:10px;pointer-events:auto}
+  .pill{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;border-radius:980px;padding:9px 16px;
+        border:1px solid var(--line);background:var(--glass);color:var(--white);backdrop-filter:blur(18px) saturate(1.4);
+        -webkit-backdrop-filter:blur(18px) saturate(1.4);cursor:pointer;transition:transform .25s,background .25s}
+  .pill:hover{transform:scale(1.03);background:rgba(40,42,40,.55)}
+  .pill.solid{background:var(--white);color:#111;border-color:transparent}
+  .pill.solid:hover{background:#fff}
+  .pill.blue{background:var(--blue);color:#fff;border-color:transparent}
+
+  /* ---------- palco del cantiere ---------- */
+  #build{position:relative}
+  .stage{position:sticky;top:0;height:100vh;width:100%;overflow:hidden}
+  canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .poster,.poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .shade{position:absolute;inset:0;pointer-events:none;
+         background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 18%,rgba(0,0,0,0) 52%,rgba(0,0,0,.55) 100%)}
+
+  .cap{position:absolute;left:clamp(22px,4.2vw,64px);bottom:clamp(64px,10vh,110px);max-width:min(640px,80vw);
+       opacity:0;transform:translateY(18px);filter:blur(8px);will-change:opacity,transform,filter;pointer-events:none}
+  .cap .step{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);
+             display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .cap .step i{display:block;width:28px;height:1px;background:var(--soft)}
+  .cap h2{font-family:var(--font);font-weight:700;font-size:clamp(40px,4.6vw,84px);line-height:.98;letter-spacing:-.01em;text-transform:uppercase;
+          font-variation-settings:"opsz" 144;text-shadow:0 2px 28px rgba(0,0,0,.35)}
+  .cap h2 em{display:block;font-style:italic;font-weight:600;text-transform:none;letter-spacing:-.015em;color:var(--gold)}
+  .cap p{margin-top:14px;font-size:clamp(14px,1.05vw,17px);line-height:1.45;color:var(--soft);max-width:420px;text-shadow:0 1px 12px rgba(0,0,0,.4)}
+
+  .rail{position:absolute;right:clamp(18px,2.4vw,36px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;
+        padding:14px 10px;border-radius:980px;background:var(--glass);border:1px solid var(--line);
+        backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+  .rail button{width:8px;height:8px;border-radius:50%;border:0;background:rgba(255,255,255,.35);cursor:pointer;transition:all .35s}
+  .rail button.on{background:var(--gold);transform:scale(1.5)}
+
+  .meter{position:absolute;left:clamp(22px,4.2vw,64px);bottom:clamp(26px,4vh,40px);display:flex;align-items:center;gap:12px;
+         font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+  .meter svg{width:22px;height:22px;transform:rotate(-90deg)}
+  .meter circle{fill:none;stroke-width:2.5}
+  .watch{position:absolute;right:clamp(18px,2.4vw,36px);bottom:clamp(22px,3.6vh,36px)}
+
+  /* loading (L4, 9/11): a big number that counts to 100 over the first frame, then rises and goes */
+  .loader{position:absolute;left:clamp(20px,4vw,56px);bottom:clamp(20px,5vh,56px);z-index:5;pointer-events:none;color:#fff;
+          transition:transform .9s cubic-bezier(.6,0,.2,1),opacity .7s}
+  .loader p{margin:0 0 6px;font-family:var(--text);font-size:15px;letter-spacing:.01em;color:rgba(255,255,255,.8)}
+  .loader b{display:block;font-family:var(--text);font-size:clamp(110px,17vw,240px);line-height:.82;font-weight:500;letter-spacing:-.06em;font-variant-numeric:tabular-nums}
+  .loader b small{font-size:.32em;letter-spacing:-.02em;margin-left:6px;vertical-align:.95em;color:#e07b4f}
+  .loader.out{transform:translateY(-30px);opacity:0}
+  .veil{position:absolute;inset:0;background:rgba(8,8,10,.38);pointer-events:none;transition:opacity .9s;z-index:4}
+  .stage.loading #caps,.stage.loading .rail,.stage.loading .meter{opacity:0}
+  #caps,.rail,.meter{transition:opacity .8s}
+  html.lock,html.lock body{overflow:hidden}
+
+  /* ---------- configuratore ---------- */
+  .cfg{position:relative;height:100vh}
+  .cfg .frame{position:absolute;inset:0;overflow:hidden}
+  .cfg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.04);
+           transition:opacity .9s ease,transform 1.6s cubic-bezier(.2,.7,.2,1)}
+  .cfg img.on{opacity:1;transform:scale(1)}
+  .cfg .shade{background:linear-gradient(180deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,0) 30%,rgba(0,0,0,0) 62%,rgba(0,0,0,.5) 100%)}
+  .cfg .head{position:absolute;left:clamp(22px,4.2vw,64px);top:clamp(86px,13vh,130px)}
+  .cfg .head h2{font-family:var(--font);font-weight:700;font-size:clamp(38px,4.2vw,76px);line-height:.98;letter-spacing:-.01em;text-transform:uppercase}
+  .cfg .head h2 em{display:block;font-style:italic;text-transform:none;color:var(--gold);font-weight:600}
+  .cfg .head p{margin-top:12px;font-size:17px;color:var(--soft);letter-spacing:-.005em}
+  .seg{position:absolute;left:50%;bottom:clamp(30px,6vh,60px);transform:translateX(-50%);display:flex;gap:6px;padding:6px;
+       border-radius:980px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(20px) saturate(1.4);
+       -webkit-backdrop-filter:blur(20px) saturate(1.4)}
+  .seg button{display:flex;align-items:center;gap:9px;font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--white);
+              background:transparent;border:0;border-radius:980px;padding:10px 18px 10px 12px;cursor:pointer;transition:background .3s,color .3s}
+  .seg button b{width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,255,255,.5)}
+  .seg button.on{background:var(--white);color:#111}
+
+  .end{min-height:100vh;display:grid;place-items:center;text-align:center;background:var(--ink);padding:80px 24px}
+  .end h2{font-family:var(--font);font-weight:700;font-size:clamp(44px,5.6vw,100px);line-height:.98;letter-spacing:-.01em;text-transform:uppercase}
+  .end h2 em{display:block;font-style:italic;text-transform:none;color:var(--gold);font-weight:600}
+  .end p{margin:22px auto 30px;max-width:460px;font-size:18px;line-height:1.45;color:var(--soft)}
+  .end .pill{font-size:16px;padding:13px 26px}
+  .outro{position:fixed;inset:0;z-index:15;display:grid;place-items:center;pointer-events:none;opacity:0}
+  .outro .logo{display:flex;align-items:center;justify-content:center;gap:clamp(18px,1.8vw,30px);color:var(--white);will-change:transform}
+  .outro img{height:clamp(54px,5.4vw,92px);width:auto;display:block;filter:drop-shadow(0 6px 30px rgba(0,0,0,.35))}
+  .outro b{font-family:var(--sf);font-weight:700;font-size:clamp(56px,6.4vw,112px);letter-spacing:-.035em;line-height:1;text-shadow:0 4px 40px rgba(0,0,0,.35)}
+  @media (prefers-reduced-motion:reduce){.cap,.cfg img{transition:none}}
+  /* phone held upright: ask to turn it, like the tower (9/11) */
+  .rotate{display:none}
+  @media (orientation:portrait) and (max-width:760px){
+    html,body{overflow:hidden}
+    .rotate{position:absolute;inset:0;z-index:6;display:grid;place-items:center;background:#0b0c0b;text-align:center;color:var(--white);font-family:var(--text)}
+    .rotate div{font-size:17px;font-weight:500;letter-spacing:-.01em}
+    .rotate i{display:block;width:46px;height:78px;margin:0 auto 22px;border:2px solid var(--white);border-radius:10px;animation:turn 2.2s ease-in-out infinite}
+    .rotate small{display:block;margin-top:6px;font-size:14px;font-weight:400;color:var(--soft)}
+    .loader{z-index:7}
+    .bar{display:none}
+  }
+  @keyframes turn{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="brand"><b>Omnya Lab</b><i></i><span>Homes</span></div>
+</header>
+
+<section id="build">
+  <div class="stage loading" id="stage">
+    <picture class="poster" id="poster"><img src="d/0000.avif" alt="The drawing of a wooden house on its lot in the woods" fetchpriority="high"></picture>
+    <canvas id="c"></canvas>
+    <div class="shade"></div>
+    <div id="caps"></div>
+    <div class="rail" id="rail"></div>
+    <div class="meter"><svg viewBox="0 0 22 22"><circle cx="11" cy="11" r="9" stroke="rgba(255,255,255,.25)"/><circle id="ring" cx="11" cy="11" r="9" stroke="#e9c46a" stroke-dasharray="56.5" stroke-dashoffset="56.5" stroke-linecap="round"/></svg><span id="meterTxt">Blueprint</span></div>
+    <div class="rotate"><div><i></i>Turn your phone<small>This house is best seen in landscape</small></div></div>
+    <div class="veil" id="veil"></div>
+    <div class="loader" id="loader" role="status" aria-live="polite"><p>Watch it rise · loading</p><b><span id="pct">0</span><small>%</small></b></div>
+  </div>
+</section>
+
+<div class="outro" id="outro">
+  <div class="logo">
+    <img src="img/omnya_mark_white.svg" alt="">
+    <b>Omnya Lab</b>
+  </div>
+</div>
+
+<script>
+const META = { frames: 960, bounds: [0, 72, 168, 240, 312, 384, 456, 552, 624, 720, 840, 959] };
+const PHASES = [
+  { tag: 'The plan',    deg: 'Blueprint',    a: 'From blueprint', b: 'to front door',  p: 'Every home starts on paper, drawn for your land, your family, your light.' },
+  { tag: 'Site',        deg: '0°',           a: 'Staked on',      b: 'your lot',       p: 'We mark the footprint before a single shovel moves.' },
+  { tag: 'Foundation',  deg: '67°',          a: 'Rock-solid',     b: 'foundation',     p: 'Poured concrete, cured and checked.' },
+  { tag: 'Framing',     deg: '112°',         a: 'The walls',      b: 'go up',          p: 'Floor deck down, first-floor walls standing.' },
+  { tag: 'Framing',     deg: '157°',         a: 'Fully',          b: 'framed',         p: 'Second floor, rafters and dormers in place.' },
+  { tag: 'Sheathing',   deg: '202°',         a: 'Closed in,',     b: 'sheathed tight', p: 'Every wall and roof wrapped in structural panels.' },
+  { tag: 'Dried in',    deg: '247°',         a: 'Dried in.',      b: 'Weather-tight',  p: 'House wrap on, windows set, roof shingled.' },
+  { tag: 'Masonry',     deg: '292°',         a: 'Brick',          b: 'by brick',       p: 'A real masonry chimney, laid by hand.' },
+  { tag: 'Exterior',    deg: '315°',         a: 'Exterior',       b: 'complete',       p: 'Siding, trim and shutters. Now it looks like home.' },
+  { tag: 'Landscape',   deg: '360°',         a: 'The final',      b: 'touches',        p: 'Lawn, gravel drive and gardens.' },
+  { tag: 'Step inside', deg: 'Front door',   a: 'Welcome',        b: 'home',           p: 'Open the door and walk in.' },
+  { tag: 'Inside',      deg: 'Living room',  a: 'Made',           b: 'to live in',     p: 'Oak, stone and morning light in every room.' },
+];
+let target = 0, cur = 0, dirty = true;
+const PX_PER_FRAME = 9;                       // lunghezza dello scroll del cantiere
+const N = META.frames, last = N - 1;
+const build = document.getElementById('build');
+const OUTRO = 1.4;                            // viewport di coda: sfocato + logo
+const setH = () => { build.style.height = (N * PX_PER_FRAME + innerHeight * (1 + OUTRO)) + 'px'; };
+setH(); addEventListener('resize', setH);
+
+/* ---- didascalie e puntini ---- */
+const capsEl = document.getElementById('caps'), rail = document.getElementById('rail');
+const caps = PHASES.map((ph, i) => {
+  const d = document.createElement('div'); d.className = 'cap';
+  d.innerHTML = `                 <h2>${ph.a}<em>${ph.b}</em></h2><p>${ph.p}</p>`;
+  capsEl.appendChild(d);
+  const dot = document.createElement('button'); dot.title = ph.tag;
+  dot.onclick = () => scrollToFrame(META.bounds[i], 1100); rail.appendChild(dot);
+  return d;
+});
+const dots = [...rail.children];
+
+/* ---- frame: carica prima le tappe, poi a griglie sempre più fitte ---- */
+const imgs = new Array(N), ok = new Uint8Array(N);
+// phones (held sideways, like the tower) get the same frames as computers, one in two; computers every frame
+const MOB = /iPhone|Android.+Mobile/i.test(navigator.userAgent) || (matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 600);
+const pad = n => String(n).padStart(4, '0');
+const src = i => `d/${pad(i)}.avif`;
+const order = [], seen = new Set();
+const push = i => { if (MOB) i -= i % 2; if (i >= 0 && i < N && !seen.has(i)) { seen.add(i); order.push(i); } };
+META.bounds.forEach(push);
+for (const step of [24, 12, 6, 3, 2, 1]) for (let i = 0; i < N; i += step) push(i);
+let loaded = 0, qi = 0;
+// the number counts until the house can already rise smoothly (every third frame here), the rest arrives while you scroll
+const READY = (() => { const st = new Set(); const p = i => { if (MOB) i -= i % 2; if (i >= 0 && i < N) st.add(i); }; META.bounds.forEach(p); for (const step of (MOB ? [24, 12, 6] : [24, 12, 6, 3])) for (let i = 0; i < N; i += step) p(i); return st.size; })();
+let shown = 0, done = false;
+const pctEl = document.getElementById('pct');
+function tick() {
+  if (done) return;
+  const want = Math.min(100, Math.floor(loaded / READY * 100));
+  if (want > shown) { shown = want; pctEl.textContent = shown; }
+  if (loaded >= READY) {
+    done = true; pctEl.textContent = 100;
+    setTimeout(() => {
+      document.getElementById('loader').classList.add('out'); document.getElementById('veil').style.opacity = 0;
+      document.getElementById('stage').classList.remove('loading'); document.documentElement.classList.remove('lock');
+      setTimeout(() => { document.getElementById('loader').remove(); document.getElementById('veil').remove(); }, 1000);
+    }, 350);
+  }
+}
+scrollTo(0, 0);
+function next() {
+  if (qi >= order.length) return;
+  const i = order[qi++], im = new Image(); im.decoding = 'async';
+  im.onload = () => { imgs[i] = im; ok[i] = 1; if (MOB && i + 1 < N) { imgs[i + 1] = im; ok[i + 1] = 1; } loaded++; tick(); dirty = true; next(); };
+  im.onerror = () => { loaded++; tick(); next(); }; im.src = src(i);
+}
+for (let k = 0; k < 6; k++) next();
+
+/* ---- canvas ---- */
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+function size() { const r = Math.min(devicePixelRatio || 1, 2); cv.width = innerWidth * r; cv.height = innerHeight * r; dirty = true; }
+addEventListener('resize', size); size();
+function nearest(i) { if (ok[i]) return i; for (let d = 1; d < N; d++) { if (ok[i - d]) return i - d; if (ok[i + d]) return i + d; } return -1; }
+function draw(f) {
+  const i = nearest(Math.round(f)); if (i < 0) return;
+  const im = imgs[i], W = cv.width, H = cv.height;
+  const zoom = 1.0 + 0.035 * (f / last);                       // leggerissimo zoom lungo tutto il cantiere
+  const s = Math.max(W / im.width, H / im.height) * zoom, w = im.width * s, h = im.height * s;
+  ctx.drawImage(im, (W - w) / 2, (H - h) / 2, w, h);
+}
+
+/* ---- scroll → frame, con morbidezza ---- */
+function progress() { const r = build.getBoundingClientRect(); const span = N * PX_PER_FRAME; return Math.min(1, Math.max(0, -r.top / span)); }
+function outroK() { const r = build.getBoundingClientRect(); const k = (-r.top - N * PX_PER_FRAME) / (innerHeight * OUTRO * 0.8); return Math.min(1, Math.max(0, k)); }
+let outCur = 0;
+addEventListener('scroll', () => { target = progress() * last; }, { passive: true });
+const ring = document.getElementById('ring'), meterTxt = document.getElementById('meterTxt');
+function phaseState(f) {
+  // ogni scritta vive attorno alla sua tappa: entra prima, resta piena sulla tappa, esce dopo
+  caps.forEach((el, i) => {
+    const b = META.bounds[i], prev = i ? META.bounds[i - 1] : -60, nextB = i < 9 ? META.bounds[i + 1] : N + 60;
+    const inStart = b - (b - prev) * 0.42, inEnd = b - (b - prev) * 0.12, outStart = b + (nextB - b) * 0.18, outEnd = b + (nextB - b) * 0.45;
+    let o = 0;
+    if (f >= inStart && f < inEnd) o = (f - inStart) / (inEnd - inStart);
+    else if (f >= inEnd && f <= outStart) o = 1;
+    else if (f > outStart && f < outEnd) o = 1 - (f - outStart) / (outEnd - outStart);
+    if (i === 0 && f <= outStart) o = 1;
+    if (i === PHASES.length - 1 && f >= inEnd) o = 1;
+    o = o * o * (3 - 2 * o);
+    el.style.opacity = o.toFixed(3);
+    el.style.transform = `translateY(${((1 - o) * 18).toFixed(1)}px)`;
+    el.style.filter = `blur(${((1 - o) * 8).toFixed(1)}px)`;
+  });
+  let k = 0; META.bounds.forEach((b, i) => { if (f >= b - (i ? (b - META.bounds[i - 1]) / 2 : 0)) k = i; });
+  dots.forEach((d, i) => d.classList.toggle('on', i === k));
+  meterTxt.textContent = /°/.test(PHASES[k].deg) ? PHASES[k].deg + ' around the build' : PHASES[k].deg;
+  ring.style.strokeDashoffset = (56.5 * (1 - f / last)).toFixed(2);
+}
+function loop() {
+  const d = target - cur;
+  if (Math.abs(d) > 0.02 || dirty) { cur += d * 0.14; draw(cur); phaseState(cur); dirty = false; }
+  const ot = outroK(); if (Math.abs(ot - outCur) > 0.001) {
+    outCur += (ot - outCur) * 0.14; const e = outCur * outCur * (3 - 2 * outCur);
+    cv.style.filter = e > 0.002 ? `blur(${(e * 22).toFixed(1)}px) brightness(${(1 - e * 0.45).toFixed(3)}) saturate(${(1 - e * 0.3).toFixed(3)})` : '';
+    cv.style.transform = `scale(${(1 + e * 0.06).toFixed(4)})`;
+    for (const id of ['caps', 'rail']) document.getElementById(id).style.opacity = (1 - e).toFixed(3);
+    document.querySelector('.meter').style.opacity = (1 - e).toFixed(3);
+    const o = document.getElementById('outro'); o.style.opacity = Math.min(1, Math.max(0, (e - 0.25) / 0.6)).toFixed(3);
+    o.firstElementChild.style.transform = `translateY(${((1 - e) * 16).toFixed(1)}px) scale(${(0.96 + e * 0.04).toFixed(4)})`;
+  }
+  requestAnimationFrame(loop);
+}
+target = progress() * last; cur = target; loop();
+
+/* ---- Watch the build: lo scroll va da solo ---- */
+let auto = null;
+function scrollToFrame(fr, ms) {
+  const span = N * PX_PER_FRAME, y0 = scrollY, y1 = build.offsetTop + span * (fr / last), t0 = performance.now();
+  cancelAnimationFrame(auto);
+  const step = t => { const k = Math.min(1, (t - t0) / ms), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+    scrollTo(0, y0 + (y1 - y0) * e); if (k < 1) auto = requestAnimationFrame(step); };
+  auto = requestAnimationFrame(step);
+}
+function watch() { scrollTo(0, build.offsetTop); setTimeout(() => scrollToFrame(last, 34000), 60); }
+['wheel', 'touchstart', 'keydown'].forEach(ev => addEventListener(ev, () => cancelAnimationFrame(auto), { passive: true }));
+
+</script>
+</body>
+</html>
