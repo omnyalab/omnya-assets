@@ -31,3 +31,9 @@ Here you go 👇🏻 The Casa Cresta Blueprint is free on this page, and right u
 ## Reel dei piani della torre (dal 6/11)
 
 Reel DfaH3QkN4qs (la torre, la pianta del piano in 3D, le stanze), parola AI, automazione ManyChat a parte ("Grow followers from comments copy", copia di quella della torre). Il bottone porta a https://omnyalab.com/the-tower-floors (corto: omnyalab.com/floors): stessa pagina della Tower Blueprint, stessi PDF gratis e Full, con i testi sui piani. Solo in inglese.
+
+## Reel della casa che si costruisce, "Hold to build" (dal 9/11)
+
+Reel della casa americana nel bosco che si costruisce tenendo premuto (lun 9/11) e split ripresa/3D (mar 10/11), parola BUILD. Pagina: https://www.omnyalab.com/the-build-blueprint (corto: omnyalab.com/build), copia di /3d-to-film: Blueprint gratis con opt-in (nome, mail, consenso newsletter), poi il Full Build a 5,99 € (29 € barrato) e su /the-build-blueprint/sent l'upsell con Everything we teach. Solo in inglese. Prima il follow, poi il link (come l'automazione della City).
+
+Here you go 👇🏻 The Build Blueprint is free on this page, and right under it there's the full method behind the house that builds itself: https://www.omnyalab.com/the-build-blueprint

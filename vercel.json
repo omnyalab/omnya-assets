@@ -219,6 +219,11 @@
       "permanent": true
     },
     {
+      "source": "/build",
+      "destination": "/the-build-blueprint",
+      "permanent": true
+    },
+    {
       "source": "/cresta",
       "destination": "/casa-cresta-blueprint",
       "permanent": true

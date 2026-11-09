@@ -14,6 +14,7 @@ const FREE = {
   'free-tower': { name: 'The Tower Blueprint', file: '/learn/free/omnya-lab-tower-blueprint.pdf' },
   'free-3d': { name: 'The 3D to film Blueprint', file: '/learn/free/omnya-lab-3d-to-film-blueprint.pdf' },
   'free-city': { name: 'The City Blueprint', file: '/learn/free/omnya-lab-city-blueprint.pdf' },
+  'free-build': { name: 'The Build Blueprint', file: '/learn/free/omnya-lab-build-blueprint.pdf' },
   free: { name: 'The Blueprint', file: '/learn/free/omnya-lab-blueprint.pdf' },
 };
 const KEY = 'omnya:optin';

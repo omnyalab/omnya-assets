@@ -23,7 +23,10 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'full-3d'
   // the free and the paid city PDFs, on /the-city-blueprint (5/11, Omnya City reel)
   | 'free-city'
-  | 'full-city';
+  | 'full-city'
+  // the free and the paid "Hold to build" PDFs, on /the-build-blueprint (9/11, the house that builds itself, word BUILD)
+  | 'free-build'
+  | 'full-build';
 
 export const products: { id: ProductId; checkout: string }[] = [
   { id: 'white-to-real', checkout: 'https://buy.stripe.com/aFaeVcbgVdQA2dwaix8so0s' },
@@ -52,6 +55,9 @@ export const products: { id: ProductId; checkout: string }[] = [
   { id: 'free-city', checkout: '/learn/free/omnya-lab-city-blueprint.pdf' },
   // the Full City Blueprint at €5.99 from 9/11 (Nico, 8/11); the old €19 link was https://buy.stripe.com/00w6oGfxbcMw2dw4Yd8so0k
   { id: 'full-city', checkout: 'https://buy.stripe.com/bJecN4gBfcMwf0icqF8so0B' },
+  { id: 'free-build', checkout: '/learn/free/omnya-lab-build-blueprint.pdf' },
+  // the Full Build Blueprint at €5.99 (€29 struck): empty until Nico approves the Stripe link, so the button opens WhatsApp
+  { id: 'full-build', checkout: '' },
 ];
 
 /**
@@ -99,6 +105,7 @@ export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: Pr
   'full-tower': { kind: 'pdf', oto: 'sample', down: 'community' },
   'full-3d': { kind: 'pdf', oto: 'sample', down: 'community' },
   'full-city': { kind: 'pdf', oto: 'sample', down: 'community' },
+  'full-build': { kind: 'pdf', oto: 'sample', down: 'community' },
 };
 
 /** The words used in the reels ("Comment 3D"). Each one has its own page, /learn/<word>, and leads with one playbook. */
