@@ -10,7 +10,7 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'session-reader' | 'rest-30' | 'rest-50' | 'build-upgrade' | 'sample'
   // the other two playbooks after buying 02 (€30) or 03 (€40), with the 7/11 prices (01 €79, 02 €49, 03 €39)
   | 'rest-02' | 'rest-03'
-  // everything we teach: three Full blueprints (Tower, 3D, Build: the City one left the pack on 9/11, Nico) and the three playbooks, €59 from 9/11 (€39 on 7/11), only in the funnels
+  // everything we teach: four Full blueprints (Tower, 3D, Build, Towers: the City one left the pack on 9/11, Towers joined it the same day, Nico) and the three playbooks, €59 from 9/11 (€39 on 7/11), only in the funnels
   | 'everything'
   // the free PDF people claim from the reel DM, on /learn/<word>
   | 'free'
@@ -62,8 +62,8 @@ export const products: { id: ProductId; checkout: string }[] = [
   // the Full Build Blueprint at €5.99 (€29 struck), Stripe link created 9/11 with Nico's ok (product "The Full Build Blueprint", back to /learn/thanks/full-build)
   { id: 'full-build', checkout: 'https://buy.stripe.com/5kQ3cuacR3bW2dwgGV8so0D' },
   { id: 'free-towers', checkout: '/learn/free/omnya-lab-towers-blueprint.pdf' },
-  // the Full Towers Blueprint at €5.99 (€29 struck): empty = WhatsApp until Nico has made the Stripe link (9/11)
-  { id: 'full-towers', checkout: '' },
+  // the Full Towers Blueprint at €5.99 (€29 struck), Stripe link created 9/11 with Nico's ok (product "The Full Towers Blueprint", back to /learn/thanks/full-towers)
+  { id: 'full-towers', checkout: 'https://buy.stripe.com/28E00i2Kp4g04lEbmB8so0E' },
 ];
 
 /**
@@ -180,7 +180,8 @@ const pdfs = {
 type FileKey = keyof (typeof pdfs)['en'];
 const bundleFiles: FileKey[] = ['white-to-real', 'reel', 'before-it-exists', 'prompts', 'checklist'];
 // 9/11 (Nico): the Full Build Blueprint replaces the Full City one in the pack
-const everythingFiles: FileKey[] = ['full-tower', 'full-3d', 'full-build', ...bundleFiles];
+// 9/11 (Nico): the Full Towers Blueprint joins the pack, nothing taken out
+const everythingFiles: FileKey[] = ['full-tower', 'full-3d', 'full-build', 'full-towers', ...bundleFiles];
 
 /** What a buyer downloads after paying for a PDF product (the bundle gets all five files). */
 export function filesFor(id: ProductId, lang: Lang) {

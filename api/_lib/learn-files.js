@@ -18,8 +18,8 @@ const FULL_TOWERS = pdf('How to build three towers you choose the view of', 'ful
 /** One Stripe product name → the files it should deliver. Checked in order, first match wins. */
 const RULES = [
   // "Everything we teach" (7/11, €39 after a free blueprint): the three Full blueprints and the three playbooks with the extras
-  // 9/11 (Nico): the Full Build Blueprint took the place of the Full City one in the pack
-  [/everything we teach/i, [FULL_TOWER, FULL_3D, FULL_BUILD, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST]],
+  // 9/11 (Nico): the Full Build Blueprint took the place of the Full City one in the pack, then the Full Towers one joined it
+  [/everything we teach/i, [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST]],
   // "build blueprint", never /build/ alone: the Build lesson is a product too
   [/full build blueprint/i, [FULL_BUILD]],
   // "full towers blueprint" before /tower/: the Full Tower Blueprint (one tower) is another product (9/11)
