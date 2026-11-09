@@ -29,7 +29,12 @@ interface Props {
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const defaultOgAlt = `Omnya Lab, ${alt(projects.find((p) => p.id === '01_penthouse_dubai')!, lang)}`;
-const { page, title, seoTitle, description = T.siteDescription, og = '/og/omnya-lab.jpg', ogAlt = defaultOgAlt, footer = true, header = true, noindex = false } = Astro.props;
+// 9/11: the main pages each have their own share image (made by scripts/make-og-pages.py), the rest keep the general one
+const sectionOg = (() => {
+  const m = Astro.url.pathname.replace(/\/$/, '').match(/^(?:\/it)?\/(work|pricing|studio|learn|contact)$/);
+  return m ? `/og/page-${m[1]}${lang === 'it' ? '-it' : ''}.jpg` : '/og/omnya-lab.jpg';
+})();
+const { page, title, seoTitle, description = T.siteDescription, og = sectionOg, ogAlt = defaultOgAlt, footer = true, header = true, noindex = false } = Astro.props;
 const fullTitle = seoTitle ?? (title ? `${title} | Omnya Lab` : T.siteTitle);
 const path = Astro.url.pathname;
 const canonical = new URL(localize(path, lang), Astro.site);
