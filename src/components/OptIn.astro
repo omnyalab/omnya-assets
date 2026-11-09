@@ -4,6 +4,7 @@
 // Name + email, then the PDF goes by email (api/optin) and the visitor lands on /<page>/sent,
 // the upsell. If the email can't be sent, the PDF opens right away instead, so nobody is stuck.
 import '../styles/optin.css';
+import '../styles/optin-build.css';
 
 interface Props {
   slug: string; // the funnel page, e.g. the-tower-blueprint
@@ -14,12 +15,13 @@ interface Props {
   hero: string;
   heroMobile: string;
   book?: boolean; // 9/11 (Nico, Build page): the cover in book format (1000x1375) instead of the tall 9:16 PDF
+  theme?: 'c1'; // 9/11 (Nico): C1 green on the Build page (src/styles/optin-build.css, made by scripts/recolor-build.py)
   noClose?: boolean; // 9/11 (Nico, Build page): no × on the card (Escape and a click outside still close it)
 }
-const { slug, free, word, small, cover, hero, heroMobile, book, noClose } = Astro.props;
+const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme } = Astro.props;
 ---
 
-<div class={`oidim${book ? ' oi--book' : ''}${noClose ? ' oi--nox' : ''}`} data-optin data-slug={slug} data-free={free} style={`--oi-cover:url(${cover});--oi-hero:url(${hero});--oi-hero-m:url(${heroMobile})`} role="dialog" aria-modal="true" aria-labelledby="oi-title">
+<div class={`oidim${book ? ' oi--book' : ''}${noClose ? ' oi--nox' : ''}${theme ? ' oi--' + theme : ''}`} data-optin data-slug={slug} data-free={free} style={`--oi-cover:url(${cover});--oi-hero:url(${hero});--oi-hero-m:url(${heroMobile})`} role="dialog" aria-modal="true" aria-labelledby="oi-title">
   <div class="oisheet">
     <button type="button" class="oix" data-oi-close aria-label="Close">×</button>
     <div class="oibk" role="img" aria-label="The free blueprint"><div class="oibk__b"><span class="oibk__k"></span><span class="oibk__t"></span><span class="oibk__p"></span><span class="oibk__f"></span></div></div>
