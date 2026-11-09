@@ -56,7 +56,8 @@ export const products: { id: ProductId; checkout: string }[] = [
   // the Full City Blueprint at €5.99 from 9/11 (Nico, 8/11); the old €19 link was https://buy.stripe.com/00w6oGfxbcMw2dw4Yd8so0k
   { id: 'full-city', checkout: 'https://buy.stripe.com/bJecN4gBfcMwf0icqF8so0B' },
   { id: 'free-build', checkout: '/learn/free/omnya-lab-build-blueprint.pdf' },
-  // the Full Build Blueprint at €5.99 (€29 struck): empty until Nico approves the Stripe link, so the button opens WhatsApp
+  // the Full Build Blueprint at €5.99 (€29 struck). Stripe link created 9/11 (Nico ok): https://buy.stripe.com/5kQ3cuacR3bW2dwgGV8so0D
+  // (product "The Full Build Blueprint", back to /learn/thanks/full-build). It goes here only once the Full PDF exists, until then WhatsApp.
   { id: 'full-build', checkout: '' },
 ];
 
