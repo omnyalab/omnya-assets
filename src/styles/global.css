@@ -513,7 +513,8 @@ html.has-sbar::-webkit-scrollbar, html.has-sbar body::-webkit-scrollbar { displa
   html.has-dot, html.has-dot *, html.has-dot a, html.has-dot button { cursor: none !important; }
   html.has-dot input, html.has-dot textarea, html.has-dot select, html.has-dot [contenteditable='true'] { cursor: text !important; }
 }
-.cursor__dot, .cursor__bub { position: fixed; left: 0; top: 0; z-index: 9100; pointer-events: none; }
+/* above everything on the page, the cookie banner included (it sits at 2147483000), so it is never lost under a box (9/11) */
+.cursor__dot, .cursor__bub { position: fixed; left: 0; top: 0; z-index: 2147483647; pointer-events: none; }
 /* white + difference = ink on paper, paper on dark images */
 .cursor__dot { margin: -5px 0 0 -5px; width: 10px; height: 10px; mix-blend-mode: difference; }
 .cursor__dot::after {
