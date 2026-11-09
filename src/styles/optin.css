@@ -98,3 +98,8 @@ html:has(.oidim:not([hidden])),html:has(.oidim:not([hidden])) body{overflow:hidd
 @keyframes oildraw{to{stroke-dashoffset:0}}
 @keyframes oilin{from{opacity:0;transform:translateY(10px)}}
 @media (max-width:640px){.oil__t{font-size:27px}}
+
+/* 9/11 (Nico, Build page only): the cover in book format, and no × on the card */
+.oi--book .oibk{--w:176px;--h:calc(var(--w)*1.375)}
+@media (max-width:899px){.oi--book .oibk{--w:138px}}
+.oi--nox .oix{display:none}

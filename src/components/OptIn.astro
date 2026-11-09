@@ -13,11 +13,13 @@ interface Props {
   cover: string; // the free PDF cover
   hero: string;
   heroMobile: string;
+  book?: boolean; // 9/11 (Nico, Build page): the cover in book format (1000x1375) instead of the tall 9:16 PDF
+  noClose?: boolean; // 9/11 (Nico, Build page): no × on the card (Escape and a click outside still close it)
 }
-const { slug, free, word, small, cover, hero, heroMobile } = Astro.props;
+const { slug, free, word, small, cover, hero, heroMobile, book, noClose } = Astro.props;
 ---
 
-<div class="oidim" data-optin data-slug={slug} data-free={free} style={`--oi-cover:url(${cover});--oi-hero:url(${hero});--oi-hero-m:url(${heroMobile})`} role="dialog" aria-modal="true" aria-labelledby="oi-title">
+<div class={`oidim${book ? ' oi--book' : ''}${noClose ? ' oi--nox' : ''}`} data-optin data-slug={slug} data-free={free} style={`--oi-cover:url(${cover});--oi-hero:url(${hero});--oi-hero-m:url(${heroMobile})`} role="dialog" aria-modal="true" aria-labelledby="oi-title">
   <div class="oisheet">
     <button type="button" class="oix" data-oi-close aria-label="Close">×</button>
     <div class="oibk" role="img" aria-label="The free blueprint"><div class="oibk__b"><span class="oibk__k"></span><span class="oibk__t"></span><span class="oibk__p"></span><span class="oibk__f"></span></div></div>
