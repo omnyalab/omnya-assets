@@ -86,8 +86,8 @@ const en = {
   phoneNote: 'International: WhatsApp or email only',
   i3d: {
     badge: 'Interactive 3D',
-    ring: 'INTERACTIVE 3D · TRY IT FREE · ',
-    try: 'Try it free',
+    ring: 'INTERACTIVE 3D · TRY IT · ',
+    try: 'Try it',
     items: {
       house: { name: 'Watch it rise', text: 'Scroll, and the house goes up from the drawing.', alt: 'A wooden house in the woods going up, from the frame to the finished house' },
       tower: { name: 'Choose your floor', text: 'Fly in, pick a floor and see its view.', alt: 'The SAMAR tower in Dubai Marina, the camera flying in to a terrace' },
@@ -266,7 +266,7 @@ const en = {
     ],
     i3Best: 1,
     from: 'From',
-    tryLive: 'Try it free',
+    tryLive: 'Try it',
     info: 'More about',
     close: 'Close',
     imagesUnit: ['image', 'images'],
@@ -707,8 +707,8 @@ const it: Dict = {
   phoneNote: 'Dall’estero solo WhatsApp o email',
   i3d: {
     badge: '3D interattivo',
-    ring: '3D INTERATTIVO · PROVALO GRATIS · ',
-    try: 'Provalo gratis',
+    ring: '3D INTERATTIVO · PROVALO · ',
+    try: 'Provalo',
     items: {
       house: { name: 'Guardala salire', text: 'Scorri e la casa sale dal disegno.', alt: 'Una casa di legno nel bosco che sale, dalla struttura alla casa finita' },
       tower: { name: 'Scegli il piano', text: 'Voli dentro, scegli un piano e vedi la sua vista.', alt: 'La torre SAMAR a Dubai Marina, la camera che vola fino a una terrazza' },
@@ -887,7 +887,7 @@ const it: Dict = {
     ],
     i3Best: 1,
     from: 'Da',
-    tryLive: 'Provalo gratis',
+    tryLive: 'Provalo',
     info: 'Dettagli su',
     close: 'Chiudi',
     imagesUnit: ['immagine', 'immagini'],
