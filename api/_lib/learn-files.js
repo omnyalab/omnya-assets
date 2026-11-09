@@ -12,11 +12,15 @@ const CHECKLIST = pdf('The checklist before every delivery', 'bundle-the-checkli
 const FULL_TOWER = pdf('How to build a tower that sells with AI', 'full-tower-blueprint.pdf');
 const FULL_3D = pdf('How to make a 3D that sells with AI', 'full-3d-blueprint.pdf');
 const FULL_CITY = pdf('How to build a 3D city that goes viral with AI', 'full-city-blueprint.pdf');
+const FULL_BUILD = pdf('How to build a house that builds itself', 'full-build-blueprint.pdf');
 
 /** One Stripe product name → the files it should deliver. Checked in order, first match wins. */
 const RULES = [
   // "Everything we teach" (7/11, €39 after a free blueprint): the three Full blueprints and the three playbooks with the extras
-  [/everything we teach/i, [FULL_TOWER, FULL_3D, FULL_CITY, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST]],
+  // 9/11 (Nico): the Full Build Blueprint took the place of the Full City one in the pack
+  [/everything we teach/i, [FULL_TOWER, FULL_3D, FULL_BUILD, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST]],
+  // "build blueprint", never /build/ alone: the Build lesson is a product too
+  [/full build blueprint/i, [FULL_BUILD]],
   [/tower/i, [FULL_TOWER]],
   [/city/i, [FULL_CITY]],
   [/3d.*sells|sells.*3d/i, [FULL_3D]],

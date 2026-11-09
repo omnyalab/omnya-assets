@@ -10,7 +10,7 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'session-reader' | 'rest-30' | 'rest-50' | 'build-upgrade' | 'sample'
   // the other two playbooks after buying 02 (€30) or 03 (€40), with the 7/11 prices (01 €79, 02 €49, 03 €39)
   | 'rest-02' | 'rest-03'
-  // everything we teach: the three Full blueprints and the three playbooks, €59 from 9/11 (€39 on 7/11), only in the funnels
+  // everything we teach: three Full blueprints (Tower, 3D, Build: the City one left the pack on 9/11, Nico) and the three playbooks, €59 from 9/11 (€39 on 7/11), only in the funnels
   | 'everything'
   // the free PDF people claim from the reel DM, on /learn/<word>
   | 'free'
@@ -56,9 +56,8 @@ export const products: { id: ProductId; checkout: string }[] = [
   // the Full City Blueprint at €5.99 from 9/11 (Nico, 8/11); the old €19 link was https://buy.stripe.com/00w6oGfxbcMw2dw4Yd8so0k
   { id: 'full-city', checkout: 'https://buy.stripe.com/bJecN4gBfcMwf0icqF8so0B' },
   { id: 'free-build', checkout: '/learn/free/omnya-lab-build-blueprint.pdf' },
-  // the Full Build Blueprint at €5.99 (€29 struck). Stripe link created 9/11 (Nico ok): https://buy.stripe.com/5kQ3cuacR3bW2dwgGV8so0D
-  // (product "The Full Build Blueprint", back to /learn/thanks/full-build). It goes here only once the Full PDF exists, until then WhatsApp.
-  { id: 'full-build', checkout: '' },
+  // the Full Build Blueprint at €5.99 (€29 struck), Stripe link created 9/11 with Nico's ok (product "The Full Build Blueprint", back to /learn/thanks/full-build)
+  { id: 'full-build', checkout: 'https://buy.stripe.com/5kQ3cuacR3bW2dwgGV8so0D' },
 ];
 
 /**
@@ -154,6 +153,7 @@ const pdfs = {
     'full-tower': ['How to build a tower that sells with AI', 'full-tower-blueprint.pdf'],
     'full-3d': ['How to make a 3D that sells with AI', 'full-3d-blueprint.pdf'],
     'full-city': ['How to build a 3D city that goes viral with AI', 'full-city-blueprint.pdf'],
+    'full-build': ['How to build a house that builds itself', 'full-build-blueprint.pdf'],
   },
   it: {
     'white-to-real': ['Dal 3D alla foto vera', 'playbook-01-dal-3d-alla-foto-vera.pdf'],
@@ -165,11 +165,13 @@ const pdfs = {
     'full-tower': ['How to build a tower that sells with AI (EN)', '../en/full-tower-blueprint.pdf'],
     'full-3d': ['How to make a 3D that sells with AI (EN)', '../en/full-3d-blueprint.pdf'],
     'full-city': ['How to build a 3D city that goes viral with AI (EN)', '../en/full-city-blueprint.pdf'],
+    'full-build': ['How to build a house that builds itself (EN)', '../en/full-build-blueprint.pdf'],
   },
 } as const;
 type FileKey = keyof (typeof pdfs)['en'];
 const bundleFiles: FileKey[] = ['white-to-real', 'reel', 'before-it-exists', 'prompts', 'checklist'];
-const everythingFiles: FileKey[] = ['full-tower', 'full-3d', 'full-city', ...bundleFiles];
+// 9/11 (Nico): the Full Build Blueprint replaces the Full City one in the pack
+const everythingFiles: FileKey[] = ['full-tower', 'full-3d', 'full-build', ...bundleFiles];
 
 /** What a buyer downloads after paying for a PDF product (the bundle gets all five files). */
 export function filesFor(id: ProductId, lang: Lang) {
