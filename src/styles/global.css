@@ -2951,16 +2951,16 @@ main:has(.twhero) .lbundle { margin-top: 0; }
    ========================================================================== */
 
 /* the "i" next to a name */
-.pinfo {
+button.pinfo {
   display: inline-flex; align-items: center; justify-content: center; flex: none; vertical-align: 0.35em;
   width: 28px; height: 28px; padding: 0; border-radius: 50%; cursor: pointer;
   border: 1px solid rgba(17, 17, 17, 0.16); background: rgba(255, 255, 255, 0.75); color: var(--ink);
   font: italic 600 13px/1 Georgia, 'Times New Roman', serif; letter-spacing: 0;
   box-shadow: 0 4px 10px -6px rgba(30, 24, 16, 0.35); transition: background 0.3s, color 0.3s, transform 0.3s var(--ease);
 }
-.pinfo:hover, .pinfo[aria-expanded='true'] { background: var(--ink); color: var(--bg); transform: scale(1.08); }
-.pinfo:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-@media (max-width: 899px) { .pinfo { vertical-align: 0.1em; margin-left: 2px; } .ptable__q { align-items: center; } }
+button.pinfo:hover, button.pinfo[aria-expanded='true'] { background: var(--ink); color: var(--bg); transform: scale(1.08); }
+button.pinfo:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (max-width: 899px) { button.pinfo { vertical-align: 0.1em; margin-left: 2px; } .ptable__q { align-items: center; } }
 .prices__try { margin-top: 26px; justify-self: start; }
 
 /* the card it opens: glass, the preview on top; a sheet from the bottom on phones */
@@ -2986,7 +2986,7 @@ main:has(.twhero) .lbundle { margin-top: 0; }
   .pinfo-pop { left: 12px !important; right: 12px; top: auto !important; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); width: auto; transform: translateY(24px); transform-origin: bottom center; }
 }
 @media (prefers-reduced-motion: reduce) { .pinfo-pop { transition: none; } }
-.pinfo { margin-left: 14px; }
+button.pinfo { margin-left: 14px; }
 .pband .ptable--i3, .pband .ptable--packs { --cols: minmax(0, 1fr) auto !important; }
 .pinfo-pop { z-index: 1000; }
 @media (max-width: 899px) {
@@ -2998,9 +2998,9 @@ main:has(.twhero) .lbundle { margin-top: 0; }
 
 }
 /* the "i" centred on the words */
-.pinfo { vertical-align: middle; position: relative; top: -0.06em; }
+button.pinfo { vertical-align: middle; position: relative; top: -0.06em; }
 @media (max-width: 899px) {
-  .pinfo { vertical-align: middle; top: -0.04em; }
+  button.pinfo { vertical-align: middle; top: -0.04em; }
 }
 .statement:not(:has(.statement__title)) .statement__row { margin-top: 0; padding-left: 0; }
 .statement:not(:has(.statement__title)) .statement__line { font-size: clamp(1.75rem, 3.6vw, 3.25rem); line-height: 1.1; letter-spacing: -0.035em; max-width: 24ch; }
