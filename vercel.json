@@ -25,6 +25,30 @@
       "permanent": false
     },
     {
+      "source": "/it/demo/choose-your-floor/",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(iPhone|Android.+Mobile).*"
+        }
+      ],
+      "destination": "/it/demo/choose-your-floor/m/",
+      "permanent": false
+    },
+    {
+      "source": "/it/demo/choose-your-floor",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(iPhone|Android.+Mobile).*"
+        }
+      ],
+      "destination": "/it/demo/choose-your-floor/m/",
+      "permanent": false
+    },
+    {
       "source": "/privacy-policy-it",
       "destination": "/it/privacy-policy",
       "permanent": true

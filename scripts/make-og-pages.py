@@ -26,6 +26,8 @@ PAGES = [
     ('page-contact-it', 'Contatti', P('projects/25_casa_cresta/casa_cresta_cover.webp')),
     ('demo-watch-it-rise', 'Watch it rise', P('demo/hold-to-build/d/0720.avif')),
     ('demo-choose-your-floor', 'Choose your floor', P('demo/choose-your-floor/assets/fly-first.webp')),
+    ('demo-guardala-salire', 'Guardala salire', P('demo/hold-to-build/d/0720.avif')),
+    ('demo-scegli-il-piano', 'Scegli il piano', P('demo/choose-your-floor/assets/fly-first.webp')),
 ]
 
 

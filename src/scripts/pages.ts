@@ -213,7 +213,7 @@ export function contactPage() {
 export function lazyVideos() {
   // phones go straight to the tower's phone page, without the redirect the computer page makes (one trip less)
   if (matchMedia('(max-width: 820px)').matches || /iPhone|Android.+Mobile/i.test(navigator.userAgent)) {
-    document.querySelectorAll<HTMLAnchorElement>('a[href="/demo/choose-your-floor/"]').forEach((a) => (a.href = '/demo/choose-your-floor/m/'));
+    document.querySelectorAll<HTMLAnchorElement>('a[href="/demo/choose-your-floor/"], a[href="/it/demo/choose-your-floor/"]').forEach((a) => (a.href = a.getAttribute('href') + 'm/'));
   }
   const vids = document.querySelectorAll<HTMLVideoElement>('video[data-lazyvideo]');
   if (!vids.length) return;
@@ -319,4 +319,18 @@ export function priceInfo() {
     stopAll();
     pop.hidden = true;
   });
+}
+
+/* ---------- Phones (9/11): the WhatsApp button steps aside while a price row passes under it,
+   so it never covers a price or its green saving. ---------- */
+export function fabAway() {
+  const rows = document.querySelectorAll('.pband .ptable tbody tr');
+  if (!rows.length || window.matchMedia('(min-width: 900px)').matches) return;
+  const under = new Set<Element>();
+  const io = new IntersectionObserver((es) => {
+    es.forEach((e) => (e.isIntersecting ? under.add(e.target) : under.delete(e.target)));
+    document.documentElement.classList.toggle('fab-away', under.size > 0);
+  }, { rootMargin: `-${Math.max(0, window.innerHeight - 110)}px 0px 0px 0px` });
+  rows.forEach((r) => io.observe(r));
+  onDestroy(() => { io.disconnect(); document.documentElement.classList.remove('fab-away'); });
 }

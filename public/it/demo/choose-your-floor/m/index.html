@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<base href="/demo/choose-your-floor/m/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>SAMAR · Scegli il piano</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Omnya Lab">
+<meta property="og:title" content="Scegli il piano · Omnya Lab">
+<meta property="og:description" content="Una torre in 3D interattivo di Omnya Lab: entri in volo, scegli un piano e vedi la sua vista.">
+<meta property="og:url" content="https://www.omnyalab.com/it/demo/choose-your-floor/">
+<meta property="og:image" content="https://www.omnyalab.com/og/demo-scegli-il-piano.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.omnyalab.com/og/demo-scegli-il-piano.jpg">
+<meta name="description" content="Una torre in 3D interattivo di Omnya Lab: entri in volo, scegli un piano e vedi la sua vista.">
+<link rel="preload" as="image" href="assets/fly-first.webp" fetchpriority="high">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<!-- Montserrat is only for the last line of the finale: loaded without holding up the first frame -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+  :root {
+    --ink: #f4efe8;
+    --ink-dim: rgba(244, 239, 232, .68);
+    --glass: rgba(18, 28, 40, .34);
+    --line: rgba(244, 239, 232, .28);
+    --warm: #ffcf8a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; background: #0b1118; color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+  .stage { position: fixed; inset: 0; }
+  .clip { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+  .clip.on { opacity: 1; }
+
+  /* floor bands, drawn in the photo's own pixel space */
+  svg.floors { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity .4s; }
+  .floor path.hit { fill: transparent; cursor: pointer; }
+  .floor path.shape { fill: url(#fade); opacity: 0; mix-blend-mode: screen; filter: url(#soft); transition: opacity .3s ease; pointer-events: none; }
+  .floor.hover path.shape { opacity: .9; }
+  .floor line, .floor text { opacity: 0; transition: opacity .25s; pointer-events: none; }
+  .floor line { stroke: var(--ink); stroke-width: 1.2; }
+  .floor text { fill: var(--ink); font-size: 22px; font-weight: 300; }
+  .floor.hover line, .floor.hover text { opacity: 1; }
+
+  /* Apple-style glass: clear, heavy blur, thin bright rim, no fill colour */
+  .glass {
+    position: relative; isolation: isolate;
+    background: rgba(255, 255, 255, .10);
+    -webkit-backdrop-filter: blur(28px) saturate(180%); backdrop-filter: blur(28px) saturate(180%);
+    box-shadow: inset 0 0 0 .5px rgba(255,255,255,.45), inset 0 1px 1px rgba(255,255,255,.35), 0 8px 30px rgba(0,0,0,.18);
+  }
+  .glass::before { /* specular sheen along the top edge */
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1;
+    background: linear-gradient(180deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 42%);
+  }
+  .pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 999px; font-size: 15px; font-weight: 500; letter-spacing: -.01em; color: #fff; transition: transform .2s ease, background .2s ease, opacity .4s ease; }
+  .pill:hover { background: rgba(255,255,255,.18); }
+  .pill:active { transform: scale(.97); }
+  /* solid Apple buttons: blue for going forward, white for everything else */
+  .btn-blue, .btn-white { -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: 0 6px 20px rgba(0,0,0,.22); font-weight: 600; }
+  .btn-blue::before, .btn-white::before { display: none; }
+  .btn-blue { background: #0a84ff; color: #fff; }
+  .btn-blue:hover { background: #2a95ff; }
+  .btn-white { background: #fff; color: #1d1d1f; }
+  .btn-white:hover { background: #f2f2f4; }
+
+  /* top bar */
+  .bar { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 24px 32px; z-index: 5; }
+  .brand { position: absolute; left: 50%; top: 22px; transform: translateX(-50%); height: 42px; width: auto; filter: drop-shadow(0 1px 10px rgba(0,0,0,.25)); }
+  .back { display: none; }
+  .back.on { display: inline-flex; }
+
+  /* choose your floor panel */
+  .panel { position: fixed; right: 5vw; top: 50%; transform: translateY(-50%); width: min(340px, 86vw); padding: 30px 28px 24px; border-radius: 30px; z-index: 4; background: rgba(20, 24, 30, .18); }
+  .panel h1 { font-weight: 600; font-size: 34px; line-height: 1.05; letter-spacing: -.025em; }
+  .panel p.lead { margin-top: 10px; font-size: 14px; line-height: 1.45; color: rgba(255,255,255,.75); }
+  .level { margin-top: 26px; display: flex; align-items: baseline; gap: 12px; }
+  .level small { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.7); }
+  .level .num { font-size: 68px; font-weight: 600; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+  .unit { margin-top: 6px; font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+  .meta { margin-top: 2px; font-size: 14px; color: rgba(255,255,255,.7); min-height: 2.6em; line-height: 1.4; }
+  .enter { margin-top: 18px; width: 100%; height: 48px; font-size: 16px; font-weight: 600; }
+  .enter[disabled] { background: rgba(255,255,255,.22); color: rgba(255,255,255,.8); box-shadow: none; cursor: default; }
+
+  /* room caption */
+  .caption { position: fixed; left: 5vw; bottom: 8vh; z-index: 4; padding: 16px 24px 18px; border-radius: 26px; opacity: 0; transform: translateY(12px); transition: opacity .6s, transform .6s; pointer-events: none; }
+  .caption.on { opacity: 1; transform: none; }
+  .caption small { display: block; font-size: 13px; font-weight: 500; color: rgba(255,255,255,.72); }
+  .caption h2 { margin-top: 2px; font-weight: 600; font-size: 34px; line-height: 1.1; letter-spacing: -.025em; }
+
+  /* hotspot pills on the footage */
+  .spot { position: fixed; left: 0; top: 0; z-index: 4; transform: translate(-50%, -50%); opacity: 0; pointer-events: none; padding: 0 18px 0 14px; }
+  .spot.on { opacity: 1; pointer-events: auto; }
+  .spot:active { transform: translate(-50%, -50%) scale(.97); }
+  .spot i { position: relative; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+  .spot i::before { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1px solid currentColor; opacity: 0; animation: ping 2.4s infinite; }
+  .spot.selected { background: #1d1d1f; color: #fff; }
+  @keyframes ping { 0% { transform: scale(.6); opacity: .8; } 100% { transform: scale(1.6); opacity: 0; } }
+
+  /* closing title, shown once the camera is back at the tower */
+  .finale { position: fixed; inset: 0; z-index: 3; display: grid; place-items: center; pointer-events: none; }
+  .finale img { display: block; margin: 0 auto; width: clamp(260px, 30vw, 470px); height: auto; opacity: 0; filter: drop-shadow(0 4px 30px rgba(0,0,0,.3)); }
+  .finale h3 { font-weight: 600; font-size: clamp(34px, 6.4vw, 96px); letter-spacing: .28em; padding-left: .28em; line-height: 1; text-align: center; color: #fff; text-shadow: 0 2px 40px rgba(0,0,0,.25); }
+  .finale h3 span { display: inline-block; opacity: 0; }
+  .finale p { margin-top: 22px; font-family: Montserrat, sans-serif; font-weight: 400; font-size: clamp(12px, 1.35vw, 19px); letter-spacing: .62em; padding-left: .62em; color: #fff; text-align: center; opacity: 0; }
+  .restart { display: none; }
+  .restart.on { display: inline-flex; animation: pillin .6s ease both; }
+  @keyframes pillin { from { opacity: 0; transform: translateY(-6px); } }
+  .bar .left { display: flex; gap: 10px; }
+
+  /* loading (L4, 9/11): a big number that counts to 100 over the tower, then rises and goes */
+  .loader { position: fixed; left: clamp(20px, 4vw, 56px); bottom: clamp(20px, 5vh, 56px); z-index: 50; pointer-events: none; color: #fff; transition: transform .9s cubic-bezier(.6,0,.2,1), opacity .7s; }
+  .loader p { margin: 0 0 6px; font-size: 15px; letter-spacing: .01em; color: rgba(255,255,255,.8); }
+  .loader b { display: block; font-size: clamp(110px, 17vw, 240px); line-height: .82; font-weight: 500; letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
+  .loader b small { font-size: .32em; letter-spacing: -.02em; margin-left: 6px; vertical-align: .95em; color: #e07b4f; }
+  .loader.out { transform: translateY(-30px); opacity: 0; }
+  .veil { position: fixed; inset: 0; background: rgba(8,8,10,.38); z-index: 40; pointer-events: none; transition: opacity .9s; }
+  body.loading .bar, body.loading .panel, body.loading .floors { opacity: 0 !important; pointer-events: none !important; }
+  body.reveal .bar, body.reveal .panel, body.reveal .floors { transition: opacity .8s; }
+
+  @media (max-width: 760px) {
+    .panel { top: auto; bottom: 16px; right: 16px; left: 16px; width: auto; transform: none; padding: 22px; }
+    .panel h1 { font-size: 30px; }
+    .level .num { font-size: 52px; }
+    .caption h2 { font-size: 30px; }
+    .bar { padding: 18px 16px; }
+  }
+
+  /* phone in landscape: compact UI */
+  @media (max-height: 520px) {
+    .bar { padding: 12px 18px; }
+    .brand { top: 12px; height: 30px; }
+    .pill { height: 34px; padding: 0 14px; font-size: 13px; }
+    .panel { right: 18px; width: 250px; padding: 16px 18px 14px; border-radius: 22px; }
+    .panel h1 { font-size: 22px; }
+    .panel p.lead { display: none; }
+    .level .num { font-size: 40px; }
+    .unit { font-size: 14px; }
+    .meta { font-size: 12px; min-height: 0; }
+    .enter { margin-top: 10px; height: 38px; font-size: 14px; }
+    .caption { bottom: 18px; left: 18px; padding: 10px 16px 12px; border-radius: 18px; }
+    .caption h2 { font-size: 22px; }
+    .floor text { font-size: 30px; }
+  }
+  /* phone held upright: ask to turn it */
+  .rotate { display: none; }
+  @media (orientation: portrait) and (max-width: 760px) {
+    .rotate { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: #0b1118; text-align: center; }
+    .rotate div { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+    .rotate i { display: block; width: 46px; height: 78px; margin: 0 auto 22px; border: 2px solid var(--ink); border-radius: 10px; animation: turn 2.2s ease-in-out infinite; }
+    .rotate small { display: block; margin-top: 6px; font-size: 14px; font-weight: 400; color: var(--ink-dim); }
+  }
+  @keyframes turn { 0%, 25% { transform: rotate(0); } 55%, 100% { transform: rotate(-90deg); } }
+</style>
+</head>
+<body class="loading">
+<div class="stage">
+  <video class="clip on" id="v-fly" muted playsinline preload="auto" poster="assets/fly-first.webp"></video>
+  <video class="clip" id="v-enter" muted playsinline preload="auto"></video>
+  <video class="clip" id="v-bath" muted playsinline preload="auto"></video>
+  <video class="clip" id="v-back-terrace" muted playsinline preload="auto"></video>
+  <video class="clip" id="v-back-living" muted playsinline preload="auto"></video>
+  <video class="clip" id="v-back-bath" muted playsinline preload="auto"></video>
+  <svg class="floors" id="floors" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+    <defs><filter id="soft" x="-20%" y="-80%" width="140%" height="260%"><feGaussianBlur stdDeviation="7"/></filter><linearGradient id="fade" x1="0" x2="1"><stop offset="0" stop-color="#ffbf55" stop-opacity="0"/><stop offset=".18" stop-color="#ffc35e" stop-opacity="1"/><stop offset=".82" stop-color="#ffc35e" stop-opacity="1"/><stop offset="1" stop-color="#ffbf55" stop-opacity="0"/></linearGradient></defs>
+  </svg>
+</div>
+
+<header class="bar">
+  <div class="left"><button class="back pill glass btn-white" id="back">← Torna alla torre</button><button class="restart pill glass btn-white" id="restart">↺ Ricomincia</button></div>
+  <img class="brand" id="brand" src="assets/logo.svg" alt="SAMAR Residences">
+  <button class="register pill glass btn-blue">Richiedi informazioni</button>
+</header>
+
+<aside class="panel glass" id="panel">
+  <h1>Scegli<br>il piano</h1>
+  <p class="lead">Scorri lungo la torre per accendere un piano, poi sceglilo ed entri in volo attraverso il vetro.</p>
+  <div class="level"><small>Piano</small><span class="num" id="num">15</span></div>
+  <div class="unit" id="unit">Tre camere + studio</div>
+  <div class="meta" id="meta"></div>
+  <button class="enter pill btn-blue" id="enter">Entra al piano 15</button>
+</aside>
+
+<div class="caption glass" id="cap-esterno"><small>SAMAR</small><h2 class="lvl">Piano 15</h2></div>
+<div class="caption glass" id="cap-interno"><small class="lvl">Piano 15</small><h2>Soggiorno</h2></div>
+<div class="caption glass" id="cap-bagno"><small class="lvl">Piano 15</small><h2>Bagno</h2></div>
+
+<button class="spot pill glass btn-blue" id="spot-in" data-u=".5" data-v=".6"><i></i><span>Soggiorno</span></button>
+<button class="spot pill glass btn-white" id="spot-bagno" data-u=".785" data-v=".6"><i></i><span>Bagno</span></button>
+
+<div class="finale" id="finale"><div><img id="finale-logo" src="assets/logo-full.svg" alt="SAMAR Residences"><p id="finale-sub">DUBAI MARINA</p></div></div>
+
+<div class="rotate"><div><i></i>Gira il telefono<small>SAMAR si guarda in orizzontale</small></div></div>
+
+<div class="veil" id="veil"></div>
+<div class="loader" id="loader" role="status" aria-live="polite"><p>Scegli il piano · caricamento</p><b><span id="pct">0</span><small>%</small></b></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+// ---- floors: shapes traced on the first frame of the flight video (1920 x 1080), bottom to top ----
+const ACTIVE = 15;
+const TOUCH = matchMedia('(hover: none)').matches;
+const floors = [{"n":1,"d":"M566 767.9 L572 768.8 L578 769.9 L584 771.2 L590 772.6 L596 774.1 L602 775.6 L608 777.1 L614 778.8 L620 780.4 L626 781.9 L632 783.1 L638 784.0 L644 784.6 L650 785.0 L656 784.9 L662 784.5 L668 784.0 L674 783.1 L680 782.3 L686 781.4 L692 780.4 L698 779.4 L704 778.3 L710 777.3 L716 776.3 L722 775.3 L728 774.4 L734 773.7 L740 773.2 L746 772.8 L752 772.4 L758 771.8 L764 771.2 L770 770.6 L776 769.8 L782 768.8 L788 767.5 L794 766.1 L800 764.8 L806 763.6 L812 762.7 L818 762.0 L824 761.1 L830 760.4 L836 759.7 L842 759.0 L848 758.1 L854 757.3 L860 756.6 L866 755.7 L872 754.7 L878 753.8 L878 788.7 L872 789.4 L866 790.1 L860 791.0 L854 791.5 L848 792.2 L842 793.3 L836 794.5 L830 795.3 L824 794.9 L818 793.3 L812 792.8 L806 792.9 L800 793.5 L794 793.9 L788 794.1 L782 795.4 L776 798.6 L770 801.6 L764 803.8 L758 806.0 L752 807.4 L746 808.8 L740 809.5 L734 809.8 L728 810.0 L722 810.0 L716 810.0 L710 810.0 L704 810.0 L698 810.0 L692 810.0 L686 810.0 L680 810.0 L674 810.0 L668 810.0 L662 810.0 L656 810.0 L650 810.0 L644 810.0 L638 810.0 L632 810.0 L626 810.0 L620 810.0 L614 810.0 L608 810.0 L602 810.0 L596 809.8 L590 808.9 L584 807.6 L578 806.2 L572 805.1 L566 804.2 Z","mid":771.3,"xr":878},{"n":2,"d":"M566 743.7 L572 743.7 L578 744.5 L584 745.6 L590 746.5 L596 747.2 L602 748.5 L608 750.0 L614 751.5 L620 753.1 L626 754.4 L632 755.5 L638 756.3 L644 756.8 L650 757.0 L656 756.9 L662 756.6 L668 756.1 L674 755.4 L680 754.8 L686 754.1 L692 753.3 L698 752.4 L704 751.3 L710 750.3 L716 749.3 L722 748.3 L728 747.6 L734 746.8 L740 746.2 L746 745.7 L752 745.2 L758 744.7 L764 744.2 L770 743.7 L776 743.1 L782 742.3 L788 741.3 L794 740.2 L800 739.1 L806 738.1 L812 737.4 L818 736.8 L824 736.1 L830 735.4 L836 734.8 L842 734.0 L848 733.1 L854 732.3 L860 731.4 L866 730.8 L872 730.1 L878 729.5 L878 753.8 L872 754.7 L866 755.7 L860 756.6 L854 757.3 L848 758.1 L842 759.0 L836 759.7 L830 760.4 L824 761.1 L818 762.0 L812 762.7 L806 763.6 L800 764.8 L794 766.1 L788 767.5 L782 768.8 L776 769.8 L770 770.6 L764 771.2 L758 771.8 L752 772.4 L746 772.8 L740 773.2 L734 773.7 L728 774.4 L722 775.3 L716 776.3 L710 777.3 L704 778.3 L698 779.4 L692 780.4 L686 781.4 L680 782.3 L674 783.1 L668 784.0 L662 784.5 L656 784.9 L650 785.0 L644 784.6 L638 784.0 L632 783.1 L626 781.9 L620 780.4 L614 778.8 L608 777.1 L602 775.6 L596 774.1 L590 772.6 L584 771.2 L578 769.9 L572 768.8 L566 767.9 Z","mid":741.7,"xr":878},{"n":3,"d":"M566 722.7 L572 723.0 L578 722.8 L584 722.0 L590 721.5 L596 721.2 L602 722.1 L608 723.4 L614 724.4 L620 725.5 L626 726.6 L632 727.6 L638 728.3 L644 728.8 L650 729.0 L656 729.0 L662 728.8 L668 728.4 L674 727.8 L680 727.1 L686 726.4 L692 725.7 L698 725.0 L704 724.3 L710 723.6 L716 723.0 L722 722.1 L728 721.4 L734 720.8 L740 720.2 L746 719.7 L752 719.1 L758 718.5 L764 718.2 L770 717.7 L776 717.1 L782 716.3 L788 715.3 L794 714.4 L800 713.4 L806 712.4 L812 711.6 L818 710.8 L824 710.3 L830 710.0 L836 709.5 L842 708.8 L848 708.0 L854 707.3 L860 706.7 L866 706.1 L872 705.2 L878 703.4 L878 729.5 L872 730.1 L866 730.8 L860 731.4 L854 732.3 L848 733.1 L842 734.0 L836 734.8 L830 735.4 L824 736.1 L818 736.8 L812 737.4 L806 738.1 L800 739.1 L794 740.2 L788 741.3 L782 742.3 L776 743.1 L770 743.7 L764 744.2 L758 744.7 L752 745.2 L746 745.7 L740 746.2 L734 746.8 L728 747.6 L722 748.3 L716 749.3 L710 750.3 L704 751.3 L698 752.4 L692 753.3 L686 754.1 L680 754.8 L674 755.4 L668 756.1 L662 756.6 L656 756.9 L650 757.0 L644 756.8 L638 756.3 L632 755.5 L626 754.4 L620 753.1 L614 751.5 L608 750.0 L602 748.5 L596 747.2 L590 746.5 L584 745.6 L578 744.5 L572 743.7 L566 743.7 Z","mid":716.5,"xr":878},{"n":4,"d":"M566 696.7 L572 697.1 L578 696.8 L584 695.8 L590 694.8 L596 694.4 L602 695.2 L608 696.2 L614 697.4 L620 698.5 L626 699.6 L632 700.3 L638 700.8 L644 701.0 L650 701.0 L656 701.0 L662 700.8 L668 700.4 L674 699.8 L680 699.3 L686 698.8 L692 698.4 L698 697.8 L704 697.1 L710 696.3 L716 695.6 L722 694.8 L728 694.1 L734 693.5 L740 693.1 L746 692.7 L752 692.5 L758 692.2 L764 692.0 L770 691.6 L776 691.2 L782 690.6 L788 689.8 L794 688.9 L800 687.9 L806 687.0 L812 686.4 L818 685.8 L824 685.2 L830 684.6 L836 683.8 L842 683.1 L848 682.4 L854 681.8 L860 681.2 L866 680.6 L872 680.0 L878 679.4 L878 703.4 L872 705.2 L866 706.1 L860 706.7 L854 707.3 L848 708.0 L842 708.8 L836 709.5 L830 710.0 L824 710.3 L818 710.8 L812 711.6 L806 712.4 L800 713.4 L794 714.4 L788 715.3 L782 716.3 L776 717.1 L770 717.7 L764 718.2 L758 718.5 L752 719.1 L746 719.7 L740 720.2 L734 720.8 L728 721.4 L722 722.1 L716 723.0 L710 723.6 L704 724.3 L698 725.0 L692 725.7 L686 726.4 L680 727.1 L674 727.8 L668 728.4 L662 728.8 L656 729.0 L650 729.0 L644 728.8 L638 728.3 L632 727.6 L626 726.6 L620 725.5 L614 724.4 L608 723.4 L602 722.1 L596 721.2 L590 721.5 L584 722.0 L578 722.8 L572 723.0 L566 722.7 Z","mid":691.4,"xr":878},{"n":5,"d":"M566 664.9 L572 664.9 L578 664.9 L584 665.2 L590 665.8 L596 667.2 L602 668.4 L608 669.3 L614 670.2 L620 671.0 L626 671.9 L632 672.6 L638 673.1 L644 673.4 L650 673.4 L656 673.2 L662 673.0 L668 672.6 L674 672.2 L680 671.6 L686 671.0 L692 670.4 L698 669.8 L704 669.5 L710 669.0 L716 668.5 L722 668.1 L728 667.6 L734 667.3 L740 667.0 L746 666.6 L752 666.3 L758 666.0 L764 665.8 L770 665.5 L776 665.0 L782 664.2 L788 663.6 L794 662.8 L800 662.1 L806 661.4 L812 660.8 L818 660.3 L824 659.8 L830 659.5 L836 659.1 L842 658.6 L848 658.1 L854 657.5 L860 657.0 L866 656.5 L872 656.2 L878 656.0 L878 679.4 L872 680.0 L866 680.6 L860 681.2 L854 681.8 L848 682.4 L842 683.1 L836 683.8 L830 684.6 L824 685.2 L818 685.8 L812 686.4 L806 687.0 L800 687.9 L794 688.9 L788 689.8 L782 690.6 L776 691.2 L770 691.6 L764 692.0 L758 692.2 L752 692.5 L746 692.7 L740 693.1 L734 693.5 L728 694.1 L722 694.8 L716 695.6 L710 696.3 L704 697.1 L698 697.8 L692 698.4 L686 698.8 L680 699.3 L674 699.8 L668 700.4 L662 700.8 L656 701.0 L650 701.0 L644 701.0 L638 700.8 L632 700.3 L626 699.6 L620 698.5 L614 697.4 L608 696.2 L602 695.2 L596 694.4 L590 694.8 L584 695.8 L578 696.8 L572 697.1 L566 696.7 Z","mid":667.7,"xr":878},{"n":6,"d":"M566 640.3 L572 640.3 L578 640.3 L584 640.3 L590 640.4 L596 640.9 L602 641.5 L608 642.0 L614 642.8 L620 643.4 L626 644.2 L632 644.8 L638 645.2 L644 645.5 L650 645.8 L656 645.6 L662 645.5 L668 645.1 L674 644.6 L680 644.3 L686 644.0 L692 643.6 L698 643.2 L704 642.7 L710 642.2 L716 641.7 L722 641.3 L728 640.8 L734 640.5 L740 640.2 L746 640.0 L752 639.8 L758 639.5 L764 639.1 L770 638.6 L776 638.3 L782 637.8 L788 637.4 L794 636.8 L800 636.2 L806 635.7 L812 635.1 L818 634.5 L824 634.2 L830 633.8 L836 633.5 L842 633.1 L848 632.6 L854 632.3 L860 632.0 L866 631.6 L872 631.3 L878 631.0 L878 656.0 L872 656.2 L866 656.5 L860 657.0 L854 657.5 L848 658.1 L842 658.6 L836 659.1 L830 659.5 L824 659.8 L818 660.3 L812 660.8 L806 661.4 L800 662.1 L794 662.8 L788 663.6 L782 664.2 L776 665.0 L770 665.5 L764 665.8 L758 666.0 L752 666.3 L746 666.6 L740 667.0 L734 667.3 L728 667.6 L722 668.1 L716 668.5 L710 669.0 L704 669.5 L698 669.8 L692 670.4 L686 671.0 L680 671.6 L674 672.2 L668 672.6 L662 673.0 L656 673.2 L650 673.4 L644 673.4 L638 673.1 L632 672.6 L626 671.9 L620 671.0 L614 670.2 L608 669.3 L602 668.4 L596 667.2 L590 665.8 L584 665.2 L578 664.9 L572 664.9 L566 664.9 Z","mid":643.5,"xr":878},{"n":7,"d":"M566 613.3 L572 613.3 L578 613.3 L584 613.3 L590 613.4 L596 613.9 L602 614.5 L608 615.0 L614 615.5 L620 616.0 L626 616.5 L632 617.2 L638 617.4 L644 617.6 L650 617.6 L656 617.3 L662 617.1 L668 616.7 L674 616.3 L680 616.0 L686 615.9 L692 615.6 L698 615.3 L704 615.0 L710 614.6 L716 614.3 L722 614.0 L728 613.8 L734 613.5 L740 613.2 L746 613.0 L752 613.0 L758 612.9 L764 612.9 L770 612.6 L776 612.3 L782 612.0 L788 611.5 L794 611.1 L800 610.6 L806 610.3 L812 609.8 L818 609.5 L824 609.2 L830 608.8 L836 608.5 L842 608.2 L848 608.2 L854 607.9 L860 607.6 L866 606.9 L872 606.5 L878 606.2 L878 631.0 L872 631.3 L866 631.6 L860 632.0 L854 632.3 L848 632.6 L842 633.1 L836 633.5 L830 633.8 L824 634.2 L818 634.5 L812 635.1 L806 635.7 L800 636.2 L794 636.8 L788 637.4 L782 637.8 L776 638.3 L770 638.6 L764 639.1 L758 639.5 L752 639.8 L746 640.0 L740 640.2 L734 640.5 L728 640.8 L722 641.3 L716 641.7 L710 642.2 L704 642.7 L698 643.2 L692 643.6 L686 644.0 L680 644.3 L674 644.6 L668 645.1 L662 645.5 L656 645.6 L650 645.8 L644 645.5 L638 645.2 L632 644.8 L626 644.2 L620 643.4 L614 642.8 L608 642.0 L602 641.5 L596 640.9 L590 640.4 L584 640.3 L578 640.3 L572 640.3 L566 640.3 Z","mid":618.6,"xr":878},{"n":8,"d":"M566 586.1 L572 586.1 L578 586.1 L584 586.1 L590 586.2 L596 586.5 L602 586.8 L608 587.0 L614 587.3 L620 587.9 L626 588.5 L632 589.0 L638 589.0 L644 589.0 L650 589.0 L656 588.9 L662 588.6 L668 588.3 L674 588.0 L680 588.0 L686 587.9 L692 587.6 L698 587.3 L704 587.0 L710 587.0 L716 586.9 L722 586.6 L728 586.3 L734 586.0 L740 586.0 L746 586.0 L752 586.0 L758 585.9 L764 585.8 L770 585.6 L776 585.3 L782 585.2 L788 585.1 L794 584.8 L800 584.5 L806 584.2 L812 583.9 L818 583.6 L824 583.3 L830 583.0 L836 583.0 L842 583.0 L848 582.9 L854 582.6 L860 582.3 L866 581.9 L872 581.7 L878 581.7 L878 606.2 L872 606.5 L866 606.9 L860 607.6 L854 607.9 L848 608.2 L842 608.2 L836 608.5 L830 608.8 L824 609.2 L818 609.5 L812 609.8 L806 610.3 L800 610.6 L794 611.1 L788 611.5 L782 612.0 L776 612.3 L770 612.6 L764 612.9 L758 612.9 L752 613.0 L746 613.0 L740 613.2 L734 613.5 L728 613.8 L722 614.0 L716 614.3 L710 614.6 L704 615.0 L698 615.3 L692 615.6 L686 615.9 L680 616.0 L674 616.3 L668 616.7 L662 617.1 L656 617.3 L650 617.6 L644 617.6 L638 617.4 L632 617.2 L626 616.5 L620 616.0 L614 615.5 L608 615.0 L602 614.5 L596 613.9 L590 613.4 L584 613.3 L578 613.3 L572 613.3 L566 613.3 Z","mid":593.9,"xr":878},{"n":9,"d":"M566 559.0 L572 559.0 L578 559.0 L584 559.0 L590 559.0 L596 559.1 L602 559.1 L608 559.2 L614 559.4 L620 559.9 L626 560.7 L632 561.2 L638 561.4 L644 561.3 L650 561.1 L656 560.9 L662 560.6 L668 560.6 L674 560.6 L680 560.6 L686 560.5 L692 560.2 L698 559.8 L704 559.6 L710 559.3 L716 559.1 L722 559.0 L728 559.0 L734 559.0 L740 559.0 L746 559.0 L752 559.0 L758 559.0 L764 559.0 L770 559.0 L776 558.9 L782 558.8 L788 558.5 L794 558.2 L800 558.0 L806 558.0 L812 558.0 L818 558.0 L824 558.0 L830 558.0 L836 558.0 L842 557.8 L848 557.5 L854 557.2 L860 557.0 L866 557.0 L872 557.0 L878 557.0 L878 581.7 L872 581.7 L866 581.9 L860 582.3 L854 582.6 L848 582.9 L842 583.0 L836 583.0 L830 583.0 L824 583.3 L818 583.6 L812 583.9 L806 584.2 L800 584.5 L794 584.8 L788 585.1 L782 585.2 L776 585.3 L770 585.6 L764 585.8 L758 585.9 L752 586.0 L746 586.0 L740 586.0 L734 586.0 L728 586.3 L722 586.6 L716 586.9 L710 587.0 L704 587.0 L698 587.3 L692 587.6 L686 587.9 L680 588.0 L674 588.0 L668 588.3 L662 588.6 L656 588.9 L650 589.0 L644 589.0 L638 589.0 L632 589.0 L626 588.5 L620 587.9 L614 587.3 L608 587.0 L602 586.8 L596 586.5 L590 586.2 L584 586.1 L578 586.1 L572 586.1 L566 586.1 Z","mid":569.4,"xr":878},{"n":10,"d":"M566 532.2 L572 532.2 L578 532.2 L584 532.2 L590 532.3 L596 532.5 L602 532.4 L608 532.3 L614 532.2 L620 532.6 L626 533.1 L632 533.4 L638 533.4 L644 533.2 L650 533.0 L656 532.9 L662 532.6 L668 532.5 L674 532.3 L680 532.3 L686 532.4 L692 532.4 L698 532.4 L704 532.3 L710 532.2 L716 532.0 L722 532.1 L728 532.2 L734 532.2 L740 532.2 L746 532.2 L752 532.2 L758 532.2 L764 532.1 L770 532.0 L776 532.0 L782 532.0 L788 532.0 L794 532.0 L800 532.0 L806 532.0 L812 532.1 L818 532.2 L824 532.3 L830 532.4 L836 532.5 L842 532.4 L848 532.1 L854 531.8 L860 531.6 L866 531.5 L872 531.5 L878 531.5 L878 557.0 L872 557.0 L866 557.0 L860 557.0 L854 557.2 L848 557.5 L842 557.8 L836 558.0 L830 558.0 L824 558.0 L818 558.0 L812 558.0 L806 558.0 L800 558.0 L794 558.2 L788 558.5 L782 558.8 L776 558.9 L770 559.0 L764 559.0 L758 559.0 L752 559.0 L746 559.0 L740 559.0 L734 559.0 L728 559.0 L722 559.0 L716 559.1 L710 559.3 L704 559.6 L698 559.8 L692 560.2 L686 560.5 L680 560.6 L674 560.6 L668 560.6 L662 560.6 L656 560.9 L650 561.1 L644 561.3 L638 561.4 L632 561.2 L626 560.7 L620 559.9 L614 559.4 L608 559.2 L602 559.1 L596 559.1 L590 559.0 L584 559.0 L578 559.0 L572 559.0 L566 559.0 Z","mid":544.2,"xr":878},{"n":11,"d":"M566 505.4 L572 505.4 L578 505.4 L584 505.4 L590 505.5 L596 505.8 L602 505.8 L608 505.4 L614 505.1 L620 505.2 L626 505.4 L632 505.6 L638 505.3 L644 505.0 L650 505.0 L656 504.9 L662 504.6 L668 504.3 L674 504.0 L680 504.1 L686 504.4 L692 504.7 L698 505.0 L704 505.0 L710 505.0 L716 505.0 L722 505.2 L728 505.4 L734 505.4 L740 505.4 L746 505.4 L752 505.4 L758 505.4 L764 505.2 L770 505.0 L776 505.0 L782 505.2 L788 505.5 L794 505.8 L800 506.0 L806 506.1 L812 506.3 L818 506.4 L824 506.7 L830 506.7 L836 506.9 L842 507.0 L848 506.8 L854 506.5 L860 506.2 L866 506.0 L872 506.0 L878 506.0 L878 531.5 L872 531.5 L866 531.5 L860 531.6 L854 531.8 L848 532.1 L842 532.4 L836 532.5 L830 532.4 L824 532.3 L818 532.2 L812 532.1 L806 532.0 L800 532.0 L794 532.0 L788 532.0 L782 532.0 L776 532.0 L770 532.0 L764 532.1 L758 532.2 L752 532.2 L746 532.2 L740 532.2 L734 532.2 L728 532.2 L722 532.1 L716 532.0 L710 532.2 L704 532.3 L698 532.4 L692 532.4 L686 532.4 L680 532.3 L674 532.3 L668 532.5 L662 532.6 L656 532.9 L650 533.0 L644 533.2 L638 533.4 L632 533.4 L626 533.1 L620 532.6 L614 532.2 L608 532.3 L602 532.4 L596 532.5 L590 532.3 L584 532.2 L578 532.2 L572 532.2 L566 532.2 Z","mid":518.8,"xr":878},{"n":12,"d":"M566 474.0 L572 474.0 L578 474.0 L584 474.0 L590 474.0 L596 473.8 L602 473.2 L608 472.4 L614 471.9 L620 472.1 L626 472.2 L632 472.4 L638 472.2 L644 471.8 L650 471.7 L656 471.4 L662 470.9 L668 470.5 L674 470.3 L680 470.5 L686 471.0 L692 471.4 L698 471.4 L704 471.6 L710 471.7 L716 471.8 L722 472.0 L728 472.0 L734 472.0 L740 472.0 L746 472.2 L752 472.5 L758 472.8 L764 473.0 L770 473.0 L776 473.0 L782 473.2 L788 473.5 L794 473.9 L800 474.4 L806 474.7 L812 475.0 L818 475.0 L824 475.1 L830 475.4 L836 475.7 L842 476.0 L848 475.9 L854 475.6 L860 475.6 L866 475.6 L872 475.6 L878 475.6 L878 506.0 L872 506.0 L866 506.0 L860 506.2 L854 506.5 L848 506.8 L842 507.0 L836 506.9 L830 506.7 L824 506.7 L818 506.4 L812 506.3 L806 506.1 L800 506.0 L794 505.8 L788 505.5 L782 505.2 L776 505.0 L770 505.0 L764 505.2 L758 505.4 L752 505.4 L746 505.4 L740 505.4 L734 505.4 L728 505.4 L722 505.2 L716 505.0 L710 505.0 L704 505.0 L698 505.0 L692 504.7 L686 504.4 L680 504.1 L674 504.0 L668 504.3 L662 504.6 L656 504.9 L650 505.0 L644 505.0 L638 505.3 L632 505.6 L626 505.4 L620 505.2 L614 505.1 L608 505.4 L602 505.8 L596 505.8 L590 505.5 L584 505.4 L578 505.4 L572 505.4 L566 505.4 Z","mid":490.8,"xr":878},{"n":13,"d":"M566 437.9 L572 437.9 L578 437.9 L584 437.9 L590 437.9 L596 437.6 L602 437.0 L608 435.8 L614 435.2 L620 434.9 L626 435.0 L632 435.3 L638 434.8 L644 434.5 L650 434.1 L656 433.4 L662 432.8 L668 432.3 L674 432.4 L680 432.8 L686 433.3 L692 433.7 L698 434.2 L704 434.5 L710 434.9 L716 435.4 L722 435.7 L728 436.0 L734 436.0 L740 436.2 L746 436.5 L752 436.8 L758 437.0 L764 437.0 L770 437.1 L776 437.4 L782 437.8 L788 438.3 L794 438.9 L800 439.6 L806 440.2 L812 440.7 L818 441.2 L824 441.5 L830 441.8 L836 442.2 L842 442.5 L848 442.6 L854 442.6 L860 442.6 L866 442.7 L872 443.0 L878 443.0 L878 475.6 L872 475.6 L866 475.6 L860 475.6 L854 475.6 L848 475.9 L842 476.0 L836 475.7 L830 475.4 L824 475.1 L818 475.0 L812 475.0 L806 474.7 L800 474.4 L794 473.9 L788 473.5 L782 473.2 L776 473.0 L770 473.0 L764 473.0 L758 472.8 L752 472.5 L746 472.2 L740 472.0 L734 472.0 L728 472.0 L722 472.0 L716 471.8 L710 471.7 L704 471.6 L698 471.4 L692 471.4 L686 471.0 L680 470.5 L674 470.3 L668 470.5 L662 470.9 L656 471.4 L650 471.7 L644 471.8 L638 472.2 L632 472.4 L626 472.2 L620 472.1 L614 471.9 L608 472.4 L602 473.2 L596 473.8 L590 474.0 L584 474.0 L578 474.0 L572 474.0 L566 474.0 Z","mid":459.3,"xr":878},{"n":14,"d":"M566 409.7 L572 409.7 L578 409.7 L584 409.7 L590 409.7 L596 409.4 L602 408.5 L608 406.9 L614 405.6 L620 404.8 L626 404.4 L632 404.4 L638 404.0 L644 403.5 L650 403.2 L656 403.0 L662 403.1 L668 403.4 L674 403.8 L680 404.3 L686 404.7 L692 405.2 L698 405.5 L704 406.0 L710 406.5 L716 406.9 L722 407.4 L728 407.7 L734 408.0 L740 408.1 L746 408.4 L752 408.7 L758 408.9 L764 409.0 L770 409.1 L776 409.4 L782 409.9 L788 410.6 L794 411.3 L800 412.3 L806 413.2 L812 414.0 L818 414.5 L824 415.0 L830 415.5 L836 416.0 L842 416.5 L848 416.8 L854 417.0 L860 417.0 L866 417.0 L872 417.0 L878 417.0 L878 443.0 L872 443.0 L866 442.7 L860 442.6 L854 442.6 L848 442.6 L842 442.5 L836 442.2 L830 441.8 L824 441.5 L818 441.2 L812 440.7 L806 440.2 L800 439.6 L794 438.9 L788 438.3 L782 437.8 L776 437.4 L770 437.1 L764 437.0 L758 437.0 L752 436.8 L746 436.5 L740 436.2 L734 436.0 L728 436.0 L722 435.7 L716 435.4 L710 434.9 L704 434.5 L698 434.2 L692 433.7 L686 433.3 L680 432.8 L674 432.4 L668 432.3 L662 432.8 L656 433.4 L650 434.1 L644 434.5 L638 434.8 L632 435.3 L626 435.0 L620 434.9 L614 435.2 L608 435.8 L602 437.0 L596 437.6 L590 437.9 L584 437.9 L578 437.9 L572 437.9 L566 437.9 Z","mid":430.0,"xr":878},{"n":15,"d":"M566 370.7 L572 370.7 L578 370.7 L584 370.7 L590 370.7 L596 370.7 L602 370.7 L608 370.7 L614 370.7 L620 371.3 L626 373.0 L632 374.5 L638 374.5 L644 374.2 L650 374.0 L656 374.0 L662 374.1 L668 374.4 L674 374.8 L680 375.3 L686 375.8 L692 376.3 L698 376.8 L704 377.2 L710 377.8 L716 378.3 L722 378.8 L728 379.3 L734 379.7 L740 380.1 L746 380.4 L752 380.7 L758 380.9 L764 381.1 L770 381.4 L776 381.8 L782 382.3 L788 383.0 L794 383.9 L800 385.1 L806 386.4 L812 387.3 L818 388.0 L824 388.6 L830 389.2 L836 389.8 L842 390.3 L848 390.7 L854 391.0 L860 391.0 L866 391.0 L872 391.0 L878 391.0 L878 417.0 L872 417.0 L866 417.0 L860 417.0 L854 417.0 L848 416.8 L842 416.5 L836 416.0 L830 415.5 L824 415.0 L818 414.5 L812 414.0 L806 413.2 L800 412.3 L794 411.3 L788 410.6 L782 409.9 L776 409.4 L770 409.1 L764 409.0 L758 408.9 L752 408.7 L746 408.4 L740 408.1 L734 408.0 L728 407.7 L722 407.4 L716 406.9 L710 406.5 L704 406.0 L698 405.5 L692 405.2 L686 404.7 L680 404.3 L674 403.8 L668 403.4 L662 403.1 L656 403.0 L650 403.2 L644 403.5 L638 404.0 L632 404.4 L626 404.4 L620 404.8 L614 405.6 L608 406.9 L602 408.5 L596 409.4 L590 409.7 L584 409.7 L578 409.7 L572 409.7 L566 409.7 Z","mid":404.0,"xr":878},{"n":16,"d":"M566 346.8 L572 346.8 L578 346.8 L584 346.8 L590 346.8 L596 346.8 L602 346.6 L608 346.0 L614 345.5 L620 345.4 L626 346.2 L632 347.0 L638 346.7 L644 346.3 L650 345.9 L656 345.5 L662 345.2 L668 345.3 L674 345.6 L680 346.0 L686 346.6 L692 347.4 L698 348.0 L704 348.4 L710 349.0 L716 349.7 L722 350.3 L728 350.9 L734 351.4 L740 351.8 L746 352.2 L752 352.5 L758 352.8 L764 353.1 L770 353.4 L776 353.9 L782 354.5 L788 355.2 L794 356.3 L800 357.6 L806 359.1 L812 360.1 L818 360.8 L824 361.4 L830 362.2 L836 362.9 L842 363.2 L848 363.5 L854 363.6 L860 363.5 L866 363.5 L872 363.8 L878 364.1 L878 391.0 L872 391.0 L866 391.0 L860 391.0 L854 391.0 L848 390.7 L842 390.3 L836 389.8 L830 389.2 L824 388.6 L818 388.0 L812 387.3 L806 386.4 L800 385.1 L794 383.9 L788 383.0 L782 382.3 L776 381.8 L770 381.4 L764 381.1 L758 380.9 L752 380.7 L746 380.4 L740 380.1 L734 379.7 L728 379.3 L722 378.8 L716 378.3 L710 377.8 L704 377.2 L698 376.8 L692 376.3 L686 375.8 L680 375.3 L674 374.8 L668 374.4 L662 374.1 L656 374.0 L650 374.0 L644 374.2 L638 374.5 L632 374.5 L626 373.0 L620 371.3 L614 370.7 L608 370.7 L602 370.7 L596 370.7 L590 370.7 L584 370.7 L578 370.7 L572 370.7 L566 370.7 Z","mid":377.5,"xr":878},{"n":17,"d":"M566 323.0 L572 323.0 L578 323.0 L584 323.0 L590 323.0 L596 322.9 L602 322.5 L608 321.4 L614 320.2 L620 319.5 L626 319.3 L632 319.5 L638 318.9 L644 318.3 L650 317.8 L656 317.1 L662 316.4 L668 316.1 L674 316.3 L680 316.7 L686 317.3 L692 318.6 L698 319.2 L704 319.6 L710 320.1 L716 321.0 L722 321.8 L728 322.5 L734 323.0 L740 323.6 L746 324.0 L752 324.4 L758 324.7 L764 325.2 L770 325.5 L776 326.1 L782 326.7 L788 327.5 L794 328.7 L800 330.1 L806 331.8 L812 333.0 L818 333.6 L824 334.2 L830 335.2 L836 336.0 L842 336.2 L848 336.3 L854 336.3 L860 336.0 L866 336.0 L872 336.5 L878 337.1 L878 364.1 L872 363.8 L866 363.5 L860 363.5 L854 363.6 L848 363.5 L842 363.2 L836 362.9 L830 362.2 L824 361.4 L818 360.8 L812 360.1 L806 359.1 L800 357.6 L794 356.3 L788 355.2 L782 354.5 L776 353.9 L770 353.4 L764 353.1 L758 352.8 L752 352.5 L746 352.2 L740 351.8 L734 351.4 L728 350.9 L722 350.3 L716 349.7 L710 349.0 L704 348.4 L698 348.0 L692 347.4 L686 346.6 L680 346.0 L674 345.6 L668 345.3 L662 345.2 L656 345.5 L650 345.9 L644 346.3 L638 346.7 L632 347.0 L626 346.2 L620 345.4 L614 345.5 L608 346.0 L602 346.6 L596 346.8 L590 346.8 L584 346.8 L578 346.8 L572 346.8 L566 346.8 Z","mid":350.6,"xr":878},{"n":18,"d":"M566 299.1 L572 299.1 L578 299.1 L584 299.1 L590 299.1 L596 299.0 L602 298.4 L608 296.7 L614 295.0 L620 293.5 L626 292.5 L632 292.0 L638 291.1 L644 290.4 L650 289.7 L656 288.6 L662 287.5 L668 287.0 L674 287.1 L680 287.4 L686 288.1 L692 289.7 L698 290.4 L704 290.9 L710 291.3 L716 292.4 L722 293.3 L728 294.0 L734 294.7 L740 295.3 L746 295.8 L752 296.3 L758 296.7 L764 297.2 L770 297.6 L776 298.2 L782 298.9 L788 299.8 L794 301.1 L800 302.6 L806 304.6 L812 305.9 L818 306.3 L824 307.0 L830 308.2 L836 309.0 L842 309.1 L848 309.1 L854 308.9 L860 308.5 L866 308.5 L872 309.3 L878 310.2 L878 337.1 L872 336.5 L866 336.0 L860 336.0 L854 336.3 L848 336.3 L842 336.2 L836 336.0 L830 335.2 L824 334.2 L818 333.6 L812 333.0 L806 331.8 L800 330.1 L794 328.7 L788 327.5 L782 326.7 L776 326.1 L770 325.5 L764 325.2 L758 324.7 L752 324.4 L746 324.0 L740 323.6 L734 323.0 L728 322.5 L722 321.8 L716 321.0 L710 320.1 L704 319.6 L698 319.2 L692 318.6 L686 317.3 L680 316.7 L674 316.3 L668 316.1 L662 316.4 L656 317.1 L650 317.8 L644 318.3 L638 318.9 L632 319.5 L626 319.3 L620 319.5 L614 320.2 L608 321.4 L602 322.5 L596 322.9 L590 323.0 L584 323.0 L578 323.0 L572 323.0 L566 323.0 Z","mid":323.6,"xr":878},{"n":19,"d":"M566 271.6 L572 271.6 L578 271.6 L584 271.6 L590 271.6 L596 271.0 L602 269.8 L608 267.9 L614 266.0 L620 264.3 L626 262.9 L632 261.8 L638 261.1 L644 260.5 L650 260.3 L656 260.0 L662 258.8 L668 258.0 L674 257.4 L680 257.7 L686 258.6 L692 259.6 L698 260.6 L704 261.6 L710 262.7 L716 263.9 L722 264.5 L728 265.2 L734 266.3 L740 267.0 L746 267.6 L752 268.0 L758 268.4 L764 268.7 L770 268.9 L776 269.5 L782 270.3 L788 271.5 L794 273.0 L800 274.7 L806 276.4 L812 278.1 L818 279.1 L824 280.0 L830 281.0 L836 281.4 L842 282.1 L848 282.4 L854 282.1 L860 281.6 L866 281.7 L872 283.1 L878 284.5 L878 310.2 L872 309.3 L866 308.5 L860 308.5 L854 308.9 L848 309.1 L842 309.1 L836 309.0 L830 308.2 L824 307.0 L818 306.3 L812 305.9 L806 304.6 L800 302.6 L794 301.1 L788 299.8 L782 298.9 L776 298.2 L770 297.6 L764 297.2 L758 296.7 L752 296.3 L746 295.8 L740 295.3 L734 294.7 L728 294.0 L722 293.3 L716 292.4 L710 291.3 L704 290.9 L698 290.4 L692 289.7 L686 288.1 L680 287.4 L674 287.1 L668 287.0 L662 287.5 L656 288.6 L650 289.7 L644 290.4 L638 291.1 L632 292.0 L626 292.5 L620 293.5 L614 295.0 L608 296.7 L602 298.4 L596 299.0 L590 299.1 L584 299.1 L578 299.1 L572 299.1 L566 299.1 Z","mid":297.3,"xr":878},{"n":20,"d":"M566 243.3 L572 243.3 L578 243.3 L584 243.3 L590 243.3 L596 242.5 L602 240.7 L608 238.5 L614 236.5 L620 235.2 L626 234.4 L632 234.0 L638 232.8 L644 231.8 L650 230.6 L656 229.1 L662 227.6 L668 226.7 L674 226.9 L680 227.8 L686 229.1 L692 230.2 L698 231.2 L704 232.3 L710 232.9 L716 233.9 L722 235.1 L728 236.1 L734 237.0 L740 237.9 L746 238.5 L752 239.0 L758 239.3 L764 239.8 L770 240.4 L776 241.2 L782 242.1 L788 243.4 L794 244.8 L800 246.7 L806 248.4 L812 250.1 L818 251.4 L824 252.5 L830 253.6 L836 254.7 L842 255.8 L848 256.8 L854 257.0 L860 256.3 L866 255.2 L872 254.3 L878 254.1 L878 284.5 L872 283.1 L866 281.7 L860 281.6 L854 282.1 L848 282.4 L842 282.1 L836 281.4 L830 281.0 L824 280.0 L818 279.1 L812 278.1 L806 276.4 L800 274.7 L794 273.0 L788 271.5 L782 270.3 L776 269.5 L770 268.9 L764 268.7 L758 268.4 L752 268.0 L746 267.6 L740 267.0 L734 266.3 L728 265.2 L722 264.5 L716 263.9 L710 262.7 L704 261.6 L698 260.6 L692 259.6 L686 258.6 L680 257.7 L674 257.4 L668 258.0 L662 258.8 L656 260.0 L650 260.3 L644 260.5 L638 261.1 L632 261.8 L626 262.9 L620 264.3 L614 266.0 L608 267.9 L602 269.8 L596 271.0 L590 271.6 L584 271.6 L578 271.6 L572 271.6 L566 271.6 Z","mid":269.3,"xr":878},{"n":21,"d":"M566 200.4 L572 200.4 L578 200.4 L584 200.4 L590 200.4 L596 200.4 L602 200.4 L608 200.4 L614 200.4 L620 200.4 L626 200.4 L632 200.3 L638 199.8 L644 198.4 L650 197.3 L656 196.3 L662 195.8 L668 196.4 L674 197.3 L680 198.5 L686 199.9 L692 201.1 L698 202.2 L704 203.2 L710 204.1 L716 205.1 L722 206.4 L728 207.6 L734 208.8 L740 209.9 L746 210.6 L752 211.0 L758 211.5 L764 211.9 L770 212.4 L776 213.0 L782 213.9 L788 214.8 L794 216.3 L800 218.3 L806 220.5 L812 222.6 L818 224.2 L824 225.5 L830 226.6 L836 227.6 L842 228.7 L848 229.8 L854 230.9 L860 231.4 L866 231.5 L872 232.3 L878 233.2 L878 254.1 L872 254.3 L866 255.2 L860 256.3 L854 257.0 L848 256.8 L842 255.8 L836 254.7 L830 253.6 L824 252.5 L818 251.4 L812 250.1 L806 248.4 L800 246.7 L794 244.8 L788 243.4 L782 242.1 L776 241.2 L770 240.4 L764 239.8 L758 239.3 L752 239.0 L746 238.5 L740 237.9 L734 237.0 L728 236.1 L722 235.1 L716 233.9 L710 232.9 L704 232.3 L698 231.2 L692 230.2 L686 229.1 L680 227.8 L674 226.9 L668 226.7 L662 227.6 L656 229.1 L650 230.6 L644 231.8 L638 232.8 L632 234.0 L626 234.4 L620 235.2 L614 236.5 L608 238.5 L602 240.7 L596 242.5 L590 243.3 L584 243.3 L578 243.3 L572 243.3 L566 243.3 Z","mid":243.7,"xr":878},{"n":22,"d":"M566 184.3 L572 184.3 L578 183.9 L584 183.6 L590 183.2 L596 183.6 L602 183.3 L608 181.5 L614 178.6 L620 175.6 L626 173.0 L632 171.5 L638 170.6 L644 170.2 L650 170.0 L656 168.8 L662 167.7 L668 167.0 L674 167.4 L680 168.6 L686 169.9 L692 171.1 L698 172.1 L704 173.2 L710 174.5 L716 175.8 L722 177.1 L728 178.4 L734 179.3 L740 180.0 L746 178.9 L752 177.2 L758 176.9 L764 176.9 L770 176.9 L776 176.9 L782 176.9 L788 176.9 L794 176.9 L800 176.9 L806 176.9 L812 176.9 L818 176.9 L824 176.9 L830 176.9 L836 176.9 L842 176.9 L848 176.9 L854 176.9 L860 176.9 L866 176.9 L872 176.9 L878 176.9 L878 233.2 L872 232.3 L866 231.5 L860 231.4 L854 230.9 L848 229.8 L842 228.7 L836 227.6 L830 226.6 L824 225.5 L818 224.2 L812 222.6 L806 220.5 L800 218.3 L794 216.3 L788 214.8 L782 213.9 L776 213.0 L770 212.4 L764 211.9 L758 211.5 L752 211.0 L746 210.6 L740 209.9 L734 208.8 L728 207.6 L722 206.4 L716 205.1 L710 204.1 L704 203.2 L698 202.2 L692 201.1 L686 199.9 L680 198.5 L674 197.3 L668 196.4 L662 195.8 L656 196.3 L650 197.3 L644 198.4 L638 199.8 L632 200.3 L626 200.4 L620 200.4 L614 200.4 L608 200.4 L602 200.4 L596 200.4 L590 200.4 L584 200.4 L578 200.4 L572 200.4 L566 200.4 Z","mid":205.1,"xr":878}].map(f => ({ ...f, ...(f.n === 23 ? { unit: 'Attico · Quattro camere', area: 549, out: 'terrazza di 330 m² con piscina' } : f.n >= 15 ? { unit: 'Tre camere + studio', area: 714, out: 'balcone di 150 m² sul Golfo' } : { unit: 'Due camere + sala cinema', area: 714, out: 'balcone di 150 m² sul Golfo' }) }));
+const svg = document.getElementById('floors');
+const NS = 'http://www.w3.org/2000/svg';
+floors.forEach(f => {
+  const g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'floor');
+  g.innerHTML = `<path class="hit" d="${f.d}"/><path class="shape" d="${f.d}"/>
+    <line x1="${f.xr + 26}" x2="${f.xr + 76}" y1="${f.mid}" y2="${f.mid}"/>
+    <text x="${f.xr + 88}" y="${f.mid + 8}">${f.n}</text>`;
+  g.addEventListener('mouseenter', () => pick(f, g));
+  g.addEventListener('click', () => { if (TOUCH && !g.classList.contains('hover')) { pick(f, g); return; } pick(f, g); fly(); });
+  f.el = g; svg.appendChild(g);
+});
+
+const $ = id => document.getElementById(id);
+let current = null;
+function pick(f, g) {
+  floors.forEach(x => x.el.classList.toggle('hover', x === f));
+  if (f === current) return;
+  current = f;
+  const num = $('num');
+  gsap.fromTo(num, { yPercent: 30, opacity: 0 }, { yPercent: 0, opacity: 1, duration: .35, ease: 'power2.out' });
+  num.textContent = f.n;
+  $('unit').textContent = f.unit;
+  $('meta').textContent = `${f.area} m² · ${f.out}`;
+  $('enter').disabled = false;
+  $('enter').textContent = `Entra al piano ${f.n}`;
+}
+pick(floors[ACTIVE - 1]);
+floors[ACTIVE - 1].el.classList.remove('hover');
+svg.addEventListener('mouseleave', () => floors.forEach(x => x.el.classList.remove('hover')));
+
+// ---- clips ----
+// Only the original footage: forward clips play as they are; each return is one clip made of the
+// same original frames in reverse, with slow stretches thinned so the camera never stalls.
+const CLIPS = {
+  fly: 'assets/fly.mp4', enter: 'assets/enter.mp4', bath: 'assets/bath.mp4',
+  'back-terrace': 'assets/back-terrace.mp4', 'back-living': 'assets/back-living.mp4', 'back-bath': 'assets/back-bath.mp4',
+};
+// Web version (8/11): one clip at a time, in the order you watch them. The flight comes first and the
+// tower is usable as soon as it is in; the others load while you look around. Each clip still goes
+// fully into memory before it plays, so nothing stalls mid-move.
+const ORDER = ['fly', 'enter', 'back-terrace', 'bath', 'back-living', 'back-bath'];
+let ready = 0;
+const total = ORDER.length;
+const loaded = {};
+ORDER.forEach(id => { let r; loaded[id] = new Promise(res => (r = res)); loaded[id].done = r; });
+async function grab(src, onPct) {
+  const res = await fetch(src);
+  const len = +res.headers.get('content-length') || 0;
+  if (!len || !res.body || !onPct) return res.blob();
+  const reader = res.body.getReader(), parts = []; let got = 0;
+  for (;;) { const { done, value } = await reader.read(); if (done) break; parts.push(value); got += value.length; onPct(got / len); }
+  return new Blob(parts, { type: 'video/mp4' });
+}
+(async () => {
+  for (const id of ORDER) {
+    const blob = await grab(CLIPS[id], id === 'fly' ? p => { $('pct').textContent = Math.min(99, Math.floor(p * 100)); } : null);
+    const v = $('v-' + id);
+    v.src = URL.createObjectURL(blob);
+    await new Promise(res => { v.addEventListener('loadeddata', res, { once: true }); v.load(); });
+    ready++;
+    if (id === 'fly') {
+      $('pct').textContent = 100;
+      setTimeout(() => {
+        $('loader').classList.add('out'); $('veil').style.opacity = 0;
+        document.body.classList.add('reveal'); document.body.classList.remove('loading');
+        setTimeout(() => { document.body.classList.remove('reveal'); $('loader').remove(); $('veil').remove(); }, 1000);
+      }, 350);
+    }
+    loaded[id].done();
+  }
+})();
+let showing = $('v-fly');   // the tower is the flight's first frame
+function swapTo(el) {
+  el.classList.add('on');
+  if (showing && showing !== el) { const old = showing; requestAnimationFrame(() => requestAnimationFrame(() => old.classList.remove('on'))); }
+  showing = el;
+}
+async function play(id, onStart, rate = 1) {
+  if (ready < total) await loaded[id];   // a clip still on its way: wait for it, then go
+  const v = $('v-' + id);
+  v.playbackRate = rate;
+  return new Promise(resolve => {
+    v.pause(); v.currentTime = 0;
+    const start = () => {
+      swapTo(v); v.play();
+      if (onStart) onStart(v);
+      v.addEventListener('ended', () => resolve(), { once: true });
+    };
+    if (v.readyState >= 2 && !v.seeking) start(); else v.addEventListener('seeked', start, { once: true });
+  });
+}
+
+// place hotspots on frame coordinates, whatever the window shape
+function placeSpots() {
+  const iw = 1920, ih = 1080, s = Math.max(innerWidth / iw, innerHeight / ih);
+  const ox = (innerWidth - iw * s) / 2, oy = (innerHeight - ih * s) / 2;
+  document.querySelectorAll('.spot').forEach(el => {
+    el.style.left = (ox + el.dataset.u * iw * s) + 'px';
+    el.style.top = (oy + el.dataset.v * ih * s) + 'px';
+  });
+}
+placeSpots(); addEventListener('resize', placeSpots);
+
+let state = 'tower', busy = false;
+function captions(id) {
+  document.querySelectorAll('.caption, .spot').forEach(c => c.classList.remove('on', 'selected'));
+  if (id) $(id).classList.add('on');
+}
+
+async function fly() {
+  if (busy || state !== 'tower') return;
+  busy = true;
+  gsap.to(['#panel', '#floors'], { opacity: 0, duration: .4, onComplete: () => { $('panel').style.pointerEvents = 'none'; $('floors').style.pointerEvents = 'none'; } });
+  $('back').classList.add('on');
+  document.querySelectorAll('.lvl').forEach(el => el.textContent = `Piano ${current.n}`);
+  await play('fly');
+  state = 'esterno'; busy = false; captions('cap-esterno'); $('spot-in').classList.add('on');
+}
+$('enter').addEventListener('click', () => fly());
+
+$('spot-in').addEventListener('click', async () => {
+  if (busy || state !== 'esterno') return;
+  busy = true; captions();
+  await play('enter');
+  state = 'interno'; busy = false; captions('cap-interno'); $('spot-bagno').classList.add('on');
+});
+$('spot-bagno').addEventListener('click', async () => {
+  if (busy || state !== 'interno') return;
+  busy = true; captions();
+  await play('bath');
+  state = 'bagno'; busy = false; captions('cap-bagno');
+});
+
+// back: the same footage in reverse, room by room, to the tower; the logo builds up on the last stretch
+$('back').addEventListener('click', async () => {
+  if (busy || !['esterno', 'interno', 'bagno'].includes(state)) return;
+  busy = true; captions();
+  gsap.to('#brand', { opacity: 0, duration: .6 });
+  // one continuous clip per starting room (original frames, reversed, evened out): no stops on the way
+  const id = { esterno: 'back-terrace', interno: 'back-living', bagno: 'back-bath' }[state];
+  await play(id, v => { const d = v.duration, lead = d * .55; gsap.delayedCall(d - lead, () => finale(lead)); });
+  state = 'end'; busy = false; $('back').classList.remove('on'); $('restart').classList.add('on');
+});
+
+// closing title: SAMAR RESIDENCES, letter by letter, only at the end of the return
+function finale(dur) {
+  return gsap.timeline()
+    .fromTo('#finale-logo', { opacity: 0, y: 30, scale: .94, filter: 'blur(14px) drop-shadow(0 4px 30px rgba(0,0,0,.3))' },
+      { opacity: 1, y: 0, scale: 1, filter: 'blur(0px) drop-shadow(0 4px 30px rgba(0,0,0,.3))', duration: dur, ease: 'power2.out' })
+    .fromTo('#finale-sub', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: dur * .6, ease: 'power2.out' }, dur * .4);
+}
+// back to the very beginning: clear the title, bring the floor picker back
+$('restart').addEventListener('click', () => {
+  if (state !== 'end') return;
+  $('restart').classList.remove('on');
+  gsap.to(['#finale-logo', '#finale-sub'], { opacity: 0, duration: .5, ease: 'power2.in', onComplete: () => {
+    state = 'tower';
+    $('panel').style.pointerEvents = ''; $('floors').style.pointerEvents = '';
+    pick(floors[ACTIVE - 1]); floors.forEach(x => x.el.classList.remove('hover'));
+    gsap.to(['#panel', '#floors', '#brand'], { opacity: 1, duration: .6 });
+  } });
+});
+</script>
+</body>
+</html>

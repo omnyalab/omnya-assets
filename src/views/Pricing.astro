@@ -99,7 +99,7 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
       </tbody>
     </table>
     <p class="prices__star" data-fade>{P.i3Star}</p>
-    <a class="btn btn--sm prices__try" href="/demo/hold-to-build/" data-astro-reload data-fade>{P.tryLive} <Arrow /></a>
+    <a class="btn btn--sm prices__try" href={`${lang === 'it' ? '/it' : ''}/demo/hold-to-build/`} data-astro-reload data-fade>{P.tryLive} <Arrow /></a>
   </section>
 
   <!-- Films -->

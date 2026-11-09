@@ -18,8 +18,8 @@ const T = t(lang);
 const I = T.i3d;
 const it = I.items[id];
 const media = {
-  house: { href: '/demo/hold-to-build/', video: '/interactive/house.mp4', videoM: '/interactive/house-m.mp4', pic: '/interactive/house', cat: 'luxury' },
-  tower: { href: '/demo/choose-your-floor/', video: '/interactive/tower.mp4', videoM: '/interactive/tower-m.mp4', pic: '/interactive/tower', cat: 'real-estate' },
+  house: { href: `${lang === 'it' ? '/it' : ''}/demo/hold-to-build/`, video: '/interactive/house.mp4', videoM: '/interactive/house-m.mp4', pic: '/interactive/house', cat: 'luxury' },
+  tower: { href: `${lang === 'it' ? '/it' : ''}/demo/choose-your-floor/`, video: '/interactive/tower.mp4', videoM: '/interactive/tower-m.mp4', pic: '/interactive/tower', cat: 'real-estate' },
 }[id];
 ---
 
