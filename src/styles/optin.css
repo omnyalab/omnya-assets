@@ -103,3 +103,4 @@ html:has(.oidim:not([hidden])),html:has(.oidim:not([hidden])) body{overflow:hidd
 .oi--book .oibk{--w:176px;--h:calc(var(--w)*1.375)}
 @media (max-width:899px){.oi--book .oibk{--w:138px}}
 .oi--nox .oix{display:none}
+.oidim.oi--nox{overflow-y:auto;overscroll-behavior:contain} /* the card is the whole page: on short screens it scrolls inside, nothing behind */

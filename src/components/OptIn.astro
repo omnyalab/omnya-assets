@@ -16,7 +16,8 @@ interface Props {
   heroMobile: string;
   book?: boolean; // 9/11 (Nico, Build page): the cover in book format (1000x1375) instead of the tall 9:16 PDF
   theme?: 'c1'; // 9/11 (Nico): C1 green on the Build page (src/styles/optin-build.css, made by scripts/recolor-build.py)
-  noClose?: boolean; // 9/11 (Nico, Build page): no × on the card (Escape and a click outside still close it)
+  noClose?: boolean; // 9/11 (Nico, Build page): no × on the card, and the card never closes (no click outside, no Escape):
+  // the card is the whole page; "I'm good with the free one" downloads the free PDF instead of revealing a page
 }
 const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme } = Astro.props;
 ---
@@ -70,7 +71,8 @@ const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme }
     var free = box.dataset.free, slug = box.dataset.slug;
     var form = box.querySelector('[data-oi-form]'), err = box.querySelector('[data-oi-err]');
     var open = function (e) { e.preventDefault(); box.hidden = false; setTimeout(function () { form.name.focus(); }, 50); };
-    var close = function () { box.hidden = true; };
+    var locked = box.classList.contains('oi--nox');
+    var close = function () { if (!locked) box.hidden = true; };
     // one listener on the page: the buttons come after this script in the HTML
     document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a[href^="/go/' + free + '"]'); if (a) open(e); });
     box.querySelector('[data-oi-close]').addEventListener('click', close);
@@ -81,7 +83,7 @@ const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme }
     var st = function (n) { return oil.querySelector('[data-st="' + n + '"]'); };
     // after Sunday 8 November every Full guide is €5.99 (Nico 8/11)
     if (Date.now() > Date.parse('2026-11-08T23:59:59+01:00')) oil.querySelector('[data-oil-price]').textContent = '€5.99';
-    oil.querySelector('[data-oil-skip]').addEventListener('click', function () { oil.hidden = true; box.hidden = true; });
+    oil.querySelector('[data-oil-skip]').addEventListener('click', function () { if (locked) { location.href = '/go/' + free; return; } oil.hidden = true; box.hidden = true; });
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var name = form.elements.name.value.trim(), email = form.elements.email.value.trim();
