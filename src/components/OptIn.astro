@@ -58,7 +58,7 @@ const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme }
       <p class="oil__t">You're all set<span data-oil-nm></span></p>
       <p class="oil__p"><b>Your <span style="color:#2997ff">free</span> blueprint</b> is in your inbox.</p>
       <p class="oil__p">If one day you want to implement it faster, <b>the full interactive 3D course</b> is here for <b data-oil-price>€1.99</b>.</p>
-      <a class="x3-btn x3-btn--blue" data-oil-go href={`/${slug}/sent`}>Have a look →</a>
+      <a class="x3-btn x3-btn--blue" data-oil-go data-astro-reload href={`/${slug}/sent`}>Have a look →</a>
       <button type="button" class="oil__no" data-oil-skip>I'm good with the free one, thanks</button>
     </div>
   </div>
@@ -72,6 +72,16 @@ const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme }
     var form = box.querySelector('[data-oi-form]'), err = box.querySelector('[data-oi-err]');
     var open = function (e) { e.preventDefault(); box.hidden = false; setTimeout(function () { form.name.focus(); }, 50); };
     var locked = box.classList.contains('oi--nox');
+    // 9/11 (Nico, Build page): no site loading screen between the form and the offer, only a clean green fade
+    var green = box.classList.contains('oi--c1');
+    var go = function (url) {
+      if (!green) { location.href = url; return; }
+      var f = document.createElement('div'); f.className = 'oi-fade'; document.body.appendChild(f);
+      requestAnimationFrame(function () { f.classList.add('on'); });
+      setTimeout(function () { location.href = url; }, 520);
+    };
+    var goBtn = document.querySelector('[data-oil-go]');
+    if (goBtn) goBtn.addEventListener('click', function (e) { if (!green) return; e.preventDefault(); go(goBtn.getAttribute('href')); });
     var close = function () { if (!locked) box.hidden = true; };
     // one listener on the page: the buttons come after this script in the HTML
     document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a[href^="/go/' + free + '"]'); if (a) open(e); });
@@ -111,7 +121,7 @@ const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme }
           T(function () { st(3).classList.add('is-in'); }, 1000);
           T(function () { st(3).classList.add('is-done'); }, 1900);
           T(function () { oil.querySelector('[data-oil-top]').classList.add('is-gone'); oil.querySelector('[data-oil-fin]').hidden = false; }, 3700);
-          T(function () { if (!oil.hidden) location.href = '/' + slug + '/sent'; }, 3700 + 15000);
+          T(function () { if (!oil.hidden) go('/' + slug + '/sent'); }, 3700 + 15000);
         });
       }, 4700);
     });
