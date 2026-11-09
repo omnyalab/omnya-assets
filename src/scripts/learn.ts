@@ -156,8 +156,17 @@ export function buyBox() {
       pay.href = d.go!;
       q<HTMLAnchorElement>('[data-all]').href = d.bundleGo!;
       box.showModal();
+      // the open box sits in the browser's top layer, above everything: the round cursor goes in with it, or it stays hidden underneath (9/11)
+      const cur = document.querySelector<HTMLElement>('[data-cursor-el]');
+      if (cur && cur.parentElement !== box) { home = [cur.parentElement!, cur.nextSibling]; box.append(cur); }
     }, opt);
   });
+  let home: [HTMLElement, ChildNode | null] | null = null;
+  box.addEventListener('close', () => {
+    const cur = box.querySelector<HTMLElement>('[data-cursor-el]');
+    if (cur && home) home[0].insertBefore(cur, home[1]);
+    home = null;
+  }, opt);
   box.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => box.close(), opt));
   box.addEventListener('click', (e) => { if (e.target === box) box.close(); }, opt);
   onDestroy(() => { ac.abort(); if (box.open) box.close(); });

@@ -37,9 +37,10 @@ const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packPa
 type Media = { video?: string; img?: string; poster?: string };
 const byId = (id: string) => projects.find((p) => p.id === id);
 const i3Media: Media[] = [
-  { video: '/interactive/house-m.mp4', poster: '/interactive/house-800.webp' },
-  { video: '/interactive/tower-m.mp4', poster: '/interactive/tower-800.webp' },
-  { video: '/interactive/tower-m.mp4', poster: '/interactive/tower-800.webp' },
+  // small clips made for this card (9/11): the card is 320 px wide, the home previews were 1.5-5 MB
+  { video: '/prices/i3-house.mp4', poster: '/interactive/house-800.webp' },
+  { video: '/prices/i3-tower.mp4', poster: '/interactive/tower-800.webp' },
+  { video: '/prices/i3-tower.mp4', poster: '/interactive/tower-800.webp' },
 ];
 const filmMedia: Media[] = ['30', '60', '90'].map((n) => ({ video: `/prices/film-${n}.mp4`, poster: `/prices/film-${n}.webp` }));
 const packMedia: Media[] = ['02_villa_cape_town', '01_penthouse_dubai', '05_corfu_resort'].map((id) => ({ img: byId(id)?.gallery[0]?.mobile }));
@@ -238,7 +239,7 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
       <template id={`info-${f.id}`}>
         {f.media && (
           <div class="pinfo-pop__media">
-            {f.media.video ? <video src={f.media.video} poster={f.media.poster} muted playsinline loop autoplay></video> : <img src={f.media.img} alt="" />}
+            {f.media.video ? <video src={f.media.video} poster={f.media.poster} muted playsinline loop preload="none"></video> : <img src={f.media.img} alt="" />}
           </div>
         )}
         <p class="pinfo-pop__name"><span>{f.name}</span><span>{f.price}</span></p>

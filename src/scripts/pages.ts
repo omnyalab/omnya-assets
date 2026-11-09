@@ -240,6 +240,25 @@ export function priceInfo() {
   let open: HTMLButtonElement | null = null;
   let timer = 0;
   let leave = 0;
+  // 9/11: each preview is made once and kept, so opening it again is instant, and only the open one plays;
+  // the clips start loading (just their first part) as soon as the price tables come into view
+  const cache = new Map<string, Node[]>();
+  const nodes = (id: string) => {
+    if (!cache.has(id)) {
+      const tpl = document.getElementById(`info-${id}`) as HTMLTemplateElement | null;
+      // importNode, not cloneNode: the copy must belong to the page, or a video made in the template's inert document never loads
+      cache.set(id, tpl ? Array.from(document.importNode(tpl.content, true).childNodes) : []);
+    }
+    return cache.get(id)!;
+  };
+  const stopAll = () => body.querySelectorAll('video').forEach((v) => v.pause());
+  const band = document.querySelector('.pband');
+  const warm = new IntersectionObserver((es) => {
+    if (!es.some((e) => e.isIntersecting)) return;
+    warm.disconnect();
+    btns.forEach((b) => nodes(b.dataset.info!).forEach((n) => { if (n instanceof HTMLElement) n.querySelectorAll('video').forEach((v) => { v.preload = fine ? 'auto' : 'metadata'; v.load(); }); }));
+  }, { rootMargin: '300px 0px' });
+  if (band) warm.observe(band);
   if (fine) {
     pop.addEventListener('mouseenter', () => window.clearTimeout(leave));
     pop.addEventListener('mouseleave', () => { leave = window.setTimeout(close, 280); });
@@ -259,16 +278,17 @@ export function priceInfo() {
     open = null;
     pop.classList.remove('is-open');
     window.clearTimeout(timer);
-    timer = window.setTimeout(() => { if (!open) { pop.hidden = true; body.innerHTML = ''; } }, 350);
+    stopAll();
+    timer = window.setTimeout(() => { if (!open) { pop.hidden = true; body.replaceChildren(); } }, 350);
   };
   const show = (b: HTMLButtonElement) => {
     if (open === b) return;
     if (open) open.setAttribute('aria-expanded', 'false');
-    const tpl = document.getElementById(`info-${b.dataset.info}`) as HTMLTemplateElement | null;
-    if (!tpl) return;
+    const content = nodes(b.dataset.info!);
+    if (!content.length) return;
     window.clearTimeout(timer);
-    body.innerHTML = '';
-    body.append(tpl.content.cloneNode(true));
+    stopAll();
+    body.replaceChildren(...content);
     pop.setAttribute('aria-label', b.getAttribute('aria-label') || '');
     pop.hidden = false;
     open = b;
@@ -295,6 +315,8 @@ export function priceInfo() {
     document.removeEventListener('click', outside);
     document.removeEventListener('keydown', esc);
     window.removeEventListener('scroll', close);
+    warm.disconnect();
+    stopAll();
     pop.hidden = true;
   });
 }
