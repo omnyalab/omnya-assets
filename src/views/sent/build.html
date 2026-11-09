@@ -187,13 +187,16 @@ html,body{min-height:100%}
 .pick label>div{font-family:Montserrat,sans-serif;font-weight:800;font-size:16px;letter-spacing:.01em}
 .pick label>div>span{font-family:-apple-system,sans-serif}
 .pick .inc{display:inline-block;margin:5px 0 3px;padding:3px 10px;border-radius:999px;background:#22d35e;color:#fff;font:800 11px/1.3 Montserrat,sans-serif;letter-spacing:.04em}
+/* 9/11 (Nico): the single book as big as one book of the three-book fan (same width, the image cropped to the book) */
+.uc .ub{width:144px;margin:-48px auto 12px}
+@media (width<=899px){.uc .ub{width:104px;margin-top:-36px}}
 /* 9/11 (Nico): the page opens from the same green fade the form ends on */
 .inf{position:fixed;inset:0;z-index:200;pointer-events:none;background:radial-gradient(120% 90% at 50% 35%,#1d6636 0%,#0b2a17 45%,#05070a 100%);animation:inf .6s ease .05s forwards}
 @keyframes inf{to{opacity:0;visibility:hidden}}
 @media (prefers-reduced-motion:reduce){.inf{animation-duration:.01s}}
 </style><div class="inf" aria-hidden="true"></div><div class="ok"><i>✓</i><span data-mail><b>Your blueprint is on its way.</b> <br class="br">Check your inbox in a couple of minutes.</span><span data-nomail><b>Your blueprint is downloading.</b> <br class="br">One thing before you open it.</span></div><section class="x3-deal u w"><div class="wbg a"></div><div class="wbg b"></div><div class="u-in"><div class="uc">
-<img class="ub" data-one src="/learn/bd_book.webp" alt=""><div class="arc" data-all><img src="/learn/pk_pb01.webp" alt="From 3D to real photo"><img src="/learn/pk_pb02.webp" alt="The reel they comment on"><img src="/learn/pk_pb03.webp" alt="Sell it before it exists"></div>
-<p class="x3-kick">These prices are only available on this page</p>
+<img class="ub" data-one src="/learn/bd_book_tight.webp" alt="The Full Build Blueprint"><div class="arc" data-all><img src="/learn/pk_pb01.webp" alt="From 3D to real photo"><img src="/learn/pk_pb02.webp" alt="The reel they comment on"><img src="/learn/pk_pb03.webp" alt="Sell it before it exists"></div>
+<p class="x3-kick">These prices are only here</p>
 <h1 data-one>The Full Guide<br><span>Hold to build</span></h1><h1 data-all>Everything<br><span>we teach</span></h1>
 <div class="pick">
 <label class="on" data-p="5.99"><i></i><div>The Full Build Guide<span>every prompt and file for a house that builds itself</span></div><strong>€5.99<s>€29</s></strong></label>
@@ -213,6 +216,6 @@ document.querySelectorAll('form').forEach(f=>f.addEventListener('submit',e=>{e.p
 (function(){var until=Date.parse('2026-11-08T23:59:59+01:00');if(Date.now()<until)return;
 var o=document.querySelector('.pick label[data-p="1.99"]');if(!o)return;o.dataset.p='5.99';
 o.querySelector('strong').innerHTML='€5.99<s>€29</s>';
-document.querySelectorAll('.uc .x3-kick').forEach(function(k){k.textContent='These prices are only available on this page'});
+document.querySelectorAll('.uc .x3-kick').forEach(function(k){k.textContent='These prices are only here'});
 var g=document.getElementById('go');if(g&&/1\.99/.test(g.textContent))g.textContent='Get it · €5.99 →';})();
 </script><script defer src="/_vercel/insights/script.js"></script></body></html>
