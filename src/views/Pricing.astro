@@ -37,9 +37,9 @@ const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packPa
 type Media = { video?: string; img?: string; poster?: string };
 const byId = (id: string) => projects.find((p) => p.id === id);
 const i3Media: Media[] = [
-  { video: '/interactive/house.mp4', poster: '/interactive/house-start.webp' },
-  { video: '/interactive/tower.mp4', poster: '/interactive/tower.webp' },
-  { video: '/interactive/tower.mp4', poster: '/interactive/tower.webp' },
+  { video: '/interactive/house-m.mp4', poster: '/interactive/house-800.webp' },
+  { video: '/interactive/tower-m.mp4', poster: '/interactive/tower-800.webp' },
+  { video: '/interactive/tower-m.mp4', poster: '/interactive/tower-800.webp' },
 ];
 const filmMedia: Media[] = ['30', '60', '90'].map((n) => ({ video: `/prices/film-${n}.mp4`, poster: `/prices/film-${n}.webp` }));
 const packMedia: Media[] = ['02_villa_cape_town', '01_penthouse_dubai', '05_corfu_resort'].map((id) => ({ img: byId(id)?.gallery[0]?.mobile }));

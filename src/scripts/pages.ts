@@ -218,6 +218,7 @@ export function lazyVideos() {
     (entries) => entries.forEach((e) => {
       const v = e.target as HTMLVideoElement;
       if (e.isIntersecting) { v.preload = 'auto'; v.play().catch(() => {}); } else v.pause();
+      if (!v.dataset.on) { v.dataset.on = '1'; v.addEventListener('playing', () => v.classList.add('is-on'), { once: true }); }
     }),
     { rootMargin: '200px 0px' }
   );

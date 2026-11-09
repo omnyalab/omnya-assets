@@ -18,8 +18,8 @@ const T = t(lang);
 const I = T.i3d;
 const it = I.items[id];
 const media = {
-  house: { href: '/demo/hold-to-build/', video: '/interactive/house.mp4', poster: '/interactive/house-start.webp', cat: 'luxury' },
-  tower: { href: '/demo/choose-your-floor/', video: '/interactive/tower.mp4', poster: '/interactive/tower.webp', cat: 'real-estate' },
+  house: { href: '/demo/hold-to-build/', video: '/interactive/house.mp4', videoM: '/interactive/house-m.mp4', pic: '/interactive/house', cat: 'luxury' },
+  tower: { href: '/demo/choose-your-floor/', video: '/interactive/tower.mp4', videoM: '/interactive/tower-m.mp4', pic: '/interactive/tower', cat: 'real-estate' },
 }[id];
 ---
 
@@ -27,7 +27,10 @@ const media = {
   <div class="pcard__media">
     <div class="frame pcard__frame" style={`--ar: ${ar}`}>
       <div class="frame__in">
-        <video muted playsinline loop preload="none" poster={media.poster} aria-label={it.alt} data-lazyvideo>
+        {/* 9/11: like the hero, a sharp picture is always there underneath, and the moving preview fades in on top once it plays */}
+        <img class="i3card__pic" src={`${media.pic}-1600.webp`} srcset={`${media.pic}-800.webp 800w, ${media.pic}-1600.webp 1600w`} sizes="(min-width: 900px) 58vw, 100vw" width="1600" height="900" alt={it.alt} decoding="async" />
+        <video class="i3card__vid" muted playsinline loop preload="none" aria-hidden="true" data-lazyvideo>
+          <source src={media.videoM} type="video/mp4" media="(max-width: 899px)" />
           <source src={media.video} type="video/mp4" />
         </video>
       </div>

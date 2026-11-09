@@ -3007,7 +3007,9 @@ main:has(.twhero) .lbundle { margin-top: 0; }
 
 /* Interactive 3D inside the work grids (8/11): the moving preview, a badge, "Try it free" */
 .i3card .frame__in { position: absolute; inset: 0; }
-.i3card video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.i3card .i3card__pic, .i3card .i3card__vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.i3card .i3card__vid { opacity: 0; transition: opacity 0.5s ease; }
+.i3card .i3card__vid.is-on { opacity: 1; }
 .i3card .pcard__media { border-radius: 0; }
 .i3card__text { display: block; margin-top: 4px; color: var(--mute); font-size: var(--fs-small); }
 .i3card__view { width: 96px; height: 96px; margin: -48px 0 0 -48px; text-align: center; line-height: 1.15; }
@@ -3049,4 +3051,10 @@ main:has(.twhero) .lbundle { margin-top: 0; }
   .pband .ptable thead tr { display: flex; justify-content: space-between; padding: 0 16px 10px; border: 0; background: none; box-shadow: none; }
   .pband .ptable thead th { font-size: var(--fs-small); color: var(--mute); font-weight: 400; white-space: nowrap; }
   .pband .ptable thead th:nth-child(n+3) { display: none; }
+}
+
+/* 9/11: on the home, the two 3Ds sit like on /work: the tower wide, the house narrower and taller */
+@media (min-width: 900px) {
+  .plist .i3card[data-slot='0'] { grid-column: 1 / span 7; }
+  .plist .i3card[data-slot='1'] { grid-column: 9 / span 4; margin-top: 24vh; }
 }
