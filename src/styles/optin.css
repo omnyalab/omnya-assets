@@ -108,3 +108,4 @@ html:has(.oidim:not([hidden])),html:has(.oidim:not([hidden])) body{overflow:hidd
 /* 9/11 (Nico, Build page): the green fade from the form to the offer, mirrored on /the-build-blueprint/sent */
 .oi-fade{position:fixed;inset:0;z-index:200;pointer-events:none;opacity:0;transition:opacity .5s ease;background:radial-gradient(120% 90% at 50% 35%,#1d6636 0%,#0b2a17 45%,#05070a 100%)}
 .oi-fade.on{opacity:1}
+.oi-fade--blue{background:radial-gradient(120% 90% at 50% 35%,#163266 0%,#0b1630 45%,#05070a 100%)} /* 9/11 Towers page, same blue as the .inf of sent/towers.html */

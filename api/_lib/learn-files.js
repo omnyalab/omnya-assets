@@ -13,6 +13,7 @@ const FULL_TOWER = pdf('How to build a tower that sells with AI', 'full-tower-bl
 const FULL_3D = pdf('How to make a 3D that sells with AI', 'full-3d-blueprint.pdf');
 const FULL_CITY = pdf('How to build a 3D city that goes viral with AI', 'full-city-blueprint.pdf');
 const FULL_BUILD = pdf('How to build a house that builds itself', 'full-build-blueprint.pdf');
+const FULL_TOWERS = pdf('How to build three towers you choose the view of', 'full-towers-blueprint.pdf');
 
 /** One Stripe product name → the files it should deliver. Checked in order, first match wins. */
 const RULES = [
@@ -21,6 +22,8 @@ const RULES = [
   [/everything we teach/i, [FULL_TOWER, FULL_3D, FULL_BUILD, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST]],
   // "build blueprint", never /build/ alone: the Build lesson is a product too
   [/full build blueprint/i, [FULL_BUILD]],
+  // "full towers blueprint" before /tower/: the Full Tower Blueprint (one tower) is another product (9/11)
+  [/full towers blueprint/i, [FULL_TOWERS]],
   [/tower/i, [FULL_TOWER]],
   [/city/i, [FULL_CITY]],
   [/3d.*sells|sells.*3d/i, [FULL_3D]],

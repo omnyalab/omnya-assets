@@ -224,6 +224,11 @@
       "permanent": true
     },
     {
+      "source": "/towers",
+      "destination": "/the-towers-blueprint",
+      "permanent": true
+    },
+    {
       "source": "/cresta",
       "destination": "/casa-cresta-blueprint",
       "permanent": true

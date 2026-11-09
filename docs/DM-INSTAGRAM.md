@@ -37,3 +37,9 @@ Reel DfaH3QkN4qs (la torre, la pianta del piano in 3D, le stanze), parola AI, au
 Reel della casa americana nel bosco che si costruisce tenendo premuto (lun 9/11) e split ripresa/3D (mar 10/11), parola BUILD. Pagina: https://www.omnyalab.com/the-build-blueprint (corto: omnyalab.com/build), copia di /3d-to-film: Blueprint gratis con opt-in (nome, mail, consenso newsletter), poi il Full Build a 5,99 € (29 € barrato) e su /the-build-blueprint/sent l'upsell con Everything we teach. Solo in inglese. Prima il follow, poi il link (come l'automazione della City).
 
 Here you go 👇🏻 The Build Blueprint is free on this page, and right under it there's the full method behind the house that builds itself: https://www.omnyalab.com/the-build-blueprint
+
+## Reel delle tre torri, "Choose your view" (mer 11/11 e gio 12/11 "Let him cook")
+
+Reel delle tre torri nella nebbia dove scegli la vista (Front, Side, Back, Rooftop, Above the clouds), parola TOWERS. Pagina: https://www.omnyalab.com/the-towers-blueprint (corto: omnyalab.com/towers), copia esatta del funnel Build in blu: solo la card della mail (nome, mail, consenso newsletter), poi su /the-towers-blueprint/sent il Full Towers a 5,99 € (29 € barrato) ed Everything we teach a 59 € (164 € barrato). Solo in inglese. Un solo DM col link della pagina, mai il PDF allegato. Prima il follow, poi il link.
+
+Here you go 👇🏻 The Towers Blueprint is free on this page, and right after it there's the full method behind the three towers where you choose the view: https://www.omnyalab.com/the-towers-blueprint

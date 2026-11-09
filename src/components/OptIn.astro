@@ -16,13 +16,14 @@ interface Props {
   heroMobile: string;
   book?: boolean; // 9/11 (Nico, Build page): the cover in book format (1000x1375) instead of the tall 9:16 PDF
   theme?: 'c1'; // 9/11 (Nico): C1 green on the Build page (src/styles/optin-build.css, made by scripts/recolor-build.py)
+  fade?: boolean; // 9/11 (Nico, Towers page): the blue fade between the form and the offer, like the green one of the Build page
   noClose?: boolean; // 9/11 (Nico, Build page): no × on the card, and the card never closes (no click outside, no Escape):
   // the card is the whole page; "I'm good with the free one" downloads the free PDF instead of revealing a page
 }
-const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme } = Astro.props;
+const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, fade } = Astro.props;
 ---
 
-<div class={`oidim${book ? ' oi--book' : ''}${noClose ? ' oi--nox' : ''}${theme ? ' oi--' + theme : ''}`} data-optin data-slug={slug} data-free={free} style={`--oi-cover:url(${cover});--oi-hero:url(${hero});--oi-hero-m:url(${heroMobile})`} role="dialog" aria-modal="true" aria-labelledby="oi-title">
+<div class={`oidim${book ? ' oi--book' : ''}${noClose ? ' oi--nox' : ''}${theme ? ' oi--' + theme : ''}${fade ? ' oi--fade' : ''}`} data-optin data-slug={slug} data-free={free} style={`--oi-cover:url(${cover});--oi-hero:url(${hero});--oi-hero-m:url(${heroMobile})`} role="dialog" aria-modal="true" aria-labelledby="oi-title">
   <div class="oisheet">
     <button type="button" class="oix" data-oi-close aria-label="Close">×</button>
     <div class="oibk" role="img" aria-label="The free blueprint"><div class="oibk__b"><span class="oibk__k"></span><span class="oibk__t"></span><span class="oibk__p"></span><span class="oibk__f"></span></div></div>
@@ -73,10 +74,10 @@ const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme }
     var open = function (e) { e.preventDefault(); box.hidden = false; setTimeout(function () { form.name.focus(); }, 50); };
     var locked = box.classList.contains('oi--nox');
     // 9/11 (Nico, Build page): no site loading screen between the form and the offer, only a clean green fade
-    var green = box.classList.contains('oi--c1');
+    var green = box.classList.contains('oi--c1') || box.classList.contains('oi--fade');
     var go = function (url) {
       if (!green) { location.href = url; return; }
-      var f = document.createElement('div'); f.className = 'oi-fade'; document.body.appendChild(f);
+      var f = document.createElement('div'); f.className = 'oi-fade' + (box.classList.contains('oi--c1') ? '' : ' oi-fade--blue'); document.body.appendChild(f);
       requestAnimationFrame(function () { f.classList.add('on'); });
       setTimeout(function () { location.href = url; }, 520);
     };

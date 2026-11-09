@@ -26,7 +26,10 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'full-city'
   // the free and the paid "Hold to build" PDFs, on /the-build-blueprint (9/11, the house that builds itself, word BUILD)
   | 'free-build'
-  | 'full-build';
+  | 'full-build'
+  // the free and the paid three-tower PDFs, on /the-towers-blueprint (9/11, "Choose your view" reels, word TOWERS)
+  | 'free-towers'
+  | 'full-towers';
 
 export const products: { id: ProductId; checkout: string }[] = [
   { id: 'white-to-real', checkout: 'https://buy.stripe.com/aFaeVcbgVdQA2dwaix8so0s' },
@@ -58,6 +61,9 @@ export const products: { id: ProductId; checkout: string }[] = [
   { id: 'free-build', checkout: '/learn/free/omnya-lab-build-blueprint.pdf' },
   // the Full Build Blueprint at €5.99 (€29 struck), Stripe link created 9/11 with Nico's ok (product "The Full Build Blueprint", back to /learn/thanks/full-build)
   { id: 'full-build', checkout: 'https://buy.stripe.com/5kQ3cuacR3bW2dwgGV8so0D' },
+  { id: 'free-towers', checkout: '/learn/free/omnya-lab-towers-blueprint.pdf' },
+  // the Full Towers Blueprint at €5.99 (€29 struck): empty = WhatsApp until Nico has made the Stripe link (9/11)
+  { id: 'full-towers', checkout: '' },
 ];
 
 /**
@@ -106,6 +112,7 @@ export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: Pr
   'full-3d': { kind: 'pdf', oto: 'sample', down: 'community' },
   'full-city': { kind: 'pdf', oto: 'sample', down: 'community' },
   'full-build': { kind: 'pdf', oto: 'sample', down: 'community' },
+  'full-towers': { kind: 'pdf', oto: 'sample', down: 'community' },
 };
 
 /** The words used in the reels ("Comment 3D"). Each one has its own page, /learn/<word>, and leads with one playbook. */
@@ -154,6 +161,7 @@ const pdfs = {
     'full-3d': ['How to make a 3D that sells with AI', 'full-3d-blueprint.pdf'],
     'full-city': ['How to build a 3D city that goes viral with AI', 'full-city-blueprint.pdf'],
     'full-build': ['How to build a house that builds itself', 'full-build-blueprint.pdf'],
+    'full-towers': ['How to build three towers you choose the view of', 'full-towers-blueprint.pdf'],
   },
   it: {
     'white-to-real': ['Dal 3D alla foto vera', 'playbook-01-dal-3d-alla-foto-vera.pdf'],
@@ -166,6 +174,7 @@ const pdfs = {
     'full-3d': ['How to make a 3D that sells with AI (EN)', '../en/full-3d-blueprint.pdf'],
     'full-city': ['How to build a 3D city that goes viral with AI (EN)', '../en/full-city-blueprint.pdf'],
     'full-build': ['How to build a house that builds itself (EN)', '../en/full-build-blueprint.pdf'],
+    'full-towers': ['How to build three towers you choose the view of (EN)', '../en/full-towers-blueprint.pdf'],
   },
 } as const;
 type FileKey = keyof (typeof pdfs)['en'];
