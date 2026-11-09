@@ -10,7 +10,7 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'session-reader' | 'rest-30' | 'rest-50' | 'build-upgrade' | 'sample'
   // the other two playbooks after buying 02 (€30) or 03 (€40), with the 7/11 prices (01 €79, 02 €49, 03 €39)
   | 'rest-02' | 'rest-03'
-  // everything we teach: the three Full blueprints and the three playbooks, €39, only after a free blueprint (7/11)
+  // everything we teach: the three Full blueprints and the three playbooks, €59 from 9/11 (€39 on 7/11), only in the funnels
   | 'everything'
   // the free PDF people claim from the reel DM, on /learn/<word>
   | 'free'
@@ -38,7 +38,8 @@ export const products: { id: ProductId; checkout: string }[] = [
   { id: 'rest-50', checkout: 'https://buy.stripe.com/bJedR870F9Ak5pI0HX8so08' },
   { id: 'rest-02', checkout: 'https://buy.stripe.com/fZu9ASdp3eUE6tM62h8so0v' },
   { id: 'rest-03', checkout: 'https://buy.stripe.com/6oUfZget7aEoaK29et8so0w' },
-  { id: 'everything', checkout: 'https://buy.stripe.com/9B68wOgBf13O6tMbmB8so0r' },
+  // €59 from 9/11 (Nico: "only here"); the €39 link was https://buy.stripe.com/9B68wOgBf13O6tMbmB8so0r
+  { id: 'everything', checkout: 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C' },
   { id: 'build-upgrade', checkout: 'https://buy.stripe.com/8x23cufxbcMw4lE76l8so09' },
   { id: 'sample', checkout: '' },
   { id: 'free', checkout: '/learn/free/omnya-lab-blueprint.pdf' },
@@ -78,7 +79,7 @@ export const fullCityDeal = { ...fullTowerDeal, checkout: 'https://buy.stripe.co
 export const bundleDeal = { ...fullTowerDeal, until: '2026-11-07T00:00:00+01:00', checkout: '' };
 
 /** Playbook prices from 7/11 (one by one €167, all three €79). Used for the "Are you sure?" box and the funnels. */
-export const prices = { 'white-to-real': 79, reel: 49, 'before-it-exists': 39, bundle: 79, everything: 39 } as const;
+export const prices = { 'white-to-real': 79, reel: 49, 'before-it-exists': 39, bundle: 79, everything: 59 } as const;
 
 /**
  * After each purchase the checkout returns to /learn/thanks/<product>. That page makes one

@@ -3,7 +3,7 @@
 // "View my home": the house in 3D on its lot, turning with a finger; number, district, neighbour, share.
 // 7/11/2026 (board approved by Nico, cozy yellow, no blue): the page fades in once the house is found;
 // MOVE UP (sticker, button, "Get a top spot" cards) opens the place picker (penthouse, top villa, fountain, €0.99 on Stripe);
-// the cozy book on the city and the card next to the house sell the Full City Guide (€1.99 until Sunday) or Everything (€39).
+// the cozy book on the city and the card next to the house sell the Full City Guide (€1.99 until Sunday) or Everything (€59).
 import CityHead from '../../components/CityHead.astro';
 import { cityUpgrades, cityWhatsApp } from '../../lib/city';
 import { fullCityDeal } from '../../lib/learn';
@@ -35,7 +35,7 @@ const places = [
 ];
 const pickBook = `<div class="pick" data-g="book">
   <label class="on" data-go="/go/full-city?k=city" data-p="1.99"><i></i><div>The Full City Guide<span>every prompt to build a 3D city like this</span></div><strong data-full>€1.99<s>€19</s></strong></label>
-  <label data-go="/go/everything?k=city" data-p="39"><i></i><div>Everything we teach<span>3 Full Guides + 3 playbooks</span><em class="tag">Only here</em></div><strong>€39<s>€164</s></strong></label>
+  <label data-go="/go/everything?k=city" data-p="59"><i></i><div>Everything we teach<span>3 Full Guides + 3 playbooks</span><em class="tag">Only here</em></div><strong>€59<s>€164</s></strong></label>
 </div>`;
 ---
 
@@ -111,7 +111,7 @@ const pickBook = `<div class="pick" data-g="book">
         <div class="buy__in">
           <button class="buy__bk" type="button" data-open="book" aria-label="The Full City Guide" set:html={book} />
           <div class="buy__tx">
-            <p class="kick" data-kick>2,000 followers offer · until Sunday</p>
+            <p class="kick" data-kick>These prices are only available on this page</p>
             <h2>Build a city like this</h2>
             <p class="sub">Every prompt we gave Claude to build Omnya City.</p>
           </div>
@@ -171,7 +171,7 @@ const pickBook = `<div class="pick" data-g="book">
       <div class="card" role="dialog" aria-modal="true" aria-label="Build a city like this">
         <span class="stamp">FULL GUIDE</span>
         <Fragment set:html={book} />
-        <p class="kick" data-kick>2,000 followers offer · until Sunday</p>
+        <p class="kick" data-kick>These prices are only available on this page</p>
         <h2>Build a city like this</h2>
         <p class="sub">Every prompt we gave Claude to build Omnya City: the houses, the map and the links in the DMs.</p>
         <Fragment set:html={pickBook} />
