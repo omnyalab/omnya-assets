@@ -41,6 +41,8 @@ export function leave(source: Element | undefined, to: URL): { mode: Mode; done:
 function expand(frame: HTMLElement) {
   const img = frame.querySelector('img')!;
   const r = frame.getBoundingClientRect();
+  // a second tap starts a second transition: never leave the first picture behind
+  layer().querySelectorAll('.tclone').forEach((c) => c.remove());
   const clone = document.createElement('div');
   clone.className = 'tclone';
   const ci = new Image();
@@ -79,6 +81,8 @@ function curtainIn([ink, grey]: [string, string]) {
 /* ---------- In ---------- */
 /** Resolves when the new page should start its own intro. */
 export function enter(mode: Mode): Promise<void> {
+  // a picture left from an interrupted project transition never stays fixed over the page
+  if (mode !== 'project') layer().querySelectorAll('.tclone').forEach((c) => c.remove());
   if (mode === 'curtain') return curtainOut();
   if (mode === 'project') return dropClone();
   return Promise.resolve();
@@ -97,15 +101,15 @@ function curtainOut() {
 }
 
 async function dropClone() {
-  const clone = layer().querySelector<HTMLElement>('.tclone');
+  const clones = layer().querySelectorAll<HTMLElement>('.tclone');
   const hero = document.querySelector<HTMLImageElement>('[data-hero-img]');
   if (hero) {
     try {
       await Promise.race([hero.decode(), wait(1400)]);
     } catch {}
   }
-  if (clone) {
+  clones.forEach((clone) => {
     gsap.to(clone, { opacity: 0, duration: 0.6, ease: 'om', onComplete: () => clone.remove() });
-  }
+  });
   return wait(80);
 }

@@ -82,6 +82,14 @@ const stillSizes: Record<string, string> = {
   right: '(min-width: 900px) 56vw, 78vw',
   left: '(min-width: 900px) 64vw, 78vw',
 };
+// Phones (9/11, Nico): horizontal stills are cut to different shapes like the home cards
+// (bleed 4:5, right 1:1, inset 3:2, left 3:4), so they need the bigger file to stay sharp
+const cropSizes: Record<string, string> = {
+  bleed: '(min-width: 900px) 100vw, 222vw',
+  inset: '(min-width: 900px) 94vw, 109vw',
+  right: '(min-width: 900px) 56vw, 139vw',
+  left: '(min-width: 900px) 64vw, 185vw',
+};
 ---
 
 <Base page="project" title={p.title} seoTitle={T.seo.project(p.title)} description={snippet} og={`/og/${slug(p)}.jpg`} ogAlt={alt(p, lang)}>
@@ -127,8 +135,8 @@ const stillSizes: Record<string, string> = {
             </div>
           );
         return (
-          <div class:list={['pm', `pm--${b.layout}`]}>
-            <Frame still={b.still} alt={altOf(b.still)} sizes={stillSizes[b.layout]} />
+          <div class:list={['pm', `pm--${b.layout}`]} data-crop={b.still.orientation !== 'vertical' ? '' : undefined}>
+            <Frame still={b.still} alt={altOf(b.still)} sizes={b.still.orientation !== 'vertical' ? cropSizes[b.layout] : stillSizes[b.layout]} />
           </div>
         );
       })

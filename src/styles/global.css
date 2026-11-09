@@ -909,6 +909,14 @@ html.menu-open .wa-fab, html.sheet-open .wa-fab, html.fab-away .wa-fab { opacity
 .pm--pair > :nth-child(2) { width: 82%; margin-left: auto; }
 .pm--video .frame { --ar: 16 / 9; }
 .pm-gap { height: clamp(48px, 10vw, 160px); }
+/* Phones (9/11, Nico): the pictures apart like the home cards, and not all the same shape */
+@media (max-width: 899px) {
+  .pmedia, .pm--pair { gap: 72px; }
+  .pm--bleed[data-crop] .frame { --ar: 4 / 5 !important; }
+  .pm--right[data-crop] .frame { --ar: 1 / 1 !important; }
+  .pm--inset[data-crop] .frame { --ar: 3 / 2 !important; }
+  .pm--left[data-crop] .frame { --ar: 3 / 4 !important; }
+}
 @media (min-width: 900px) {
   .pm--right { margin-left: 41.6%; }
   .pm--left { margin-right: 33%; }
