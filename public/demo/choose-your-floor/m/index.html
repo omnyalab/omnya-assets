@@ -18,7 +18,8 @@
 <meta name="description" content="An interactive 3D tower by Omnya Lab: fly in, pick a floor and see its view.">
 <link rel="preload" as="image" href="assets/fly-first.webp" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap" rel="stylesheet">
+<!-- Montserrat is only for the last line of the finale: loaded without holding up the first frame -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
   :root {
     --ink: #f4efe8;

@@ -211,6 +211,10 @@ export function contactPage() {
 
 /* ---------- [data-lazyvideo]: a muted preview that loads and plays only while it is on screen ---------- */
 export function lazyVideos() {
+  // phones go straight to the tower's phone page, without the redirect the computer page makes (one trip less)
+  if (matchMedia('(max-width: 820px)').matches || /iPhone|Android.+Mobile/i.test(navigator.userAgent)) {
+    document.querySelectorAll<HTMLAnchorElement>('a[href="/demo/choose-your-floor/"]').forEach((a) => (a.href = '/demo/choose-your-floor/m/'));
+  }
   const vids = document.querySelectorAll<HTMLVideoElement>('video[data-lazyvideo]');
   if (!vids.length) return;
   if (reduced) return;
