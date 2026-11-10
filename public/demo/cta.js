@@ -39,21 +39,21 @@
     '.oc{position:fixed;z-index:2147483000;right:max(14px,env(safe-area-inset-right,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));display:grid;justify-items:end;gap:10px;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;pointer-events:none;max-width:calc(100vw - 28px)}' +
     '.oc *{box-sizing:border-box;margin:0}' +
     '.oc a,.oc button{pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent}' +
-    '.oc-l{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px 0 11px;border-radius:999px;background:rgba(12,14,16,.62);border:1px solid rgba(255,255,255,.2);color:#fff;text-decoration:none;font-size:13px;font-weight:600;letter-spacing:-.005em;line-height:1;white-space:nowrap;-webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);box-shadow:0 10px 24px -12px rgba(0,0,0,.7);opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s ease,background .2s}' +
-    '.oc-l svg{color:#25d366;flex:none}' +
+    '.oc-l{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 18px 0 14px;border-radius:999px;background:#0a84ff;border:0;color:#fff;text-decoration:none;font-size:15px;font-weight:600;letter-spacing:-.01em;line-height:1;white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.22);opacity:0;transform:translateY(6px);transition:opacity .5s ease,transform .5s ease,background .2s}' +
+    '.oc-l svg{color:#fff;flex:none}' +
     '.oc.on .oc-l{opacity:1;transform:none}' +
     '.oc.card .oc-l{display:none}' +
-    '@media (hover:hover){.oc-l:hover{background:rgba(12,14,16,.82)}}' +
-    '.oc-c{pointer-events:auto;position:relative;width:320px;max-width:100%;padding:16px 16px 14px;border-radius:20px;background:rgba(12,14,16,.8);border:1px solid rgba(255,255,255,.18);color:#fff;text-align:left;-webkit-backdrop-filter:blur(22px) saturate(1.4);backdrop-filter:blur(22px) saturate(1.4);box-shadow:0 24px 50px -20px rgba(0,0,0,.8);animation:ocin .5s cubic-bezier(.16,1,.3,1) both}' +
+    '@media (hover:hover){.oc-l:hover{background:#2a95ff}}' +
+    '.oc-c{pointer-events:auto;position:relative;width:320px;max-width:100%;padding:16px 16px 14px;border-radius:22px;background:rgba(18,24,32,.36);border:0;color:#fff;text-align:left;-webkit-backdrop-filter:blur(28px) saturate(180%);backdrop-filter:blur(28px) saturate(180%);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.45),inset 0 1px 1px rgba(255,255,255,.35),0 18px 44px -18px rgba(0,0,0,.55);animation:ocin .5s cubic-bezier(.16,1,.3,1) both}' +
     '@keyframes ocin{from{opacity:0;transform:translateY(14px)}}' +
-    '.oc-k{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.62)}' +
+    '.oc-k{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.72)}' +
     '.oc-t{margin-top:6px;padding-right:26px;font-size:19px;font-weight:650;line-height:1.18;letter-spacing:-.02em;text-wrap:balance}' +
     '.oc-p{display:flex;align-items:center;gap:10px;margin-top:10px}' +
     '.oc-p b{font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1;white-space:nowrap}' +
-    '.oc-p span{font-size:12.5px;line-height:1.3;color:rgba(255,255,255,.75)}' +
-    '.oc-b{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;margin-top:14px;border-radius:999px;background:#fff;color:#0c0e10;text-decoration:none;font-size:14px;font-weight:650;line-height:1}' +
-    '.oc-b svg{color:#128c4b}' +
-    '.oc-x{position:absolute;top:8px;right:8px;width:32px;height:32px;border:0;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font:400 20px/1 -apple-system,sans-serif}' +
+    '.oc-p span{font-size:12.5px;line-height:1.3;color:rgba(255,255,255,.82)}' +
+    '.oc-b{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;margin-top:14px;border-radius:999px;background:#0a84ff;color:#fff;text-decoration:none;font-size:15px;font-weight:600;letter-spacing:-.01em;line-height:1;box-shadow:0 6px 20px rgba(0,0,0,.22)}' +
+    '.oc-b svg{color:#fff}' +
+    '.oc-x{position:absolute;top:8px;right:8px;width:32px;height:32px;border:0;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font:400 20px/1 -apple-system,sans-serif}' +
     // a phone held in landscape (both demos ask for it): the card is a low bar along the bottom, so it never covers the floor panel
     '@media (max-height:480px) and (min-width:560px){.oc-c{width:auto;max-width:min(640px,100%);display:grid;grid-template-columns:1fr auto auto;grid-template-areas:"t b x" "p b x";align-items:center;gap:1px 12px;padding:9px 9px 9px 16px;border-radius:18px}.oc-k{display:none}.oc-t{grid-area:t;margin:0;padding:0;font-size:14.5px;line-height:1.2}.oc-p{grid-area:p;margin:0;gap:6px}.oc-p b{font-size:13px;letter-spacing:0}.oc-p span{font-size:12px}.oc-b{grid-area:b;margin:0;min-height:38px;padding:0 14px;font-size:13px;white-space:nowrap}.oc-x{grid-area:x;position:static}}' +
     // a small phone in landscape (667 wide): narrower still, the WhatsApp button is its icon alone, so the bar stays clear of the floor panel
@@ -65,7 +65,16 @@
     document.head.appendChild(st);
     var box = document.createElement('div');
     box.className = 'oc';
-    box.innerHTML = '<a class="oc-l" href="' + WA + encodeURIComponent(S.msg) + '" target="_blank" rel="noopener">' + ICON + '<span>' + S.label + '</span></a>';
+    // 10/11 (Nico): the demo's own "Register interest" button is gone; in its place, same spot and same blue,
+    // the WhatsApp label. A demo without that button gets the label at the bottom right
+    var reg = document.querySelector('button.register');
+    if (reg) {
+      reg.innerHTML = ICON + '<span>' + S.label + '</span>';
+      reg.setAttribute('aria-label', S.label);
+      reg.addEventListener('click', function (e) { e.stopPropagation(); window.open(WA + encodeURIComponent(S.msg), '_blank', 'noopener'); });
+    } else {
+      box.innerHTML = '<a class="oc-l" href="' + WA + encodeURIComponent(S.msg) + '" target="_blank" rel="noopener">' + ICON + '<span>' + S.label + '</span></a>';
+    }
     document.body.appendChild(box);
     // a tap on the label or the card is not a tap on the demo under it
     ['pointerdown', 'pointerup', 'mousedown', 'mouseup', 'touchstart', 'touchend', 'click', 'wheel'].forEach(function (ev) {
