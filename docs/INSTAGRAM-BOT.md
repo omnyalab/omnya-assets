@@ -1,6 +1,6 @@
 # Bot Instagram di @omnyalab (al posto di ManyChat)
 
-Gira sul sito, su Vercel, senza Mac acceso e senza costi. Dal 10/11/2026 fa tutto quello che facevano le automazioni ManyChat: ogni reel con la sua pagina, risposta a qualsiasi commento sui reel in mappa, Omnya City con il link monouso, i vecchi tasti dei DM di ManyChat, la coda per il tetto di Meta, i clic sul link contati per post.
+Gira sul sito, su Vercel, senza Mac acceso e senza costi. Dal 10/11/2026 fa tutto quello che facevano le automazioni ManyChat: ogni reel con la sua pagina, risposta a qualsiasi commento sui reel in mappa (con il suo interruttore), Omnya City con il link monouso, i vecchi tasti dei DM di ManyChat, la coda per il tetto di Meta, i clic sul link contati per post.
 
 | File | Cosa fa |
 | --- | --- |
@@ -116,7 +116,22 @@ Tutto in `api/_lib/ig-posts.js`. Vince la prima regola che trova:
 3. la caption dice "Comment PAROLA" con un'altra parola: Tower Blueprint se la caption parla di una torre, Blueprint normale altrimenti, e solo a chi scrive quella parola (un errore di battitura è perdonato).
 4. niente di tutto questo (teaser per i clienti ecc.): il bot non risponde.
 
-Nei casi 1 e 2 il bot risponde a **qualsiasi commento**, qualunque parola (Nico, 7/11).
+Nei casi 1 e 2 (i post "in mappa") il bot risponde a **qualsiasi commento**, qualunque parola (Nico, 7/11 e 10/11): vedi qui sotto.
+
+## Ogni commento riceve risposta (interruttore `any`)
+
+Nico, 10/11: "tutti i messaggi vengono fatti con reply e gli mandiamo sempre tutto in DM anche se scrivono altro". Sotto un reel in mappa **qualsiasi commento di un'altra persona**, anche un'emoji, una domanda o una risposta scritta sotto il commento di qualcun altro, riceve la stessa risposta pubblica e lo stesso DM con il link di quel reel, come se avesse scritto la parola. È acceso di default.
+
+Chi resta fuori, sempre:
+
+- **noi**: i commenti di @omnyalab e le risposte che il bot stesso scrive sotto i commenti (riconosciuti dall'id dell'account e, come seconda sicura, dal nome `omnyalab`; se un giorno l'account cambia nome va messa la variabile `IG_USERNAME` su Vercel);
+- **chi ha già ricevuto per quel reel**: una risposta per persona per reel, anche se commenta dieci volte;
+- lo stesso commento consegnato due volte da Meta, e tutto quello che la coda già scarta (commenti più vecchi di 7 giorni, bot spento);
+- **i post che non sono in mappa**: lì vale la regola di prima, risponde solo a chi scrive la parola della caption (caso 3), e sotto i post senza "Comment PAROLA" non risponde a nessuno (caso 4). Per far rispondere a tutti anche sotto un vecchio reel basta aggiungerlo alla mappa con `action=post` (vedi "Aggiungere un reel").
+
+La coda e il tetto dei 750 DM l'ora sono gli stessi: più commenti con risposta vuol dire solo che l'ora si riempie prima, e chi arriva dopo aspetta in coda e riceve più tardi.
+
+**Spegnerlo, senza deploy:** `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=any&value=off`, e `&value=on` per riaccenderlo. Vale entro 15 secondi e resta su Redis. Da spento i reel in mappa tornano a rispondere **solo a chi scrive la parola** (quella della caption, più `TOWERS`, `BUILD` o `HOUSE` se il reel porta a quelle pagine; errori di battitura perdonati), e chi aveva scritto altro può ancora scrivere la parola dopo. Lo stato si legge come `anyComment: true|false` in `&format=json` e nella salute, e in una riga della pagina di Nico.
 
 ### Aggiungere un reel
 
@@ -150,14 +165,39 @@ Se è Meta a dire "too many calls" (conta anche i DM di altre app collegate) il 
 
 Variabili facoltative su Vercel: `IG_HOURLY_CAP` (default 750; si può abbassare a 700 per stare larghi), `IG_DRAIN_MS` e `IG_TICK_MS` (quanto lavora ogni chiamata).
 
+## Quando Instagram rifiuta la risposta pubblica (errore `code 20 sub 1772107`)
+
+Visto il 10/11 alle 09:56: `POST <id-commento>/replies: This API call does not support the requested response format [code 20 sub 1772107]`. Il testo dell'errore inganna, non c'entrano né il formato né il token: è il modo in cui Meta dice **"Instagram Comment Not Added"**, cioè Instagram non ha aggiunto la nostra risposta sotto quel commento. Succede quando il suo filtro automatico trattiene la risposta perché gli sembra ripetuta (le stesse poche frasi sotto tanti commenti), oppure quando quel commento non può ricevere risposte (nascosto da Instagram, cancellato nel frattempo, account limitato). Meta lo segna come non temporaneo, quindi riprovare non serve.
+
+Cosa fa il bot:
+
+- **il DM non ne risente**: parte sempre prima della risposta pubblica ed è una chiamata separata, quindi la persona ha già il link;
+- la risposta pubblica viene provata una volta sola e non viene ripetuta (insistere peggiorerebbe il filtro);
+- **non mette mai il bot in pausa**: la pausa scatta solo per i DM che falliscono, mai per le risposte pubbliche;
+- l'errore resta nel contatore e nella pagina di Nico con una frase leggibile: `Instagram did not add our public reply [code 20 sub 1772107], the DM went out all the same: …`, con l'id del commento e il nome di chi ha commentato nei log (`[ig] ERROR public reply`).
+
+Uno ogni tanto è normale. Se diventano tanti di fila vuol dire che Instagram sta frenando le risposte pubbliche dell'account: i DM continuano, e la cosa che aiuta è avere più frasi diverse in `publicReplies` dentro `ig-texts.js`.
+
+## I titoli dei reel per l'app sul Mac (`action=media`)
+
+`https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=media` risponde in JSON con gli ultimi 30 post e reel dell'account, dal più nuovo:
+
+```json
+{ "media": [ { "id": "…", "shortcode": "DfSXvGDtt4s", "caption": "…", "permalink": "https://www.instagram.com/reel/DfSXvGDtt4s/", "thumbnail_url": "https://…", "media_type": "VIDEO", "timestamp": "2026-11-03T17:00:00+0000" } ] }
+```
+
+`shortcode` è lo stesso codice della mappa e dei numeri per post, così l'app può mettere il titolo accanto a ogni riga. `caption` è vuota se il post non ne ha; `thumbnail_url` è la copertina dei video e la foto stessa per le foto (per i caroselli può essere vuota), ed è un indirizzo di Instagram che scade dopo qualche giorno, quindi va ricaricato e non salvato. Il bot chiede la lista a Meta **al massimo una volta ogni 10 minuti** (con il token e l'account che usa già) e nel mezzo la legge da Redis; `&fresh=1` la richiede subito.
+
+Se Meta rifiuta, la risposta è sempre un 200 con `{ "media": [], "error": "cosa ha detto Meta" }`; se c'era una lista di meno di un giorno fa torna quella, con `"stale": true` accanto all'errore. Non tocca il bot: non entra nel contatore degli errori e non ferma niente.
+
 ## I clic sul link
 
 Il link nel DM è quello della pagina con il post in coda, per esempio `https://www.omnyalab.com/the-towers-blueprint?ig=DfXXXXXXXXX`. Una regola in `vercel.json` manda i link con `?ig=` a `/api/instagram?go=…`, che conta il clic per quel post e apre la pagina pulita. Le anteprime che Instagram fa del link non contano. Se la regola mancasse il link aprirebbe la pagina lo stesso, si perderebbe solo il conteggio.
 
 ## Cosa guardare
 
-- **Pagina di Nico**: `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY` → contatti, commenti in coda, DM dell'ultima ora, errori dell'ultima ora, e per ogni post commenti, DM mandati, DM bloccati, link mandati, clic sul link. Con `&format=json` solo i numeri.
-- **Salute**: `https://www.omnyalab.com/api/instagram?health=IG_ADMIN_KEY` → `on` (acceso o spento), `flow` (`direct`, `gate` o `comment`), `followProbe` (la sonda del follow), `gateFor` (chi riceve sempre il giro completo), `linkAs` (il link va sul tasto o nel testo), `mode` (tutti o solo i tester), `token` (valido, quale Pagina e quale Instagram), `webhook` (i campi accesi sulla Pagina e sull'app, e in `missing` quelli che mancano tra `comments`, `messages`, `messaging_postbacks`), `lastComment` (l'ultimo commento arrivato, anche se non ha avuto risposta: è la prova che il webhook è acceso), `line` (coda, DM dell'ultima ora, eventuale fermo), `errors` (ultima ora e gli ultimi cinque), `map` (i post e le parole).
+- **Pagina di Nico**: `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY` → contatti, commenti in coda, DM dell'ultima ora, errori dell'ultima ora, e per ogni post commenti, DM mandati, DM bloccati, link mandati, clic sul link. Con `&format=json` solo i numeri (dentro ci sono anche `on`, `mode` e `anyComment`).
+- **Salute**: `https://www.omnyalab.com/api/instagram?health=IG_ADMIN_KEY` → `on` (acceso o spento), `flow` (`direct`, `gate` o `comment`), `anyComment` (`true` = sui reel in mappa risponde a ogni commento, `false` = solo alla parola), `followProbe` (la sonda del follow), `gateFor` (chi riceve sempre il giro completo), `linkAs` (il link va sul tasto o nel testo), `mode` (tutti o solo i tester), `token` (valido, quale Pagina e quale Instagram), `webhook` (i campi accesi sulla Pagina e sull'app, e in `missing` quelli che mancano tra `comments`, `messages`, `messaging_postbacks`), `lastComment` (l'ultimo commento arrivato, anche se non ha avuto risposta: è la prova che il webhook è acceso), `line` (coda, DM dell'ultima ora, eventuale fermo), `errors` (ultima ora e gli ultimi cinque), `map` (i post e le parole).
 - **Log**: Vercel → Logs → cerca `[ig]`; gli errori sono le righe `[ig] ERROR`. Nessun errore di Meta passa in silenzio: ognuno ha la sua riga con il codice (per esempio `[code 100 sub 2534037]` = la chat è ancora di un'altra app) e finisce nel contatore.
 
 ## Comandi (tutti con la chiave)
@@ -170,6 +210,8 @@ Il link nel DM è quello della pagina con il post in coda, per esempio `https://
 | `/api/leads?key=…&action=mode&value=gate` | giro completo: tasto, controllo del follow, link |
 | `/api/leads?key=…&action=mode&value=comment` | cancello a commenti: prima il follow, poi "comment DONE", poi il link |
 | `/api/leads?key=…&action=gatefor&value=gghizzoo` | giro completo solo per questi username, per lo screencast (valore vuoto = nessuno) |
+| `/api/leads?key=…&action=any&value=off` | sui reel in mappa risponde solo a chi scrive la parola (`&value=on`, il default: a ogni commento) |
+| `/api/leads?key=…&action=media` | gli ultimi 30 post e reel in JSON, per i titoli nell'app (`&fresh=1` salta la memoria di 10 minuti) |
 | `/api/leads?key=…&action=off` | **spegne il bot subito**, senza deploy (non risponde a nessuno e non tiene i commenti che arrivano) |
 | `/api/leads?key=…&action=on` | lo riaccende |
 | `/api/leads?key=…&action=subscribe` | collega la Pagina al webhook (una volta sola) |
