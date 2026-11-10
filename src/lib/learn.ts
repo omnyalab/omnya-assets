@@ -94,7 +94,8 @@ export const products: { id: ProductId; checkout: string }[] = [
   // https://www.omnyalab.com/learn/thanks/full-towers?session_id={CHECKOUT_SESSION_ID} (the webhook already delivers both
   // by their names). While this is an empty string the card only says "Add it at checkout" and the button is the guide's;
   // paste the link here and the card becomes a tick, with the button "Get both · €17.99" going to /go/full-towers-scene.
-  { id: 'full-towers-scene', checkout: '' },
+  // link created 10/11 with Nico's ok: plink_1UaEexATIF7pxfqfL5Ft6FcB, the two products, €17.99
+  { id: 'full-towers-scene', checkout: 'https://buy.stripe.com/7sY3cu2KpbIsaK2duJ8so0H' },
 ];
 
 // 10/11 (site check 2 and 21): the launch prices are gone from the code. fullTowerDeal, full3dDeal and fullCityDeal (the Full
