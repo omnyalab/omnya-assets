@@ -495,6 +495,7 @@ const en = {
       only: 'Only on this page',
       no: 'No thanks, show me something else',
       upgradeNo: 'No thanks, take me to my PDF',
+      upgradeSub: 'You already paid €5.99 of it, so here you only pay the rest',
       // 10/11 (Nico): the community card says what it is, next to the Skool logo
       skoolTag: 'Private community · opening soon',
       skoolLine: 'Our private community on Skool, where we build together, and you get in from the waiting list.',
@@ -1115,6 +1116,7 @@ const it: Dict = {
       only: 'Solo su questa pagina',
       no: 'No grazie, fammi vedere altro',
       upgradeNo: 'No grazie, portami al mio PDF',
+      upgradeSub: 'Ne hai già pagati 5,99, quindi qui paghi solo il resto',
       skoolTag: 'Community privata · apre presto',
       skoolLine: 'La nostra community privata su Skool, dove si costruisce insieme, e si entra dalla lista d’attesa.',
       or: 'Oppure',
