@@ -147,19 +147,24 @@ function paidFiles() {
   if (!id) return closed();
   fetch(`/api/files?session_id=${encodeURIComponent(id)}&lang=${box.dataset.dl}`)
     .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-    .then((j: { files?: { name: string; href: string }[]; pack?: boolean }) => {
+    .then((j: { files?: { name: string; href: string; kind?: string }[]; pack?: boolean }) => {
       const files = (j.files || []).filter((f) => f.href.startsWith('/api/file?'));
       if (!files.length) return closed();
       // step 2 (10/11): the upgrade to the pack shows only now, with the payment confirmed, and not to who paid for the pack
       const up = document.querySelector<HTMLElement>('[data-upgrade]');
       if (up && j.pack === false) up.hidden = false;
-      text.textContent = text.dataset.ok!;
+      // 10/11: the Towers scene file (kind 'zip') sits next to the PDF, with its own words and the line that says what it is
+      const scene = files.some((f) => f.kind === 'zip');
+      const pdf = files.some((f) => f.kind !== 'zip');
+      text.textContent = (scene ? (pdf ? text.dataset.okScene : text.dataset.onlyScene) : '') || text.dataset.ok!;
       for (const f of files) {
         const a = tpl('file').firstElementChild!.cloneNode(true) as HTMLAnchorElement;
         a.href = f.href;
-        a.querySelector('span')!.textContent = f.name;
+        a.querySelector('span')!.textContent = f.kind === 'zip' ? `${f.name} · zip` : f.name;
         btns.append(a);
       }
+      const note = box.querySelector<HTMLElement>('[data-dl-note]');
+      if (note && scene) note.hidden = false;
     })
     .catch(closed);
 }

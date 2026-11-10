@@ -5,7 +5,7 @@
 // (api/file.js). The id works for 30 days after the payment; after that the buyer has the email.
 // Fail closed: no id, a wrong one, not paid, Stripe not answering, no key → no links, and the page says the
 // PDFs are in the buyer's inbox (the webhook sends them, with or without this page).
-// GET ?key=IG_ADMIN_KEY → a fresh 30-day link for every file, as text: for Nico, to answer a buyer by hand.
+// GET ?key=IG_ADMIN_KEY → a fresh 30-day link for every file (the PDFs and the Towers scene zip), as text: for Nico, to answer a buyer by hand.
 import Stripe from 'stripe';
 import { filesForProduct, allFiles, signedHref, isPack, PAGE_TTL, DAY } from './_lib/learn-files.js';
 
@@ -43,7 +43,8 @@ export async function GET(request) {
     const names = (session.line_items?.data || []).map((it) => it.price?.product?.name || it.description || '').filter((n) => n && !/^omnya city/i.test(n));
     const files = filesForProduct(names, { ttl: PAGE_TTL, lang: q.get('lang') === 'it' ? 'it' : 'en' });
     // pack: this payment already holds "Everything we teach" (any of its prices), so the page does not offer the upgrade
-    return json({ files: files.map((f) => ({ name: f.name, href: f.href })), pack: names.some(isPack) });
+    // kind: 'zip' only on the Towers scene file (10/11), so the page can say what it is; the PDFs are as before
+    return json({ files: files.map((f) => ({ name: f.name, href: f.href, ...(f.kind ? { kind: f.kind } : {}) })), pack: names.some(isPack) });
   } catch (e) {
     console.error('[files]', e.message);
     return json({ error: 'could not check' }, e.statusCode === 404 ? 404 : 502);

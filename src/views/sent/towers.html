@@ -194,12 +194,19 @@ html,body{min-height:100%}
 .inf{position:fixed;inset:0;z-index:200;pointer-events:none;background:radial-gradient(120% 90% at 50% 35%,#163266 0%,#0b1630 45%,#05070a 100%);animation:inf .6s ease .05s forwards}
 @keyframes inf{to{opacity:0;visibility:hidden}}
 @media (prefers-reduced-motion:reduce){.inf{animation-duration:.01s}}
+/* 10/11 (Nico): one quiet line under the Full Towers Guide option. The Towers Scene File (€12) is a recommended product of
+   that Stripe payment link, so it is added in the checkout, not here; it fades when the other option is the chosen one */
+.pick .add{margin:-3px 4px 0;text-align:center;text-wrap:balance;color:#2997ff;font:600 12px/1.35 -apple-system,sans-serif;transition:opacity .3s}
+.w.all .pick .add{opacity:.45}
+/* on short phones (375x667) the line must not push GET IT under the cookie bar: the same card, a little tighter */
+@media (width<=899px) and (height<=700px){.u{padding-top:8px}.w .uc{margin-top:32px}.pick{margin:14px 0 12px}.pick label{padding:12px 16px}}
 </style><div class="inf" aria-hidden="true"></div><div class="ok"><i>✓</i><span data-mail><b>Your blueprint is on its way.</b> <br class="br">Check your inbox in a couple of minutes.</span><span data-nomail><b>Your blueprint is downloading.</b> <br class="br">One thing before you open it.</span></div><section class="x3-deal u w"><div class="wbg a"></div><div class="wbg b"></div><div class="u-in"><div class="uc">
 <img class="ub" data-one src="/learn/tt_book_tight.webp" alt="The Full Towers Blueprint"><div class="arc" data-all><img src="/learn/pk_pb01.webp" alt="From 3D to real photo"><img src="/learn/pk_pb02.webp" alt="The reel they comment on"><img src="/learn/pk_pb03.webp" alt="Sell it before it exists"></div>
 <p class="x3-kick">These prices are only here</p>
 <h1 data-one>The Full Guide<br><span>Choose your view</span></h1><h1 data-all>Everything<br><span>we teach</span></h1>
 <div class="pick">
 <label class="on" data-p="5.99"><i></i><div>The Full Towers Guide<span>every prompt and file for three towers you fly around</span></div><strong>€5.99<s>€29</s></strong></label>
+<p class="add">At checkout you can add the base 3D scene itself, to open and edit in your browser, for €12</p>
 <label data-p="59"><i></i><div>Everything we teach<span><b class="inc">✓ This guide is inside</b><br>+ 3 more Full Guides and 3 playbooks</span><em class="tag2">Only here</em></div><strong>€59<s>€164</s></strong></label>
 </div><a class="x3-btn x3-btn--blue" id="go" href="/go/full-towers">Get it · €5.99 →</a>
 <div data-one><ul class="ul"><li><span><b>Every prompt, word for word</b>, for the photos, the six views and the six clips</span></li><li><span><b>The 3D code and the page</b>, the three towers in three.js and the choose your view page, ready to change</span></li><li><span><b>The fog and the loop</b>, how the clips join with no cut and the video plays forwards and backwards</span></li><li><span><b>Delivery to the client</b>, how it goes online and what to charge</span></li></ul></div><div data-all><ul class="ul"><li><span><b>The Full Tower Guide</b>, every prompt to build a tower that sells</span></li><li><span><b>The Full 3D Guide</b>, how to make a 3D that sells with AI</span></li><li><span><b>The Full Build Guide</b>, the house that builds itself</span></li><li><span><b>The Full Towers Guide</b>, this guide, three towers you choose the view of</span></li><li><span><b>3 playbooks</b>, from 3D to real photo, the reel they comment on, sell it before it exists</span></li><li><span><b>€164</b> bought one by one, €79 for the playbooks alone on the site, <b>here only €59</b></span></li></ul></div></div><a class="nt" href="/go/free-towers" target="_blank" rel="noopener">No thanks, the free one is enough</a></div></section>

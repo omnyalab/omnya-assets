@@ -5,6 +5,8 @@
 // after the payment one-year links (api/stripe-webhook.js). Anything else gets the kind page below, never a file.
 // The old public links (/learn/files/…) are sent here too, so they end on the same page.
 // The PDF is streamed: a streamed answer has no 4.5 MB limit on Vercel (the playbooks are up to 8 MB).
+// 10/11: one file is not a PDF, the Towers scene (en/the-towers-scene.zip). Same signature, same end date, same
+// folder; it goes out as application/zip and as a download with its own clean name, the PDFs as before.
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { Readable } from 'node:stream';
@@ -37,10 +39,11 @@ export async function GET(request) {
     console.error('[file] missing in the bundle', file);
     return closed(404);
   }
+  const zip = file.endsWith('.zip');
   return new Response(Readable.toWeb(createReadStream(path)), {
     headers: {
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `inline; filename="${file.split('/').pop()}"`,
+      'Content-Type': zip ? 'application/zip' : 'application/pdf',
+      'Content-Disposition': `${zip ? 'attachment' : 'inline'}; filename="${file.split('/').pop()}"`,
       'Cache-Control': 'private, no-store',
       'X-Robots-Tag': 'noindex, nofollow',
     },
