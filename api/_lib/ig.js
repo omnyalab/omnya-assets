@@ -530,11 +530,12 @@ async function infoFor(mediaId) {
 
 // ---------- Nico ----------
 
-// 10/11 (Nico): no mail when the one writing is Nico himself from his own profile (he tests the bot with it)
-const NO_MAIL = new Set(['gghizzoo']);
+// 10/11 (Nico): no mails from the Instagram bot at all, they were too many ("me ne arrivano troppe, togli tutto").
+// What people write stays on the lead (lead.wrote, lead.interest) and on Nico's page; turn MAIL_NICO on to have them back.
+const MAIL_NICO = false;
 
 async function tellNico(lead, subject, lines = []) {
-  if (NO_MAIL.has(String(lead.username || '').toLowerCase())) return;
+  if (!MAIL_NICO) return;
   const who = lead.username ? `@${lead.username}` : `utente ${lead.id}`;
   const body = [
     ...lines,
