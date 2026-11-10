@@ -2,10 +2,13 @@
 
 Gira sul sito, su Vercel, senza Mac acceso e senza costi. Dal 10/11/2026 fa tutto quello che facevano le automazioni ManyChat: ogni reel con la sua pagina, risposta a qualsiasi commento sui reel in mappa (con il suo interruttore), Omnya City con il link monouso, i vecchi tasti dei DM di ManyChat, la coda per il tetto di Meta, i clic sul link contati per post.
 
+**In breve, com'è oggi (10/11 sera):** chi commenta sotto un reel collegato riceve una risposta pubblica sotto il commento e un solo DM con il tasto che apre la pagina. Le risposte pubbliche sono dodici e i DM cinque, dicono tutti la stessa cosa con parole diverse e vengono presi a turno, mai la stessa frase due volte di fila sotto lo stesso reel. Il DM chiede di seguire @omnyalab ma **il follow non è obbligatorio e non viene controllato**. Se il commento è una città o un paese ("Dubai", "Italy"), la risposta pubblica lo riprende ("Dubai, nice 🙌🏻 check your DMs").
+
 | File | Cosa fa |
 | --- | --- |
 | `api/_lib/ig-posts.js` | **la mappa: quale post porta a quale pagina** (l'unico posto dove si aggiunge un reel) |
 | `api/_lib/ig-texts.js` | tutte le frasi, una serie per destinazione |
+| `api/_lib/ig-places.js` | l'elenco di città e paesi per "comment your city" |
 | `api/_lib/ig.js` | il giro, la coda, i contatori, il controllo di salute |
 | `api/_lib/ig-store.js` | quello che il bot ricorda su Redis (chiavi `omnya:ig:*`) |
 | `api/instagram.js` | riceve gli eventi da Meta, conta i clic, risponde al controllo di salute |
@@ -13,26 +16,85 @@ Gira sul sito, su Vercel, senza Mac acceso e senza costi. Dal 10/11/2026 fa tutt
 | `api/leads.js` | la pagina di Nico: contatti, coda, errori, numeri per post, comandi |
 | `scripts/ig-test.mjs` | le prove: `~/.local/node/bin/node scripts/ig-test.mjs` |
 
-## Le modalità: `direct` (di default), `gate`, `comment`
+## Le modalità: si usa solo `direct`
+
+**Decisione di Nico del 10/11: la revisione di Meta si lascia perdere.** Quindi il bot resta in `direct` e il follow si chiede a parole nel DM, senza controllarlo: chi non segue riceve il link lo stesso. Le altre due modalità, `gate` e `comment`, **restano nel codice ma spente e non si usano**: servirebbero solo con l'Advanced Access di Meta, che senza revisione non arriva. Non vanno accese (`comment` oggi manderebbe comunque il link al secondo commento, `gate` lascerebbe senza link chiunque non abbia un ruolo sull'app). Tutto quello che qui sotto parla di `gate`, `comment`, screencast e "dopo la review" è lasciato per memoria, nel caso un giorno si riprenda la revisione.
 
 **Perché esiste `direct`.** Prova dal vivo del 10/11/2026: con ManyChat tolto e Omnya Bot come app di routing predefinita, il tester @gghizzoo riceve tutto il giro, e i commenti di chiunque ricevono la risposta pubblica e il primo DM. Ma il tocco sul tasto di chi **non ha un ruolo sull'app** non arriva mai al webhook, né come messaggio né in standby: con lo Standard Access Meta non ci consegna i messaggi in entrata degli sconosciuti. Finché l'App Review non passa (Advanced Access) il bot non può dipendere da nessun tocco o messaggio in entrata.
 
 **`direct` (link diretto), il default.** Al commento escono la risposta pubblica e **un solo DM che ha già il link**: un testo corto che chiede il follow in una riga e un tasto che apre la pagina giusta del post (`Get the Blueprint`, per City `Get my house`), con `?ig=<codice>` per contare i clic. Per City il link personale monouso viene creato al momento del commento, dal nome utente del commento. Il follow non si controlla più, si chiede e basta. Se Instagram rifiuta il tasto con il link, parte subito lo stesso testo con il link scritto dentro, e per 6 ore il bot manda direttamente il testo (così ogni commento costa una chiamata sola); la salute lo dice in `linkAs`. Niente promemoria "check Requests" dopo 3 ore, perché senza i "visto" non sappiamo chi ha aperto il DM. I tocchi e i messaggi che arrivano lo stesso (tester, chi ha un ruolo) ricevono il link subito, senza controllo del follow.
 
-I testi di `direct` (`direct` in `ig-texts.js`), tutti con il tasto `Get the Blueprint`:
+I testi di `direct` (`direct.texts` in `ig-texts.js`): **cinque modi di dire la stessa cosa**, presi a turno, tutti con lo stesso tasto `Get the Blueprint` e tutti con la riga "follow @omnyalab so you catch the next one". Al posto di "The Towers Blueprint" ogni reel mette il nome della sua guida (The Blueprint, The Tower Blueprint, The 3D to film blueprint, The Build Blueprint, The Towers Blueprint):
 
-| Post | Testo del DM |
-| --- | --- |
-| Blueprint normale | Hey 🙌🏻 The Blueprint is ready 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week |
-| torre rossa, 1 DAY | Hey 🙌🏻 The Tower Blueprint is ready 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week |
-| 3D KILLED, CLAUDE COOKED | Hey 🙌🏻 The 3D to film blueprint is ready 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week |
-| BUILD | Hey 🙌🏻 The Build Blueprint is ready 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week |
-| TOWERS | Hey 🙌🏻 The Towers Blueprint is ready 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week |
-| City (tasto `Get my house`) | Hey 🙌🏻 your house in Omnya City is ready 🏠 tap below, it’s one link, one house, made for your username, and follow @omnyalab so you watch the city grow |
+1. Hey 🙌🏻 The Towers Blueprint is ready 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week
+2. Here you go 🙌🏻 The Towers Blueprint is right below, and follow @omnyalab so you catch the next one, we drop a new build every week
+3. Thanks for the comment 🫶🏻 The Towers Blueprint is one tap away 👇🏻 follow @omnyalab so you catch the next one, there’s a new build every week
+4. Hey, got your comment 👀 The Towers Blueprint is ready for you below, follow @omnyalab so you catch the next one, a new build drops every week
+5. As promised 🙌🏻 tap below for The Towers Blueprint, and follow @omnyalab so you catch the next one, we post a new build every week
 
-**`gate` (giro completo).** Quello descritto sotto: tasto da toccare → controllo del follow → link. Si torna a usarlo quando la review passa.
+Per City il tasto è `Get my house` e i cinque testi sono:
 
-**`comment` (cancello a commenti), pronta ma spenta: NON si può accendere prima della review.** La sonda dal vivo del 10/11 (commento di un account senza ruolo) ha risposto `ERROR 200 (#200) App does not have Advanced Access to instagram_manage_messages permission, and recipient user does not have role on app`: Meta non ci dice il follow di chi ha soltanto commentato, quindi oggi questa modalità manderebbe sempre il link al secondo commento. Resta nel codice per dopo. Il follow torna obbligatorio anche senza review, usando come canale di ritorno i commenti, che Meta ci consegna da chiunque:
+1. Hey 🙌🏻 your house in Omnya City is ready 🏠 tap below, it’s one link, one house, made for your username, and follow @omnyalab so you watch the city grow
+2. Here you go 🏠 your house in Omnya City is right below, it’s one link, one house, made for your username, and follow @omnyalab so you watch the city grow
+3. Thanks for the comment 🙌🏻 your house in Omnya City is one tap away, one link, one house, made for your username, and follow @omnyalab so you watch the city grow
+4. Hey, your lot is waiting 🏠 tap below for your house in Omnya City, it’s one link, one house, made for your username, and follow @omnyalab so you watch the city grow
+5. As promised 🔑 tap below for your house in Omnya City, one link, one house, made for your username, and follow @omnyalab so you watch the city grow
+
+## Le frasi a rotazione (risposte pubbliche e DM)
+
+Instagram frena le risposte che gli sembrano fatte in serie (è l'errore `code 20 sub 1772107` più sotto). Per questo ogni reel ha **dodici risposte pubbliche** che dicono tutte "te l'ho mandato in DM" (`publicReplies` in `ig-texts.js`; le prime sei sono quelle di prima):
+
+1. Sent 🙌🏻 check your DMs for The Towers Blueprint
+2. Just sent it, check your DMs 👀
+3. Done! It’s in your DMs 🫶🏻
+4. Check your DMs, The Towers Blueprint is there 🙌🏻
+5. Sent you a DM 👇🏻 enjoy The Towers Blueprint
+6. It’s in your inbox now 🙌🏻
+7. sent, it’s waiting for you in your DMs 🫶🏻
+8. just dropped it in your DMs 👀
+9. on its way, check your DMs 🙌🏻
+10. The Towers Blueprint just landed in your DMs 👀
+11. you got it, check your DMs 👇🏻
+12. all yours, I just sent it in DM 🙌🏻
+
+(Il nome della guida cambia con il reel; i reel 3D "KILLED" e "COOKED" tengono anche le loro tre frasi di prima, quindi ne hanno quattordici; City ne ha dieci sue, con la casa e la chiave.)
+
+**Come vengono scelte.** Non a caso: a turno. Per ogni reel il bot tiene un contatore su Redis (uno per le risposte pubbliche, uno per i DM, uno per le risposte con la città) e a ogni commento prende la frase successiva. Finito il giro delle dodici ricomincia con un ordine diverso, e la prima del giro nuovo non è mai l'ultima di quello prima: **sotto lo stesso reel la stessa frase non esce mai due volte di fila**, né in pubblico né nei DM. Se Redis per un momento non risponde il bot prende una frase a caso e va avanti: il conteggio non può mai fermare un commento. Un DM che fallisce e viene riprovato dice le stesse parole del primo tentativo.
+
+Per aggiungere una frase basta scriverla nell'elenco `repliesFor` (risposte pubbliche) o `directFor` (DM) dentro `ig-texts.js`: corta, un'emoji sola, niente link, e nei DM sempre la riga del follow. Le prove controllano queste regole da sole.
+
+## "Comment your city": quando il commento è una città o un paese
+
+Nei prossimi reel, oltre alla parola, alla fine c'è un invito tipo "comment your city". Quando sotto un reel in mappa il commento **non è la parola ma una città o un paese**, la risposta pubblica lo riprende, e il DM è quello di sempre (stesso testo a turno, stesso tasto, stesso link). Le frasi (`placeReplies` in `ig-texts.js`), a turno anche loro:
+
+1. Dubai, nice 🙌🏻 check your DMs
+2. Dubai 👀 love it, I just sent it in DM
+3. hello Dubai 🙌🏻 it’s in your DMs
+4. Dubai, love that 🫶🏻 sent you a DM
+5. Dubai 🙌🏻 great, check your DMs, it’s there
+6. nice one, Dubai 👀 it’s in your inbox now
+7. Dubai! done, it’s in your DMs 🫶🏻
+
+**Come riconosce la città, senza AI.** Da un elenco nostro, `api/_lib/ig-places.js`: circa 550 città (le più grandi del mondo, le capitali e quelle dei nostri mercati) e tutti i paesi, in inglese e nelle grafie più comuni (Milano e Milan, München e Munich, Bombay e Mumbai, UAE e United Arab Emirates, دبي, Москва). Le regole sono strette apposta:
+
+- il commento deve essere **corto, al massimo 3 parole**, e deve **combaciare per intero** con un nome dell'elenco. Maiuscole, accenti, emoji, bandiere, punti esclamativi e cancelletto non contano: `dubai!!`, `DUBAI 🔥🔥`, `#dubai`, `São Paulo 🇧🇷` vanno bene;
+- vale anche "città + paese" se tutti e due sono nell'elenco: `Milan, Italy` → "Milan";
+- **in ogni altro caso escono le risposte normali**: `I love Dubai`, `from Dubai`, `Dubai baby`, una frase lunga, un nome che non conosciamo, un commento con una @menzione;
+- nella nostra risposta c'è sempre **il nome scritto come nell'elenco**, mai il testo del commento: chi scrive `dUbAi` legge "Dubai", chi scrive `milano` legge "Milan". Nessuna parola del commento che non sia nell'elenco può finire nella nostra risposta;
+- la parola del reel vince sempre: `TOWERS` (anche con un errore di battitura) riceve la risposta normale;
+- le sigle che in minuscolo sono parole qualunque contano solo in maiuscolo: `LA`, `NY`, `SF`, `DC`, `KL`, `HK`, `US`, `NZ`;
+- alcuni nomi sono lasciati fuori apposta perché da soli sono parole comuni: Nice, Male, Split, Essen, Cork, Bath, Reading, Mobile, Victoria, Casa, Kobe;
+- `Ho Chi Minh City` ha quattro parole e quindi riceve la risposta normale; `Ho Chi Minh` e `Saigon` sono riconosciuti.
+
+Vale solo dove un commento riceve già risposta: sotto i reel in mappa con "ogni commento" acceso. Sotto un post fuori mappa, o con `any` spento, una città non è la parola e non riceve niente, come prima. La città riconosciuta resta salvata con il contatto (`place`), e nella pagina di Nico si legge nel commento.
+
+Per aggiungere una città: una riga in `CITIES` dentro `ig-places.js`, `'Nome come lo scriviamo|altra grafia|altra grafia'`.
+
+## Le altre due modalità (spente, non si usano)
+
+**`gate` (giro completo), spenta.** Quello descritto sotto: tasto da toccare → controllo del follow → link. Funziona solo con l'Advanced Access di Meta, cioè dopo una revisione che Nico ha deciso di non fare: resta nel codice e non si usa.
+
+**`comment` (cancello a commenti), spenta: NON si può accendere senza la review.** La sonda dal vivo del 10/11 (commento di un account senza ruolo) ha risposto `ERROR 200 (#200) App does not have Advanced Access to instagram_manage_messages permission, and recipient user does not have role on app`: Meta non ci dice il follow di chi ha soltanto commentato, quindi oggi questa modalità manderebbe sempre il link al secondo commento. Resta nel codice per dopo. Il follow torna obbligatorio anche senza review, usando come canale di ritorno i commenti, che Meta ci consegna da chiunque:
 
 1. primo commento di una persona di cui non abbiamo ancora l'id dei messaggi: risposta pubblica ("Check your DMs 👀 one quick step and it’s yours" e simili) e un DM **senza link**: "Hey 🙌🏻 The Towers Blueprint is ready, one step first: follow @omnyalab, then comment DONE under the reel and I’ll send it right over 👇🏻". La risposta di Meta a quel DM ci dà l'id dei messaggi della persona, che il bot salva;
 2. la persona commenta di nuovo sotto lo stesso reel (qualsiasi parola): **prima di rispondere** il bot chiede a Meta se quell'id ci segue. Se segue, risposta privata a quel commento con il tasto che apre la pagina ("Thanks for the follow 🙌🏻 The Towers Blueprint is ready 👇🏻 we drop a new build every week, so keep an eye on the reels") e risposta pubblica; se non segue, solo il DM "Almost there 👀 follow @omnyalab first, then comment again under the reel and it’s yours";
@@ -42,7 +104,7 @@ I testi di `direct` (`direct` in `ig-texts.js`), tutti con il tasto `Get the Blu
 
 Ogni risposta è la risposta privata a un commento diverso (mai due allo stesso commento), quindi resta nelle regole di Meta e dentro la coda a 750 l'ora; una persona può ricevere al massimo tre risposte per reel. I testi sono in `comment` dentro `ig-texts.js`. **Prima di accenderla guarda la sonda qui sotto**: ha senso solo se Meta ci dice il follow di chi ha soltanto commentato.
 
-**La sonda del follow (sempre accesa, in ogni modalità).** Dopo ogni DM riuscito a un commento il bot salva l'id dei messaggi che Meta restituisce e chiede subito `is_user_follow_business` per quell'id. Non cambia niente del comportamento e non può rallentare né far fallire l'invio: scrive una riga nei log e conta. Nei log di Vercel cerca **`[ig] probe`**:
+**La sonda del follow (accesa, è solo una riga nei log).** Non è un controllo: non decide niente e chi non segue riceve il link lo stesso. Ora che la revisione è ferma serve a poco, e si può spegnere con `IG_PROBE=0` su Vercel per risparmiare una chiamata a Meta per commento. Dopo ogni DM riuscito a un commento il bot salva l'id dei messaggi che Meta restituisce e chiede subito `is_user_follow_business` per quell'id. Non cambia niente del comportamento e non può rallentare né far fallire l'invio: scrive una riga nei log e conta. Nei log di Vercel cerca **`[ig] probe`**:
 
 - `[ig] probe <username> → follows=true` oppure `follows=false`: Meta ce lo dice, la modalità `comment` può funzionare;
 - `[ig] probe <username> → follows=unknown`: Meta risponde ma senza il dato;
@@ -50,11 +112,11 @@ Ogni risposta è la risposta privata a un commento diverso (mai due allo stesso 
 
 I totali (seguono, non seguono, senza risposta, errori, ultimo errore) sono nella pagina di Nico, in `&format=json` (`followProbe`) e nella salute. Si spegne con `IG_PROBE=0` su Vercel.
 
-**Cambiare modalità, senza deploy:** `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=mode&value=direct`, `&value=gate` oppure `&value=comment`. La scelta sta su Redis e vale entro 15 secondi; se non è mai stata scelta vale `direct`. La modalità in uso si legge nella pagina di Nico e nella salute (`flow`).
+**Cambiare modalità, senza deploy (oggi non serve: si resta in `direct`):** `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=mode&value=direct`, `&value=gate` oppure `&value=comment`. La scelta sta su Redis e vale entro 15 secondi; se non è mai stata scelta vale `direct`. La modalità in uso si legge nella pagina di Nico e nella salute (`flow`): **deve dire `direct`**, e se dice altro si rimette con `&action=mode&value=direct`.
 
 **Dopo la review** (Advanced Access su `instagram_manage_messages`): prova con un account senza ruolo che il tocco arrivi (in `gate`, una riga `[ig] message … → get` nei log), poi `&action=mode&value=gate`. Con i messaggi in entrata tornano anche il controllo del follow, il promemoria a 3 ore, il follow-up a 20 ore e la mail a Nico quando qualcuno risponde.
 
-## Come registrare lo screencast per la review
+## Come registrare lo screencast per la review (in sospeso: la revisione non si fa)
 
 La review di Meta vuole vedere il giro completo (tasto, controllo del follow, link). Si registra con @gghizzoo, che ha un ruolo sull'app, **senza toccare gli utenti veri**: chi è in lista riceve sempre il giro `gate`, tutti gli altri restano in `direct`.
 
@@ -83,7 +145,7 @@ Sotto i reel BUILD, TOWERS e 3D il giro è lo stesso fino al link, senza la doma
 
 **Dopo il video**: `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=gatefor&value=` (valore vuoto) toglie tutti dalla lista, e @gghizzoo torna in `direct` come gli altri.
 
-## Il giro in `gate`
+## Il giro in `gate` (spento, per memoria)
 
 1. Qualcuno commenta sotto un reel. Il commento entra in coda e, se nell'ultima ora sono partiti meno di 750 DM, viene servito subito.
 2. Sotto il commento esce una risposta pubblica a rotazione e parte il DM con il tasto **Get the Blueprint** (per City **Get my house**). Ogni persona lo riceve una volta sola per reel.
@@ -176,7 +238,7 @@ Cosa fa il bot:
 - **non mette mai il bot in pausa**: la pausa scatta solo per i DM che falliscono, mai per le risposte pubbliche;
 - l'errore resta nel contatore e nella pagina di Nico con una frase leggibile: `Instagram did not add our public reply [code 20 sub 1772107], the DM went out all the same: …`, con l'id del commento e il nome di chi ha commentato nei log (`[ig] ERROR public reply`).
 
-Uno ogni tanto è normale. Se diventano tanti di fila vuol dire che Instagram sta frenando le risposte pubbliche dell'account: i DM continuano, e la cosa che aiuta è avere più frasi diverse in `publicReplies` dentro `ig-texts.js`.
+Uno ogni tanto è normale. Dal 10/11 sera le risposte pubbliche sono dodici per reel e vengono prese a turno, mai la stessa due volte di fila (vedi "Le frasi a rotazione"): è la cosa che aiuta di più contro questo filtro. Se nonostante questo diventano tanti di fila vuol dire che Instagram sta frenando le risposte pubbliche dell'account: i DM continuano, e si possono aggiungere altre frasi in `repliesFor` dentro `ig-texts.js`.
 
 ## I titoli dei reel per l'app sul Mac (`action=media`)
 
@@ -207,9 +269,9 @@ Il link nel DM è quello della pagina con il post in coda, per esempio `https://
 | `/api/leads?key=…` | la pagina |
 | `/api/leads?key=…&action=post&code=…&dest=…` | aggiunge un reel alla mappa, subito |
 | `/api/leads?key=…&action=mode&value=direct` | il primo DM ha già il link (default) |
-| `/api/leads?key=…&action=mode&value=gate` | giro completo: tasto, controllo del follow, link |
-| `/api/leads?key=…&action=mode&value=comment` | cancello a commenti: prima il follow, poi "comment DONE", poi il link |
-| `/api/leads?key=…&action=gatefor&value=gghizzoo` | giro completo solo per questi username, per lo screencast (valore vuoto = nessuno) |
+| `/api/leads?key=…&action=mode&value=gate` | (non si usa) giro completo: tasto, controllo del follow, link |
+| `/api/leads?key=…&action=mode&value=comment` | (non si usa) cancello a commenti: prima il follow, poi "comment DONE", poi il link |
+| `/api/leads?key=…&action=gatefor&value=gghizzoo` | (non si usa) giro completo solo per questi username, per lo screencast (valore vuoto = nessuno) |
 | `/api/leads?key=…&action=any&value=off` | sui reel in mappa risponde solo a chi scrive la parola (`&value=on`, il default: a ogni commento) |
 | `/api/leads?key=…&action=media` | gli ultimi 30 post e reel in JSON, per i titoli nell'app (`&fresh=1` salta la memoria di 10 minuti) |
 | `/api/leads?key=…&action=off` | **spegne il bot subito**, senza deploy (non risponde a nessuno e non tiene i commenti che arrivano) |
@@ -232,6 +294,7 @@ Fatto il 10/11: Vercel su Pro, ManyChat tolto, Omnya Bot app di routing predefin
 3. **Prova da un account senza nessun ruolo sull'app**: un commento sotto un reel in mappa, e devono arrivare la risposta pubblica e un DM con il testo e il tasto `Get the Blueprint` che apre la pagina giusta. Poi tocca il tasto e ricarica la pagina di Nico: il clic deve comparire nella riga di quel post (se la pagina si apre ma il clic non compare, è la regola `?ig=` di `vercel.json` che non scatta: il funnel funziona lo stesso, manca solo il conteggio).
 4. Se nel DM il link è scritto nel testo invece che sul tasto, Instagram ha rifiutato il tasto: va bene lo stesso, e la salute dice `linkAs: text`.
 5. Quando esce il reel: la caption deve contenere `comment "TOWERS"`; primo commento di prova entro un minuto, poi la pagina di Nico per vedere commenti, DM e clic.
+6. Per provare "comment your city": da un secondo account commenta solo `Dubai` sotto lo stesso reel, e sotto il commento deve uscire una delle sette frasi con "Dubai" dentro; il DM è quello solito.
 
 ### Tornare indietro
 
