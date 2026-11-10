@@ -4,8 +4,11 @@
 // the last hour against Meta's 750, the errors of the last hour, and per post the comments, the DMs,
 // the links sent and the clicks on the link.
 // &action=subscribe switches the webhook on for @omnyalab (once, after the token is set).
-// &action=post&code=<reel code or link>&dest=<tower|floors|film|build|towers|city|blueprint> adds a reel
+// &action=post&code=<reel code or link>&dest=<tower|floors|film|build|towers|city|fable|blueprint> adds a reel
 //   to the map at once, without a deploy (no dest = takes it out); the lasting place is api/_lib/ig-posts.js.
+// &action=word&word=<WORD>&dest=<a destination> registers a word without a deploy: a reel whose caption says
+//   Comment "WORD" then goes to that destination by itself, as TOWERS does (empty dest = takes the word out).
+//   The fixed words of ig-posts.js can't be changed from here, and always win.
 // &action=mode&value=direct|gate|comment changes how the bot answers, without a deploy: direct (the default) = the DM
 //   that answers the comment already has the link; gate = button, follow check, then the link; comment = the
 //   follow is asked first and checked when they comment again, then the link.
@@ -19,7 +22,8 @@
 //   10 minutes (&fresh=1 asks now). When Meta refuses: { media: [], error }.
 // &action=off stops the bot at once, without a deploy (it answers nobody and keeps nothing), &action=on starts it again.
 // &format=json gives the numbers alone.
-import { listLeads, api, page, lineState, errorState, postStats, postMap, setPost, setOff, isOff, getMode, setMode, MODES, probeState, gateFor, setGateFor, anyComment, setAnyComment, recentMedia } from './_lib/ig.js';
+import { listLeads, api, page, lineState, errorState, postStats, postMap, setPost, setWord, setOff, isOff, getMode, setMode, MODES, probeState, gateFor, setGateFor, anyComment, setAnyComment, recentMedia } from './_lib/ig.js';
+import { DESTS } from './_lib/ig-posts.js';
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -85,15 +89,29 @@ export async function GET(request) {
 
   if (q.get('action') === 'post') {
     const map = await setPost(q.get('code'), q.get('dest') || '');
-    return new Response(JSON.stringify(map ? { ok: true, added: map, map: await postMap() } : { error: 'code or dest not valid', dests: 'blueprint, tower, floors, film, build, towers, city' }, null, 2), {
+    return new Response(JSON.stringify(map ? { ok: true, added: map, map: await postMap() } : { error: 'code or dest not valid', dests: DESTS.join(', ') }, null, 2), {
       status: map ? 200 : 400,
       headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
     });
   }
 
-  const [leads, line, errors, posts, botOff, flow, probe, gateList, every] = await Promise.all([listLeads(), lineState(), errorState(8), postStats(), isOff(), getMode(), probeState(), gateFor(), anyComment()]);
+  if (q.get('action') === 'word') {
+    let r;
+    try {
+      r = await setWord(q.get('word'), q.get('dest') || '');
+    } catch (e) {
+      r = { error: `not saved, the store did not answer: ${String(e?.message || e).slice(0, 120)}`, status: 502 };
+    }
+    const { status = r.error ? 400 : 200, ...out } = r;
+    return new Response(JSON.stringify(r.error ? { ...out, dests: DESTS.join(', ') } : { ok: true, ...out, map: await postMap() }, null, 2), {
+      status,
+      headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
+    });
+  }
+
+  const [leads, line, errors, posts, botOff, flow, probe, gateList, every, map] = await Promise.all([listLeads(), lineState(), errorState(8), postStats(), isOff(), getMode(), probeState(), gateFor(), anyComment(), postMap()]);
   if (q.get('format') === 'json') {
-    return new Response(JSON.stringify({ on: !botOff, mode: flow, anyComment: every, gateFor: gateList, followProbe: probe, line, errors, posts, map: await postMap() }, null, 2), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
+    return new Response(JSON.stringify({ on: !botOff, mode: flow, anyComment: every, gateFor: gateList, followProbe: probe, line, errors, posts, map }, null, 2), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
   }
   const count = (f) => leads.filter(f).length;
   const stats = [
@@ -114,6 +132,7 @@ export async function GET(request) {
     `sonda del follow: ${probe.follows} seguono, ${probe.notFollowing} non seguono, ${probe.unknown} senza risposta, ${probe.errors} errori${probe.lastError ? ` (ultimo: ${esc(probe.lastError.said)})` : ''}`,
     line.waiting ? `il commento più vecchio in coda aspetta da ${line.oldestMinutes} min` : '',
     line.stoppedUntil ? `invii fermi fino alle ${when(Date.parse(line.stoppedUntil))} (${esc(line.stoppedWhy || '')})` : '',
+    `parole che collegano un reel da sole: ${map.words.map((w) => `${esc(w.word)} → ${esc(w.dest)}${w.added ? ' (registrata)' : ''}`).join(', ')}`,
   ].filter(Boolean).join(' · ');
   const postRows = posts
     .map((r) => {

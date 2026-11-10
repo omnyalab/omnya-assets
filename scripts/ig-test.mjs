@@ -30,6 +30,7 @@ const posts = {
   city1: { caption: 'Don’t miss your house! 🏡', permalink: 'https://www.instagram.com/reel/DfXg47dtoyz/' },
   newreel: { caption: 'Three towers, pick your view 👀', permalink: 'https://www.instagram.com/reel/DfNEWREEL01/' },
   fablereel: { caption: 'Unlimited generations in Claude 👇🏻\n\nComment FABLE to get the link', permalink: 'https://www.instagram.com/reel/DfFABLE0001/' },
+  villareel: { caption: 'HOW TO USE THIS COMBO 👇🏻\n\nLike and comment "VILLA" and I’ll send it', permalink: 'https://www.instagram.com/reel/DfVILLA0001/' },
 };
 const server = http.createServer(async (req, res) => {
   let body = '';
@@ -2232,12 +2233,146 @@ await step('"comment your city" changes nothing where a comment gets no answer: 
   assert.equal((await ig.lineState()).stoppedUntil, null);
 });
 
-// ---------- 10/11/2026: the FABLE page ----------
+// ---------- 10/11/2026: words registered without a deploy, the FABLE page ----------
 
 const FABLE_PAGE = 'https://www.omnyalab.com/fable';
 const leadsJson = async (more = '') => (await get(leadsPage, `/api/leads?key=k${more}`)).json();
 /** What went out for one comment: its DM and its public reply (a follow-up of an older test that comes due is not it). */
 const own = (list, cid) => list.filter((x) => x.method === 'POST' && ((x.path === 'me/messages' && x.body.recipient.comment_id === cid) || x.path === `${cid}/replies`));
+
+await step('a word registered from /api/leads?action=word, without a deploy: its reel goes to its page like TOWERS, the fixed words always win', async () => {
+  ahead += 2 * 3_600_000;
+  await quietly(flushDue); // the follow-ups of the tests above that come due with the clock
+  sent();
+  // before: a caption with a word nobody knows answers only that word, with the normal Blueprint
+  assert.deepEqual(await comment('wd1', 'so good 🔥', 'villareel').res, ['no word']);
+  // the key, a real word, a destination that exists, never a fixed word
+  assert.equal((await get(leadsPage, '/api/leads?action=word&word=VILLA&dest=film')).status, 404);
+  for (const bad of ['&word=&dest=film', '&dest=film', '&word=VILLA&dest=nope', '&word=VILLA&dest=legacy', '&word=two words&dest=film', '&word=THE&dest=film', '&word=x&dest=film', `&word=${'A'.repeat(25)}&dest=film`]) {
+    const r = await get(leadsPage, `/api/leads?key=k&action=word${bad}`);
+    assert.equal(r.status, 400, bad);
+    const j = await r.json();
+    assert.ok(j.error, bad);
+    assert.match(j.dests, /blueprint, tower, floors, film, build, towers, city, fable/);
+  }
+  for (const fixed of ['TOWERS', 'towers', 'BUILD', 'HOUSE', 'FABLE']) {
+    const r = await get(leadsPage, `/api/leads?key=k&action=word&word=${fixed}&dest=film`);
+    assert.equal(r.status, 400, fixed);
+    assert.match((await r.json()).error, /fixed word/);
+  }
+  assert.deepEqual((await leadsJson('&format=json')).map.words, P.WORDS); // nothing was registered
+  assert.deepEqual(P.WORDS.map((w) => `${w.word}:${w.dest}`), ['TOWERS:towers', 'BUILD:build', 'HOUSE:city', 'FABLE:fable']);
+
+  // registered: written small, kept in capitals
+  const r = await leadsJson('&action=word&word=villa&dest=film');
+  assert.deepEqual([r.ok, r.word, r.dest, r.words], [true, 'VILLA', 'film', { VILLA: 'film' }]);
+  // in the json next to the fixed words, and in the health check
+  const words = (await leadsJson('&format=json')).map.words;
+  assert.deepEqual(words.slice(0, P.WORDS.length), P.WORDS);
+  assert.deepEqual(words.slice(P.WORDS.length), [{ word: 'VILLA', dest: 'film', added: 'from /api/leads' }]);
+  assert.deepEqual((await health()).map.words.at(-1), { word: 'VILLA', dest: 'film', added: 'from /api/leads' });
+  assert.match(await (await get(leadsPage, '/api/leads?key=k')).text(), /VILLA → film \(registrata\)/);
+
+  // the reel whose caption says Comment "VILLA" now answers ANY comment with its page, exactly as a TOWERS reel does
+  const fm = T.textsFor('film');
+  let c = comment('wd2', 'so good 🔥', 'villareel');
+  assert.deepEqual(await c.res, ['sent']);
+  let s = own(sent(), c.id);
+  assert.equal(s.length, 2);
+  assert.ok(isDirect(fm, msgText(s[0])));
+  assert.deepEqual(urlButton(s[0]), { type: 'web_url', title: 'Get the Blueprint', url: 'https://www.omnyalab.com/3d-to-film?ig=DfVILLA0001' });
+  assert.ok(fm.publicReplies.includes(s[1].query.message));
+  assert.deepEqual([(await lead('wd2')).kind, (await lead('wd2')).post], ['film', 'DfVILLA0001']);
+  // a city under it is said back, as under any post of the map; one answer per person
+  c = comment('wd3', 'Dubai', 'villareel');
+  assert.deepEqual(await c.res, ['sent']);
+  assert.match(own(sent(), c.id)[1].query.message, /Dubai/);
+  assert.deepEqual(await comment('wd3', 'villa', 'villareel').res, ['already']);
+  // "every comment" off: the registered word is the word of its reel, typos forgiven
+  await get(leadsPage, '/api/leads?key=k&action=any&value=off');
+  assert.deepEqual(await comment('wd4', 'love it', 'villareel').res, ['no word']);
+  assert.deepEqual(await comment('wd4', 'vila', 'villareel').res, ['sent']);
+  await get(leadsPage, '/api/leads?key=k&action=any&value=on');
+  sent();
+
+  // the reels that were already linked answer as before: TOWERS by its word, the red tower by its code
+  c = comment('wd5', 'TOWERS', 'towersreel');
+  assert.deepEqual(await c.res, ['sent']);
+  assert.equal(urlButton(own(sent(), c.id)[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
+  c = comment('wd5', 'AI', 'red');
+  assert.deepEqual(await c.res, ['sent']);
+  assert.equal(urlButton(own(sent(), c.id)[0]).url, 'https://omnyalab.com/the-tower-blueprint?ig=DfSXvGDtt4s');
+
+  // the fixed words always win, the pinned posts too, and a word with a destination that doesn't exist is no word at all
+  const more = { VILLA: 'film', TOWERS: 'film', BUILD: 'city', BAD: 'nope', OLD: 'legacy' };
+  assert.equal(P.resolvePost({ code: 'new', words: ['TOWERS'] }, {}, more).dest, 'towers');
+  assert.equal(P.resolvePost({ code: 'new', words: ['VILLA', 'BUILD'] }, {}, more).dest, 'build');
+  assert.deepEqual(P.resolvePost({ code: 'new', words: ['VILLA'] }, {}, more), { dest: 'film', any: true, words: ['VILLA'] });
+  assert.equal(P.resolvePost({ code: 'DfSXvGDtt4s', words: ['VILLA'] }, {}, more).dest, 'tower');
+  assert.equal(P.resolvePost({ code: 'new', words: ['VILLA'] }, { new: 'towers' }, more).dest, 'towers');
+  assert.deepEqual(P.resolvePost({ code: 'new', words: ['BAD'] }, {}, more), { dest: 'blueprint', any: false, words: ['BAD'] });
+  assert.deepEqual(P.resolvePost({ code: 'new', words: ['OLD'], tower: true }, {}, more), { dest: 'tower', any: false, words: ['OLD'] });
+  assert.deepEqual(P.resolvePost({ code: 'new', words: ['CONSTRUCTOR'] }, {}, {}), { dest: 'blueprint', any: false, words: ['CONSTRUCTOR'] });
+  assert.deepEqual(P.resolvePost({ code: 'new', words: ['VILLA'] }), { dest: 'blueprint', any: false, words: ['VILLA'] }); // without the registered words: as before
+  // even written by hand in Redis, a fixed word or a broken row never gets in
+  await S.kv.set('words', { VILLA: 'film', TOWERS: 'film', 'two words': 'film', X: 'film', PIZZA: 'nope' });
+  ahead += 31_000; // the words are read again every 30 seconds
+  assert.deepEqual((await leadsJson('&format=json')).map.words.slice(P.WORDS.length), [{ word: 'VILLA', dest: 'film', added: 'from /api/leads' }]);
+  c = comment('wd6', 'TOWERS', 'towersreel');
+  assert.deepEqual(await c.res, ['sent']);
+  assert.equal(urlButton(own(sent(), c.id)[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
+
+  // Redis doesn't answer for the words: nothing breaks, the fixed words go on (and the words read before are still there)
+  const getKv = S.kv.get;
+  const warn = console.warn;
+  const warned = [];
+  S.kv.get = async (k) => { if (k === 'words') throw new Error('redis is down'); return getKv(k); };
+  console.warn = (...a) => warned.push(a.join(' '));
+  try {
+    ahead += 31_000;
+    c = comment('wd7', 'nice', 'towersreel');
+    assert.deepEqual(await c.res, ['sent']);
+    assert.equal(urlButton(own(sent(), c.id)[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
+    c = comment('wd7', 'house', 'cityreel');
+    assert.deepEqual(await c.res, ['sent']);
+    c = comment('wd7', 'nice', 'villareel');
+    assert.deepEqual(await c.res, ['sent']);
+    assert.equal(urlButton(own(sent(), c.id)[0]).url, 'https://www.omnyalab.com/3d-to-film?ig=DfVILLA0001');
+    assert.ok(warned.some((w) => /registered words were not read/.test(w)));
+    // the page and the json still open
+    assert.equal((await get(leadsPage, '/api/leads?key=k')).status, 200);
+    assert.deepEqual((await leadsJson('&format=json')).map.words.slice(0, P.WORDS.length), P.WORDS);
+    // and saving a word while Redis is down says so, without a crash
+    const down = await get(leadsPage, '/api/leads?key=k&action=word&word=PIZZA&dest=film');
+    assert.equal(down.status, 502);
+    assert.match((await down.json()).error, /not saved/);
+  } finally {
+    S.kv.get = getKv;
+    console.warn = warn;
+  }
+
+  // taken out with an empty dest: the reel goes back to its own word only
+  ahead += 31_000;
+  const out = await leadsJson('&action=word&word=VILLA&dest=');
+  assert.deepEqual([out.ok, out.word, out.dest, out.words], [true, 'VILLA', null, {}]);
+  assert.deepEqual((await leadsJson('&format=json')).map.words, P.WORDS);
+  assert.deepEqual(await comment('wd8', 'so good 🔥', 'villareel').res, ['no word']);
+  // with nothing registered and Redis down: only the fixed words, and the Towers reel answers
+  S.kv.get = async (k) => { if (k === 'words') throw new Error('redis is down'); return getKv(k); };
+  console.warn = () => {};
+  try {
+    ahead += 31_000;
+    assert.deepEqual(await ig.extraWords(), {});
+    c = comment('wd9', 'TOWERS', 'towersreel');
+    assert.deepEqual(await c.res, ['sent']);
+    assert.equal(urlButton(own(sent(), c.id)[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
+  } finally {
+    S.kv.get = getKv;
+    console.warn = warn;
+  }
+  ahead += 31_000;
+  sent();
+});
 
 await step('FABLE: the reel that says "Comment FABLE to get the link" goes to /fable, the bot talks about the link and the click is counted', async () => {
   ahead += 2 * 3_600_000;

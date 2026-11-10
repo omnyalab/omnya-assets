@@ -10,7 +10,8 @@
 //
 // How a comment finds its destination, first match wins:
 //   1. the post is in POSTS (or was added without a deploy from /api/leads?key=…&action=post&code=…&dest=…)
-//   2. the caption says "Comment WORD" and WORD is in WORDS
+//   2. the caption says "Comment WORD" and WORD is in WORDS, or was registered without a deploy from
+//      /api/leads?key=…&action=word&word=…&dest=… (the words of WORDS always win over the registered ones)
 //   3. the caption says "Comment WORD" with any other word: the Tower Blueprint when the caption
 //      talks about a tower, the normal Blueprint otherwise, and only for who writes that word
 //   4. nothing: the bot stays quiet (client teasers and the rest)
@@ -37,6 +38,29 @@ export const WORDS = [
   { word: 'FABLE', dest: 'fable' },
 ];
 
+// words that follow "comment" in a caption without being the keyword
+export const NOT_WORDS = new Set(['BELOW', 'DOWN', 'HERE', 'THE', 'AND', 'FOR', 'TO', 'IF', 'YOUR', 'ME', 'US', 'SOTTO', 'QUI', 'LA', 'IL', 'WITH', 'NOW']);
+
+/** A word as a caption can ask for it ("Comment WORD"): letters and numbers, 2 to 24, in capitals. Anything else: ''. */
+export const cleanWord = (raw) => {
+  const w = String(raw || '').trim().replace(/^["“”'‘’«]+|["“”'‘’»]+$/g, '').toUpperCase();
+  return /^[\p{L}\p{N}]{2,24}$/u.test(w) && !NOT_WORDS.has(w) ? w : '';
+};
+
+/**
+ * The words registered without a deploy, as they are kept ({ WORD: dest }), with only what is still
+ * good: a real word, a destination that exists, and never one of the fixed words of WORDS.
+ */
+export const cleanWords = (map) => {
+  const out = {};
+  if (!map || typeof map !== 'object') return out;
+  for (const [k, dest] of Object.entries(map)) {
+    const w = cleanWord(k);
+    if (w && isDest(dest) && !WORDS.some((x) => x.word === w)) out[w] = dest;
+  }
+  return out;
+};
+
 /** instagram.com/reel/DfSXvGDtt4s/ → DfSXvGDtt4s */
 export const codeOf = (permalink) => (String(permalink || '').match(/instagram\.com\/(?:[^/]+\/)?(?:reels?|p|tv)\/([A-Za-z0-9_-]+)/) || [])[1] || '';
 
@@ -47,15 +71,21 @@ export const cleanCode = (raw) => {
   return /^[A-Za-z0-9_-]{5,40}$/.test(c) ? c : '';
 };
 
-export const isDest = (d) => KINDS.includes(d) && d !== 'legacy';
+export function isDest(d) {
+  return typeof d === 'string' && KINDS.includes(d) && d !== 'legacy';
+}
+
+/** The destinations a post or a word can be given, for the answers of /api/leads. */
+export const DESTS = KINDS.filter((d) => d !== 'legacy');
 
 /**
  * The destination of a post.
  * @param {{ id?: string, code?: string, words?: string[], tower?: boolean }} post  what Instagram told us about it
  * @param {Record<string, string>} [extra]  posts added without a deploy: { code: dest }
+ * @param {Record<string, string>} [more]  words registered without a deploy: { WORD: dest }
  * @returns {{ dest: string, any: boolean, words: string[] } | null}  any = every comment counts
  */
-export function resolvePost(post, extra = {}) {
+export function resolvePost(post, extra = {}, more = {}) {
   const ids = [post.code, post.id].filter(Boolean).map(String);
   for (const id of ids) if (isDest(extra[id])) return { dest: extra[id], any: true, words: post.words || [] };
   const pinned = POSTS.find((p) => ids.includes(p.code));
@@ -63,6 +93,9 @@ export function resolvePost(post, extra = {}) {
   const words = post.words || [];
   const byWord = WORDS.find((w) => words.includes(w.word));
   if (byWord) return { dest: byWord.dest, any: true, words };
+  // a word registered from /api/leads: after the fixed ones, which always win
+  const added = words.find((w) => Object.hasOwn(more, w) && isDest(more[w]));
+  if (added) return { dest: more[added], any: true, words };
   if (words.length) return { dest: post.tower ? 'tower' : 'blueprint', any: false, words };
   return null;
 }

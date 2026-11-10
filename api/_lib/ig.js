@@ -20,7 +20,7 @@ import { kv, z, h, clock, takePlace, leadIds, getMany, KEEP } from './ig-store.j
 import { sendMail } from './mail.js';
 import { host } from './config.js';
 import * as T from './ig-texts.js';
-import { resolvePost, codeOf, cleanCode, isDest, POSTS, WORDS } from './ig-posts.js';
+import { resolvePost, codeOf, cleanCode, isDest, cleanWord, cleanWords, POSTS, WORDS, NOT_WORDS } from './ig-posts.js';
 import { linkFor, cleanName } from './city.js';
 import { placeIn } from './ig-places.js';
 
@@ -55,8 +55,6 @@ const ONLY = new Set((process.env.IG_ONLY || '').split(',').map((w) => w.trim().
 // Our own account, by name: its comments and its replies under the reels are never answered (they are
 // already left out by the account's id; this is the second lock, now that every comment gets an answer).
 const OWN_NAMES = new Set((process.env.IG_USERNAME || 'omnyalab').split(',').map((w) => w.trim().replace(/^@/, '').toLowerCase()).filter(Boolean));
-// words that follow "comment" in a caption without being the keyword
-const NOT_WORDS = new Set(['BELOW', 'DOWN', 'HERE', 'THE', 'AND', 'FOR', 'TO', 'IF', 'YOUR', 'ME', 'US', 'SOTTO', 'QUI', 'LA', 'IL', 'WITH', 'NOW']);
 
 // ---------- storage ----------
 
@@ -459,6 +457,47 @@ export async function setPost(rawCode, dest) {
   return map;
 }
 
+// Words registered from /api/leads?key=…&action=word&word=…&dest=…, without a deploy: { WORD: dest }, kept in
+// Redis like the posts. A reel whose caption says Comment "WORD" then goes to that destination by itself,
+// as TOWERS, BUILD, HOUSE and FABLE do from the code (WORDS in ig-posts.js, which always win). It never
+// throws: when Redis doesn't answer the fixed words work as always (they are in the code) and the registered
+// ones are the last this function read, or none if it never read them; it asks again a few seconds later.
+let moreWords = { at: 0, ttl: -1, map: {} };
+export async function extraWords() {
+  const now = clock.now();
+  if (now - moreWords.at > moreWords.ttl || now < moreWords.at) {
+    try {
+      moreWords = { at: now, ttl: 30_000, map: cleanWords(await kv.get('words')) };
+    } catch (e) {
+      console.warn('[ig] the registered words were not read, the fixed ones go on as always:', e.message);
+      moreWords = { at: now, ttl: 5000, map: moreWords.map };
+    }
+  }
+  return moreWords.map;
+}
+
+/** Every word that links a reel by itself: the fixed ones first, then the registered ones. */
+const knownWords = async () => [...WORDS, ...Object.entries(await extraWords()).map(([word, dest]) => ({ word, dest }))];
+
+/**
+ * Registers a word (dest empty takes it out). Returns { word, dest, words } or { error } when the word
+ * or the destination is wrong, or when the word is one of the fixed ones (they can't be changed from here).
+ */
+export async function setWord(rawWord, dest) {
+  const word = cleanWord(rawWord);
+  if (!word) return { error: 'word not valid: letters and numbers only, 2 to 24, as the caption says it after Comment' };
+  const fixed = WORDS.find((w) => w.word === word);
+  if (fixed) return { error: `${word} is a fixed word, it already goes to ${fixed.dest} and can't be changed from here` };
+  if (dest && !isDest(dest)) return { error: 'dest not valid' };
+  const map = cleanWords(await kv.get('words'));
+  if (dest) map[word] = dest;
+  else delete map[word];
+  await kv.set('words', map, 400 * 86_400);
+  moreWords = { at: clock.now(), ttl: 30_000, map };
+  console.log(`[ig] word ${word} ${dest ? `→ ${dest}` : 'taken out'} (set from /api/leads)`);
+  return { word, dest: dest || null, words: map };
+}
+
 /**
  * What Instagram says about a post: the words its caption asks for, its link and code. Kept 6 hours
  * when the post gives something, 5 minutes when it doesn't (so a caption fixed after posting is read
@@ -472,7 +511,7 @@ async function reelInfo(mediaId) {
     const m = await api(mediaId, { query: { fields: 'caption,permalink' } });
     const caption = m.caption || '';
     const c = { words: captionWords(caption), permalink: m.permalink || '', code: codeOf(m.permalink), tower: postKind(caption) === 'tower' };
-    await kv.set(key, c, resolvePost({ id: mediaId, ...c }, await extraPosts()) ? 6 * 3600 : 300);
+    await kv.set(key, c, resolvePost({ id: mediaId, ...c }, await extraPosts(), await extraWords()) ? 6 * 3600 : 300);
     return c;
   } catch (e) {
     await noteError('caption', e, `post ${mediaId}`);
@@ -738,21 +777,22 @@ async function giveBlueprint(lead, afterDone, gate = false) {
  * The words of a post of the map while "every comment" is off: the ones its caption asks for and the
  * ones of its page (TOWERS, BUILD, HOUSE); a post with neither takes the DM words (BLUEPRINT, AI, 3D…).
  */
-const wordsOf = (post) => {
-  const w = [...new Set([...post.words, ...WORDS.filter((x) => x.dest === post.dest).map((x) => x.word)])];
+const wordsOf = (post, known = WORDS) => {
+  const w = [...new Set([...post.words, ...known.filter((x) => x.dest === post.dest).map((x) => x.word)])];
   return w.length ? w : DEFAULT_WORDS;
 };
 
 /** Whether this comment gets a DM: fills job.p with the post's destination, or says why not. */
 async function accept(job, info) {
-  const post = resolvePost({ id: job.m, code: info.code, words: info.words, tower: info.tower }, await extraPosts());
+  const post = resolvePost({ id: job.m, code: info.code, words: info.words, tower: info.tower }, await extraPosts(), await extraWords());
+  const known = await knownWords(); // the fixed words and the registered ones
   // posts in the map answer any comment (unless "every comment" was switched off from /api/leads: then
   // only their word); the others only the word their caption asks for
   // (a tester, under a post that asks for nothing, can use the DM words)
   const named =
     post?.any && (await anyComment())
       ? matchWord(job.t, post.words) || post.words[0] || 'ANY'
-      : matchWord(job.t, post ? (post.any ? wordsOf(post) : post.words) : ONLY.size ? DEFAULT_WORDS : []);
+      : matchWord(job.t, post ? (post.any ? wordsOf(post, known) : post.words) : ONLY.size ? DEFAULT_WORDS : []);
   let word = named;
   const key = `once:${job.m}:${job.u}`;
   if (await inGate(job.n, job.u)) {
@@ -775,7 +815,7 @@ async function accept(job, info) {
   job.p = { dest: post?.dest || 'blueprint', code: info.code || cleanPost(job.m), word, link: info.permalink || '' };
   // "comment your city": under a post of the map, a comment that is not the word but a city or a
   // country of our list (ig-places.js) gets the public reply that says the place back; the DM is the same
-  if (post?.any && !matchWord(job.t, [...post.words, ...WORDS.filter((x) => x.dest === post.dest).map((x) => x.word)])) {
+  if (post?.any && !matchWord(job.t, [...post.words, ...known.filter((x) => x.dest === post.dest).map((x) => x.word)])) {
     const place = placeIn(job.t);
     if (place) job.p.place = place;
   }
@@ -1126,7 +1166,7 @@ export async function onMessaging(ownId, m) {
     // a DM out of nowhere: only a keyword or one of our buttons starts the flow, the rest is Nico's
     // (a tap on our button can come with an id we never saw: the comment's id is not always the DM's)
     const ours = ['GET', 'DONE'].includes(payload);
-    const mapWord = !ours && said.split(/\s+/).length <= 2 ? WORDS.find((w) => matchWord(said, [w.word])) : null;
+    const mapWord = !ours && said.split(/\s+/).length <= 2 ? (await knownWords()).find((w) => matchWord(said, [w.word])) : null;
     const word = mapWord?.word || matchWord(said, DEFAULT_WORDS);
     if (!ours && !word) return 'not ours';
     lead = newLead(uid);
@@ -1275,7 +1315,7 @@ export async function recentMedia(fresh = false) {
 export async function postMap() {
   return {
     posts: [...POSTS.map(({ code, dest }) => ({ code, dest })), ...Object.entries(await extraPosts()).map(([code, dest]) => ({ code, dest, added: 'from /api/leads' }))],
-    words: WORDS,
+    words: [...WORDS, ...Object.entries(await extraWords()).map(([word, dest]) => ({ word, dest, added: 'from /api/leads' }))],
   };
 }
 
