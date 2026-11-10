@@ -6,7 +6,11 @@ import { t, langFromPath, localize } from '../i18n';
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
 const F = T.footer;
-const wa = sampleLinks(lang).whatsapp;
+interface Props {
+  /** 10/11: a page can give its own WhatsApp message (after a payment: help with what was bought, not the free image request) */
+  wa?: string;
+}
+const wa = Astro.props.wa || sampleLinks(lang).whatsapp;
 const year = new Date().getFullYear();
 const pages = [
   ['/work', T.nav.work],

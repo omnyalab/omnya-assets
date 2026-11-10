@@ -48,10 +48,25 @@ const bookIds = ['white-to-real', 'reel', 'before-it-exists'];
 const book = booking[Astro.props.id as ProductId];
 // 10/11: no PDF link is written in this page. The script asks api/files.js, which checks the payment with Stripe
 // (?session_id= from the checkout) and only then gives the buttons; in every other case the kind line below.
+// 10/11 (Nico): on this page the round WhatsApp button and the WhatsApp link in the footer no longer open
+// "I'd like to request a free sample": who is here has just paid, so the message is a plain help one, with what they bought.
+const fulls: Record<string, string> = { 'full-tower': 'Full Tower Blueprint', 'full-3d': 'Full 3D Blueprint', 'full-city': 'Full City Blueprint', 'full-build': 'Full Build Blueprint', 'full-towers': 'Full Towers Blueprint' };
+const bought = (() => {
+  const id = Astro.props.id;
+  const it = lang === 'it';
+  const b = L.books.find((x) => x.id === id);
+  if (b) return `${it ? 'il playbook' : 'the playbook'} ${b.a} ${b.b}`;
+  const l = L.lessons.find((x) => x.id === id);
+  if (l) return `${it ? 'la lezione' : 'the'} ${l.name}${it ? '' : ' lesson'}`;
+  if (id === 'bundle') return it ? 'i tre playbook' : 'the three playbooks';
+  if (id === 'everything') return 'Everything we teach';
+  return `${it ? 'il' : 'the'} ${fulls[id] || 'PDF'}`;
+})();
+const ask = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'it' ? `Ciao Nico, ho appena comprato ${bought} e ho una domanda: ` : `Hi Nico, I just bought ${bought} and I have a question: `);
 const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'it' ? 'Ciao Nico, ho pagato ma non trovo i miei PDF. La mail che ho usato è: ' : 'Hi Nico, I paid but I can’t find my PDFs. The email I used is: ');
 ---
 
-<Base page="thanks" title={X.title} noindex>
+<Base page="thanks" title={X.title} noindex wa={ask}>
   {
     lang === 'en' && (
       <script is:inline>
