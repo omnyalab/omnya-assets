@@ -1,7 +1,9 @@
 ---
-// "Get a free sample" (2/11: no line under it).
+// The site's main button. It was "Get a free image" and opened the request sheet; since 10/11 (Nico) it is
+// "Try the free demo" and goes to the live demo. data-sample stays: it is what gives the button its look.
 import Arrow from './Arrow.astro';
 import { t, langFromPath } from '../i18n';
+import { demoHref } from '../lib/contact';
 
 interface Props {
   /** On dark backgrounds (footer). */
@@ -10,9 +12,10 @@ interface Props {
   [key: `data-${string}`]: unknown;
 }
 const { light = false, class: cls, ...rest } = Astro.props;
-const T = t(langFromPath(Astro.url.pathname));
+const lang = langFromPath(Astro.url.pathname);
+const T = t(lang);
 ---
 
 <div class:list={['cta', cls]} {...rest}>
-  <button type="button" class:list={['btn', { 'btn--light': light }]} data-sample>{T.cta} <Arrow /></button>
+  <a class:list={['btn', { 'btn--light': light }]} href={demoHref(lang)} data-astro-reload data-sample>{T.cta} <Arrow /></a>
 </div>

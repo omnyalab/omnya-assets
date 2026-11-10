@@ -1,7 +1,7 @@
 ---
 import Logo from './Logo.astro';
 import SampleCta from './SampleCta.astro';
-import { contact } from '../lib/contact';
+import { contact, demoHref } from '../lib/contact';
 import { t, langFromPath, localize, langs } from '../i18n';
 
 interface Props {
@@ -29,7 +29,8 @@ const startsDark = page === 'home' || page === 'project' || page === 'studio' ||
   </a>
   <nav class="hdr__nav" aria-label="Main">
     {links.map((l) => <a href={l.href} class="u" aria-current={current(l.key)}>{l.label}</a>)}
-    <button type="button" class="btn btn--sm" data-sample title={T.ctaNote}>{T.ctaShort}</button>
+    {/* 10/11 (Nico): "Try the free demo" goes to the live demo; data-sample stays for the button's look */}
+    <a class="btn btn--sm" href={demoHref(lang)} data-astro-reload data-sample title={T.ctaNote}>{T.ctaShort}</a>
   </nav>
   <div class="hdr__end">
     <nav class="lang" aria-label={T.nav.lang}>

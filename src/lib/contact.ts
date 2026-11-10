@@ -14,20 +14,16 @@ export const contact = {
   vat: '05578770264',
   /** The free 30-minute call, booked on our own page (it replaced Calendly). */
   bookCall: '/book/call',
-  whatsappSample:
-    'https://wa.me/393792220465?text=Hi%20Omnya%20team%2C%20I%E2%80%99d%20like%20to%20request%20a%20free%20sample.',
-  emailSample:
-    'mailto:info@omnyalab.com?subject=Free%20Sample%20Request&body=Hi%20Omnya%20team%2C%0A%0AI%E2%80%99d%20like%20to%20request%20a%20free%20sample.%0A%0AStudio%20or%20property%3A%20%0AProject%3A%20%0AWhat%20I%20already%20have%20(model%2C%20drawings%2C%20photos)%3A%20%0A%0ALooking%20forward%20to%20seeing%20what%20you%20can%20do.',
 };
 
-// Pre-filled messages follow the page language. English keeps the exact links
-// from docs/CONTACTS.md; Italian is built from the same template.
+// Pre-filled messages follow the page language (i18n, messages).
 
 /** The live demo the site sends people to (10/11): the tower with the floors to click. Phones are sent to its /m/ page by vercel.json. */
 export const demoHref = (lang: Lang) => `${lang === 'it' ? '/it' : ''}/demo/choose-your-floor/`;
 
 export function sampleLinks(lang: Lang) {
-  if (lang === 'en') return { whatsapp: contact.whatsappSample, email: contact.emailSample };
+  // 10/11 (Nico): no more "I'd like to request a free sample". The round WhatsApp button, the footer and the contact
+  // page open a plain message about a project, written in i18n (messages) for both languages.
   const m = t(lang).messages;
   return {
     whatsapp: `https://wa.me/393792220465?text=${encodeURIComponent(m.whatsapp)}`,

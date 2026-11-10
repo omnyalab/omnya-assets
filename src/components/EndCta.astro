@@ -1,9 +1,10 @@
 ---
-// The closing card of every page, before the footer (2/11): the free sample, a second way on, three works fanned out.
+// The closing card of every page, before the footer (2/11): the live demo (10/11, it was the free image), a second way on, three works fanned out.
 import Duo from './Duo.astro';
 import Arrow from './Arrow.astro';
 import { projects, slug } from '../lib/data';
 import { t, langFromPath, localize, stripLang } from '../i18n';
+import { demoHref } from '../lib/contact';
 
 interface Props {
   /** The second button: the price list, or the work on the pricing page. */
@@ -34,7 +35,7 @@ const link = second === 'work' ? { href: '/work', label: T.work.seeWork } : { hr
     <div class="wend__copy">
       <Duo size="h2" class="wend__title" a={T.work.endA} b={T.work.endB} />
       <div class="wend__btns" data-fade>
-        <button type="button" class="btn btn--fill" data-sample>{T.cta} <Arrow /></button>
+        <a class="btn btn--fill" href={demoHref(lang)} data-astro-reload data-sample>{T.cta} <Arrow /></a>
         <a href={localize(link.href, lang)} class="btn">{link.label} <Arrow /></a>
       </div>
     </div>

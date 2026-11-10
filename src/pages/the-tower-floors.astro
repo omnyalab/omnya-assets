@@ -9,7 +9,6 @@ import { goHref } from '../lib/learn';
 
 const free = goHref('free-tower', 'en');
 const full = goHref('full-tower', 'en');
-const sample = goHref('sample', 'en');
 const bundle = goHref('bundle', 'en');
 import OptIn from '../components/OptIn.astro';
 ---
@@ -148,7 +147,7 @@ import OptIn from '../components/OptIn.astro';
         <details><summary>What if a floor has more than one apartment?</summary><p>The buyer picks the unit on the plan of that level before flying in. Reserved and sold units stay grey, and the Full Blueprint shows how.</p></details>
         <details><summary>Do I need a video for every apartment?</summary><p>No. One showcase apartment per unit type is enough: every floor uses the same flight and the panel changes.</p></details>
         <details><summary>When do I get it?</summary><p>Right after payment, on the next page.</p></details>
-        <details><summary>Can you make it for my project?</summary><p>Yes. Send us the plans or a model, and the first image is free.</p></details>
+        <details><summary>Can you make it for my project?</summary><p>Yes. Send us the plans or a model: the pilot is your building with one floor to click, in 7 days, for €490, credited if you go ahead within 30 days.</p></details>
       </div>
     </div>
   </div>
@@ -159,7 +158,7 @@ import OptIn from '../components/OptIn.astro';
     <p class="x3-kick">Still a plan on your screen?</p>
     <h2 class="x3-T">Sell<br><span class="x3-box">every floor</span></h2>
     <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={full}>Get the Full Blueprint →</a><a class="x3-btn x3-btn--line" href={free} target="_blank" rel="noopener">Start with the free one</a></div>
-    <p class="x3-small">Or send us your plans, <a href={sample}>the first image is free</a>.</p>
+    <p class="x3-small">Or see one live, <a href="/demo/choose-your-floor/" data-astro-reload>try the free demo</a>.</p>
   </div>
 </section>
 <p class="x3-foot">OMNYA LAB</p>

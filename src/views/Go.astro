@@ -19,11 +19,12 @@ const book = L.books.find((b) => b.id === id);
 const lesson = L.lessons.find((l) => l.id === id);
 const offer = (L.thanks.offers as Record<string, { a: string; b: string; price: string }>)[id];
 const name = id === 'free' ? 'The Blueprint (PDF)' : id === 'free-tower' ? 'The Tower Blueprint (PDF)' : id === 'full-tower' ? 'The Full Tower Blueprint (PDF)' : id === 'free-3d' ? 'the free 3D to film blueprint (PDF)' : id === 'full-3d' ? 'the Full Blueprint, How to make a 3D that sells with AI (PDF)' : id === 'free-city' ? 'the free City Blueprint (PDF)' : id === 'full-city' ? 'the Full City Blueprint, How to build a 3D city that goes viral with AI (PDF)' : id === 'free-build' ? 'the free Build Blueprint (PDF)' : id === 'full-build' ? 'the Full Build Blueprint, How to build a house that builds itself (PDF)' : id === 'free-towers' ? 'the free Towers Blueprint (PDF)' : id === 'full-towers' ? 'the Full Towers Blueprint, How to build three towers you choose the view of (PDF)' : id === 'full-towers-scene' ? 'the Full Towers Blueprint and The Towers Scene File' : book ? `${book.a} ${book.b}` : lesson ? lesson.name : id === 'bundle' ? L.ladder[2][0] : id === 'everything' ? 'Everything we teach (4 Full blueprints + 3 playbooks)' : offer && id !== 'community' ? `${offer.a} (${offer.price})` : L.communityA;
-// The WhatsApp message for a thanks-page offer (4/11, Nico): the free image is just "a free image",
+// The WhatsApp message for a thanks-page offer (4/11, Nico):
 // the paid ones keep "title (price)" with the title in lower case, as it reads inside a sentence.
 const said = offer && id !== 'community' ? offerName() : name;
 function offerName() {
-  if (id === 'sample') return lang === 'it' ? 'un’immagine gratis' : 'a free image';
+  // 10/11: the free image is no longer offered; an old /go/sample link opens a plain message about a project
+  if (id === 'sample') return lang === 'it' ? 'parlarvi del mio progetto' : 'to talk about my project';
   const a = offer.a.charAt(0).toLowerCase() + offer.a.slice(1);
   return `${a} (${offer.price})`;
 }

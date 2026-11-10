@@ -1,6 +1,7 @@
 ---
 // Prices: three tables (images by quantity, films by length, launch packages) on a photo, rows in glass,
-// the volume line, a real project on a dark band, terms, then the free sample.
+// the volume line, a real project on a dark band, terms, then the live demo.
+// 10/11 (Nico): the Interactive 3D table opens with the pilot, €490, the first paid step before a full project.
 // On phones each table row becomes one line: quantity left, price large right.
 import Base from '../layouts/Base.astro';
 import Arrow from '../components/Arrow.astro';
@@ -45,6 +46,7 @@ const i3Media: Media[] = [
 const filmMedia: Media[] = ['30', '60', '90'].map((n) => ({ video: `/prices/film-${n}.mp4`, poster: `/prices/film-${n}.webp` }));
 const packMedia: Media[] = ['02_villa_cape_town', '01_penthouse_dubai', '05_corfu_resort'].map((id) => ({ img: byId(id)?.gallery[0]?.mobile }));
 const infos: { id: string; name: string; price: string; text: string; media?: Media }[] = [
+  { id: 'i3p', name: P.i3Pilot[0], price: P.i3Pilot[1], text: P.i3Pilot[3], media: i3Media[1] },
   ...P.i3Rows.map(([name, , price, text], i) => ({ id: `i3-${i}`, name, price, text, media: i3Media[i] })),
   ...P.i3Extras.map(([name, price, text], i) => ({ id: `i3x-${i}`, name, price, text })),
   ...P.filmsRows.map(([len, price, use], i) => ({ id: `film-${i}`, name: `${len} ${P.filmsUnit}`, price, text: `${use}. ${P.filmsNoteShort}`, media: filmMedia[i] })),
@@ -71,6 +73,15 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
         <tr>{P.i3Cols.map((c) => <th scope="col">{c}</th>)}</tr>
       </thead>
       <tbody>
+        <tr class="ptable__pilot">
+          <th scope="row" class="ptable__q">
+            <span class="ptable__qn">{P.i3Pilot[0]}<button type="button" class="pinfo" data-info="i3p" aria-label={`${P.info} ${P.i3Pilot[0]}`}><span aria-hidden="true">i</span></button></span>
+          </th>
+          <td class="ptable__price">
+            <span class="ptable__now">{P.i3Pilot[1]}</span>
+            <span class="ptable__save">{P.i3Pilot[2]}</span>
+          </td>
+        </tr>
         {
           P.i3Rows.map(([name, was, price], i) => (
             <tr class:list={{ 'is-best': i === P.i3Best }}>
@@ -99,7 +110,10 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
       </tbody>
     </table>
     <p class="prices__star" data-fade>{P.i3Star}</p>
-    <a class="btn btn--sm prices__try" href={`${lang === 'it' ? '/it' : ''}/demo/hold-to-build/`} data-astro-reload data-fade>{P.tryLive} <Arrow /></a>
+    <div class="prices__ctas" data-fade>
+      <a class="btn btn--sm prices__try" href={`${lang === 'it' ? '/it' : ''}/demo/hold-to-build/`} data-astro-reload>{P.tryLive} <Arrow /></a>
+      <a class="btn btn--sm btn--fill" href={`https://wa.me/393792220465?text=${encodeURIComponent(P.pilotMsg)}`} target="_blank" rel="noopener">{P.pilotCta} <Arrow /></a>
+    </div>
   </section>
 
   <!-- Films -->

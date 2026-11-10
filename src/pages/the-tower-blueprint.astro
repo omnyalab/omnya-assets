@@ -10,7 +10,6 @@ import { goHref } from '../lib/learn';
 
 const free = goHref('free-tower', 'en');
 const full = goHref('full-tower', 'en');
-const sample = goHref('sample', 'en');
 import OptIn from '../components/OptIn.astro';
 ---
 
@@ -118,7 +117,7 @@ import OptIn from '../components/OptIn.astro';
         <details><summary>What tools does it use?</summary><p>Claude for the 3D and the site, Nano Banana Pro for the tower photo, Seedance and Kling for the flight and the rooms.</p></details>
         <details><summary>Is it a video course?</summary><p>No, it's a PDF with every step and every prompt, made to follow next to your screen.</p></details>
         <details><summary>When do I get it?</summary><p>Right after payment, on the next page.</p></details>
-        <details><summary>Can you make it for my project?</summary><p>Yes. Send us the plans or a model, and the first image is free.</p></details>
+        <details><summary>Can you make it for my project?</summary><p>Yes. Send us the plans or a model: the pilot is your building with one floor to click, in 7 days, for €490, credited if you go ahead within 30 days.</p></details>
       </div>
     </div>
   </div>
@@ -129,7 +128,7 @@ import OptIn from '../components/OptIn.astro';
     <p class="x3-kick">Still a drawing on your screen?</p>
     <h2 class="x3-T">Sell<br><span class="x3-box">every floor</span></h2>
     <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={full}>Get the Full Blueprint →</a><a class="x3-btn x3-btn--line" href={free} target="_blank" rel="noopener">Start with the free one</a></div>
-    <p class="x3-small">Or send us your tower, <a href={sample}>the first image is free</a>.</p>
+    <p class="x3-small">Or see one live, <a href="/demo/choose-your-floor/" data-astro-reload>try the free demo</a>.</p>
   </div>
 </section>
 <p class="x3-foot">OMNYA LAB</p>

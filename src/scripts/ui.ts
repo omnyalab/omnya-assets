@@ -114,7 +114,8 @@ export function initSheet() {
 
   document.addEventListener('click', (e) => {
     const t = e.target as Element;
-    if (t.closest('[data-sample]')) { e.preventDefault(); open(); return; }
+    // 10/11: the site's buttons with data-sample are links to the live demo now; only a real button would open the sheet
+    if (t.closest('button[data-sample]')) { e.preventDefault(); open(); return; }
     if (t.closest('[data-sheet-close]')) close();
   });
   document.addEventListener('keydown', (e) => {

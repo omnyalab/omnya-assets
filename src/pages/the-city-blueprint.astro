@@ -11,7 +11,6 @@ import { goHref } from '../lib/learn';
 
 const free = goHref('free-city', 'en');
 const full = goHref('full-city', 'en');
-const sample = goHref('sample', 'en');
 // 10/11 (Nico): the free PDF only after the email, like the other funnels. This page has no /sent page,
 // so after the email the card goes away and the page opens on the Full guide (#full).
 import OptIn from '../components/OptIn.astro';
@@ -100,7 +99,7 @@ import OptIn from '../components/OptIn.astro';
         <details><summary>What tools does it use?</summary><p>Claude Code for the city, the reel page and the site, ElevenLabs for the voice, ManyChat for the comments and the DMs, Vercel and Upstash for the live map, all on free or starter plans.</p></details>
         <details><summary>Will it work on phones?</summary><p>Yes. Most people open it from the DM, so the city draws half the detail on phones and stays the same city on every device.</p></details>
         <details><summary>When do I get the Full one?</summary><p>Right after payment, on the next page.</p></details>
-        <details><summary>Can you build it for my brand?</summary><p>Yes. Write to us with your project, the first image is free.</p></details>
+        <details><summary>Can you build it for my brand?</summary><p>Yes. Write to us with your project and we tell you the price before we start.</p></details>
       </div>
     </div>
   </div>
@@ -111,7 +110,7 @@ import OptIn from '../components/OptIn.astro';
     <p class="x3-kick">Your followers want a house</p>
     <h2 class="x3-T">Build<br><span class="x3-box">your city</span></h2>
     <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={full}>Get the Full Blueprint →</a><a class="x3-btn x3-btn--line" href={free} target="_blank" rel="noopener">Start with the free one</a></div>
-    <p class="x3-small">Or send us your project, <a href={sample}>the first image is free</a>.</p>
+    <p class="x3-small">Or see what we build, <a href="/demo/choose-your-floor/" data-astro-reload>try the free demo</a>.</p>
   </div>
 </section>
 

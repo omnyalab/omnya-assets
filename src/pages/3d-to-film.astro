@@ -9,7 +9,6 @@ import { goHref } from '../lib/learn';
 
 const free = goHref('free-3d', 'en');
 const full = goHref('full-3d', 'en');
-const sample = goHref('sample', 'en');
 import OptIn from '../components/OptIn.astro';
 ---
 
@@ -107,7 +106,7 @@ import OptIn from '../components/OptIn.astro';
         <details><summary>What tools does it use?</summary><p>Claude for the 3D and the camera path, Higgsfield for the photos and the video. The blueprint says which model we used at each step.</p></details>
         <details><summary>Is it a video course?</summary><p>No, it's a PDF with every step, every prompt and the prompt for Claude Code, made to follow next to your screen.</p></details>
         <details><summary>When do I get it?</summary><p>Right after payment, on the next page.</p></details>
-        <details><summary>Can you make it for my project?</summary><p>Yes. Send us the plans, a model or a photo, and the first image is free.</p></details>
+        <details><summary>Can you make it for my project?</summary><p>Yes. Send us the plans, a model or a photo and we tell you the price before we start.</p></details>
       </div>
     </div>
   </div>
@@ -118,7 +117,7 @@ import OptIn from '../components/OptIn.astro';
     <p class="x3-kick">Still a 3D on your screen?</p>
     <h2 class="x3-T">Make it<br><span class="x3-box">a film</span></h2>
     <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={full}>Get the Full Blueprint →</a><a class="x3-btn x3-btn--line" href={free} target="_blank" rel="noopener">Start with the free one</a></div>
-    <p class="x3-small">Or send us your project, <a href={sample}>the first image is free</a>.</p>
+    <p class="x3-small">Or see what we build, <a href="/demo/hold-to-build/" data-astro-reload>try the free demo</a>.</p>
   </div>
 </section>
 

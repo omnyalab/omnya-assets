@@ -96,7 +96,7 @@ const rows = [
         <div class="statement__txt">
           <p class="statement__line" data-fade>{H.line}</p>
           <div class="statement__btns" data-fade>
-            <button type="button" class="btn btn--fill" data-sample>{T.cta} <Arrow /></button>
+            <a class="btn btn--fill" href={demoHref(lang)} data-astro-reload data-sample>{T.cta} <Arrow /></a>
             <a class="btn" href={localize('/work', lang)}>{T.work.seeWork} <Arrow /></a>
           </div>
         </div>

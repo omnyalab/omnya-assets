@@ -2998,6 +2998,9 @@ button.pinfo:hover, button.pinfo[aria-expanded='true'] { background: var(--ink);
 button.pinfo:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 @media (max-width: 899px) { button.pinfo { vertical-align: 0.1em; margin-left: 2px; } .ptable__q { align-items: center; } }
 .prices__try { margin-top: 26px; justify-self: start; }
+/* 10/11 (Nico): "Try it" and "Start with the pilot" side by side under the Interactive 3D table */
+.prices__ctas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.prices__ctas .prices__try { margin-top: 0; }
 
 /* the card it opens: glass, the preview on top; a sheet from the bottom on phones */
 .pinfo-pop {
