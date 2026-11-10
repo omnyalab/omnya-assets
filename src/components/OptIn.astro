@@ -43,8 +43,8 @@ const next = after || `/${slug}/sent`;
       <label class="oihp" aria-hidden="true">Company<input name="company" tabindex="-1" autocomplete="off" /></label>
       <input name="name" placeholder="Your first name" autocomplete="given-name" required maxlength="60" />
       <input name="email" type="email" placeholder="Your best email" autocomplete="email" required maxlength="120" />
-      <label class="oiag oiag--nl"><input type="checkbox" name="nl" /><i>✓</i><span>Send me an update from Omnya Lab now and then too. No spam, unsubscribe in one click.</span></label>
-      <p class="oiag oiag--line">Your blueprint goes to this email, and by sending you accept the <a href="/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+      <label class="oiag oiag--nl"><input type="checkbox" name="nl" /><i>✓</i><span>Also send me an update now and then. No spam, unsubscribe in one click.</span></label>
+      <p class="oiag oiag--line">By sending you accept the <a href="/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.</p>
       <p class="oierr" data-oi-err hidden></p>
       <button class="x3-btn x3-btn--blue">Send me the blueprint →</button>
     </form>
@@ -86,7 +86,7 @@ const next = after || `/${slug}/sent`;
     var done = function () { try { return localStorage.getItem(FLAG) === '1'; } catch (e) { return false; } };
     var form = box.querySelector('[data-oi-form]'), err = box.querySelector('[data-oi-err]');
     if (box.hasAttribute('data-landing') && done()) box.hidden = true;
-    var open = function (e) { e.preventDefault(); box.hidden = false; setTimeout(function () { form.name.focus(); }, 50); };
+    var open = function (e) { e.preventDefault(); box.hidden = false; fit(); setTimeout(function () { form.name.focus(); }, 50); };
     var locked = box.classList.contains('oi--nox');
     // 9/11 (Nico, Build page): no site loading screen between the form and the offer, only a clean green fade
     var green = box.classList.contains('oi--c1') || box.classList.contains('oi--fade');
@@ -101,6 +101,23 @@ const next = after || `/${slug}/sent`;
     var goBtn = document.querySelector('[data-oil-go]');
     if (goBtn) goBtn.addEventListener('click', function (e) { var h = goBtn.getAttribute('href'); if (!green && h.charAt(0) !== '#') return; e.preventDefault(); go(h); });
     var close = function () { if (!locked) box.hidden = true; };
+    // 10/11 (Nico): the send button always stays on screen, with or without the cookie bar. On a short screen the
+    // card first moves up (less of the book shows above it), and if that is not enough it gets a little smaller.
+    var sheet = box.querySelector('.oisheet');
+    var fit = function () {
+      if (box.hidden) return;
+      box.style.paddingTop = ''; sheet.style.zoom = '';
+      var cs = getComputedStyle(box), top = parseFloat(cs.paddingTop) || 0, bot = parseFloat(cs.paddingBottom) || 0;
+      var room = box.clientHeight, h = sheet.offsetHeight, over = top + h + bot - room;
+      if (over <= 0) return;
+      var t = Math.max(48, top - over);
+      box.style.paddingTop = t + 'px';
+      over = t + h + bot - room;
+      if (over > 0) sheet.style.zoom = Math.max(0.7, (room - t - bot) / h).toFixed(3);
+    };
+    fit();
+    window.addEventListener('resize', fit); window.addEventListener('load', fit); window.addEventListener('omnya:ocb', fit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
     // one listener on the page: the buttons come after this script in the HTML
     document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a[href^="/go/' + free + '"]'); if (a && !done()) open(e); });
     box.querySelector('[data-oi-close]').addEventListener('click', close);
