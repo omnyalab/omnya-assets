@@ -9,8 +9,9 @@ export const contact = {
   places: 'Venice · Dubai',
   instagram: 'https://www.instagram.com/omnyalab/',
   linkedin: 'https://www.linkedin.com/in/nicolaghizzo',
-  /** Legal name of the business (sole trader): Meta checks it on the site. */
-  legal: 'Nicola Ghizzo',
+  /** The name shown next to the VAT number in the footer. 10/11 (Nico): the studio's name, not his own (the Meta review
+   *  that wanted the sole trader's name is dropped). */
+  legal: 'Omnya Lab',
   vat: '05578770264',
   /** The free 30-minute call, booked on our own page (it replaced Calendly). */
   bookCall: '/book/call',
