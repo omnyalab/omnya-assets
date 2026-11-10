@@ -16,7 +16,7 @@
 // allowed within 24 hours of the person's last message).
 //
 // Without Redis or a token (local tests) it keeps everything in memory.
-import { kv, z, h, clock, takePlace, leadIds, getMany } from './ig-store.js';
+import { kv, z, h, clock, takePlace, leadIds, getMany, KEEP } from './ig-store.js';
 import { sendMail } from './mail.js';
 import { host } from './config.js';
 import * as T from './ig-texts.js';
@@ -108,7 +108,10 @@ export async function setOff(v) {
 // Meta doesn't hand us the taps and messages of people who have no role on the app, so the bot can't
 // wait for a tap. 'gate': the whole round (button → follow check → link), for after the App Review.
 // Changed without a deploy: /api/leads?key=…&action=mode&value=direct|gate
-export const MODES = ['direct', 'gate'];
+// 'comment' (ready, off): the follow is checked through comments, the one thing Meta delivers from
+// everyone: first comment → a DM without the link ("follow, then comment DONE"), next comment →
+// follow check with the id the first DM gave us → the link. See gateByComment().
+export const MODES = ['direct', 'gate', 'comment'];
 let mode = { at: 0, v: 'direct' };
 export async function getMode() {
   if (Date.now() - mode.at > 15_000) {
@@ -183,7 +186,7 @@ export function errorKind(e) {
 const envToken = () => String(process.env.IG_TOKEN || '').replace(/[^A-Za-z0-9]/g, ''); // Meta tokens are letters and digits only: a stray space, newline or ù from pasting is dropped
 
 /** One call to Meta. Throws an Error that carries Meta's code, subcode and the HTTP status. */
-async function graph(path, token, { method = 'GET', body, query } = {}) {
+async function graph(path, token, { method = 'GET', body, query, timeout = 12_000 } = {}) {
   const url = new URL(`${GRAPH}/${V}/${path}`);
   for (const [k, v] of Object.entries(query || {})) url.searchParams.set(k, v);
   url.searchParams.set('access_token', token);
@@ -193,16 +196,17 @@ async function graph(path, token, { method = 'GET', body, query } = {}) {
       method,
       headers: body ? { 'Content-Type': 'application/json' } : {},
       body: body && JSON.stringify(body),
-      signal: AbortSignal.timeout(12_000),
+      signal: AbortSignal.timeout(timeout),
     });
     j = await res.json().catch(() => ({}));
   } catch (e) {
-    throw Object.assign(new Error(`instagram ${method} ${path}: ${e.name === 'TimeoutError' ? 'no answer in 12 seconds' : e.message}`), { status: 0 });
+    const why = e.name === 'TimeoutError' ? `no answer in ${timeout / 1000} seconds` : e.message;
+    throw Object.assign(new Error(`instagram ${method} ${path}: ${why}`), { status: 0, said: why });
   }
   if (!res.ok || j.error) {
     const er = j.error || {};
     throw Object.assign(new Error(`instagram ${method} ${path}: ${er.message || res.status}${er.code ? ` [code ${er.code}${er.error_subcode ? ` sub ${er.error_subcode}` : ''}]` : ''}`), {
-      code: er.code, sub: er.error_subcode, type: er.type, status: res.status,
+      code: er.code, sub: er.error_subcode, type: er.type, status: res.status, said: String(er.message || res.status),
     });
   }
   return j;
@@ -272,6 +276,42 @@ async function profile(id) {
     return { follows: null };
   }
 }
+
+/**
+ * The follow probe (10/11/2026): Meta gives us the messaging id of a commenter in the answer to the
+ * private reply; this asks whether that person follows @omnyalab, to find out with real traffic if
+ * Meta tells us the follow of someone who only commented. One log line per try, to search in the
+ * Vercel logs: "[ig] probe <username> → follows=true|false|unknown" or "[ig] probe <username> → ERROR
+ * <code> <what Meta said>", and a count of each on /api/leads. It never throws.
+ */
+async function probe(sid, username) {
+  const who = username || sid || '?';
+  try {
+    if (!sid) throw Object.assign(new Error('no recipient id'), { said: 'no recipient id in Meta’s answer to the private reply' });
+    const j = await api(sid, { query: { fields: 'is_user_follow_business' }, timeout: 6000 });
+    const follows = typeof j.is_user_follow_business === 'boolean' ? j.is_user_follow_business : null;
+    console.log(`[ig] probe ${who} → follows=${follows === null ? 'unknown' : follows}`);
+    await h.incr('probe', follows === null ? 'unknown' : String(follows)).catch(() => {});
+    return { follows };
+  } catch (e) {
+    const said = `${e.code || e.status || 0}${e.sub ? `/${e.sub}` : ''} ${String(e.said || e.message).slice(0, 140)}`;
+    console.log(`[ig] probe ${who} → ERROR ${said}`);
+    try {
+      await h.incr('probe', 'error');
+      await kv.set('probeErr', { at: clock.now(), who, said }, 30 * 86_400);
+    } catch {}
+    return { follows: null, error: said };
+  }
+}
+
+/** The probe's numbers for Nico's page: how many true, false, unknown, error, and the last error. */
+export async function probeState() {
+  const [n, last] = await Promise.all([h.all('probe'), kv.get('probeErr')]);
+  return { follows: n.true || 0, notFollowing: n.false || 0, unknown: n.unknown || 0, errors: n.error || 0, lastError: last ? { at: new Date(last.at).toISOString(), who: last.who, said: last.said } : null };
+}
+
+// probes started while the line is being emptied: they run beside the sending and are waited for at the end
+const probing = [];
 
 // ---------- the word ----------
 
@@ -460,14 +500,15 @@ async function sendHouse(lead) {
  * (for City the personal link, made now from the commenter's username). If Instagram refuses the
  * button the same text goes out with the link written in it, and from then on at once.
  */
-async function directDm(job, onSecond) {
+async function directDm(job, onSecond, words) {
   const p = job.p;
   const t = T.textsFor(p.dest);
+  const say = words || t.direct.text;
   const url = p.dest === 'city' ? await houseUrl(job.n, job.u, p.code) : track(t.url, p.code);
-  const inText = { text: `${t.direct.text}\n\n${url}` };
+  const inText = { text: `${say}\n\n${url}` };
   if (await isPlain()) return send({ comment_id: job.c }, inText);
   try {
-    return await send({ comment_id: job.c }, { attachment: { type: 'template', payload: { template_type: 'button', text: t.direct.text, buttons: [{ type: 'web_url', title: t.direct.button, url }] } } });
+    return await send({ comment_id: job.c }, { attachment: { type: 'template', payload: { template_type: 'button', text: say, buttons: [{ type: 'web_url', title: t.direct.button, url }] } } });
   } catch (e) {
     if (!refusedShape(e)) throw e;
     console.warn('[ig] link button refused in the answer to a comment, link in the text instead:', e.message);
@@ -490,6 +531,35 @@ async function sendLink(lead, newFollower) {
   else await sendBlueprint(lead, newFollower);
   Object.assign(lead, { stage: 'asked', follows: true, sentAt: clock.now() });
   await h.incr('stats', `${cleanPost(lead.post)}|link:${lead.kind || 'blueprint'}`);
+}
+
+/**
+ * Comment mode: the follow is checked through comments. Decides what this comment gets and sends it:
+ * 'ask'    first comment of someone whose messaging id we don't have (or who doesn't follow yet):
+ *          a DM without the link, "follow, then comment DONE under the reel"
+ * 'almost' they commented again and still don't follow: "follow first, then comment again"
+ * 'link'   they follow, or it is their third comment, or Meta won't say whether they follow
+ *          (then it is as in direct: nobody is left with nothing)
+ * Every answer is the private reply to a different comment: one per comment, as Meta wants.
+ */
+async function gateByComment(job, onSecond) {
+  const t = T.textsFor(job.p.dest);
+  const round = job.round || 1;
+  const sid = await kv.get(`sid:${job.u}`);
+  let follows = null;
+  if (sid) {
+    follows = (await probe(sid, job.n)).follows;
+    job.probed = true;
+  }
+  let kind = 'link';
+  if (follows !== true && round < 3) {
+    if (!sid) kind = round === 1 ? 'ask' : 'link'; // a second comment and still no id to check: as in direct
+    else if (follows === false) kind = round === 1 ? 'ask' : 'almost';
+  }
+  job.sent = kind;
+  job.follows = follows;
+  if (kind === 'link') return directDm(job, onSecond, follows === true ? (round === 1 ? t.comment.linkFollower : t.comment.linkNew) : undefined);
+  return send({ comment_id: job.c }, { text: kind === 'ask' ? t.comment.ask : t.comment.almost });
 }
 
 /** They tapped "Get the Blueprint" (afterDone false) or "Done" (true). */
@@ -517,9 +587,21 @@ async function accept(job, info) {
   const post = resolvePost({ id: job.m, code: info.code, words: info.words, tower: info.tower }, await extraPosts());
   // posts in the map answer any comment; the others only the word their caption asks for
   // (a tester, under a post that asks for nothing, can use the DM words)
-  const word = post?.any ? matchWord(job.t, post.words) || post.words[0] || 'ANY' : matchWord(job.t, post ? post.words : ONLY.size ? DEFAULT_WORDS : []);
-  if (!word) return 'no word';
-  if (!(await kv.once(`once:${job.m}:${job.u}`))) return 'already';
+  const named = post?.any ? matchWord(job.t, post.words) || post.words[0] || 'ANY' : matchWord(job.t, post ? post.words : ONLY.size ? DEFAULT_WORDS : []);
+  let word = named;
+  const key = `once:${job.m}:${job.u}`;
+  if ((await getMode()) === 'comment') {
+    // comment mode: up to three answers per person per reel, one per comment, until the link went out
+    const rounds = `cn:${job.m}:${job.u}`;
+    if (!word && (await kv.get(rounds))) word = 'DONE'; // they are answering our "comment DONE": any word counts
+    if (!word) return 'no word';
+    if (await kv.get(key)) return 'already';
+    job.round = await kv.incr(rounds, KEEP);
+    if (job.round > 3) return 'already';
+  } else {
+    if (!word) return 'no word';
+    if (!(await kv.once(key))) return 'already'; // one answer per person per reel
+  }
   job.p = { dest: post?.dest || 'blueprint', code: info.code || cleanPost(job.m), word, link: info.permalink || '' };
   delete job.raw;
   return null;
@@ -597,13 +679,27 @@ async function deliver(job, ctx) {
     try {
       if (ONLY.size) await kv.set(`tester:${job.u}`, 1, 7 * 86_400);
       const second = () => z.add('sent', now, `${cid}:2`); // a second call for the same comment takes its place in the hour too
-      const direct = (await getMode()) === 'direct';
-      // direct: the link is in this DM. gate: a button to tap, which carries its post, so the tap finds the right link even when Instagram gives the tap another id
-      const r = direct ? await directDm(job, second) : await button({ comment_id: cid }, t.opener.text, t.opener.button, `GET:${p.dest}:${p.code}`, second);
+      const flow = await getMode();
+      // direct: the link is in this DM. comment: the follow is checked through comments, then the link.
+      // gate: a button to tap, which carries its post, so the tap finds the right link even when Instagram gives the tap another id
+      const r =
+        flow === 'direct' ? await directDm(job, second)
+        : flow === 'comment' ? await gateByComment(job, second)
+        : await button({ comment_id: cid }, t.opener.text, t.opener.button, `GET:${p.dest}:${p.code}`, second);
       if (r.recipient_id) uid = r.recipient_id;
       if (ONLY.size) await kv.set(`tester:${uid}`, 1, 7 * 86_400);
       job.dm = 'sent';
-      job.direct = direct;
+      job.flow = flow;
+      job.linked = flow === 'direct' || job.sent === 'link'; // the link went out with this DM
+      // the commenter's messaging id, kept for the follow check of their next comment; and the follow probe,
+      // which runs beside the rest and can't stop or slow the sending
+      try {
+        if (r.recipient_id) await kv.set(`sid:${job.u}`, r.recipient_id, KEEP);
+        if (flow === 'comment' && job.linked) await kv.once(`once:${job.m}:${job.u}`); // they have it: no more answers under this reel
+      } catch (e) {
+        console.warn('[ig] messaging id not kept:', e.message);
+      }
+      if (!job.probed && process.env.IG_PROBE !== '0') probing.push(probe(r.recipient_id, job.n)); // IG_PROBE=0 on Vercel switches the probe off
       if (ctx.probing) {
         await kv.del('hold'); // it works again
         ctx.probing = false;
@@ -649,7 +745,9 @@ async function deliver(job, ctx) {
 
   if (!job.pub) {
     try {
-      await replyComment(cid, dm ? t.publicReplies[Math.floor(Math.random() * t.publicReplies.length)] : t.cantDm);
+      // comment mode: "one step first" under the first comment, nothing more under the "almost there"
+      const lines = !dm ? [t.cantDm] : job.sent === 'ask' ? t.comment.askReplies : job.sent === 'almost' ? [] : t.publicReplies;
+      if (lines.length) await replyComment(cid, lines[Math.floor(Math.random() * lines.length)]);
     } catch (e) {
       await noteError('public reply', e, `comment ${cid}`);
     }
@@ -680,17 +778,19 @@ async function keep(job, uid, dm, now) {
     comment: job.t,
     commentId: cid,
     commentAt: job.at,
-    // direct: the link went out with the DM, so they have it; gate: they have a button to tap
-    stage: !dm ? 'nodm' : job.direct ? 'asked' : 'opened',
+    // the link went out with the DM (direct, or comment mode once they follow): they have it;
+    // comment mode before the follow: asked to follow; gate: they have a button to tap
+    stage: !dm ? 'nodm' : job.linked ? 'asked' : job.flow === 'comment' ? 'asked_follow' : 'opened',
     seen: false,
     reels: [...new Set([...(lead.reels || []), job.m])],
   });
-  if (dm && job.direct) Object.assign(lead, { direct: true, sentAt: now });
+  if (dm && job.linked) Object.assign(lead, { direct: true, sentAt: now });
+  if (dm && job.flow === 'comment') Object.assign(lead, job.linked ? {} : { wasAskedFollow: true }, typeof job.follows === 'boolean' ? { follows: job.follows } : {});
   await saveLead(lead);
   await h.incr('stats', `${p.code}|${dm ? 'dm' : 'nodm'}`);
-  if (dm && job.direct) await h.incr('stats', `${p.code}|link:${p.dest}`);
-  // the "check Requests" reminder needs to know whether the DM was opened, and in direct mode Meta doesn't tell us: none
-  if (dm && !job.direct) await later(now + REMIND_AFTER, { k: 'remind', id: uid, c: cid });
+  if (dm && job.linked) await h.incr('stats', `${p.code}|link:${p.dest}`);
+  // the "check Requests" reminder needs to know whether the DM was opened, and only in gate mode Meta tells us
+  if (dm && job.flow === 'gate') await later(now + REMIND_AFTER, { k: 'remind', id: uid, c: cid });
   await done(cid);
   return dm ? 'sent' : 'nodm';
 }
@@ -700,7 +800,15 @@ async function keep(job, uid, dm, now) {
  * Meta says slow down, or when the time for this call is over. Runs on every webhook call and on
  * every /api/igtick. Returns a Map: comment id → what happened.
  */
-export async function drain({ budget = 6000, max = 100 } = {}) {
+export async function drain(opts) {
+  try {
+    return await emptyLine(opts);
+  } finally {
+    await Promise.allSettled(probing.splice(0)); // the follow probes started on the way
+  }
+}
+
+async function emptyLine({ budget = 6000, max = 100 } = {}) {
   const out = new Map();
   const started = Date.now();
   const now = clock.now();
@@ -944,7 +1052,7 @@ export async function health() {
   const out = {
     time: new Date(now).toISOString(),
     on: !(await isOff().catch(() => false)),
-    flow: await getMode().catch(() => 'direct'), // direct = the link in the first DM, gate = button, follow check, link
+    flow: await getMode().catch(() => 'direct'), // direct = the link in the first DM, gate = button, follow check, link, comment = follow checked through comments
     linkAs: (await isPlain().catch(() => false)) ? 'text (Instagram refused the link button)' : 'button',
     mode: ONLY.size ? `only testers: ${[...ONLY].join(', ')}` : 'everyone',
   };
@@ -982,6 +1090,7 @@ export async function health() {
     out.lastComment = last ? { at: new Date(last.at).toISOString(), minutesAgo: Math.round((now - last.at) / 60_000), from: last.from, text: last.text, post: last.media, did: last.did } : null;
     out.line = await lineState();
     out.errors = await errorState(5);
+    out.followProbe = await probeState();
     out.map = await postMap();
   } catch (e) {
     out.store = { error: e.message };

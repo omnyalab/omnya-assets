@@ -6,11 +6,13 @@
 // &action=subscribe switches the webhook on for @omnyalab (once, after the token is set).
 // &action=post&code=<reel code or link>&dest=<tower|floors|film|build|towers|city|blueprint> adds a reel
 //   to the map at once, without a deploy (no dest = takes it out); the lasting place is api/_lib/ig-posts.js.
-// &action=mode&value=direct|gate changes how the bot answers, without a deploy: direct (the default) = the DM
-//   that answers the comment already has the link; gate = button, follow check, then the link.
+// &action=mode&value=direct|gate|comment changes how the bot answers, without a deploy: direct (the default) = the DM
+//   that answers the comment already has the link; gate = button, follow check, then the link; comment = the
+//   follow is asked first and checked when they comment again, then the link.
+// The page also shows the follow probe: how many times Meta told us whether a commenter follows (yes, no, no answer, error).
 // &action=off stops the bot at once, without a deploy (it answers nobody and keeps nothing), &action=on starts it again.
 // &format=json gives the numbers alone.
-import { listLeads, api, page, lineState, errorState, postStats, postMap, setPost, setOff, isOff, getMode, setMode, MODES } from './_lib/ig.js';
+import { listLeads, api, page, lineState, errorState, postStats, postMap, setPost, setOff, isOff, getMode, setMode, MODES, probeState } from './_lib/ig.js';
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -64,9 +66,9 @@ export async function GET(request) {
     });
   }
 
-  const [leads, line, errors, posts, botOff, flow] = await Promise.all([listLeads(), lineState(), errorState(8), postStats(), isOff(), getMode()]);
+  const [leads, line, errors, posts, botOff, flow, probe] = await Promise.all([listLeads(), lineState(), errorState(8), postStats(), isOff(), getMode(), probeState()]);
   if (q.get('format') === 'json') {
-    return new Response(JSON.stringify({ on: !botOff, mode: flow, line, errors, posts, map: await postMap() }, null, 2), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
+    return new Response(JSON.stringify({ on: !botOff, mode: flow, followProbe: probe, line, errors, posts, map: await postMap() }, null, 2), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
   }
   const count = (f) => leads.filter(f).length;
   const stats = [
@@ -81,7 +83,8 @@ export async function GET(request) {
   const only = (process.env.IG_ONLY || '').trim();
   const state = [
     botOff ? '<b>BOT SPENTO</b> (si riaccende con &amp;action=on)' : only ? `Modalità prova: risponde solo a ${esc(only)}` : 'Risponde a tutti',
-    flow === 'direct' ? 'link diretto: il primo DM ha già il link' : 'giro completo: tasto, controllo del follow, link',
+    flow === 'direct' ? 'link diretto: il primo DM ha già il link' : flow === 'comment' ? 'cancello a commenti: prima il follow, poi commenta DONE e arriva il link' : 'giro completo: tasto, controllo del follow, link',
+    `sonda del follow: ${probe.follows} seguono, ${probe.notFollowing} non seguono, ${probe.unknown} senza risposta, ${probe.errors} errori${probe.lastError ? ` (ultimo: ${esc(probe.lastError.said)})` : ''}`,
     line.waiting ? `il commento più vecchio in coda aspetta da ${line.oldestMinutes} min` : '',
     line.stoppedUntil ? `invii fermi fino alle ${when(Date.parse(line.stoppedUntil))} (${esc(line.stoppedWhy || '')})` : '',
   ].filter(Boolean).join(' · ');

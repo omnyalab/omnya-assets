@@ -44,6 +44,22 @@ const directFor = (name) => ({
 });
 export const direct = directFor('The Blueprint');
 
+/**
+ * Comment mode (ready, off): the follow is asked first and checked when they comment again, since
+ * comments are the one thing Meta delivers from everyone. ask = the DM to the first comment, without
+ * the link; almost = they commented again and still don't follow; linkNew / linkFollower = the text
+ * over the link button for someone who just followed / already followed; askReplies = under the
+ * first comment, in public.
+ */
+const commentFor = (name) => ({
+  ask: `Hey 🙌🏻 ${name} is ready, one step first: follow @omnyalab, then comment DONE under the reel and I’ll send it right over 👇🏻`,
+  almost: 'Almost there 👀 follow @omnyalab first, then comment again under the reel and it’s yours',
+  linkNew: `Thanks for the follow 🙌🏻 ${name} is ready 👇🏻 we drop a new build every week, so keep an eye on the reels`,
+  linkFollower: `Hey 🙌🏻 ${name} is ready 👇🏻 thanks for following, we drop a new build every week`,
+  askReplies: ['Check your DMs 👀 one quick step and it’s yours', 'Just sent you a DM 🙌🏻 one quick step first', 'It’s in your DMs 👇🏻 one quick step and it’s yours'],
+});
+export const comment = commentFor('The Blueprint');
+
 /** Not following yet. */
 export const followFirst = {
   text: 'Hey, thanks for the comment 🙌🏻 The Blueprint is ready for you, I just need one thing first: follow @omnyalab and I’ll send you the link right away (we post a new before and after every week, so you’ll see the method in action too).\nOnce you’ve followed, just reply “done” here 👇🏻',
@@ -97,6 +113,7 @@ const tower = {
   cantDm: 'We can’t send you the Tower Blueprint unless you send us a text, if you want it, just send us a text 🫶🏻',
   opener: { text: 'Hey 🙌🏻 The Tower Blueprint is ready, tap below and I’ll send it over 👇🏻', button: 'Get the Blueprint' },
   direct: directFor('The Tower Blueprint'),
+  comment: commentFor('The Tower Blueprint'),
   followFirst: { ...followFirst, text: followFirst.text.replace('The Blueprint', 'The Tower Blueprint') },
   blueprintFollower: `Here you go 👇🏻 ${towerBlueprint}`,
   blueprintNewFollower: `Thanks for the follow 🙌🏻 ${towerBlueprint}`,
@@ -120,6 +137,7 @@ const funnel = ({ name, url, page, replies, opener: first, nudge }) => ({
   cantDm: `We can’t send you ${name.replace(/^The /, 'the ')} unless you send us a text, if you want it, just send us a text 🫶🏻`,
   opener: { text: first || `Hey 🙌🏻 ${name} is ready, tap below and I’ll send it over 👇🏻`, button: 'Get the Blueprint' },
   direct: directFor(name),
+  comment: commentFor(name),
   followFirst: { ...followFirst, text: followFirst.text.replace('The Blueprint', name) },
   blueprintFollower: `Here you go 👇🏻 ${page}: ${url}`,
   blueprintNewFollower: `Thanks for the follow 🙌🏻 ${page}: ${url}`,
@@ -156,6 +174,13 @@ const city = {
   cantDm: 'We can’t send you your house link unless you send us a text, if you want it, just send us a text 🏠',
   opener: { text: 'Hey! Your free house in Omnya City is ready 🏠 Tap below and I’ll send you your personal link. It’s one link, one house, made for your username.', button: 'Get my house' },
   direct: { text: 'Hey 🙌🏻 your house in Omnya City is ready 🏠 tap below, it’s one link, one house, made for your username, and follow @omnyalab so you watch the city grow', button: 'Get my house' },
+  comment: {
+    ask: 'Hey 🙌🏻 your house in Omnya City is ready 🏠 one step first, the city is only for followers: follow @omnyalab, then comment DONE under the reel and I’ll send your link right over',
+    almost: 'Almost there 👀 follow @omnyalab first, then comment again under the reel and the house is yours',
+    linkNew: 'Thanks for the follow 🙌🏻 your house in Omnya City is ready 🏠 tap below, it’s one link, one house, made for your username',
+    linkFollower: 'Hey 🙌🏻 your house in Omnya City is ready 🏠 tap below, it’s one link, one house, made for your username',
+    askReplies: ['Check your DMs 🏠 one quick step and the house is yours', 'Just sent you a DM 🔑 one quick step first', 'It’s in your DMs 🏠 one quick step and it’s yours'],
+  },
   followFirst: { text: 'Almost there! The city is only for followers 🏠 Follow @omnyalab, then tap Done and your link comes right away.', button: 'Done' },
   stillNotFollowing: { text: 'Hmm, I can’t see the follow yet 👀 follow @omnyalab and tap Done again 👇🏻', button: 'Done' },
   link: { text: 'Here’s your link 🔑 Tap Reserve my spot and your house lands on the next free lot. The earlier you tap, the closer to downtown. Your username designs it.', button: 'Reserve my spot' },
@@ -191,7 +216,7 @@ export const oldButtons = {
   done: { payload: 'DONE', kind: 'city' },
 };
 
-const base = { url: BLUEPRINT, ask: true, publicReplies, cantDm, opener, direct, followFirst, stillNotFollowing, blueprintFollower, blueprintNewFollower, answerProject, answerCurious, nudgeFollow, nudgeQuestion };
+const base = { url: BLUEPRINT, ask: true, publicReplies, cantDm, opener, direct, comment, followFirst, stillNotFollowing, blueprintFollower, blueprintNewFollower, answerProject, answerCurious, nudgeFollow, nudgeQuestion };
 const kinds = { tower: { ...tower, url: TOWER_BLUEPRINT }, floors: { ...floors, url: TOWER_FLOORS }, film, build, towers, city, legacy };
 
 /** Every destination the bot knows: 'blueprint', 'tower', 'floors', 'film', 'build', 'towers', 'city' ('legacy' is only for old buttons). */

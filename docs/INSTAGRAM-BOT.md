@@ -13,7 +13,7 @@ Gira sul sito, su Vercel, senza Mac acceso e senza costi. Dal 10/11/2026 fa tutt
 | `api/leads.js` | la pagina di Nico: contatti, coda, errori, numeri per post, comandi |
 | `scripts/ig-test.mjs` | le prove: `~/.local/node/bin/node scripts/ig-test.mjs` |
 
-## Le due modalità: `direct` (di default) e `gate`
+## Le modalità: `direct` (di default), `gate`, `comment`
 
 **Perché esiste `direct`.** Prova dal vivo del 10/11/2026: con ManyChat tolto e Omnya Bot come app di routing predefinita, il tester @gghizzoo riceve tutto il giro, e i commenti di chiunque ricevono la risposta pubblica e il primo DM. Ma il tocco sul tasto di chi **non ha un ruolo sull'app** non arriva mai al webhook, né come messaggio né in standby: con lo Standard Access Meta non ci consegna i messaggi in entrata degli sconosciuti. Finché l'App Review non passa (Advanced Access) il bot non può dipendere da nessun tocco o messaggio in entrata.
 
@@ -32,7 +32,25 @@ I testi di `direct` (`direct` in `ig-texts.js`), tutti con il tasto `Get the Blu
 
 **`gate` (giro completo).** Quello descritto sotto: tasto da toccare → controllo del follow → link. Si torna a usarlo quando la review passa.
 
-**Cambiare modalità, senza deploy:** `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=mode&value=direct` oppure `&value=gate`. La scelta sta su Redis e vale entro 15 secondi; se non è mai stata scelta vale `direct`. La modalità in uso si legge nella pagina di Nico e nella salute (`flow`).
+**`comment` (cancello a commenti), pronta ma spenta.** Il follow torna obbligatorio anche senza review, usando come canale di ritorno i commenti, che Meta ci consegna da chiunque:
+
+1. primo commento di una persona di cui non abbiamo ancora l'id dei messaggi: risposta pubblica ("Check your DMs 👀 one quick step and it’s yours" e simili) e un DM **senza link**: "Hey 🙌🏻 The Towers Blueprint is ready, one step first: follow @omnyalab, then comment DONE under the reel and I’ll send it right over 👇🏻". La risposta di Meta a quel DM ci dà l'id dei messaggi della persona, che il bot salva;
+2. la persona commenta di nuovo sotto lo stesso reel (qualsiasi parola): **prima di rispondere** il bot chiede a Meta se quell'id ci segue. Se segue, risposta privata a quel commento con il tasto che apre la pagina ("Thanks for the follow 🙌🏻 The Towers Blueprint is ready 👇🏻 we drop a new build every week, so keep an eye on the reels") e risposta pubblica; se non segue, solo il DM "Almost there 👀 follow @omnyalab first, then comment again under the reel and it’s yours";
+3. al terzo commento il link parte comunque, come faceva ManyChat, con il testo di `direct`; dal quarto in poi niente;
+4. una persona di cui abbiamo già l'id da un reel precedente viene controllata subito: se segue riceve il link al primo commento;
+5. se il controllo dà errore o Meta non risponde (permesso negato, consenso mancante, nessun id), il bot fa come in `direct` e manda il link: nessuno resta senza niente.
+
+Ogni risposta è la risposta privata a un commento diverso (mai due allo stesso commento), quindi resta nelle regole di Meta e dentro la coda a 750 l'ora; una persona può ricevere al massimo tre risposte per reel. I testi sono in `comment` dentro `ig-texts.js`. **Prima di accenderla guarda la sonda qui sotto**: ha senso solo se Meta ci dice il follow di chi ha soltanto commentato.
+
+**La sonda del follow (sempre accesa, in ogni modalità).** Dopo ogni DM riuscito a un commento il bot salva l'id dei messaggi che Meta restituisce e chiede subito `is_user_follow_business` per quell'id. Non cambia niente del comportamento e non può rallentare né far fallire l'invio: scrive una riga nei log e conta. Nei log di Vercel cerca **`[ig] probe`**:
+
+- `[ig] probe <username> → follows=true` oppure `follows=false`: Meta ce lo dice, la modalità `comment` può funzionare;
+- `[ig] probe <username> → follows=unknown`: Meta risponde ma senza il dato;
+- `[ig] probe <username> → ERROR <codice> <cosa ha detto Meta>`: Meta rifiuta.
+
+I totali (seguono, non seguono, senza risposta, errori, ultimo errore) sono nella pagina di Nico, in `&format=json` (`followProbe`) e nella salute. Si spegne con `IG_PROBE=0` su Vercel.
+
+**Cambiare modalità, senza deploy:** `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=mode&value=direct`, `&value=gate` oppure `&value=comment`. La scelta sta su Redis e vale entro 15 secondi; se non è mai stata scelta vale `direct`. La modalità in uso si legge nella pagina di Nico e nella salute (`flow`).
 
 **Dopo la review** (Advanced Access su `instagram_manage_messages`): prova con un account senza ruolo che il tocco arrivi (in `gate`, una riga `[ig] message … → get` nei log), poi `&action=mode&value=gate`. Con i messaggi in entrata tornano anche il controllo del follow, il promemoria a 3 ore, il follow-up a 20 ore e la mail a Nico quando qualcuno risponde.
 
@@ -110,7 +128,7 @@ Il link nel DM è quello della pagina con il post in coda, per esempio `https://
 ## Cosa guardare
 
 - **Pagina di Nico**: `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY` → contatti, commenti in coda, DM dell'ultima ora, errori dell'ultima ora, e per ogni post commenti, DM mandati, DM bloccati, link mandati, clic sul link. Con `&format=json` solo i numeri.
-- **Salute**: `https://www.omnyalab.com/api/instagram?health=IG_ADMIN_KEY` → `on` (acceso o spento), `flow` (`direct` o `gate`), `linkAs` (il link va sul tasto o nel testo), `mode` (tutti o solo i tester), `token` (valido, quale Pagina e quale Instagram), `webhook` (i campi accesi sulla Pagina e sull'app, e in `missing` quelli che mancano tra `comments`, `messages`, `messaging_postbacks`), `lastComment` (l'ultimo commento arrivato, anche se non ha avuto risposta: è la prova che il webhook è acceso), `line` (coda, DM dell'ultima ora, eventuale fermo), `errors` (ultima ora e gli ultimi cinque), `map` (i post e le parole).
+- **Salute**: `https://www.omnyalab.com/api/instagram?health=IG_ADMIN_KEY` → `on` (acceso o spento), `flow` (`direct`, `gate` o `comment`), `followProbe` (la sonda del follow), `linkAs` (il link va sul tasto o nel testo), `mode` (tutti o solo i tester), `token` (valido, quale Pagina e quale Instagram), `webhook` (i campi accesi sulla Pagina e sull'app, e in `missing` quelli che mancano tra `comments`, `messages`, `messaging_postbacks`), `lastComment` (l'ultimo commento arrivato, anche se non ha avuto risposta: è la prova che il webhook è acceso), `line` (coda, DM dell'ultima ora, eventuale fermo), `errors` (ultima ora e gli ultimi cinque), `map` (i post e le parole).
 - **Log**: Vercel → Logs → cerca `[ig]`; gli errori sono le righe `[ig] ERROR`. Nessun errore di Meta passa in silenzio: ognuno ha la sua riga con il codice (per esempio `[code 100 sub 2534037]` = la chat è ancora di un'altra app) e finisce nel contatore.
 
 ## Comandi (tutti con la chiave)
@@ -121,6 +139,7 @@ Il link nel DM è quello della pagina con il post in coda, per esempio `https://
 | `/api/leads?key=…&action=post&code=…&dest=…` | aggiunge un reel alla mappa, subito |
 | `/api/leads?key=…&action=mode&value=direct` | il primo DM ha già il link (default) |
 | `/api/leads?key=…&action=mode&value=gate` | giro completo: tasto, controllo del follow, link |
+| `/api/leads?key=…&action=mode&value=comment` | cancello a commenti: prima il follow, poi "comment DONE", poi il link |
 | `/api/leads?key=…&action=off` | **spegne il bot subito**, senza deploy (non risponde a nessuno e non tiene i commenti che arrivano) |
 | `/api/leads?key=…&action=on` | lo riaccende |
 | `/api/leads?key=…&action=subscribe` | collega la Pagina al webhook (una volta sola) |

@@ -12,7 +12,7 @@ for (const k of ['KV_REST_API_URL', 'UPSTASH_REDIS_REST_URL', 'RESEND_API_KEY', 
 // ---- fake graph.instagram.com ----
 const OWN = '999';
 const calls = [];
-const state = { follows: {}, commentUser: {}, refuseTemplate: false, refuseDm: new Set(), failPrivate: null, failSend: null, captionDown: false };
+const state = { follows: {}, commentUser: {}, refuseTemplate: false, refuseDm: new Set(), failPrivate: null, failSend: null, captionDown: false, sid: {}, probeFail: null, probeBlank: false, noRecipient: false };
 let mid = 0;
 let simNow = () => Date.now(); // the bot's clock, set below: every fake call remembers the bot's time
 // posts by the id Meta gives in the comment event: caption and link, as Instagram would answer
@@ -53,12 +53,17 @@ const server = http.createServer(async (req, res) => {
     if (cid && state.failPrivate) return out({ error: state.failPrivate }, state.failPrivate.status || 400);
     if (!cid && state.failSend) return out({ error: state.failSend }, 400);
     if (cid && state.refuseDm.has(cid)) return out({ error: { message: 'cannot message user' } }, 400);
-    return out({ recipient_id: cid ? state.commentUser[cid] : j.recipient.id, message_id: `m${++mid}` });
+    // the id Instagram gives for messaging can differ from the commenter's id (state.sid), or be missing
+    const to = cid ? state.sid[state.commentUser[cid]] || state.commentUser[cid] : j.recipient.id;
+    return out(cid && state.noRecipient ? { message_id: `m${++mid}` } : { recipient_id: to, message_id: `m${++mid}` });
   }
   if (path.endsWith('/replies')) return out({ id: `r${++mid}` });
   if (posts[path]) return state.captionDown ? out({ error: { message: 'An unexpected error has occurred. Please retry your request later.', code: 2 } }, 500) : out(posts[path]);
   if (path.startsWith('media')) return out({ caption: 'From rough 3D to final photo ✨ Comment “PROJECT” below and I’ll send you The Blueprint', permalink: 'https://www.instagram.com/reel/abc/' });
-  if (/^[a-z]\d+$/.test(path)) return out({ username: `name_${path}`, is_user_follow_business: !!state.follows[path] });
+  if (/^[a-z]\d+$/.test(path)) {
+    if (state.probeFail) return out({ error: state.probeFail }, 400);
+    return out(state.probeBlank ? { id: path } : { username: `name_${path}`, is_user_follow_business: !!state.follows[path] });
+  }
   out({ error: { message: 'unknown ' + path } }, 404);
 });
 await new Promise((r) => server.listen(0, r));
@@ -364,6 +369,28 @@ if (REDIS_RUN) {
     assert.match(html, /Errori ultima ora/);
     await ig.tick(ig.clock.now() + 4 * 3_600_000); // the reminders run on Redis too
     for (const op of ['GET', 'SET', 'DEL', 'INCR', 'MGET', 'ZADD', 'ZREM', 'ZRANGEBYSCORE', 'ZREVRANGE', 'ZRANGE', 'ZCARD', 'ZCOUNT', 'HINCRBY', 'HGETALL', 'EVAL', 'GETDEL']) assert.ok(redisUsed.has(op), `${op} was never sent to Redis`);
+  });
+
+  await step('on Redis: follow probe counted, and comment mode (DM without the link → follow → comment again → the link)', async () => {
+    const p0 = await ig.probeState();
+    assert.ok(p0.follows + p0.notFollowing >= 20); // every DM above was probed
+    assert.equal((await (await leadsPage.GET(new Request('http://x/api/leads?key=k&action=mode&value=comment'))).json()).mode, 'comment');
+    state.sid.k1 = 's301';
+    const c1 = comment('k1', 'TOWERS', 'towersreel');
+    assert.deepEqual(await c1.res, ['sent']);
+    assert.deepEqual(pr(sent())[0].body.message, { text: T.textsFor('towers').comment.ask });
+    const c2 = comment('k1', 'done', 'towersreel');
+    assert.deepEqual(await c2.res, ['sent']);
+    assert.deepEqual(pr(sent())[0].body.message, { text: T.textsFor('towers').comment.almost });
+    state.follows.s301 = true;
+    const c3 = comment('k1', 'DONE', 'towersreel');
+    assert.deepEqual(await c3.res, ['sent']);
+    const s = sent();
+    assert.equal(urlOf(pr(s)[0]), 'https://www.omnyalab.com/the-towers-blueprint?ig=DfTOWERS11');
+    assert.equal(msgText(pr(s)[0]), T.textsFor('towers').comment.linkNew);
+    assert.deepEqual(await comment('k1', 'again', 'towersreel').res, ['already']);
+    assert.equal((await lead('s301')).stage, 'asked');
+    assert.ok(redisUsed.has('EXPIRE'));
   });
 
   server.close();
@@ -1108,7 +1135,9 @@ await step('direct: the comment gets ONE DM that already has the right link (TOW
     assert.deepEqual(s[0].body.message.attachment.payload.buttons, [{ type: 'web_url', title: 'Get the Blueprint', url: `${page}?ig=${code}` }], media);
     assert.equal(s[1].path, `${c.id}/replies`);
     assert.ok(t.publicReplies.includes(s[1].query.message));
-    assert.equal(all.filter((x) => x.path === u).length, 0); // nobody's follow was asked to Instagram
+    // the follow is not a condition: the only question to Instagram about this person is the probe, after the DM
+    assert.equal(all.filter((x) => x.path === u).length, 1);
+    assert.ok(all.findIndex((x) => x.path === u) > all.findIndex((x) => x.path === 'me/messages'), media);
     const l = await lead(u);
     assert.deepEqual([l.stage, l.kind, l.post, l.direct], ['asked', dest, code, true]); // they have the link
     assert.equal((await ig.postStats()).find((r) => r.post === code).link, before + 1); // counted as a link sent
@@ -1266,6 +1295,195 @@ await step('back to gate from /api/leads: the whole round again (button to tap �
   state.follows.d50 = true;
   await tap('d50', 'DONE');
   assert.equal(linkOf(sent().filter((x) => x.path === 'me/messages')[0]), `${TOWERS_PAGE}?ig=DfTOWERS11`);
+});
+
+// ===================== 10/11/2026: the follow probe, and the gate through comments =====================
+// Comments reach us from everyone, messages don't. The answer to a private reply gives the commenter's
+// messaging id: the probe asks Meta whether that id follows us (always on, only logs and counts), and
+// "comment" mode (ready, off) uses it to ask for the follow before the link.
+
+const logsOf = async (fn) => {
+  const lines = [];
+  const real = console.log;
+  console.log = (...a) => { lines.push(a.join(' ')); };
+  try { await fn(); } finally { console.log = real; }
+  return lines;
+};
+const say = (id, user, text, media) => {
+  state.commentUser[id] = user;
+  return post({ changes: [{ field: 'comments', value: { id, text, from: { id: user, username: `name_${user}` }, media: { id: media } } }] });
+};
+const idx = (list, f) => list.findIndex(f);
+
+await step('follow probe: after every DM to a comment, one log line and a count, in every mode; it can never stop the DM', async () => {
+  ahead += 2 * 3_600_000;
+  await get(leadsPage, '/api/leads?key=k&action=mode&value=direct');
+  await flushDue();
+  const before = await ig.probeState();
+  // Instagram gives the tap/DM side another id than the comment's: s101 is p1's messaging id
+  state.sid.p1 = 's101';
+  state.follows.s101 = true;
+  let lines = await logsOf(async () => assert.deepEqual(await say('pc1', 'p1', 'TOWERS', 'towersreel'), ['sent']));
+  assert.ok(lines.includes('[ig] probe name_p1 → follows=true'), lines.join('\n'));
+  let s = sent();
+  assert.equal(s.filter((x) => x.method === 'GET' && x.path === 's101').length, 1);
+  assert.equal(s.find((x) => x.path === 's101').query.fields, 'is_user_follow_business');
+  assert.ok(idx(s, (x) => x.path === 's101') > idx(s, (x) => x.path === 'me/messages')); // after the DM, never before it
+  lines = await logsOf(async () => assert.deepEqual(await say('pc2', 'p2', 'TOWERS', 'towersreel'), ['sent']));
+  assert.ok(lines.includes('[ig] probe name_p2 → follows=false'));
+  // Meta refuses to say: logged with its code, counted, and the DM and the public reply went out all the same
+  state.probeFail = { message: '(#10) This action requires the user to have messaged the business first', type: 'OAuthException', code: 10, error_subcode: 2018108 };
+  const errorsBefore = (await ig.errorState()).lastHour;
+  lines = await logsOf(async () => assert.deepEqual(await say('pc3', 'p3', 'TOWERS', 'towersreel'), ['sent']));
+  state.probeFail = null;
+  assert.ok(lines.includes('[ig] probe name_p3 → ERROR 10/2018108 (#10) This action requires the user to have messaged the business first'), lines.join('\n'));
+  s = sent();
+  assert.equal(dmsFor(s, 'pc3').length, 1);
+  assert.equal(s.filter((x) => x.path === 'pc3/replies').length, 1);
+  assert.equal((await ig.errorState()).lastHour, errorsBefore); // the probe has its own count, it doesn't fill the error list
+  // Meta answers without the field
+  state.probeBlank = true;
+  lines = await logsOf(async () => { await say('pc4', 'p4', 'TOWERS', 'towersreel'); });
+  state.probeBlank = false;
+  assert.ok(lines.includes('[ig] probe name_p4 → follows=unknown'));
+  const now = await ig.probeState();
+  assert.deepEqual([now.follows - before.follows, now.notFollowing - before.notFollowing, now.errors - before.errors, now.unknown - before.unknown], [1, 1, 1, 1]);
+  assert.match(now.lastError.said, /^10\/2018108 \(#10\)/);
+  assert.equal(now.lastError.who, 'name_p3');
+  // readable from /api/leads and from the health check
+  const j = await (await get(leadsPage, '/api/leads?key=k&format=json')).json();
+  assert.deepEqual(j.followProbe, now);
+  assert.match(await (await get(leadsPage, '/api/leads?key=k')).text(), /sonda del follow: \d+ seguono, \d+ non seguono, \d+ senza risposta, \d+ errori/);
+  assert.deepEqual((await (await get(hook, '/api/instagram?health=k')).json()).followProbe, now);
+  // gate mode probes too
+  await get(leadsPage, '/api/leads?key=k&action=mode&value=gate');
+  lines = await logsOf(async () => { await say('pc5', 'p5', 'TOWERS', 'towersreel'); });
+  assert.ok(lines.includes('[ig] probe name_p5 → follows=false'));
+  sent();
+});
+
+await step('comment mode, switched on from /api/leads: first comment → a DM without the link; they follow and comment again → the link', async () => {
+  assert.deepEqual(await (await get(leadsPage, '/api/leads?key=k&action=mode&value=comment')).json(), { ok: true, mode: 'comment' });
+  assert.equal((await (await get(hook, '/api/instagram?health=k')).json()).flow, 'comment');
+  assert.match(await (await get(leadsPage, '/api/leads?key=k')).text(), /cancello a commenti/);
+  const t = T.textsFor('towers');
+  state.sid.k1 = 's201';
+  assert.deepEqual(await say('kc1', 'k1', 'TOWERS', 'towersreel'), ['sent']);
+  let s = sent();
+  let mine = forComment(s, 'kc1');
+  assert.equal(mine.length, 2);
+  assert.deepEqual(mine[0].body.message, { text: t.comment.ask }); // no button, no link
+  assert.doesNotMatch(t.comment.ask, /https?:|omnyalab\.com/);
+  assert.match(t.comment.ask, /follow @omnyalab, then comment DONE under the reel/);
+  assert.ok(t.comment.askReplies.includes(mine[1].query.message));
+  assert.deepEqual([(await lead('s201')).stage, (await lead('s201')).wasAskedFollow], ['asked_follow', true]);
+  // they follow and comment DONE: the follow is checked BEFORE answering, with the id the first DM gave us
+  state.follows.s201 = true;
+  assert.deepEqual(await say('kc2', 'k1', 'DONE', 'towersreel'), ['sent']);
+  assert.deepEqual(await say('kc2', 'k1', 'DONE', 'towersreel'), ['dup']); // never two answers to the same comment
+  s = sent();
+  assert.ok(idx(s, (x) => x.method === 'GET' && x.path === 's201') < idx(s, (x) => x.path === 'me/messages'));
+  mine = forComment(s, 'kc2');
+  assert.equal(mine.length, 2);
+  assert.equal(mine[0].body.recipient.comment_id, 'kc2'); // the private reply to THIS comment
+  assert.equal(msgText(mine[0]), t.comment.linkNew);
+  assert.deepEqual(urlButton(mine[0]), { type: 'web_url', title: 'Get the Blueprint', url: `${TOWERS_PAGE}?ig=DfTOWERS11` });
+  assert.ok(t.publicReplies.includes(mine[1].query.message));
+  const l = await lead('s201');
+  assert.deepEqual([l.stage, l.follows, l.kind], ['asked', true, 'towers']);
+  // they have it: a third comment under this reel gets nothing more
+  assert.deepEqual(await say('kc3', 'k1', 'thanks!', 'towersreel'), ['already']);
+  assert.equal(sent().filter((x) => x.method === 'POST').length, 0);
+});
+
+await step('comment mode: still not following at the second comment → "almost there"; the third comment gets the link anyway', async () => {
+  const t = T.textsFor('towers');
+  assert.deepEqual(await say('kd1', 'k2', 'towers', 'towersreel'), ['sent']);
+  assert.equal(forComment(sent(), 'kd1')[0].body.message.text, t.comment.ask);
+  assert.deepEqual(await say('kd2', 'k2', 'done', 'towersreel'), ['sent']);
+  let mine = forComment(sent(), 'kd2');
+  assert.equal(mine.length, 1); // the DM alone, nothing in public
+  assert.deepEqual(mine[0].body.message, { text: t.comment.almost });
+  assert.match(t.comment.almost, /^Almost there 👀 follow @omnyalab first, then comment again/);
+  assert.equal((await lead('k2')).stage, 'asked_follow');
+  assert.deepEqual(await say('kd3', 'k2', 'DONE!!', 'towersreel'), ['sent']);
+  mine = forComment(sent(), 'kd3');
+  assert.equal(mine.length, 2);
+  assert.equal(msgText(mine[0]), t.direct.text); // still asks for the follow, in words
+  assert.equal(urlButton(mine[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
+  assert.equal((await lead('k2')).stage, 'asked');
+  assert.deepEqual(await say('kd4', 'k2', 'done', 'towersreel'), ['already']); // three answers per reel at most
+});
+
+await step('comment mode: the follow check fails (Meta refuses) → the link at once, as in direct, and the error is logged', async () => {
+  const t = T.textsFor('towers');
+  await say('ke1', 'k3', 'towers', 'towersreel');
+  sent();
+  state.probeFail = { message: '(#200) Requires instagram_manage_messages permission', type: 'OAuthException', code: 200 };
+  let res;
+  const lines = await logsOf(async () => { res = await say('ke2', 'k3', 'DONE', 'towersreel'); });
+  state.probeFail = null;
+  assert.deepEqual(res, ['sent']);
+  assert.ok(lines.some((l) => l.startsWith('[ig] probe name_k3 → ERROR 200 (#200) Requires instagram_manage_messages')), lines.join('\n'));
+  const mine = forComment(sent(), 'ke2');
+  assert.equal(mine.length, 2);
+  assert.equal(msgText(mine[0]), t.direct.text);
+  assert.equal(urlButton(mine[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
+  // and when Meta gives no id back with the first DM there is nothing to check at the second comment: the link
+  state.noRecipient = true;
+  await say('kf1', 'k4', 'towers', 'towersreel');
+  state.noRecipient = false;
+  assert.equal(forComment(sent(), 'kf1')[0].body.message.text, t.comment.ask);
+  assert.deepEqual(await say('kf2', 'k4', 'DONE', 'towersreel'), ['sent']);
+  assert.equal(urlButton(forComment(sent(), 'kf2')[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
+});
+
+await step('comment mode: someone whose id we already know from another reel and who follows gets the link at the first comment', async () => {
+  // k1 followed after the TOWERS reel: the BUILD reel answers with the link straight away
+  assert.deepEqual(await say('kg1', 'k1', 'Build', 'buildreel'), ['sent']);
+  let s = sent();
+  let mine = forComment(s, 'kg1');
+  assert.equal(mine.length, 2);
+  assert.equal(msgText(mine[0]), T.textsFor('build').comment.linkFollower);
+  assert.equal(urlButton(mine[0]).url, 'https://www.omnyalab.com/the-build-blueprint?ig=DfBUILDnew1');
+  assert.equal(s.filter((x) => x.path === 's201').length, 1); // one check, before the DM, and no second probe after it
+  // k2 is known too but doesn't follow: asked first, like anyone
+  assert.deepEqual(await say('kg2', 'k2', 'Build', 'buildreel'), ['sent']);
+  assert.equal(forComment(sent(), 'kg2')[0].body.message.text, T.textsFor('build').comment.ask);
+});
+
+await step('comment mode: a reel that wants its own word still takes "DONE" as the second comment; City gives the personal link after the follow', async () => {
+  assert.deepEqual(await say('kh0', 'k5', 'so nice', 'media1'), ['no word']); // not the word, and nothing pending: nothing
+  assert.deepEqual(await say('kh1', 'k5', 'PROJECT', 'media1'), ['sent']);
+  assert.equal(forComment(sent(), 'kh1')[0].body.message.text, T.comment.ask);
+  state.follows.k5 = true;
+  assert.deepEqual(await say('kh2', 'k5', 'DONE', 'media1'), ['sent']);
+  assert.equal(urlButton(forComment(sent(), 'kh2')[0]).url, 'https://omnyalab.com/the-blueprint?ig=abc');
+  const ct = T.textsFor('city');
+  assert.deepEqual(await say('ki1', 'k6', 'HOUSE', 'cityreel'), ['sent']);
+  let mine = forComment(sent(), 'ki1');
+  assert.deepEqual(mine[0].body.message, { text: ct.comment.ask });
+  assert.ok(ct.comment.askReplies.includes(mine[1].query.message));
+  state.follows.k6 = true;
+  assert.deepEqual(await say('ki2', 'k6', 'done', 'cityreel'), ['sent']);
+  mine = forComment(sent(), 'ki2');
+  assert.equal(msgText(mine[0]), ct.comment.linkNew);
+  const m = urlButton(mine[0]).url.match(/^https:\/\/www\.omnyalab\.com\/city\?k=([A-Za-z0-9_-]{10,40})&ig=DfCITYep2xx$/);
+  assert.equal((await city.peek(m[1])).u, 'name_k6');
+  // every answer is one private reply and takes one place of the hour, like any other
+  const before = (await ig.lineState()).sentLastHour;
+  await say('kj1', 'k7', 'towers', 'towersreel');
+  await say('kj2', 'k7', 'done', 'towersreel');
+  assert.equal((await ig.lineState()).sentLastHour, before + 2);
+  // the texts of this mode keep Nico's rules
+  for (const k of T.KINDS.filter((x) => x !== 'legacy')) {
+    const c = T.textsFor(k).comment;
+    assert.doesNotMatch(JSON.stringify(c), /\bAI\b|before it.?s built|first image|free image|https?:/i, k);
+    assert.match(c.ask, /follow @omnyalab, then comment DONE under the reel/, k);
+  }
+  // back to direct: the default again
+  assert.equal((await (await get(leadsPage, '/api/leads?key=k&action=mode&value=direct')).json()).mode, 'direct');
+  sent();
 });
 
 server.close();
