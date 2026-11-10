@@ -6,7 +6,8 @@
 import type { Lang } from '../i18n';
 
 export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle' | 'session' | 'build' | 'community'
-  // offers shown only after a purchase, on /learn/thanks/<product>
+  // offers shown only after a purchase, on /learn/thanks/<product> (sample, the free image, is not one of them since 10/11:
+  // /go/sample stays for the links on the funnel pages)
   | 'session-reader' | 'rest-30' | 'rest-50' | 'build-upgrade' | 'sample'
   // the other two playbooks after buying 02 (€30) or 03 (€40), with the 7/11 prices (01 €79, 02 €49, 03 €39)
   | 'rest-02' | 'rest-03'
@@ -79,21 +80,24 @@ export const prices = { 'white-to-real': 79, reel: 49, 'before-it-exists': 39, b
  * offer that exists only there (oto), the most natural next step for that buyer, and if
  * they pass, a smaller one (down). Every price is real: a lesson for readers, or the
  * difference to the next tier. No countdowns, no fake scarcity.
+ * 10/11 (Nico): the free image ("One image of your project, free", id sample) is no longer offered after a
+ * payment. Where it was the second offer there is none now (no "No thanks" button either); where it was the
+ * first one (the Build lesson and the Full guides) the community waiting list, which was already there, takes its place.
  */
-export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: ProductId; down: ProductId }>> = {
+export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: ProductId; down?: ProductId }>> = {
   // 01 costs as much as all three, so after it there is no "other two" offer (7/11)
-  'white-to-real': { kind: 'pdf', oto: 'session-reader', down: 'sample' },
+  'white-to-real': { kind: 'pdf', oto: 'session-reader' },
   reel: { kind: 'pdf', oto: 'rest-02', down: 'session-reader' },
-  'before-it-exists': { kind: 'pdf', oto: 'rest-03', down: 'sample' },
-  everything: { kind: 'pdf', oto: 'session-reader', down: 'sample' },
+  'before-it-exists': { kind: 'pdf', oto: 'rest-03' },
+  everything: { kind: 'pdf', oto: 'session-reader' },
   bundle: { kind: 'pdf', oto: 'session-reader', down: 'community' },
-  session: { kind: 'lesson', oto: 'build-upgrade', down: 'sample' },
-  build: { kind: 'lesson', oto: 'sample', down: 'community' },
-  'full-tower': { kind: 'pdf', oto: 'sample', down: 'community' },
-  'full-3d': { kind: 'pdf', oto: 'sample', down: 'community' },
-  'full-city': { kind: 'pdf', oto: 'sample', down: 'community' },
-  'full-build': { kind: 'pdf', oto: 'sample', down: 'community' },
-  'full-towers': { kind: 'pdf', oto: 'sample', down: 'community' },
+  session: { kind: 'lesson', oto: 'build-upgrade' },
+  build: { kind: 'lesson', oto: 'community' },
+  'full-tower': { kind: 'pdf', oto: 'community' },
+  'full-3d': { kind: 'pdf', oto: 'community' },
+  'full-city': { kind: 'pdf', oto: 'community' },
+  'full-build': { kind: 'pdf', oto: 'community' },
+  'full-towers': { kind: 'pdf', oto: 'community' },
 };
 
 /** The words used in the reels ("Comment 3D"). Each one has its own page, /learn/<word>, and leads with one playbook. */

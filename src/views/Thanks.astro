@@ -3,9 +3,10 @@
 // offer, your download), one offer in the middle that can't be missed (the real price struck,
 // the saving, what you get, one big yes), a quiet "no thanks" that reveals a smaller offer,
 // and the download at the end. Prices are real; see lib/learn.ts.
+// 10/11 (Nico): no free image after a payment. A product may have no second offer: then there is
+// no "no thanks" button and no second card.
 import Base from '../layouts/Base.astro';
 import Arrow from '../components/Arrow.astro';
-import { projects } from '../lib/data';
 import { goHref, thanks, booking, type ProductId } from '../lib/learn';
 import { t, langFromPath, localize } from '../i18n';
 
@@ -22,20 +23,18 @@ const offers = X.offers as Record<string, Offer>;
 const extra = X.extra as Record<string, Extra>;
 const oto = offers[flow.oto];
 const otoX = extra[flow.oto];
-const down = offers[flow.down];
-const downX = extra[flow.down];
-const townhall = projects.find((p) => p.id === '17_the_townhall')!;
+const down = flow.down ? offers[flow.down] : null;
+const downX = flow.down ? extra[flow.down] : null;
 
 // What each offer looks like: a lesson on a real project, the books, the studio's work, the community
 const visual = (id: string) => {
   if (id === 'rest-30' || id === 'rest-50' || id === 'rest-02' || id === 'rest-03') return { kind: 'books' as const };
   if (id === 'session-reader') return { kind: 'pic' as const, src: '/learn/dev_rooftop.webp', badge: L.lessons[0].time };
   if (id === 'build-upgrade') return { kind: 'pic' as const, src: '/learn/burt_night_real_mobile.webp', badge: L.lessons[1].time };
-  if (id === 'sample') return { kind: 'pic' as const, src: townhall.cover.mobile, badge: lang === 'it' ? '0 €' : '€0' };
   return { kind: 'skool' as const };
 };
 const v = visual(flow.oto);
-const vd = visual(flow.down);
+const vd = flow.down ? visual(flow.down) : null;
 const bookIds = ['white-to-real', 'reel', 'before-it-exists'];
 const book = booking[Astro.props.id as ProductId];
 // 10/11: no PDF link is written in this page. The script asks api/files.js, which checks the payment with Stripe
@@ -87,11 +86,13 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
         </p>
         <ul class="oto__items">{otoX.items.map((it) => <li>{it}</li>)}</ul>
         <a class="btn btn--fill oto__yes" href={goHref(flow.oto, lang)}>{oto.cta} <Arrow /></a>
-        <button type="button" class="oto__no" data-oto-no>{X.no}</button>
+        {down && <button type="button" class="oto__no" data-oto-no>{X.no}</button>}
       </div>
     </article>
   </section>
 
+  {
+    down && downX && vd && (
   <section class="oto-down wrap" id="down" data-oto-down aria-labelledby="down-title">
     <article class="oto__card oto__card--small">
       <div class="oto__visual">
@@ -118,10 +119,12 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
           {downX.strike && <s class="oto__was">{downX.strike}</s>}
         </p>
         <ul class="oto__items">{downX.items.map((it) => <li>{it}</li>)}</ul>
-        <a class="btn oto__yes" href={goHref(flow.down, lang)}>{down.cta} <Arrow /></a>
+        <a class="btn oto__yes" href={goHref(flow.down!, lang)}>{down.cta} <Arrow /></a>
       </div>
     </article>
   </section>
+    )
+  }
 
   <!-- What they paid for: the PDFs to download (only after the server has checked the payment), or the link to pick the time of the lesson -->
   <section class="oto-dl wrap" id="download" data-dl={flow.kind === 'pdf' ? lang : undefined}>
@@ -146,3 +149,9 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
     }
   </section>
 </Base>
+
+<style is:global>
+  /* 10/11 (Nico): no free image after a payment. On this page the site's own "Get a free image" buttons
+     (header, menu and footer, all [data-sample]) stay hidden too; everywhere else they are as before. */
+  html:has(main .oto) [data-sample] { display: none !important; }
+</style>
