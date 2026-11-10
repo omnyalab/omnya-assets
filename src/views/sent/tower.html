@@ -126,6 +126,8 @@ html:has(.dim),html:has(.dim) body{overflow:hidden;height:100%}
 .pick strong{font:900 24px Montserrat;text-align:right;white-space:nowrap} .pick strong s{display:block;font-size:12px;color:#ffffff73}
 .pick .tag2{position:absolute;top:-10px;left:16px;background:#2997ff;color:#fff;border-radius:999px;padding:4px 10px;font:800 10px/1 Montserrat,sans-serif;letter-spacing:.14em;text-transform:uppercase;font-style:normal;box-shadow:0 6px 16px -6px #2997ffcc}
 .pick label:has(.tag2){margin-top:8px}
+/* 10/11 (Nico, G7): a second badge on the pack, on the right, white so it reads next to "Only here" */
+.pick .tag3{left:auto;right:16px;background:#fff;color:#05070a;box-shadow:0 6px 16px -6px #000c}
 .pick .tag{display:inline-block;background:#2997ff;color:#fff;border-radius:999px;padding:2px 8px;font:800 9px Montserrat;letter-spacing:.12em;text-transform:uppercase;margin-left:6px;vertical-align:2px}
 @media (width<=899px){
  .u{padding:16px 0 40px} .dm{margin-bottom:22px;font-size:11.5px;gap:6px;padding:8px 8px 8px 14px;white-space:nowrap} .dm i{padding:5px 8px;font-size:10px}
@@ -190,7 +192,7 @@ html,body{min-height:100%}
 <h1 data-one>The Full Guide<br><span>Tower</span></h1><h1 data-all>Everything<br><span>we teach</span></h1>
 <div class="pick">
 <label class="on" data-p="5.99"><i></i><div>The Full Tower Guide<span>every prompt to build an interactive 3D tower</span></div><strong>€5.99<s>€29</s></strong></label>
-<label data-p="59"><i></i><div>Everything we teach<span>4 Full Guides + 3 playbooks</span><em class="tag2">Only here</em></div><strong>€59<s>€190</s></strong></label>
+<label data-p="59"><i></i><div>Everything we teach<span>4 Full Guides + 3 playbooks</span><em class="tag2">Only here</em><em class="tag2 tag3">★ Best value</em></div><strong>€59<s>€190</s></strong></label>
 </div><a class="x3-btn x3-btn--blue" id="go" href="/go/full-tower">Get it · €5.99 →</a>
 <div data-one><ul class="ul"><li><span><b>Every prompt, word for word</b>, for the tower, the flight into the floor and the rooms</span></li><li><span><b>Thirteen chapters</b>, from the tower photo to the site you send buyers</span></li><li><span><b>The floor picker</b>, trace the floors, hover, click and fly in</span></li><li><span><b>What to charge</b> and how it goes online</span></li></ul></div><div data-all><ul class="ul"><li><span><b>The Full Tower Guide</b>, every prompt to build a tower that sells</span></li><li><span><b>The Full 3D Guide</b>, how to make a 3D that sells with AI</span></li><li><span><b>The Full Build Guide</b>, how to build a house that builds itself</span></li><li><span><b>The Full Towers Guide</b>, three towers you choose the view of</span></li><li><span><b>3 playbooks</b>, from 3D to real photo, the reel they comment on, sell it before it exists</span></li><li><span><b>€190 one by one</b>, the 4 guides at €5.99 each and the playbooks at €79, €49 and €39, <b>here only €59</b></span></li></ul></div></div><a class="nt" href="/go/free-tower" target="_blank" rel="noopener">No thanks, the free one is enough</a></div></section>
 <script>document.querySelectorAll('.pick label').forEach(l=>l.onclick=()=>{document.querySelectorAll('.pick label').forEach(x=>x.classList.remove('on'));l.classList.add('on');var all=l.dataset.p==='59';var g=document.getElementById('go');g.textContent='Get it · €'+l.dataset.p+' →';g.href=l.dataset.p==='59'?'/go/everything':'/go/full-tower';document.querySelector('.w').classList.toggle('all',all)})</script></div><script>
