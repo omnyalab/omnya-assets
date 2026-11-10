@@ -391,6 +391,12 @@ if (REDIS_RUN) {
     assert.deepEqual(await comment('k1', 'again', 'towersreel').res, ['already']);
     assert.equal((await lead('s301')).stage, 'asked');
     assert.ok(redisUsed.has('EXPIRE'));
+    // the testers' list is kept on Redis too
+    assert.deepEqual((await (await leadsPage.GET(new Request('http://x/api/leads?key=k&action=gatefor&value=name_k1'))).json()).gateFor, ['name_k1']);
+    const c5 = comment('k1', 'once more', 'towersreel');
+    assert.deepEqual(await c5.res, ['sent']); // on the list: answered again, with the button of the whole round
+    assert.equal(pr(sent())[0].body.message.attachment.payload.buttons[0].payload, 'GET:towers:DfTOWERS11');
+    assert.deepEqual((await (await leadsPage.GET(new Request('http://x/api/leads?key=k&action=gatefor&value='))).json()).gateFor, []);
   });
 
   server.close();
@@ -621,7 +627,7 @@ await step('the map: post by its code, by the word in its caption, the old rule,
     const t = T.textsFor(k);
     assert.match(t.url, /^https:\/\/(www\.)?omnyalab\.com\//, k);
     const all = JSON.stringify(t);
-    assert.doesNotMatch(all, /\bAI\b|before it.?s built|isn.?t real|\.pdf/i, k);
+    assert.doesNotMatch(all, /\bAI\b|before it.?s built|isn.?t real|\.pdf|first image|free image/i, k);
     for (const b of [t.opener.button, t.followFirst.button, t.stillNotFollowing.button, t.nudgeFollow.button, t.link?.button, ...(t.link?.buttons || []).map((x) => x[0])].filter(Boolean)) assert.ok(b.length <= 20, `${k}: "${b}" is longer than 20`);
   }
 });
@@ -1484,6 +1490,115 @@ await step('comment mode: a reel that wants its own word still takes "DONE" as t
   // back to direct: the default again
   assert.equal((await (await get(leadsPage, '/api/leads?key=k&action=mode&value=direct')).json()).mode, 'direct');
   sent();
+});
+
+// ===================== 10/11/2026: the whole round for the testers only (App Review screencast) =====================
+
+await step('gate round for listed testers only: button → follow check → follow + Done → link, logged step by step, while everyone else stays in direct', async () => {
+  ahead += 2 * 3_600_000;
+  await flushDue();
+  assert.equal(await ig.getMode(), 'direct');
+  assert.deepEqual((await (await get(hook, '/api/instagram?health=k')).json()).gateFor, []);
+  assert.deepEqual(await (await get(leadsPage, '/api/leads?key=k&action=gatefor&value=@Name_G1')).json(), { ok: true, gateFor: ['name_g1'] });
+  assert.deepEqual((await (await get(hook, '/api/instagram?health=k')).json()).gateFor, ['name_g1']);
+  assert.match(await (await get(leadsPage, '/api/leads?key=k')).text(), /giro completo solo per: name_g1/);
+  const tw = T.textsFor('towers');
+  const lines = await logsOf(async () => {
+    // the tester: the DM has a button to tap, no link
+    assert.deepEqual(await say('gc1', 'g1', 'TOWERS', 'towersreel'), ['sent']);
+    let mine = forComment(sent(), 'gc1');
+    assert.equal(msgText(mine[0]), tw.opener.text);
+    assert.deepEqual(mine[0].body.message.attachment.payload.buttons, [{ type: 'postback', title: 'Get the Blueprint', payload: 'GET:towers:DfTOWERS11' }]);
+    assert.ok(tw.publicReplies.includes(mine[1].query.message));
+    // anyone else under the same reel, at the same time: direct, the link in the DM
+    assert.deepEqual(await say('gc2', 'g2', 'TOWERS', 'towersreel'), ['sent']);
+    assert.equal(urlButton(forComment(sent(), 'gc2')[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
+    // tap: the follow is checked, they don't follow → "follow + Done", no link
+    assert.deepEqual(await tap('g1', 'GET:towers:DfTOWERS11', 'Get the Blueprint'), ['get']);
+    let s = sent();
+    assert.equal(s.filter((x) => x.method === 'GET' && x.path === 'g1').length, 1);
+    let out = s.filter((x) => x.path === 'me/messages');
+    assert.equal(out.length, 1);
+    assert.equal(msgText(out[0]), tw.followFirst.text);
+    assert.deepEqual(out[0].body.message.attachment.payload.buttons, [{ type: 'postback', title: 'Done ✅', payload: 'DONE' }]);
+    // Done without following
+    assert.deepEqual(await tap('g1', 'DONE', 'Done ✅'), ['done']);
+    assert.equal(msgText(sent().filter((x) => x.path === 'me/messages')[0]), tw.stillNotFollowing.text);
+    // they follow, Done: the link
+    state.follows.g1 = true;
+    assert.deepEqual(await tap('g1', 'DONE', 'Done ✅'), ['done']);
+    out = sent().filter((x) => x.path === 'me/messages');
+    assert.equal(out.length, 1);
+    assert.equal(linkOf(out[0]), `${TOWERS_PAGE}?ig=DfTOWERS11`);
+  });
+  const steps = lines.filter((l) => l.startsWith('[ig] gate name_g1 step=')).map((l) => l.slice('[ig] gate name_g1 step='.length));
+  assert.deepEqual(steps, [
+    'comment "TOWERS" post=DfTOWERS11',
+    'dm-sent with the button "Get the Blueprint"',
+    'public-reply-sent',
+    'tap "Get the Blueprint" → get',
+    'follow-check follows=false',
+    'ask-follow-sent (follow + Done button)',
+    'tap "Done ✅" → done',
+    'follow-check follows=false',
+    'still-not-following-sent (follow + Done again)',
+    'tap "Done ✅" → done',
+    'follow-check follows=true',
+    'link-sent page=/the-towers-blueprint',
+  ]);
+  assert.equal(lines.filter((l) => l.startsWith('[ig] gate name_g2')).length, 0); // only the listed ones
+});
+
+await step('gate round for testers: the scene can be shot again under the same reel, and the question project/curious is there where it belongs', async () => {
+  // same person, same reel, a new comment: answered again (for everyone else it would be "already")
+  assert.deepEqual(await say('gc3', 'g1', 'TOWERS', 'towersreel'), ['sent']);
+  assert.deepEqual(await say('gc3', 'g1', 'TOWERS', 'towersreel'), ['dup']); // but never twice for the same comment
+  assert.deepEqual(await say('gc4', 'g1', 'towers again', 'towersreel'), ['sent']);
+  let s = sent();
+  assert.equal(dmsFor(s, 'gc3').length, 1);
+  assert.equal(dmsFor(s, 'gc4')[0].body.message.attachment.payload.buttons[0].type, 'postback');
+  assert.deepEqual(await say('gc5', 'g2', 'TOWERS', 'towersreel'), ['already']);
+  // the red tower: after the link, the question with the two choices
+  const tr = T.textsFor('tower');
+  await say('gc6', 'g1', 'AI', 'red');
+  sent();
+  const lines = await logsOf(async () => {
+    await tap('g1', 'GET:tower:DfSXvGDtt4s', 'Get the Blueprint');
+    const out = sent().filter((x) => x.path === 'me/messages');
+    assert.equal(linkOf(out[0]), 'https://omnyalab.com/the-tower-blueprint?ig=DfSXvGDtt4s');
+    assert.deepEqual(out[0].body.message.quick_replies.map((q) => q.payload), ['PROJECT', 'CURIOUS']);
+    assert.deepEqual(await dm('g1', { text: T.choices.project, quick_reply: { payload: 'PROJECT' } }), ['project']);
+    const a = msgText(sent().filter((x) => x.path === 'me/messages')[0]);
+    assert.equal(a, tr.answerProject);
+    assert.match(a, /omnyalab\.com\/book\/call[\s\S]*wa\.me\/393792220465/); // a call or WhatsApp, to see a 3D demo
+    assert.match(a, /3D demo of your tower/);
+  });
+  assert.ok(lines.includes('[ig] gate name_g1 step=link-sent page=/the-tower-blueprint with the question project/curious'), lines.join('\n'));
+  assert.ok(lines.includes('[ig] gate name_g1 step=choice "Working on a project" → project'));
+  assert.ok(lines.includes('[ig] gate name_g1 step=project-answer-sent (call link and WhatsApp)'));
+  // the free image is over: not in any message of any round
+  for (const k of T.KINDS) assert.doesNotMatch(JSON.stringify(T.textsFor(k)), /first image|image is (free|on us)|free image|free sample/i, k);
+  assert.doesNotMatch(T.answerProject + T.answerCurious + T.nudgeQuestion, /\bAI\b|free/);
+});
+
+await step('gate round for testers: also from the env var IG_GATE_FOR, and an empty list gives everyone the mode of the day', async () => {
+  process.env.IG_GATE_FOR = 'someone_else, @name_g3';
+  assert.deepEqual((await ig.gateFor()).sort(), ['name_g1', 'name_g3', 'someone_else']);
+  assert.deepEqual(await say('gd1', 'g3', 'Build', 'buildreel'), ['sent']);
+  assert.equal(forComment(sent(), 'gd1')[0].body.message.attachment.payload.buttons[0].payload, 'GET:build:DfBUILDnew1');
+  // a tap that comes with an id we have no lead for: the username is asked to Instagram, and it is on the list
+  state.follows.g9 = false;
+  process.env.IG_GATE_FOR = 'name_g9';
+  assert.deepEqual(await tap('g9', 'GET:towers:DfTOWERS11', 'Get the Blueprint'), ['get']);
+  assert.equal(msgText(sent().filter((x) => x.path === 'me/messages')[0]), T.textsFor('towers').followFirst.text);
+  delete process.env.IG_GATE_FOR;
+  assert.deepEqual(await (await get(leadsPage, '/api/leads?key=k&action=gatefor&value=')).json(), { ok: true, gateFor: [] });
+  // off the list: g1 is like anyone, direct
+  assert.deepEqual(await say('gd2', 'g1', 'Build', 'buildreel'), ['sent']);
+  assert.equal(urlButton(forComment(sent(), 'gd2')[0]).url, 'https://www.omnyalab.com/the-build-blueprint?ig=DfBUILDnew1');
+  assert.deepEqual(await say('gd3', 'g1', 'Build', 'buildreel'), ['already']);
+  assert.deepEqual(await tap('g9', 'GET:towers:DfTOWERS11', 'Get the Blueprint'), ['get']);
+  assert.equal(linkOf(sent().filter((x) => x.path === 'me/messages')[0]), `${TOWERS_PAGE}?ig=DfTOWERS11`); // direct: the link at once
 });
 
 server.close();

@@ -32,7 +32,7 @@ I testi di `direct` (`direct` in `ig-texts.js`), tutti con il tasto `Get the Blu
 
 **`gate` (giro completo).** Quello descritto sotto: tasto da toccare → controllo del follow → link. Si torna a usarlo quando la review passa.
 
-**`comment` (cancello a commenti), pronta ma spenta.** Il follow torna obbligatorio anche senza review, usando come canale di ritorno i commenti, che Meta ci consegna da chiunque:
+**`comment` (cancello a commenti), pronta ma spenta: NON si può accendere prima della review.** La sonda dal vivo del 10/11 (commento di un account senza ruolo) ha risposto `ERROR 200 (#200) App does not have Advanced Access to instagram_manage_messages permission, and recipient user does not have role on app`: Meta non ci dice il follow di chi ha soltanto commentato, quindi oggi questa modalità manderebbe sempre il link al secondo commento. Resta nel codice per dopo. Il follow torna obbligatorio anche senza review, usando come canale di ritorno i commenti, che Meta ci consegna da chiunque:
 
 1. primo commento di una persona di cui non abbiamo ancora l'id dei messaggi: risposta pubblica ("Check your DMs 👀 one quick step and it’s yours" e simili) e un DM **senza link**: "Hey 🙌🏻 The Towers Blueprint is ready, one step first: follow @omnyalab, then comment DONE under the reel and I’ll send it right over 👇🏻". La risposta di Meta a quel DM ci dà l'id dei messaggi della persona, che il bot salva;
 2. la persona commenta di nuovo sotto lo stesso reel (qualsiasi parola): **prima di rispondere** il bot chiede a Meta se quell'id ci segue. Se segue, risposta privata a quel commento con il tasto che apre la pagina ("Thanks for the follow 🙌🏻 The Towers Blueprint is ready 👇🏻 we drop a new build every week, so keep an eye on the reels") e risposta pubblica; se non segue, solo il DM "Almost there 👀 follow @omnyalab first, then comment again under the reel and it’s yours";
@@ -53,6 +53,35 @@ I totali (seguono, non seguono, senza risposta, errori, ultimo errore) sono nell
 **Cambiare modalità, senza deploy:** `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=mode&value=direct`, `&value=gate` oppure `&value=comment`. La scelta sta su Redis e vale entro 15 secondi; se non è mai stata scelta vale `direct`. La modalità in uso si legge nella pagina di Nico e nella salute (`flow`).
 
 **Dopo la review** (Advanced Access su `instagram_manage_messages`): prova con un account senza ruolo che il tocco arrivi (in `gate`, una riga `[ig] message … → get` nei log), poi `&action=mode&value=gate`. Con i messaggi in entrata tornano anche il controllo del follow, il promemoria a 3 ore, il follow-up a 20 ore e la mail a Nico quando qualcuno risponde.
+
+## Come registrare lo screencast per la review
+
+La review di Meta vuole vedere il giro completo (tasto, controllo del follow, link). Si registra con @gghizzoo, che ha un ruolo sull'app, **senza toccare gli utenti veri**: chi è in lista riceve sempre il giro `gate`, tutti gli altri restano in `direct`.
+
+**Prima di registrare**
+
+1. Metti @gghizzoo in lista: `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=gatefor&value=gghizzoo` (più nomi separati da virgola; vale entro 15 secondi; in alternativa la variabile `IG_GATE_FOR` su Vercel, che però chiede un Redeploy). La risposta deve dire `"gateFor":["gghizzoo"]`.
+2. Controlla la salute: `gateFor` contiene `gghizzoo`, `flow` resta `direct`.
+3. Sul telefono, con @gghizzoo, **smetti di seguire @omnyalab** (serve per far vedere il passo "follow + Done").
+4. Tieni aperti i log di Vercel filtrati su **`[ig] gate`**: ogni passo scrive una riga `[ig] gate gghizzoo step=…`.
+
+**La scena, in ordine (registrazione schermo del telefono con @gghizzoo)**
+
+| # | Cosa fa Nico sul telefono | Cosa deve comparire | Riga nei log |
+| --- | --- | --- | --- |
+| 1 | apre il reel della torre rossa e commenta `AI` | sotto il commento la risposta pubblica di @omnyalab ("Sent 🙌🏻 check your DMs…") | `step=comment "AI" post=DfSXvGDtt4s`, `step=dm-sent with the button "Get the Blueprint"`, `step=public-reply-sent` |
+| 2 | apre i DM (anche in Richieste) | il messaggio "Hey 🙌🏻 The Tower Blueprint is ready, tap below and I’ll send it over 👇🏻" con il tasto **Get the Blueprint** | |
+| 3 | tocca **Get the Blueprint** | "Hey, thanks for the comment 🙌🏻 … follow @omnyalab and I’ll send you the link right away…" con il tasto **Done ✅**, e nessun link | `step=tap "Get the Blueprint" → get`, `step=follow-check follows=false`, `step=ask-follow-sent (follow + Done button)` |
+| 4 | (facoltativo) tocca **Done ✅** senza seguire | "Hmm, I can’t see the follow yet 👀 …" | `step=follow-check follows=false`, `step=still-not-following-sent (follow + Done again)` |
+| 5 | apre il profilo @omnyalab e tocca **Segui**, torna nel DM e tocca **Done ✅** | "Thanks for the follow 🙌🏻 The Tower Blueprint is free on this page… " con il link omnyalab.com/the-tower-blueprint e la domanda con i tasti **Working on a project** / **Just curious** | `step=tap "Done ✅" → done`, `step=follow-check follows=true`, `step=link-sent page=/the-tower-blueprint with the question project/curious` |
+| 6 | tocca il link | si apre la pagina del Blueprint | |
+| 7 | torna nel DM e tocca **Working on a project** | "Love it 🙌🏻 the best way is a quick call where I show you a 3D demo of your tower, pick a time here: … Or text me on WhatsApp…" | `step=choice "Working on a project" → project`, `step=project-answer-sent (call link and WhatsApp)` |
+
+Sotto i reel BUILD, TOWERS e 3D il giro è lo stesso fino al link, senza la domanda finale (passo 7).
+
+**Rifare la scena.** Per chi è in lista non vale "una risposta per persona per reel": basta smettere di seguire e commentare di nuovo, anche sotto lo stesso reel (mai due risposte allo stesso commento). Se un passo non compare, la riga `[ig] gate` che manca dice dove si è fermato, e gli errori di Meta sono in `[ig] ERROR`.
+
+**Dopo il video**: `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=gatefor&value=` (valore vuoto) toglie tutti dalla lista, e @gghizzoo torna in `direct` come gli altri.
 
 ## Il giro in `gate`
 
@@ -128,7 +157,7 @@ Il link nel DM è quello della pagina con il post in coda, per esempio `https://
 ## Cosa guardare
 
 - **Pagina di Nico**: `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY` → contatti, commenti in coda, DM dell'ultima ora, errori dell'ultima ora, e per ogni post commenti, DM mandati, DM bloccati, link mandati, clic sul link. Con `&format=json` solo i numeri.
-- **Salute**: `https://www.omnyalab.com/api/instagram?health=IG_ADMIN_KEY` → `on` (acceso o spento), `flow` (`direct`, `gate` o `comment`), `followProbe` (la sonda del follow), `linkAs` (il link va sul tasto o nel testo), `mode` (tutti o solo i tester), `token` (valido, quale Pagina e quale Instagram), `webhook` (i campi accesi sulla Pagina e sull'app, e in `missing` quelli che mancano tra `comments`, `messages`, `messaging_postbacks`), `lastComment` (l'ultimo commento arrivato, anche se non ha avuto risposta: è la prova che il webhook è acceso), `line` (coda, DM dell'ultima ora, eventuale fermo), `errors` (ultima ora e gli ultimi cinque), `map` (i post e le parole).
+- **Salute**: `https://www.omnyalab.com/api/instagram?health=IG_ADMIN_KEY` → `on` (acceso o spento), `flow` (`direct`, `gate` o `comment`), `followProbe` (la sonda del follow), `gateFor` (chi riceve sempre il giro completo), `linkAs` (il link va sul tasto o nel testo), `mode` (tutti o solo i tester), `token` (valido, quale Pagina e quale Instagram), `webhook` (i campi accesi sulla Pagina e sull'app, e in `missing` quelli che mancano tra `comments`, `messages`, `messaging_postbacks`), `lastComment` (l'ultimo commento arrivato, anche se non ha avuto risposta: è la prova che il webhook è acceso), `line` (coda, DM dell'ultima ora, eventuale fermo), `errors` (ultima ora e gli ultimi cinque), `map` (i post e le parole).
 - **Log**: Vercel → Logs → cerca `[ig]`; gli errori sono le righe `[ig] ERROR`. Nessun errore di Meta passa in silenzio: ognuno ha la sua riga con il codice (per esempio `[code 100 sub 2534037]` = la chat è ancora di un'altra app) e finisce nel contatore.
 
 ## Comandi (tutti con la chiave)
@@ -140,6 +169,7 @@ Il link nel DM è quello della pagina con il post in coda, per esempio `https://
 | `/api/leads?key=…&action=mode&value=direct` | il primo DM ha già il link (default) |
 | `/api/leads?key=…&action=mode&value=gate` | giro completo: tasto, controllo del follow, link |
 | `/api/leads?key=…&action=mode&value=comment` | cancello a commenti: prima il follow, poi "comment DONE", poi il link |
+| `/api/leads?key=…&action=gatefor&value=gghizzoo` | giro completo solo per questi username, per lo screencast (valore vuoto = nessuno) |
 | `/api/leads?key=…&action=off` | **spegne il bot subito**, senza deploy (non risponde a nessuno e non tiene i commenti che arrivano) |
 | `/api/leads?key=…&action=on` | lo riaccende |
 | `/api/leads?key=…&action=subscribe` | collega la Pagina al webhook (una volta sola) |

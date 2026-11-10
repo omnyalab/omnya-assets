@@ -10,6 +10,7 @@ export const BUILD = 'https://www.omnyalab.com/the-build-blueprint';
 export const TOWERS = 'https://www.omnyalab.com/the-towers-blueprint';
 export const CITY = 'https://www.omnyalab.com/city';
 export const BOOK_CALL = 'https://omnyalab.com/book/call';
+export const WHATSAPP = 'https://wa.me/393792220465';
 
 /** Under the comment, one at random, so Instagram doesn't see the same line a hundred times. */
 export const publicReplies = [
@@ -72,7 +73,7 @@ export const stillNotFollowing = {
   button: 'Done ✅',
 };
 
-const rest = `Right under it there’s the full method we use for every reel, from the rough 3D to the final photo (and if you’d rather we do it on your project, the first image is on us).
+const rest = `Right under it there’s the full method we use for every reel, from the rough 3D to the final photo.
 
 Quick question so I can point you to the right part: are you working on a project right now, or just curious how we make them? 👀`;
 
@@ -85,9 +86,10 @@ export const blueprintNewFollower = `Thanks for the follow 🙌🏻 here’s The
 /** The two answers under the question. */
 export const choices = { project: 'Working on a project', curious: 'Just curious' };
 
-export const answerProject = `Love it 🙌🏻 we can look at it together on a free 30-minute call: ${BOOK_CALL}\n\nOr just tell me a few lines about it here and I’ll get back to you.`;
+// 10/11/2026: the free image is over. Who has a project is offered a call or WhatsApp, to see a 3D demo of it.
+export const answerProject = `Love it 🙌🏻 the best way is a quick call where I show you a 3D demo of your project, pick a time here: ${BOOK_CALL}\n\nOr text me on WhatsApp and we start from there: ${WHATSAPP}`;
 
-export const answerCurious = 'Love that 👀 we post a new before and after every week, so keep an eye on the reels. And if a project comes up, the first image is on us 🫶🏻';
+export const answerCurious = 'Love that 👀 we drop a new build every week, so keep an eye on the reels, and if a project comes up just text me here 🫶🏻';
 
 /** About 20 hours after their last message (Instagram allows DMs only within 24 hours of it). */
 export const nudgeFollow = {
@@ -95,7 +97,7 @@ export const nudgeFollow = {
   button: 'Done ✅',
 };
 
-export const nudgeQuestion = 'Did you get a chance to open The Blueprint? 👀 If you’re working on a project, the first image is on us.';
+export const nudgeQuestion = 'Did you get a chance to open The Blueprint? 👀 If you’re working on a project, tell me a few lines about it here and I’ll show you how it could look in 3D';
 
 /** Under the tower reels (caption mentions a tower): Nico's tower messages (4/11/2026), the rest as above. */
 const towerRest = 'Quick question so I can point you to the right part: are you working on a tower right now, or just curious how we make them? 👀';
@@ -117,9 +119,10 @@ const tower = {
   followFirst: { ...followFirst, text: followFirst.text.replace('The Blueprint', 'The Tower Blueprint') },
   blueprintFollower: `Here you go 👇🏻 ${towerBlueprint}`,
   blueprintNewFollower: `Thanks for the follow 🙌🏻 ${towerBlueprint}`,
-  answerCurious: 'Love that 👀 we post a new before and after every week, so keep an eye on the reels. And if a tower comes up, the first image is on us 🫶🏻',
+  answerProject: answerProject.replace('your project', 'your tower'),
+  answerCurious: 'Love that 👀 we drop a new build every week, so keep an eye on the reels, and if a tower comes up just text me here 🫶🏻',
   nudgeFollow: { ...nudgeFollow, text: nudgeFollow.text.replace('The Blueprint', 'The Tower Blueprint') },
-  nudgeQuestion: 'Did you get a chance to open The Tower Blueprint? 👀 If you’re working on a tower, the first image is on us.',
+  nudgeQuestion: 'Did you get a chance to open The Tower Blueprint? 👀 If you’re working on a tower, tell me a few lines about it here and I’ll show you how it could look in 3D',
 };
 
 /** The floors reel: the tower messages, the page with the floors. */
@@ -142,7 +145,7 @@ const funnel = ({ name, url, page, replies, opener: first, nudge }) => ({
   blueprintFollower: `Here you go 👇🏻 ${page}: ${url}`,
   blueprintNewFollower: `Thanks for the follow 🙌🏻 ${page}: ${url}`,
   nudgeFollow: { ...nudgeFollow, text: nudgeFollow.text.replace('The Blueprint', name) },
-  nudgeQuestion: nudge || `Did you get a chance to open ${name}? 👀 If you’re working on a project, the first image is on us 🫶🏻`,
+  nudgeQuestion: nudge || `Did you get a chance to open ${name}? 👀 If you’re working on a project, tell me a few lines about it here and I’ll show you how it could look in 3D`,
 });
 
 const film = funnel({
@@ -151,7 +154,7 @@ const film = funnel({
   page: 'Our 3D to film method is free on this page, and right under it there’s the Full Blueprint with every prompt we used for this villa',
   replies: ['Sent it to your DMs 👀', 'Check your DMs, the blueprint is there 🙌🏻', 'Just sent you the link, check your DMs 👇🏻'],
   opener: 'Hey, thanks for the comment 🙌🏻 The 3D to film blueprint is ready for you, tap the button below and I’ll send it over 👇🏻',
-  nudge: 'Did you get a chance to open the blueprint? 👀 If you’re working on a house, the first image is on us 🫶🏻',
+  nudge: 'Did you get a chance to open the blueprint? 👀 If you’re working on a house, tell me a few lines about it here and I’ll show you how it could look in 3D',
 });
 
 const build = funnel({

@@ -10,9 +10,11 @@
 //   that answers the comment already has the link; gate = button, follow check, then the link; comment = the
 //   follow is asked first and checked when they comment again, then the link.
 // The page also shows the follow probe: how many times Meta told us whether a commenter follows (yes, no, no answer, error).
+// &action=gatefor&value=gghizzoo (usernames, commas; empty = nobody) gives these people the whole round (button, follow
+//   check, link) whatever the mode, and no "one answer per reel": for the screencast of Meta's App Review.
 // &action=off stops the bot at once, without a deploy (it answers nobody and keeps nothing), &action=on starts it again.
 // &format=json gives the numbers alone.
-import { listLeads, api, page, lineState, errorState, postStats, postMap, setPost, setOff, isOff, getMode, setMode, MODES, probeState } from './_lib/ig.js';
+import { listLeads, api, page, lineState, errorState, postStats, postMap, setPost, setOff, isOff, getMode, setMode, MODES, probeState, gateFor, setGateFor } from './_lib/ig.js';
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -50,6 +52,10 @@ export async function GET(request) {
     return new Response(JSON.stringify({ ok: true, bot: nowOff ? 'off' : 'on' }), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
   }
 
+  if (q.get('action') === 'gatefor') {
+    return new Response(JSON.stringify({ ok: true, gateFor: await setGateFor(q.get('value') || '') }), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+  }
+
   if (q.get('action') === 'mode') {
     const set = await setMode(q.get('value') || '');
     return new Response(JSON.stringify(set ? { ok: true, mode: set } : { error: 'value must be one of: ' + MODES.join(', '), mode: await getMode() }), {
@@ -66,9 +72,9 @@ export async function GET(request) {
     });
   }
 
-  const [leads, line, errors, posts, botOff, flow, probe] = await Promise.all([listLeads(), lineState(), errorState(8), postStats(), isOff(), getMode(), probeState()]);
+  const [leads, line, errors, posts, botOff, flow, probe, gateList] = await Promise.all([listLeads(), lineState(), errorState(8), postStats(), isOff(), getMode(), probeState(), gateFor()]);
   if (q.get('format') === 'json') {
-    return new Response(JSON.stringify({ on: !botOff, mode: flow, followProbe: probe, line, errors, posts, map: await postMap() }, null, 2), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
+    return new Response(JSON.stringify({ on: !botOff, mode: flow, gateFor: gateList, followProbe: probe, line, errors, posts, map: await postMap() }, null, 2), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
   }
   const count = (f) => leads.filter(f).length;
   const stats = [
@@ -84,6 +90,7 @@ export async function GET(request) {
   const state = [
     botOff ? '<b>BOT SPENTO</b> (si riaccende con &amp;action=on)' : only ? `Modalità prova: risponde solo a ${esc(only)}` : 'Risponde a tutti',
     flow === 'direct' ? 'link diretto: il primo DM ha già il link' : flow === 'comment' ? 'cancello a commenti: prima il follow, poi commenta DONE e arriva il link' : 'giro completo: tasto, controllo del follow, link',
+    gateList.length ? `giro completo solo per: ${esc(gateList.join(', '))}` : '',
     `sonda del follow: ${probe.follows} seguono, ${probe.notFollowing} non seguono, ${probe.unknown} senza risposta, ${probe.errors} errori${probe.lastError ? ` (ultimo: ${esc(probe.lastError.said)})` : ''}`,
     line.waiting ? `il commento più vecchio in coda aspetta da ${line.oldestMinutes} min` : '',
     line.stoppedUntil ? `invii fermi fino alle ${when(Date.parse(line.stoppedUntil))} (${esc(line.stoppedWhy || '')})` : '',

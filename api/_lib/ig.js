@@ -130,6 +130,32 @@ export async function setMode(v) {
   return v;
 }
 
+// The whole round (gate) for a few people only, whatever the mode: for the screencast of the App
+// Review, recorded with the tester's profile while everyone else stays in direct. Usernames in the
+// env var IG_GATE_FOR (commas) plus the ones set without a deploy from
+// /api/leads?key=…&action=gatefor&value=gghizzoo (empty value = nobody from there). For these people
+// there is no "one answer per person per reel", so the scene can be shot again and again (still
+// never two answers to the same comment), and every step writes "[ig] gate <username> step=…".
+const names = (v) => String(v || '').split(',').map((w) => w.trim().replace(/^@/, '').toLowerCase()).filter((w) => /^[a-z0-9._]{1,40}$/.test(w));
+let gateList = { at: 0, v: [] };
+export async function gateFor() {
+  if (Date.now() - gateList.at > 15_000) gateList = { at: Date.now(), v: names(await kv.get('gatefor')) };
+  return [...new Set([...names(process.env.IG_GATE_FOR), ...gateList.v])];
+}
+export async function setGateFor(value) {
+  const v = names(value);
+  await kv.set('gatefor', v.join(','), 400 * 86_400);
+  gateList = { at: Date.now(), v };
+  console.log(`[ig] gate round for: ${v.join(', ') || 'nobody'} (set from /api/leads)`);
+  return gateFor();
+}
+const inGate = async (username, id) => {
+  const list = await gateFor();
+  return list.length > 0 && (list.includes(String(username || '').toLowerCase()) || list.includes(String(id || '')));
+};
+/** One line per step of the gate round of a listed tester: what the screencast shows, in the logs. */
+const gateLog = (who, step) => console.log(`[ig] gate ${who || '?'} step=${step}`);
+
 // When Instagram refuses the link button in the answer to a comment, the link goes in the text; the
 // bot remembers it for 6 hours and sends the text at once, so every comment costs one call, not two.
 let textOnly = { at: 0, v: false };
@@ -563,21 +589,28 @@ async function gateByComment(job, onSecond) {
 }
 
 /** They tapped "Get the Blueprint" (afterDone false) or "Done" (true). */
-async function giveBlueprint(lead, afterDone) {
+async function giveBlueprint(lead, afterDone, gate = false) {
   // direct mode: whoever reaches us with a tap or a message (testers, people with a role) gets the link at once
-  if ((await getMode()) === 'direct') {
+  // (not the testers of the gate round: they always get the follow check)
+  if (!gate && (await getMode()) === 'direct') {
     // the house link is made for a username: asked to Instagram only when the comment didn't give it
     if (lead.kind === 'city' && !lead.username) lead.username = (await profile(lead.id)).username || '';
     return sendLink(lead, false);
   }
   const p = await profile(lead.id);
   if (p.username) lead.username ||= p.username;
+  if (gate) gateLog(lead.username, `follow-check follows=${p.follows === null ? 'unknown' : p.follows}`);
   // Instagram doesn't say: on Done we take their word for it, first time we ask for the follow
-  if (p.follows === true || (p.follows === null && afterDone)) return sendLink(lead, afterDone || lead.stage === 'asked_follow');
+  if (p.follows === true || (p.follows === null && afterDone)) {
+    await sendLink(lead, afterDone || lead.stage === 'asked_follow');
+    if (gate) gateLog(lead.username, `link-sent page=${lead.kind === 'city' || lead.kind === 'legacy' ? lead.kind : pathOf(T.textsFor(lead.kind).url)}${T.textsFor(lead.kind).ask ? ' with the question project/curious' : ''}`);
+    return;
+  }
   const t = T.textsFor(lead.kind);
   const msg = afterDone ? t.stillNotFollowing : t.followFirst;
   await button({ id: lead.id }, msg.text, msg.button, 'DONE');
   Object.assign(lead, { stage: 'asked_follow', follows: false, wasAskedFollow: true });
+  if (gate) gateLog(lead.username, afterDone ? 'still-not-following-sent (follow + Done again)' : 'ask-follow-sent (follow + Done button)');
 }
 
 // ---------- comments: the line ----------
@@ -590,7 +623,12 @@ async function accept(job, info) {
   const named = post?.any ? matchWord(job.t, post.words) || post.words[0] || 'ANY' : matchWord(job.t, post ? post.words : ONLY.size ? DEFAULT_WORDS : []);
   let word = named;
   const key = `once:${job.m}:${job.u}`;
-  if ((await getMode()) === 'comment') {
+  if (await inGate(job.n, job.u)) {
+    // a tester of the gate round: every comment gets its answer, so the scene can be shot again
+    if (!word) return 'no word';
+    job.gate = true;
+    gateLog(job.n, `comment "${job.t.slice(0, 40)}" post=${info.code || job.m}`);
+  } else if ((await getMode()) === 'comment') {
     // comment mode: up to three answers per person per reel, one per comment, until the link went out
     const rounds = `cn:${job.m}:${job.u}`;
     if (!word && (await kv.get(rounds))) word = 'DONE'; // they are answering our "comment DONE": any word counts
@@ -679,7 +717,7 @@ async function deliver(job, ctx) {
     try {
       if (ONLY.size) await kv.set(`tester:${job.u}`, 1, 7 * 86_400);
       const second = () => z.add('sent', now, `${cid}:2`); // a second call for the same comment takes its place in the hour too
-      const flow = await getMode();
+      const flow = job.gate ? 'gate' : await getMode();
       // direct: the link is in this DM. comment: the follow is checked through comments, then the link.
       // gate: a button to tap, which carries its post, so the tap finds the right link even when Instagram gives the tap another id
       const r =
@@ -699,6 +737,7 @@ async function deliver(job, ctx) {
       } catch (e) {
         console.warn('[ig] messaging id not kept:', e.message);
       }
+      if (job.gate) gateLog(job.n, `dm-sent with the button "${t.opener.button}"`);
       if (!job.probed && process.env.IG_PROBE !== '0') probing.push(probe(r.recipient_id, job.n)); // IG_PROBE=0 on Vercel switches the probe off
       if (ctx.probing) {
         await kv.del('hold'); // it works again
@@ -748,6 +787,7 @@ async function deliver(job, ctx) {
       // comment mode: "one step first" under the first comment, nothing more under the "almost there"
       const lines = !dm ? [t.cantDm] : job.sent === 'ask' ? t.comment.askReplies : job.sent === 'almost' ? [] : t.publicReplies;
       if (lines.length) await replyComment(cid, lines[Math.floor(Math.random() * lines.length)]);
+      if (job.gate && lines.length) gateLog(job.n, dm ? 'public-reply-sent' : 'public-reply-sent (the DM could not go: "send us a text")');
     } catch (e) {
       await noteError('public reply', e, `comment ${cid}`);
     }
@@ -923,6 +963,14 @@ export async function onMessaging(ownId, m) {
   if (old && !m.postback && lead && !['new', 'opened', 'nodm', 'asked_follow'].includes(lead.stage)) old = null;
   if (old) payload = old.payload;
 
+  // a tester of the gate round? by the username of their comment, or asked to Instagram when we don't have it
+  let gate = false;
+  let handle = lead?.username || '';
+  if ((await gateFor()).length) {
+    if (!handle) handle = (await profile(uid)).username || '';
+    gate = await inGate(handle, uid);
+  }
+
   if (!lead) {
     // a DM out of nowhere: only a keyword or one of our buttons starts the flow, the rest is Nico's
     // (a tap on our button can come with an id we never saw: the comment's id is not always the DM's)
@@ -936,6 +984,7 @@ export async function onMessaging(ownId, m) {
     lead.post = old ? 'manychat' : 'dm';
     lead.stage = 'opened';
   }
+  if (handle) lead.username ||= handle;
   // the tapped button says which post it was for (someone who commented under two reels taps the first DM)
   if (payload === 'GET' && isDest(tapDest)) Object.assign(lead, { kind: tapDest, post: cleanPost(tapPost) });
   lead.lastUserAt = clock.now();
@@ -950,15 +999,18 @@ export async function onMessaging(ownId, m) {
   else if (payload === 'CURIOUS' || (lead.stage === 'asked' && /\b(curious|curios|just looking|learn)/i.test(said))) what = 'curious';
   else if (['new', 'opened', 'nodm'].includes(lead.stage)) what = 'get'; // they wrote instead of tapping
 
-  if (what === 'get' && (payload === 'GET' || !lead.human)) await giveBlueprint(lead, false);
-  else if (what === 'done') await giveBlueprint(lead, true);
+  if (gate) gateLog(lead.username, `${m.postback ? 'tap' : msg.quick_reply ? 'choice' : 'message'} "${(m.postback?.title || said || payload).slice(0, 30)}" → ${what}`);
+  if (what === 'get' && (payload === 'GET' || !lead.human)) await giveBlueprint(lead, false, gate);
+  else if (what === 'done') await giveBlueprint(lead, true, gate);
   else if (what === 'project') {
     await text(uid, T.textsFor(lead.kind).answerProject);
+    if (gate) gateLog(lead.username, 'project-answer-sent (call link and WhatsApp)');
     Object.assign(lead, { stage: 'project', interest: 'project' });
     await saveLead(lead);
     await tellNico(lead, 'ha un progetto', ['Ha detto che sta lavorando a un progetto. Gli è arrivato il link della call gratis.', said && `Ha scritto: ${said}`].filter(Boolean));
   } else if (what === 'curious') {
     await text(uid, T.textsFor(lead.kind).answerCurious);
+    if (gate) gateLog(lead.username, 'curious-answer-sent');
     Object.assign(lead, { stage: 'curious', interest: lead.interest || 'curious' });
   } else if (['asked', 'project', 'curious'].includes(lead.stage) && (await kv.once(`told:${uid}`, 3600))) {
     // a real answer in words: the bot doesn't improvise, Nico does
@@ -1054,6 +1106,7 @@ export async function health() {
     on: !(await isOff().catch(() => false)),
     flow: await getMode().catch(() => 'direct'), // direct = the link in the first DM, gate = button, follow check, link, comment = follow checked through comments
     linkAs: (await isPlain().catch(() => false)) ? 'text (Instagram refused the link button)' : 'button',
+    gateFor: await gateFor().catch(() => []), // these usernames always get the whole round (for the review screencast)
     mode: ONLY.size ? `only testers: ${[...ONLY].join(', ')}` : 'everyone',
   };
   let p = {};
