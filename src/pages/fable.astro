@@ -26,8 +26,10 @@ const offer = 'https://higgsfield.ai?fpr=omnya-5b7f71';
         <p class="fb-aff">affiliate link, it costs you nothing more</p>
       </section>
       <h2 class="x3-T fb-then" id="fb-then">Then build<br /><span class="x3-box">this</span> with it <i aria-hidden="true">→</i></h2>
+      {/* 10/11 (Nico): on the phone an arrow under the title takes them down to the free blueprint */}
+      <a class="fb-down" href="#fb-get" aria-label="Go down to the free blueprint"><span aria-hidden="true">↓</span></a>
     </div>
-    <section class="fb-b" aria-labelledby="fb-then">
+    <section class="fb-b" id="fb-get" aria-labelledby="fb-then">
       <OptIn slug="fable" free="free-tower" word="Tower" noClose inline after="/the-tower-blueprint/sent" proof="From the reel with 143,479 views" cover="/learn/tw_cover_free.webp" hero="/learn/tw_hero.webp" heroMobile="/learn/tw_hero_mobile.webp" />
     </section>
   </div>
@@ -75,6 +77,14 @@ html,body{background:#05070a}
 .fb-then{margin:44px 0 18px;text-align:center;font-size:34px}
 .fb-then i{display:none;font-style:normal;color:var(--blue)}
 .fb-b .oisheet{width:100%}
+/* the arrow down to the free blueprint (phone and tablet: on a wide screen the card is next to the title) */
+html:has(.fb){scroll-behavior:smooth}
+.fb-then{margin-bottom:14px}
+.fb-down{display:grid;place-items:center;width:52px;height:52px;margin:0 auto;border-radius:50%;background:var(--blue);color:#fff;text-decoration:none;font:800 24px/1 Montserrat,-apple-system,sans-serif;box-shadow:0 14px 30px -12px rgba(41,151,255,.9);animation:fb-down 1.6s ease-in-out infinite}
+.fb-down span{display:block;transform:translateY(-1px)}
+.fb-b{scroll-margin-top:12px}
+@keyframes fb-down{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+@media (prefers-reduced-motion:reduce){.fb-down{animation:none}html:has(.fb){scroll-behavior:auto}}
 
 @media (min-width:900px){
   .fb-card{border-radius:30px;padding:38px 34px 28px}
@@ -92,6 +102,7 @@ html,body{background:#05070a}
   .fb-b{justify-self:start}
   .fb-then{margin:40px 0 0;font-size:40px}
   .fb-then i{display:inline}
+  .fb-down{display:none}
 }
 /* two things only: the round WhatsApp button of the site stays off this page, and the site's scroll mark takes the funnel's blue */
 html:has(.fb) .wa-fab{display:none}
