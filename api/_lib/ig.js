@@ -1148,6 +1148,40 @@ export async function errorState(n = 10) {
 export const noteComment = (v, did) =>
   kv.set('last', { at: clock.now(), from: v.from?.username || v.from?.id || '', media: v.media?.id || '', text: String(v.text || '').slice(0, 60), did }, 30 * 86_400).catch(() => {});
 
+/**
+ * The last 30 posts and reels of the account, for Nico's app on the Mac (the titles of the reels next
+ * to their numbers): /api/leads?key=…&action=media. Asked to Meta with the token and the Instagram id
+ * the bot already uses, at most once every 10 minutes (the list is kept in Redis; fresh = ask now).
+ * It never throws: when Meta refuses, { media: [], error }, or the last list we have with `stale: true`.
+ */
+const MEDIA_FRESH = 10 * 60_000;
+export async function recentMedia(fresh = false) {
+  let kept = null;
+  try {
+    kept = await kv.get('media');
+    if (!fresh && kept && clock.now() - kept.at < MEDIA_FRESH) return { media: kept.media };
+    const p = await page();
+    if (!p.ig) throw new Error(p.failed || 'no Instagram account found for IG_TOKEN');
+    // media_url only to give photos a picture: Instagram has thumbnail_url for videos alone
+    const j = await graph(`${p.ig}/media`, p.token, { query: { fields: 'id,shortcode,caption,permalink,thumbnail_url,media_type,timestamp,media_url', limit: '30' } });
+    const media = (j.data || []).map((m) => ({
+      id: String(m.id || ''),
+      shortcode: m.shortcode || codeOf(m.permalink),
+      caption: m.caption || '',
+      permalink: m.permalink || '',
+      thumbnail_url: m.thumbnail_url || (m.media_type !== 'VIDEO' && m.media_url) || '',
+      media_type: m.media_type || '',
+      timestamp: m.timestamp || '',
+    }));
+    await kv.set('media', { at: clock.now(), media }, 86_400);
+    return { media };
+  } catch (e) {
+    const error = String(e?.message || e).slice(0, 300);
+    console.warn('[ig] media list:', error);
+    return kept?.media?.length ? { media: kept.media, error, stale: true } : { media: [], error };
+  }
+}
+
 /** The posts and words the bot answers, as it sees them now. */
 export async function postMap() {
   return {

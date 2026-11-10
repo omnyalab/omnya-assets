@@ -12,7 +12,7 @@ for (const k of ['KV_REST_API_URL', 'UPSTASH_REDIS_REST_URL', 'RESEND_API_KEY', 
 // ---- fake graph.instagram.com ----
 const OWN = '999';
 const calls = [];
-const state = { follows: {}, commentUser: {}, refuseTemplate: false, refuseDm: new Set(), failPrivate: null, failSend: null, captionDown: false, sid: {}, probeFail: null, probeBlank: false, noRecipient: false, failReply: null };
+const state = { follows: {}, commentUser: {}, refuseTemplate: false, refuseDm: new Set(), failPrivate: null, failSend: null, captionDown: false, sid: {}, probeFail: null, probeBlank: false, noRecipient: false, failReply: null, media: [], mediaFail: null };
 let mid = 0;
 let simNow = () => Date.now(); // the bot's clock, set below: every fake call remembers the bot's time
 // posts by the id Meta gives in the comment event: caption and link, as Instagram would answer
@@ -58,6 +58,8 @@ const server = http.createServer(async (req, res) => {
     return out(cid && state.noRecipient ? { message_id: `m${++mid}` } : { recipient_id: to, message_id: `m${++mid}` });
   }
   if (path.endsWith('/replies')) return state.failReply ? out({ error: state.failReply }, 400) : out({ id: `r${++mid}` });
+  // the account's last posts and reels, for /api/leads?action=media
+  if (path === `${OWN}/media`) return state.mediaFail ? out({ error: state.mediaFail }, 400) : out({ data: state.media, paging: {} });
   if (posts[path]) return state.captionDown ? out({ error: { message: 'An unexpected error has occurred. Please retry your request later.', code: 2 } }, 500) : out(posts[path]);
   if (path.startsWith('media')) return out({ caption: 'From rough 3D to final photo ✨ Comment “PROJECT” below and I’ll send you The Blueprint', permalink: 'https://www.instagram.com/reel/abc/' });
   if (/^[a-z]\d+$/.test(path)) {
@@ -414,6 +416,21 @@ if (REDIS_RUN) {
     assert.equal((await (await hook.GET(new Request('http://x/api/instagram?health=k'))).json()).anyComment, true);
     assert.deepEqual(await comment('j3', '😍', 'towersreel').res, ['sent']);
     assert.ok(redisUsed.has('DEL'));
+    sent();
+  });
+
+  await step('on Redis: the media list of /api/leads?action=media is asked to Meta once and then read from Redis', async () => {
+    state.media = [{ id: '18001', shortcode: 'DfTOWERS11', caption: 'HOW TO LET THE BUYER CHOOSE THE VIEW 👇🏻', permalink: 'https://www.instagram.com/reel/DfTOWERS11/', thumbnail_url: 'https://cdn.example/t.jpg', media_type: 'VIDEO', timestamp: '2026-11-11T17:00:00+0000' }];
+    const media = async (more = '') => (await leadsPage.GET(new Request(`http://x/api/leads?key=k&action=media${more}`))).json();
+    assert.equal((await media()).media[0].shortcode, 'DfTOWERS11');
+    assert.equal((await media()).media[0].caption, 'HOW TO LET THE BUYER CHOOSE THE VIEW 👇🏻');
+    assert.equal(sent().filter((x) => x.path === `${OWN}/media`).length, 1);
+    state.mediaFail = { message: '(#10) Application does not have permission for this action', type: 'OAuthException', code: 10 };
+    const bad = await media('&fresh=1');
+    state.mediaFail = null;
+    assert.match(bad.error, /#10/);
+    assert.equal(bad.stale, true);
+    assert.equal(bad.media.length, 1); // the last list we had
     sent();
   });
 
@@ -1619,8 +1636,9 @@ await step('gate round for testers: also from the env var IG_GATE_FOR, and an em
   assert.equal(linkOf(sent().filter((x) => x.path === 'me/messages')[0]), `${TOWERS_PAGE}?ig=DfTOWERS11`); // direct: the link at once
 });
 
-// ===================== 10/11/2026, evening: every comment, the refused public reply =====================
+// ===================== 10/11/2026, evening: every comment, the refused public reply, the media list =====================
 
+const S = await import('../api/_lib/ig-store.js');
 const health = async () => (await get(hook, '/api/instagram?health=k')).json();
 const numbers = async () => (await get(leadsPage, '/api/leads?key=k&format=json')).json();
 const posts_ = (list) => list.filter((x) => x.method === 'POST');
@@ -1790,6 +1808,83 @@ await step('Instagram refuses the public reply (code 20 sub 1772107): the DM wen
   const c10 = comment('q10', 'wow', 'towersreel');
   assert.deepEqual(await c10.res, ['sent']);
   assert.equal(forComment(sent(), c10.id).length, 2);
+});
+
+await step('/api/leads?action=media: the last posts and reels of the account, asked to Meta at most once every 10 minutes', async () => {
+  state.media = [
+    { id: '18001', shortcode: 'DfTOWERS11', caption: 'HOW TO LET THE BUYER CHOOSE THE VIEW 👇🏻\n\nLike and comment "TOWERS"', permalink: 'https://www.instagram.com/reel/DfTOWERS11/', thumbnail_url: 'https://cdn.example/towers.jpg', media_url: 'https://cdn.example/towers.mp4', media_type: 'VIDEO', timestamp: '2026-11-11T17:00:00+0000' },
+    { id: '18002', permalink: 'https://www.instagram.com/p/DfPHOTO0001/', media_url: 'https://cdn.example/photo.jpg', media_type: 'IMAGE', timestamp: '2026-11-09T11:00:00+0000' }, // a photo without a caption
+    { id: 18003, shortcode: 'DfCAROUSEL1', caption: '5 houses', permalink: 'https://www.instagram.com/p/DfCAROUSEL1/', media_type: 'CAROUSEL_ALBUM', timestamp: '2026-11-08T11:00:00+0000' },
+  ];
+  sent();
+  assert.equal((await get(leadsPage, '/api/leads?action=media')).status, 404); // the same key as the rest
+  assert.equal((await get(leadsPage, '/api/leads?key=wrong&action=media')).status, 404);
+  const r = await get(leadsPage, '/api/leads?key=k&action=media');
+  assert.equal(r.status, 200);
+  assert.match(r.headers.get('content-type'), /application\/json/);
+  const j = await r.json();
+  assert.deepEqual(Object.keys(j), ['media']);
+  assert.equal(j.media.length, 3);
+  for (const m of j.media) assert.deepEqual(Object.keys(m), ['id', 'shortcode', 'caption', 'permalink', 'thumbnail_url', 'media_type', 'timestamp']);
+  assert.deepEqual(j.media[0], { id: '18001', shortcode: 'DfTOWERS11', caption: state.media[0].caption, permalink: 'https://www.instagram.com/reel/DfTOWERS11/', thumbnail_url: 'https://cdn.example/towers.jpg', media_type: 'VIDEO', timestamp: '2026-11-11T17:00:00+0000' });
+  assert.deepEqual(j.media[1], { id: '18002', shortcode: 'DfPHOTO0001', caption: '', permalink: 'https://www.instagram.com/p/DfPHOTO0001/', thumbnail_url: 'https://cdn.example/photo.jpg', media_type: 'IMAGE', timestamp: '2026-11-09T11:00:00+0000' });
+  assert.deepEqual(j.media[2], { id: '18003', shortcode: 'DfCAROUSEL1', caption: '5 houses', permalink: 'https://www.instagram.com/p/DfCAROUSEL1/', thumbnail_url: '', media_type: 'CAROUSEL_ALBUM', timestamp: '2026-11-08T11:00:00+0000' });
+  // one call, to the account the bot already uses, with its token
+  let asked = sent().filter((x) => x.path === `${OWN}/media`);
+  assert.equal(asked.length, 1);
+  assert.equal(asked[0].method, 'GET');
+  assert.equal(asked[0].query.limit, '30');
+  assert.ok(asked[0].query.fields.startsWith('id,shortcode,caption,permalink,thumbnail_url,media_type,timestamp'));
+  assert.equal(asked[0].query.access_token, 'pagetoken');
+  // opened again within 10 minutes: Meta is not asked
+  state.media = state.media.slice(0, 2);
+  assert.equal((await (await get(leadsPage, '/api/leads?key=k&action=media')).json()).media.length, 3);
+  assert.equal(sent().filter((x) => x.path === `${OWN}/media`).length, 0);
+  // after 10 minutes it is, and &fresh=1 asks at once
+  ahead += 11 * 60_000;
+  assert.equal((await (await get(leadsPage, '/api/leads?key=k&action=media')).json()).media.length, 2);
+  state.media = state.media.slice(0, 1);
+  assert.equal((await (await get(leadsPage, '/api/leads?key=k&action=media&fresh=1')).json()).media.length, 1);
+  assert.equal(sent().filter((x) => x.path === `${OWN}/media`).length, 2);
+});
+
+await step('/api/leads?action=media when Meta refuses: { media: [], error }, a 200, and the bot goes on as if nothing happened', async () => {
+  const before = await errorsNow();
+  state.mediaFail = { message: '(#10) Application does not have permission for this action', type: 'OAuthException', code: 10 };
+  // with a list from before: that list, marked stale, and the error
+  let r = await get(leadsPage, '/api/leads?key=k&action=media&fresh=1');
+  assert.equal(r.status, 200);
+  let j = await r.json();
+  assert.match(j.error, /\(#10\) Application does not have permission/);
+  assert.equal(j.stale, true);
+  assert.equal(j.media.length, 1);
+  // with nothing kept: an empty list and the error
+  await S.kv.del('media');
+  r = await get(leadsPage, '/api/leads?key=k&action=media');
+  assert.equal(r.status, 200);
+  j = await r.json();
+  assert.deepEqual(Object.keys(j), ['media', 'error']);
+  assert.deepEqual(j.media, []);
+  assert.match(j.error, /\(#10\) Application does not have permission/);
+  assert.doesNotMatch(JSON.stringify(j), /pagetoken|access_token/); // no keys in the answer
+  // a dead token, Meta not answering in JSON: the same shape, never a crash
+  state.tokenDead = true;
+  j = await (await get(leadsPage, '/api/leads?key=k&action=media')).json();
+  state.tokenDead = false;
+  assert.deepEqual(j.media, []);
+  assert.match(j.error, /access token/);
+  // the bot's own errors and line are untouched, and a comment is answered as always
+  assert.equal(await errorsNow(), before);
+  assert.equal((await ig.lineState()).stoppedUntil, null);
+  sent();
+  const c = comment('a40', 'wow', 'towersreel');
+  assert.deepEqual(await c.res, ['sent']);
+  assert.equal(forComment(sent(), c.id).length, 2);
+  // Meta is back: the list too
+  state.mediaFail = null;
+  j = await (await get(leadsPage, '/api/leads?key=k&action=media')).json();
+  assert.equal(j.media.length, 1);
+  assert.equal(j.error, undefined);
 });
 
 server.close();

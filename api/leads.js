@@ -14,9 +14,12 @@
 //   check, link) whatever the mode, and no "one answer per reel": for the screencast of Meta's App Review.
 // &action=any&value=on|off: on (the default) = under a post of the map every comment of another person gets the public
 //   reply and the DM, whatever it says; off = only who writes the word. Without a deploy, kept in Redis.
+// &action=media gives the last 30 posts and reels of the account as JSON ({ media: [{ id, shortcode, caption, permalink,
+//   thumbnail_url, media_type, timestamp }] }), for the titles in Nico's app on the Mac; asked to Meta at most once every
+//   10 minutes (&fresh=1 asks now). When Meta refuses: { media: [], error }.
 // &action=off stops the bot at once, without a deploy (it answers nobody and keeps nothing), &action=on starts it again.
 // &format=json gives the numbers alone.
-import { listLeads, api, page, lineState, errorState, postStats, postMap, setPost, setOff, isOff, getMode, setMode, MODES, probeState, gateFor, setGateFor, anyComment, setAnyComment } from './_lib/ig.js';
+import { listLeads, api, page, lineState, errorState, postStats, postMap, setPost, setOff, isOff, getMode, setMode, MODES, probeState, gateFor, setGateFor, anyComment, setAnyComment, recentMedia } from './_lib/ig.js';
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -61,6 +64,11 @@ export async function GET(request) {
       status: known ? 200 : 400,
       headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
     });
+  }
+
+  if (q.get('action') === 'media') {
+    const r = await recentMedia(q.get('fresh') === '1').catch((e) => ({ media: [], error: String(e?.message || e) }));
+    return new Response(JSON.stringify(r, null, 2), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
   }
 
   if (q.get('action') === 'gatefor') {
