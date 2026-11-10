@@ -1037,7 +1037,8 @@ await step('clicks on the link are counted per post and shown on /api/leads', as
   for (let i = 0; i < 3; i++) {
     const r = await get(hook, '/api/instagram?go=the-towers-blueprint&p=DfTOWERS11&ig=DfTOWERS11', { 'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) Instagram 400.0' });
     assert.equal(r.status, 302);
-    assert.equal(r.headers.get('location'), TOWERS_PAGE); // the page without ?ig=, so it doesn't come back here
+    // the page without ?ig=, so it doesn't come back here, and with the reel's code as ?reel= for Stripe
+    assert.equal(r.headers.get('location'), `${TOWERS_PAGE}?reel=DfTOWERS11`);
   }
   // the preview Instagram makes of the link is not a click
   await get(hook, '/api/instagram?go=the-towers-blueprint&p=DfTOWERS11', { 'user-agent': 'facebookexternalhit/1.1' });
@@ -1047,8 +1048,10 @@ await step('clicks on the link are counted per post and shown on /api/leads', as
   assert.ok(row.c >= 1 && row.dm >= 1 && row.link >= 1);
   // only our own pages come out of it
   assert.equal((await get(hook, '/api/instagram?go=https://evil.example&p=x')).headers.get('location'), 'https://www.omnyalab.com/');
-  assert.equal((await get(hook, '/api/instagram?go=3d-to-film&p=DfU-nniRvNQ')).headers.get('location'), 'https://www.omnyalab.com/3d-to-film');
-  assert.equal((await get(hook, '/api/instagram?go=the-tower-blueprint&p=manychat')).headers.get('location'), 'https://www.omnyalab.com/the-tower-blueprint');
+  assert.equal((await get(hook, '/api/instagram?go=3d-to-film&p=DfU-nniRvNQ')).headers.get('location'), 'https://www.omnyalab.com/3d-to-film?reel=DfU-nniRvNQ');
+  assert.equal((await get(hook, '/api/instagram?go=the-tower-blueprint&p=manychat')).headers.get('location'), 'https://www.omnyalab.com/the-tower-blueprint?reel=manychat');
+  // a link without a reel's code opens the page as it is
+  assert.equal((await get(hook, '/api/instagram?go=the-tower-blueprint')).headers.get('location'), 'https://www.omnyalab.com/the-tower-blueprint');
   const j = await (await get(leadsPage, '/api/leads?key=k&format=json')).json();
   assert.equal(j.posts.find((r) => r.post === 'DfTOWERS11').click, before + 3);
   assert.equal(j.posts.find((r) => r.post === 'manychat').click, 1);

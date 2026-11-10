@@ -538,7 +538,11 @@ export async function click(go, post, k, count = true) {
     }
   }
   const url = `${SITE}${pathOf(T.textsFor(dest).url)}`;
-  return dest === 'city' && /^[A-Za-z0-9_-]{10,40}$/.test(k || '') ? `${url}?k=${k}` : url;
+  if (dest === 'city') return /^[A-Za-z0-9_-]{10,40}$/.test(k || '') ? `${url}?k=${k}` : url;
+  // the reel's code goes on with the visitor as ?reel= (not ?ig=, which would come back here): the page
+  // keeps it and /go/<product> hands it to Stripe as client_reference_id, so every sale knows its reel
+  const reel = cleanPost(post);
+  return reel === 'dm' ? url : `${url}?reel=${reel}`;
 }
 
 // ---------- which line comes next ----------
