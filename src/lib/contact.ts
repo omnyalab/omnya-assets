@@ -23,6 +23,9 @@ export const contact = {
 // Pre-filled messages follow the page language. English keeps the exact links
 // from docs/CONTACTS.md; Italian is built from the same template.
 
+/** The live demo the site sends people to (10/11): the tower with the floors to click. Phones are sent to its /m/ page by vercel.json. */
+export const demoHref = (lang: Lang) => `${lang === 'it' ? '/it' : ''}/demo/choose-your-floor/`;
+
 export function sampleLinks(lang: Lang) {
   if (lang === 'en') return { whatsapp: contact.whatsappSample, email: contact.emailSample };
   const m = t(lang).messages;

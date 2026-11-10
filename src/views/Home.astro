@@ -7,6 +7,7 @@ import I3dCard from '../components/I3dCard.astro';
 import { projects, pad } from '../lib/data';
 import { sizes as dims } from '../lib/media';
 import { t, langFromPath, localize } from '../i18n';
+import { demoHref } from '../lib/contact';
 import heroFrames from '../data/hero-frames.json';
 
 // An empty 1x1 GIF: a <source> that resolves to nothing to download
@@ -82,6 +83,8 @@ const rows = [
       <div class="hero__shade"></div>
       <div class="hero__title wrap">
         <h1 class="t-h1" data-hero-title>{H.heroA}{' '}<span class="mute">{H.heroB}</span></h1>
+        {/* 10/11 (Nico): on phones the first screen has a button to the live demo (the tower with the floors to click) */}
+        <div class="hero__demo"><a class="btn btn--glass" href={demoHref(lang)} data-astro-reload>{H.demo} <Arrow /></a></div>
       </div>
     </section>
   </div>
