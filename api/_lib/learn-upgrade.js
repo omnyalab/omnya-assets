@@ -7,4 +7,4 @@
 // webhook cannot read the site's .ts files: src/lib/learn.ts takes it from this file, so there is one switch, not two.
 // Stripe product name: "Everything we teach · upgrade" (api/_lib/learn-files.js delivers the whole pack), back to
 // https://www.omnyalab.com/learn/thanks/everything?session_id={CHECKOUT_SESSION_ID}
-export const everythingUpgrade = '';
+export const everythingUpgrade = 'https://buy.stripe.com/bJedR8acRbIs3hAbmB8so0F';
