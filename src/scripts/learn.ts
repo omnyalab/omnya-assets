@@ -145,6 +145,8 @@ function paidFiles() {
   };
   const id = new URLSearchParams(location.search).get('session_id');
   if (!id) return closed();
+  // the page is written with the "in your inbox" line: "Checking…" is said only here, when there is a payment to check
+  text.textContent = text.dataset.checking!;
   fetch(`/api/files?session_id=${encodeURIComponent(id)}&lang=${box.dataset.dl}`)
     .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
     .then((j: { files?: { name: string; href: string; kind?: string }[]; pack?: boolean }) => {
@@ -163,8 +165,13 @@ function paidFiles() {
         a.querySelector('span')!.textContent = f.kind === 'zip' ? `${f.name} · zip` : f.name;
         btns.append(a);
       }
-      const note = box.querySelector<HTMLElement>('[data-dl-note]');
-      if (note && scene) note.hidden = false;
+      // the line that says what the scene file is: added here, under the buttons, only for who has the scene
+      if (scene && text.dataset.sceneNote) {
+        const note = document.createElement('p');
+        note.className = 'oto-dl__note';
+        note.textContent = text.dataset.sceneNote;
+        btns.after(note);
+      }
     })
     .catch(closed);
 }
