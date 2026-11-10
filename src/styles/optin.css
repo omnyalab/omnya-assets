@@ -7,6 +7,12 @@
 .oiag{display:flex;gap:12px;align-items:flex-start;color:#ffffffb8;font:500 13px/1.5 -apple-system,sans-serif;text-align:left;margin:2px 0 4px}
 .oiag i{flex:0 0 22px;height:22px;border-radius:7px;background:#2997ff;display:grid;place-items:center;color:#fff;font:800 13px/1 -apple-system;font-style:normal;margin-top:1px}
 .oiag a{color:#fff;text-decoration:underline;text-underline-offset:3px}
+/* 10/11 (Nico): the newsletter box is a real checkbox and starts empty; the line under it needs no box */
+.oiag--nl{cursor:pointer;position:relative}
+.oiag--nl input{position:absolute;left:0;top:1px;width:22px;height:22px;margin:0;opacity:0;cursor:pointer}
+.oidim .oiag--nl input:not(:checked)+i{background:transparent;color:transparent;box-shadow:inset 0 0 0 1.5px #ffffff8c}
+.oidim .oiag--nl input:focus-visible+i{outline:2px solid #fff;outline-offset:2px}
+.oiag--line{display:block;margin:0 0 4px;font-size:12px;color:#ffffff99}
 @media (width<=899px){
  .oif{margin:22px auto 0;text-align:left}
 }

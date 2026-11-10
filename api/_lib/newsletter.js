@@ -11,6 +11,9 @@ export const CONSENT_TEXTS = {
   v1: { newsletter: false, text: 'Only the email with your blueprint, no spam and nothing else. I accept the Privacy Policy.' },
   // v2 (Nico 8/11: one box like before, "no spam", no promise of offers): these people can get the newsletter
   v2: { newsletter: true, text: 'Your blueprint by email, and now and then an update from us. No spam, unsubscribe in one click. I accept the Privacy Policy.' },
+  // v3 (Nico 10/11): two parts. The blueprint email needs no box; the newsletter is its own box and starts empty.
+  // Only a ticked box (nl: true from the form) puts the person in the list; without it the row keeps the `base` text.
+  v3: { newsletter: true, text: 'Send me an update from Omnya Lab now and then too. No spam, unsubscribe in one click.', base: 'Your blueprint goes to this email, and by sending you accept the Privacy Policy.' },
 };
 
 export const OFF_KEY = 'omnya:nl:off'; // Redis set of emails that unsubscribed

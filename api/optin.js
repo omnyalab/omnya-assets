@@ -44,7 +44,8 @@ export async function POST(request) {
 
   const page = String(b.page || '').slice(0, 40);
   const cv = CONSENT_TEXTS[b.cv] ? b.cv : 'v1'; // the checkbox version the form showed
-  const consent = { at: new Date().toISOString(), version: cv, text: CONSENT_TEXTS[cv].text, page, newsletter: CONSENT_TEXTS[cv].newsletter && b.nl === true };
+  const newsletter = CONSENT_TEXTS[cv].newsletter && b.nl === true; // only a ticked box (v3: the box starts empty)
+  const consent = { at: new Date().toISOString(), version: cv, text: newsletter ? CONSENT_TEXTS[cv].text : CONSENT_TEXTS[cv].base || CONSENT_TEXTS[cv].text, page, newsletter };
   const row = { at: Date.now(), name, email, free: b.free, page, k: String(b.k || '').slice(0, 20), consent };
   if (hasStore()) {
     try {

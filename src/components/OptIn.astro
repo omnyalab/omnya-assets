@@ -3,6 +3,10 @@
 // Closing it shows the page; "Download the free blueprint" opens it again.
 // Name + email, then the PDF goes by email (api/optin) and the visitor lands on /<page>/sent,
 // the upsell. If the email can't be sent, the PDF opens right away instead, so nobody is stuck.
+// 10/11 (Nico): the newsletter is its own box and starts empty. The blueprint email needs no box (it is what
+// the form is for); "an update now and then" is optional, and only a ticked box puts the person in the
+// newsletter (cv v3, api/_lib/newsletter.js). Sending the form marks this browser (localStorage
+// omnya-optin-<free>): only then /go/<free> opens the PDF, otherwise it comes back to this card (views/Go.astro).
 import '../styles/optin.css';
 import '../styles/optin-build.css';
 
@@ -19,11 +23,17 @@ interface Props {
   fade?: boolean; // 9/11 (Nico, Towers page): the blue fade between the form and the offer, like the green one of the Build page
   noClose?: boolean; // 9/11 (Nico, Build page): no × on the card, and the card never closes (no click outside, no Escape):
   // the card is the whole page; "I'm good with the free one" downloads the free PDF instead of revealing a page
+  // 10/11 (Nico): every funnel is noClose now, the free PDF only comes after the email
+  landing?: boolean; // 10/11: there is a page behind the card (Tower, Floors, 3D to film, City): whoever already left
+  // the email in this browser sees it straight away, with the download links working
+  after?: string; // 10/11: where "Have a look" goes after the email is sent, when the funnel has no /sent page
+  // (the City page: "#full", the card goes away and the page shows the Full guide)
 }
-const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, fade } = Astro.props;
+const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, fade, after, landing } = Astro.props;
+const next = after || `/${slug}/sent`;
 ---
 
-<div class={`oidim${book ? ' oi--book' : ''}${noClose ? ' oi--nox' : ''}${theme ? ' oi--' + theme : ''}${fade ? ' oi--fade' : ''}`} data-optin data-slug={slug} data-free={free} style={`--oi-cover:url(${cover});--oi-hero:url(${hero});--oi-hero-m:url(${heroMobile})`} role="dialog" aria-modal="true" aria-labelledby="oi-title">
+<div class={`oidim${book ? ' oi--book' : ''}${noClose ? ' oi--nox' : ''}${theme ? ' oi--' + theme : ''}${fade ? ' oi--fade' : ''}`} data-optin data-slug={slug} data-free={free} data-next={next} data-landing={landing ? '' : undefined} style={`--oi-cover:url(${cover});--oi-hero:url(${hero});--oi-hero-m:url(${heroMobile})`} role="dialog" aria-modal="true" aria-labelledby="oi-title">
   <div class="oisheet">
     <button type="button" class="oix" data-oi-close aria-label="Close">×</button>
     <div class="oibk" role="img" aria-label="The free blueprint"><div class="oibk__b"><span class="oibk__k"></span><span class="oibk__t"></span><span class="oibk__p"></span><span class="oibk__f"></span></div></div>
@@ -33,7 +43,8 @@ const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, 
       <label class="oihp" aria-hidden="true">Company<input name="company" tabindex="-1" autocomplete="off" /></label>
       <input name="name" placeholder="Your first name" autocomplete="given-name" required maxlength="60" />
       <input name="email" type="email" placeholder="Your best email" autocomplete="email" required maxlength="120" />
-      <label class="oiag"><i>✓</i><span>Your blueprint by email, and now and then an update from us. No spam, unsubscribe in one click. I accept the <a href="/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
+      <label class="oiag oiag--nl"><input type="checkbox" name="nl" /><i>✓</i><span>Send me an update from Omnya Lab now and then too. No spam, unsubscribe in one click.</span></label>
+      <p class="oiag oiag--line">Your blueprint goes to this email, and by sending you accept the <a href="/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.</p>
       <p class="oierr" data-oi-err hidden></p>
       <button class="x3-btn x3-btn--blue">Send me the blueprint →</button>
     </form>
@@ -59,7 +70,7 @@ const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, 
       <p class="oil__t">You're all set<span data-oil-nm></span></p>
       <p class="oil__p"><b>Your <span style="color:#2997ff">free</span> blueprint</b> is in your inbox.</p>
       <p class="oil__p">If one day you want to implement it faster, <b>the full interactive 3D course</b> is here for <b data-oil-price>€1.99</b>.</p>
-      <a class="x3-btn x3-btn--blue" data-oil-go data-astro-reload href={`/${slug}/sent`}>Have a look →</a>
+      <a class="x3-btn x3-btn--blue" data-oil-go data-astro-reload href={next}>Have a look →</a>
       <button type="button" class="oil__no" data-oil-skip>I'm good with the free one, thanks</button>
     </div>
   </div>
@@ -69,23 +80,29 @@ const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, 
   (function () {
     var box = document.querySelector('[data-optin]');
     if (!box) return;
-    var free = box.dataset.free, slug = box.dataset.slug;
+    var free = box.dataset.free, slug = box.dataset.slug, next = box.dataset.next;
+    // this browser already left its email for this blueprint: the download links work, the card stays away
+    var FLAG = 'omnya-optin-' + free;
+    var done = function () { try { return localStorage.getItem(FLAG) === '1'; } catch (e) { return false; } };
     var form = box.querySelector('[data-oi-form]'), err = box.querySelector('[data-oi-err]');
+    if (box.hasAttribute('data-landing') && done()) box.hidden = true;
     var open = function (e) { e.preventDefault(); box.hidden = false; setTimeout(function () { form.name.focus(); }, 50); };
     var locked = box.classList.contains('oi--nox');
     // 9/11 (Nico, Build page): no site loading screen between the form and the offer, only a clean green fade
     var green = box.classList.contains('oi--c1') || box.classList.contains('oi--fade');
     var go = function (url) {
+      // a place on this same page (the City page, "#full"): the card and the loading screen go away
+      if (url.charAt(0) === '#') { oil.hidden = true; box.hidden = true; var el = document.querySelector(url); if (el) el.scrollIntoView(); return; }
       if (!green) { location.href = url; return; }
       var f = document.createElement('div'); f.className = 'oi-fade' + (box.classList.contains('oi--c1') ? '' : ' oi-fade--blue'); document.body.appendChild(f);
       requestAnimationFrame(function () { f.classList.add('on'); });
       setTimeout(function () { location.href = url; }, 520);
     };
     var goBtn = document.querySelector('[data-oil-go]');
-    if (goBtn) goBtn.addEventListener('click', function (e) { if (!green) return; e.preventDefault(); go(goBtn.getAttribute('href')); });
+    if (goBtn) goBtn.addEventListener('click', function (e) { var h = goBtn.getAttribute('href'); if (!green && h.charAt(0) !== '#') return; e.preventDefault(); go(h); });
     var close = function () { if (!locked) box.hidden = true; };
     // one listener on the page: the buttons come after this script in the HTML
-    document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a[href^="/go/' + free + '"]'); if (a) open(e); });
+    document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a[href^="/go/' + free + '"]'); if (a && !done()) open(e); });
     box.querySelector('[data-oi-close]').addEventListener('click', close);
     box.addEventListener('click', function (e) { if (e.target === box) close(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) close(); });
@@ -100,11 +117,12 @@ const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, 
       var name = form.elements.name.value.trim(), email = form.elements.email.value.trim();
       if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = 'Write your name and a real email.'; err.hidden = false; return; }
       err.hidden = true;
+      try { localStorage.setItem(FLAG, '1'); } catch (e) {}
       // Meta Lead (8/11): only if the visitor accepted cookies; the same event_id goes to the server (no double count)
       var eid = 'lead_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
       var ads = !!(window.omnyaTrack && window.omnyaTrack('Lead', { content_name: free }, eid));
       var fbp = (document.cookie.match(/(?:^|; )_fbp=([^;]+)/) || [])[1] || '';
-      var sent = fetch('/api/optin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, free: free, page: slug, company: form.elements.company.value, k: new URLSearchParams(location.search).get('k') || '', cv: 'v2', nl: true, ads: ads, eid: eid, fbp: ads ? fbp : '' }) })
+      var sent = fetch('/api/optin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, free: free, page: slug, company: form.elements.company.value, k: new URLSearchParams(location.search).get('k') || '', cv: 'v3', nl: form.elements.nl.checked, ads: ads, eid: eid, fbp: ads ? fbp : '' }) })
         .then(function (r) { return r.ok; }).catch(function () { return false; });
       oil.querySelector('[data-oil-em]').textContent = 'to ' + email;
       oil.querySelector('[data-oil-nm]').textContent = ', ' + name.split(' ')[0];
@@ -122,7 +140,7 @@ const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, 
           T(function () { st(3).classList.add('is-in'); }, 1000);
           T(function () { st(3).classList.add('is-done'); }, 1900);
           T(function () { oil.querySelector('[data-oil-top]').classList.add('is-gone'); oil.querySelector('[data-oil-fin]').hidden = false; }, 3700);
-          T(function () { if (!oil.hidden) go('/' + slug + '/sent'); }, 3700 + 15000);
+          T(function () { if (!oil.hidden) go(next); }, 3700 + 15000);
         });
       }, 4700);
     });

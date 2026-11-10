@@ -12,10 +12,14 @@ import { goHref, fullCityDeal } from '../lib/learn';
 const free = goHref('free-city', 'en');
 const full = goHref('full-city', 'en');
 const sample = goHref('sample', 'en');
+// 10/11 (Nico): the free PDF only after the email, like the other funnels. This page has no /sent page,
+// so after the email the card goes away and the page opens on the Full guide (#full).
+import OptIn from '../components/OptIn.astro';
 ---
 
 <Base page="learn" header={false} footer={false} title="How to build a 3D city that goes viral with AI" description="Steal our city method: the free blueprint with the three real prompts behind Omnya City, and the Full Blueprint with every prompt and every file." og="/city/og.jpg">
 <div class="x3">
+<OptIn slug="the-city-blueprint" free="free-city" word="City" noClose landing after="#full" cover="/learn/ct_cover_free.webp" hero="/learn/ct_hero.webp" heroMobile="/learn/ct_hero_mobile.webp" />
 
 <section class="x3-hero" id="top">
   <picture class="x3-hero__bg"><source media="(max-width:899px)" srcset="/learn/ct_hero_mobile.webp"><img src="/learn/ct_hero.webp" width="2000" height="1117" alt="Omnya City downtown: villas on two lots, palms, a red supercar outside" fetchpriority="high"></picture>
