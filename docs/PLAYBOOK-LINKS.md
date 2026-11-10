@@ -13,7 +13,9 @@ Dal 10/11 i PDF a pagamento non sono più in una cartella pubblica: stanno in `p
 
 ## Gradino 2: passaggio al pacchetto (pronto ma spento)
 - Sulle pagine `/learn/thanks/full-*`, solo dopo che Stripe ha confermato il pagamento di una guida Full, può comparire la card "Upgrade to Everything we teach" a 53 € (i 59 € del pacchetto meno i 5,99 già pagati)
-- L'interruttore è `everythingUpgrade` in `src/lib/learn.ts`: finché è una stringa vuota la card non è nemmeno nella pagina, e per accenderla basta incollare lì il link di pagamento Stripe
+- L'interruttore è `everythingUpgrade` in `api/_lib/learn-upgrade.js` (uno solo per il sito e per il webhook, `src/lib/learn.ts` lo prende da lì): finché è una stringa vuota la card non è nemmeno nella pagina e la mail resta com'era, e per accendere tutte e due basta incollare lì il link di pagamento Stripe
+- La card è disegnata come il passo successivo del funnel da cui arriva chi ha comprato (`src/components/FunnelUpgrade.astro`): verde dopo la guida Build, blu dopo Tower, 3D, City e Towers
+- Con l'interruttore acceso anche la mail con i PDF, solo dopo una guida Full singola, porta sotto i bottoni una riga con l'offerta a 53 € e il link `/go/everything-upgrade`; chi ha pagato il pacchetto, un playbook o una lezione non la riceve
 - Il prodotto su Stripe deve chiamarsi `Everything we teach · upgrade`, e il link deve tornare su `https://www.omnyalab.com/learn/thanks/everything?session_id={CHECKOUT_SESSION_ID}`
 - Il pacchetto a 29 € da mandare a mano (`everythingApology`, prodotto Stripe `Everything we teach · thank you price`) non ha pagine sul sito: il webhook lo riconosce e manda tutto il pacchetto, e torna sulla stessa pagina
 - Chi ha già pagato il pacchetto non vede mai la card, e senza pagamento confermato non la vede nessuno

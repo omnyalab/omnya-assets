@@ -4,6 +4,7 @@
 // Checkout and booking links stay empty until the Stripe and Cal.com accounts exist:
 // until then each button opens WhatsApp with the request already written.
 import type { Lang } from '../i18n';
+import { everythingUpgrade } from '../../api/_lib/learn-upgrade.js';
 
 export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle' | 'session' | 'build' | 'community'
   // offers shown only after a purchase, on /learn/thanks/<product> (sample, the free image, is not one of them since 10/11:
@@ -36,12 +37,12 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
 
 /**
  * Step 2 (10/11, Nico): after a Full guide (€5.99) the page /learn/thanks/full-* offers "Everything we teach" for the
- * difference, €53 (€59 minus the €5.99 already paid), only once Stripe has confirmed the payment (views/Thanks.astro).
- * THE SWITCH: while this is an empty string the block is not in the page at all. Paste the Stripe Payment Link here to
- * turn it on. Stripe product name: "Everything we teach · upgrade" (api/_lib/learn-files.js delivers the whole pack),
- * back to https://www.omnyalab.com/learn/thanks/everything?session_id={CHECKOUT_SESSION_ID}
+ * difference, €53 (€59 minus the €5.99 already paid), only once Stripe has confirmed the payment (views/Thanks.astro),
+ * and the email with the PDFs says the same in one line (api/stripe-webhook.js).
+ * THE SWITCH is api/_lib/learn-upgrade.js, one file for the site and the webhook: while it is an empty string the block
+ * is not in the page at all and the email is as it was. Paste the Stripe Payment Link there to turn both on.
  */
-export const everythingUpgrade = '';
+export { everythingUpgrade };
 
 /**
  * The pack at €29 for someone we owe a thank you or an apology: a link Nico sends by hand, on no public page and

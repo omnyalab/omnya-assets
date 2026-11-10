@@ -58,6 +58,9 @@ const PACK = [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, WHITE_TO_REAL, REEL,
 /** True for every Stripe product that is the pack, whatever its price: "Everything we teach" (€59),
     "Everything we teach · upgrade" (€53 after a Full guide) and "Everything we teach · thank you price" (€29, sent by hand). */
 export const isPack = (name) => /everything we teach/i.test(String(name || ''));
+/** True when what was paid for is one Full guide and nothing else (files = what filesForProduct gave back): the buyer
+    the upgrade to the pack is for (10/11). Not a playbook, not two guides, not the pack. */
+export const oneFullGuide = (files) => files.length === 1 && [FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS].some((g) => g.file === files[0].en);
 
 /** One Stripe product name → the files it should deliver. Checked in order, first match wins. */
 const RULES = [
