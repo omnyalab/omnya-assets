@@ -207,15 +207,5 @@ html,body{min-height:100%}
 // senza mail: stessa pagina, cambia solo la riga in alto
 if(location.hash==='#nomail'){document.querySelectorAll('[data-mail]').forEach(e=>e.hidden=true);document.querySelectorAll('[data-nomail]').forEach(e=>e.hidden=false)}
 else{document.querySelectorAll('[data-nomail]').forEach(e=>e.hidden=true)}
-var end=Date.parse('2026-11-08T23:59:59+01:00');function p(n){return String(n).padStart(2,'0')}
-function tk(){var t=Math.max(0,end-Date.now())/1e3;document.querySelectorAll('.tm').forEach(function(e){var b=e.querySelectorAll('b');b[0].textContent=p(Math.floor(t/86400));b[1].textContent=p(Math.floor(t%86400/3600));b[2].textContent=p(Math.floor(t%3600/60));b[3].textContent=p(Math.floor(t%60))})}
-tk();setInterval(tk,1000);
 document.querySelectorAll('form').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();location.href=f.dataset.go}));
-</script><script>
-// The Build page (9/11) starts at €5.99; this old switch finds no €1.99 option and does nothing. After Sunday 8 November (Rome) the Full 3D guide is €5.99 (Nico 8/11): the page says so by itself, like the funnel pages.
-(function(){var until=Date.parse('2026-11-08T23:59:59+01:00');if(Date.now()<until)return;
-var o=document.querySelector('.pick label[data-p="1.99"]');if(!o)return;o.dataset.p='5.99';
-o.querySelector('strong').innerHTML='€5.99<s>€29</s>';
-document.querySelectorAll('.uc .x3-kick').forEach(function(k){k.textContent='These prices are only here'});
-var g=document.getElementById('go');if(g&&/1\.99/.test(g.textContent))g.textContent='Get it · €5.99 →';})();
 </script><script defer src="/_vercel/insights/script.js"></script></body></html>

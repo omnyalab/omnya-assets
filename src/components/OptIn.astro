@@ -69,7 +69,7 @@ const next = after || `/${slug}/sent`;
       <div class="oil__ck"><svg viewBox="0 0 40 40"><path d="M10 21l7 7 14-15" /></svg></div>
       <p class="oil__t">You're all set<span data-oil-nm></span></p>
       <p class="oil__p"><b>Your <span style="color:#2997ff">free</span> blueprint</b> is in your inbox.</p>
-      <p class="oil__p">If one day you want to implement it faster, <b>the full interactive 3D course</b> is here for <b data-oil-price>€1.99</b>.</p>
+      <p class="oil__p">If one day you want to implement it faster, <b>the full interactive 3D course</b> is here for <b>€5.99</b>.</p>
       <a class="x3-btn x3-btn--blue" data-oil-go data-astro-reload href={next}>Have a look →</a>
       <button type="button" class="oil__no" data-oil-skip>I'm good with the free one, thanks</button>
     </div>
@@ -126,8 +126,6 @@ const next = after || `/${slug}/sent`;
     var oil = document.querySelector('[data-oil]');
     var T = function (fn, ms) { return setTimeout(fn, ms); };
     var st = function (n) { return oil.querySelector('[data-st="' + n + '"]'); };
-    // after Sunday 8 November every Full guide is €5.99 (Nico 8/11)
-    if (Date.now() > Date.parse('2026-11-08T23:59:59+01:00')) oil.querySelector('[data-oil-price]').textContent = '€5.99';
     oil.querySelector('[data-oil-skip]').addEventListener('click', function () { if (locked) { location.href = '/go/' + free; return; } oil.hidden = true; box.hidden = true; });
     form.addEventListener('submit', function (e) {
       e.preventDefault();

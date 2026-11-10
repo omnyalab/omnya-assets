@@ -189,23 +189,13 @@ html,body{min-height:100%}
 <p class="x3-kick">These prices are only available on this page</p>
 <h1 data-one>The Full Guide<br><span>Tower</span></h1><h1 data-all>Everything<br><span>we teach</span></h1>
 <div class="pick">
-<label class="on" data-p="1.99"><i></i><div>The Full Tower Guide<span>every prompt to build an interactive 3D tower</span></div><strong>€1.99<s>€29</s></strong></label>
+<label class="on" data-p="5.99"><i></i><div>The Full Tower Guide<span>every prompt to build an interactive 3D tower</span></div><strong>€5.99<s>€29</s></strong></label>
 <label data-p="59"><i></i><div>Everything we teach<span>4 Full Guides + 3 playbooks</span><em class="tag2">Only here</em></div><strong>€59<s>€164</s></strong></label>
-</div><a class="x3-btn x3-btn--blue" id="go" href="/go/full-tower">Get it · €1.99 →</a>
+</div><a class="x3-btn x3-btn--blue" id="go" href="/go/full-tower">Get it · €5.99 →</a>
 <div data-one><ul class="ul"><li><span><b>Every prompt, word for word</b>, for the tower, the flight into the floor and the rooms</span></li><li><span><b>Thirteen chapters</b>, from the tower photo to the site you send buyers</span></li><li><span><b>The floor picker</b>, trace the floors, hover, click and fly in</span></li><li><span><b>What to charge</b> and how it goes online</span></li></ul></div><div data-all><ul class="ul"><li><span><b>The Full Tower Guide</b>, every prompt to build a tower that sells</span></li><li><span><b>The Full 3D Guide</b>, how to make a 3D that sells with AI</span></li><li><span><b>The Full Build Guide</b>, how to build a house that builds itself</span></li><li><span><b>The Full Towers Guide</b>, three towers you choose the view of</span></li><li><span><b>3 playbooks</b>, from 3D to real photo, the reel they comment on, sell it before it exists</span></li><li><span><b>€164</b> bought one by one, €79 for the playbooks alone on the site, <b>here only €59</b></span></li></ul></div></div><a class="nt" href="/go/free-tower" target="_blank" rel="noopener">No thanks, the free one is enough</a></div></section>
 <script>document.querySelectorAll('.pick label').forEach(l=>l.onclick=()=>{document.querySelectorAll('.pick label').forEach(x=>x.classList.remove('on'));l.classList.add('on');var all=l.dataset.p==='59';var g=document.getElementById('go');g.textContent='Get it · €'+l.dataset.p+' →';g.href=l.dataset.p==='59'?'/go/everything':'/go/full-tower';document.querySelector('.w').classList.toggle('all',all)})</script></div><script>
 // senza mail: stessa pagina, cambia solo la riga in alto
 if(location.hash==='#nomail'){document.querySelectorAll('[data-mail]').forEach(e=>e.hidden=true);document.querySelectorAll('[data-nomail]').forEach(e=>e.hidden=false)}
 else{document.querySelectorAll('[data-nomail]').forEach(e=>e.hidden=true)}
-var end=Date.parse('2026-11-08T23:59:59+01:00');function p(n){return String(n).padStart(2,'0')}
-function tk(){var t=Math.max(0,end-Date.now())/1e3;document.querySelectorAll('.tm').forEach(function(e){var b=e.querySelectorAll('b');b[0].textContent=p(Math.floor(t/86400));b[1].textContent=p(Math.floor(t%86400/3600));b[2].textContent=p(Math.floor(t%3600/60));b[3].textContent=p(Math.floor(t%60))})}
-tk();setInterval(tk,1000);
 document.querySelectorAll('form').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();location.href=f.dataset.go}));
-</script><script>
-// After Sunday 8 November (Rome) the Full Tower guide is €5.99 (Nico 8/11): the page says so by itself, like the funnel pages.
-(function(){var until=Date.parse('2026-11-08T23:59:59+01:00');if(Date.now()<until)return;
-var o=document.querySelector('.pick label[data-p="1.99"]');if(!o)return;o.dataset.p='5.99';
-o.querySelector('strong').innerHTML='€5.99<s>€29</s>';
-document.querySelectorAll('.uc .x3-kick').forEach(function(k){k.textContent='These prices are only available on this page'});
-var g=document.getElementById('go');if(g&&/1\.99/.test(g.textContent))g.textContent='Get it · €5.99 →';})();
 </script><script defer src="/_vercel/insights/script.js"></script></body></html>

@@ -120,6 +120,7 @@ async function start() {
   const left = sale.left || {};
   const mine = { np: !!L.newTower, penthouse: !!L.pent, villa: !!(L.hills && L.premium), fountain: !L.floor && !L.hills && !L.town && !L.sea && n <= 8, town: !!L.town, sea: !!L.sea, sky: !!L.pent };
   const open = Object.fromEntries(['fountain', 'sky', 'np', 'villa', 'town', 'sea', 'penthouse'].map((k) => [k, !!sale[k] && !mine[k] && (left[k] ?? 1) > 0]));
+  open.villa = false; // 10/11: the top villa is off the page (its Stripe link is no longer active, see pages/city/house.astro)
   const auc = all.auctions || {};
   for (const k of ['yacht', 'island']) open[k] = !!auc[k] && !auc[k].done; // 7/11: one of each, by auction (only "View")
   const where = `#${shown.toLocaleString('en')} in ${placeName(L)}`;
@@ -255,13 +256,6 @@ document.addEventListener('click', (e) => {
   if (go) { go.href = l.dataset.go; go.textContent = `Get it · €${l.dataset.p}`; }
 });
 addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDialog(); });
-
-// After Sunday 8 November (Rome) the Full City Guide is €5.99, Nico 8/11 (same switch as the funnels)
-if (Date.now() >= Date.parse(window.__cityDeal || '2026-11-08T23:59:59+01:00')) {
-  document.querySelectorAll('label[data-p="1.99"]').forEach((l) => { l.dataset.p = '5.99'; l.querySelector('[data-full]').innerHTML = '€5.99<s>€29</s>'; });
-  document.querySelectorAll('.bookgo').forEach((g) => (g.textContent = 'Get it · €5.99'));
-  document.querySelectorAll('[data-kick]').forEach((k) => (k.textContent = 'These prices are only available on this page'));
-}
 
 start().catch((e) => { console.error(e); none(); });
 window.__house = { W, orbit, place };

@@ -3,10 +3,10 @@
 // rebuilt like /3d-to-film. Free blueprint first ("Steal our tower method", cover 1 with the Full book small),
 // the Full Tower Blueprint ("How to build a tower that sells with AI") right under it, then the 3D/photo pairs,
 // the five steps, who it is for, questions and the last call. Montserrat, Apple blue and black.
-// On phones the opening is built like the free cover. The launch price ends by itself (fullTowerDeal).
+// On phones the opening is built like the free cover. The Full one is €5.99, written in the page (10/11: the launch price and its switch are gone).
 // The Italian page was removed on 8/11 (Nico): /it/the-tower-blueprint and /it/tower redirect here. No site header here (Nico, 5/11).
 import Base from '../layouts/Base.astro';
-import { goHref, fullTowerDeal } from '../lib/learn';
+import { goHref } from '../lib/learn';
 
 const free = goHref('free-tower', 'en');
 const full = goHref('full-tower', 'en');
@@ -47,7 +47,6 @@ import OptIn from '../components/OptIn.astro';
   <div class="x3-deal__glow" aria-hidden="true"></div>
   <div class="x3-in">
     <div class="x3-card">
-      <span class="x3-card__tab" data-deal>Only on this page</span>
       <div class="x3-card__book"><div class="x3-card__halo" aria-hidden="true"></div><img src="/learn/tw_book.webp" width="526" height="731" alt="The Full Tower Blueprint, the book"></div>
       <div class="x3-card__body">
         <p class="x3-kick">Everything you get</p>
@@ -60,10 +59,10 @@ import OptIn from '../components/OptIn.astro';
           <li><i></i><div><b>Phones and delivery</b><span>how it opens on a phone, how it goes online and what to charge</span></div><em>Included</em></li>
         </ul>
         <div class="x3-pay">
-          <div class="x3-pay__price" data-deal><small>Today</small><b>€1.99</b><s>€19</s><span>−90%</span></div><div class="x3-pay__price" data-after hidden><b>€5.99</b><s>€29</s></div>
+          <div class="x3-pay__price"><b>€5.99</b><s>€29</s></div>
           <a class="x3-cta" href={full}><span>Get the Full Blueprint</span><i>→</i></a>
         </div>
-        <p class="x3-pay__note"><span data-deal>Until Sunday 8 November at midnight, then €5.99. </span><span data-after hidden>These prices are only available on this page. </span>The PDF arrives right after payment.</p>
+        <p class="x3-pay__note">These prices are only available on this page. The PDF arrives right after payment.</p>
       </div>
     </div>
   </div>
@@ -129,19 +128,12 @@ import OptIn from '../components/OptIn.astro';
   <div class="x3-in">
     <p class="x3-kick">Still a drawing on your screen?</p>
     <h2 class="x3-T">Sell<br><span class="x3-box">every floor</span></h2>
-    <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={full}>Get the Full Blueprint<span data-deal> · €1.99</span> →</a><a class="x3-btn x3-btn--line" href={free} target="_blank" rel="noopener">Start with the free one</a></div>
+    <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={full}>Get the Full Blueprint →</a><a class="x3-btn x3-btn--line" href={free} target="_blank" rel="noopener">Start with the free one</a></div>
     <p class="x3-small">Or send us your tower, <a href={sample}>the first image is free</a>.</p>
   </div>
 </section>
 <p class="x3-foot">OMNYA LAB</p>
 </div>
-<script is:inline define:vars={{ until: fullTowerDeal.until }}>
-  // After Sunday the €5.99 version shows by itself
-  if (Date.now() >= Date.parse(until)) {
-    document.querySelectorAll('.x3 [data-deal]').forEach((el) => (el.hidden = true));
-    document.querySelectorAll('.x3 [data-after]').forEach((el) => (el.hidden = false));
-  }
-</script>
 </Base>
 
 <style is:global>

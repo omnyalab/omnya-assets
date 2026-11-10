@@ -1,12 +1,11 @@
 ---
 // The Full Tower Blueprint offer on /the-tower-blueprint (4/11, board rounds 1-11, chosen by Nico):
-// right under the hero, peeking at the bottom of the first screen with the "90% OFF till Sunday" tab,
-// and again before the closing card. Apple blue, pastel card between C-1 and C-2, the book with
-// the blue band. The launch price shows until Sunday 8 November; after that a small script swaps
-// to the €5.99 version without a new deploy, so the offer really ends.
+// right under the hero and again before the closing card. Apple blue, pastel card between C-1 and C-2, the book
+// with the blue band. 10/11: the 1,000 followers launch (€1.99 until Sunday 8 November, the "90% OFF" tab, the
+// script that swapped the price) is gone; the card says €5.99, written here.
 import Book3D from './Book3D.astro';
 import Arrow from './Arrow.astro';
-import { goHref, fullTowerDeal } from '../lib/learn';
+import { goHref } from '../lib/learn';
 import { t, langFromPath } from '../i18n';
 
 interface Props {
@@ -17,29 +16,22 @@ const lang = langFromPath(Astro.url.pathname);
 const X = t(lang).learn.tw;
 const money = (n: number) => (lang === 'it' ? `${String(n).replace('.', ',')} €` : `€${n}`);
 const top = variant === 'top';
-const titleA = top ? X.upA : X.endA;
-const titleB = top ? X.upB : X.endB;
-const afterA = top ? X.upAfterA : X.endAfterA;
-const afterB = top ? X.upAfterB : X.endAfterB;
+const titleA = top ? X.upAfterA : X.endAfterA;
+const titleB = top ? X.upAfterB : X.endAfterB;
 ---
 
 <section class:list={['twoffer', `twoffer--${variant}`]} id={top ? 'full' : 'full-end'} aria-label={X.bookAlt} data-tw-offer>
   <div class="twoffer__card">
-    {top && <span class="twoffer__tab tw-shine" data-deal>{X.tab}</span>}
     <div class="twoffer__book"><Book3D a={X.bookA} b={X.bookB} band={X.bookBand} alt={X.bookAlt} /></div>
     <div class="twoffer__copy">
       {top && <p class="twoffer__ok" data-tw-ok hidden>✓ {X.ok}</p>}
-      {top && <p class="twoffer__thanks" data-deal>{X.thanks}</p>}
       <h2 class="twoffer__title">
-        <span data-deal>{titleA} <span class="twoffer__acc">{titleB}</span></span>
-        <span data-after hidden>{afterA} <span class="mute">{afterB}</span></span>
+        {titleA} <span class="mute">{titleB}</span>
       </h2>
       {!top && <p class="twoffer__text">{X.endText}</p>}
       <p class="twoffer__price">
-        <span data-deal><b>{money(fullTowerDeal.price)}</b> <s>{money(fullTowerDeal.was)}</s> <span class="twoffer__off">−{fullTowerDeal.off}%</span></span>
-        <span data-after hidden><b>{money(fullTowerDeal.then)}</b></span>
+        <span><b>{money(5.99)}</b></span>
       </p>
-      <p class="twoffer__why" data-deal>{X.why[0]} <b>{X.why[1]}</b>, {X.why[2]} <b>{X.why[3]}</b>.</p>
       <div class="twoffer__ctas">
         <a class="twbtn twbtn--blue twoffer__buy" href={goHref('full-tower', lang)}>{X.cta} <Arrow /></a>
         {top && <a class="twoffer__no" href="#books">{X.no}</a>}
@@ -50,16 +42,7 @@ const afterB = top ? X.upAfterB : X.endAfterB;
 
 {
   top && (
-    <script is:inline define:vars={{ until: fullTowerDeal.until }}>
-      // After Sunday the €5.99 version shows by itself
-      // runs after the whole page is parsed: the "end" card comes later in the HTML than this script (8/11 fix)
-      if (Date.now() >= Date.parse(until)) {
-        const swap = () => {
-          document.querySelectorAll('[data-tw-offer] [data-deal], [data-tw-deal]').forEach((el) => (el.hidden = true));
-          document.querySelectorAll('[data-tw-offer] [data-after], [data-tw-after]').forEach((el) => (el.hidden = false));
-        };
-        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', swap); else swap();
-      }
+    <script is:inline>
       // The free PDF opens in a new tab; this page stays and says it is on its way
       document.querySelectorAll('[data-tw-dl]').forEach((a) =>
         a.addEventListener('click', () => {

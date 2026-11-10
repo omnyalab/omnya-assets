@@ -1,11 +1,11 @@
 ---
 // /the-tower-floors (6/11): the funnel for the tower floors reel (DfaH3QkN4qs, word AI): the floor plan,
 // the floor in 3D and the rooms. A copy of /the-tower-blueprint (same style, same free and Full PDFs,
-// same fullTowerDeal), with the copy about the floors: the levels on the tower, the plan of one level,
+// same €5.99 written in the page), with the copy about the floors: the levels on the tower, the plan of one level,
 // its 3D, room by room, and the buyer picking floor and apartment (Full Blueprint chapters 05-07).
 // English only, no site header. Short link: /floors.
 import Base from '../layouts/Base.astro';
-import { goHref, fullTowerDeal } from '../lib/learn';
+import { goHref } from '../lib/learn';
 
 const free = goHref('free-tower', 'en');
 const full = goHref('full-tower', 'en');
@@ -47,7 +47,6 @@ import OptIn from '../components/OptIn.astro';
   <div class="x3-deal__glow" aria-hidden="true"></div>
   <div class="x3-in">
     <div class="x3-card">
-      <span class="x3-card__tab" data-deal>Only on this page</span>
       <div class="x3-card__book"><div class="x3-card__halo" aria-hidden="true"></div><img src="/learn/tw_book.webp" width="526" height="731" alt="The Full Tower Blueprint, the book"></div>
       <div class="x3-card__body">
         <p class="x3-kick">Everything you get</p>
@@ -60,10 +59,10 @@ import OptIn from '../components/OptIn.astro';
           <li><i></i><div><b>The fast way</b><span>a prompt that hands the whole PDF to Claude Code</span></div><em>Included</em></li>
         </ul>
         <div class="x3-pay">
-          <div class="x3-pay__price" data-deal><small>Today</small><b>€1.99</b><s>€19</s><span>−90%</span></div><div class="x3-pay__price" data-after hidden><b>€5.99</b><s>€29</s></div>
+          <div class="x3-pay__price"><b>€5.99</b><s>€29</s></div>
           <a class="x3-cta" href={full}><span>Get the Full Blueprint</span><i>→</i></a>
         </div>
-        <p class="x3-pay__note"><span data-deal>Until Sunday 8 November at midnight, then €5.99. </span><span data-after hidden>These prices are only available on this page. </span>The PDF arrives right after payment.</p>
+        <p class="x3-pay__note">These prices are only available on this page. The PDF arrives right after payment.</p>
       </div>
     </div>
   </div>
@@ -159,19 +158,12 @@ import OptIn from '../components/OptIn.astro';
   <div class="x3-in">
     <p class="x3-kick">Still a plan on your screen?</p>
     <h2 class="x3-T">Sell<br><span class="x3-box">every floor</span></h2>
-    <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={full}>Get the Full Blueprint<span data-deal> · €1.99</span> →</a><a class="x3-btn x3-btn--line" href={free} target="_blank" rel="noopener">Start with the free one</a></div>
+    <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={full}>Get the Full Blueprint →</a><a class="x3-btn x3-btn--line" href={free} target="_blank" rel="noopener">Start with the free one</a></div>
     <p class="x3-small">Or send us your plans, <a href={sample}>the first image is free</a>.</p>
   </div>
 </section>
 <p class="x3-foot">OMNYA LAB</p>
 </div>
-<script is:inline define:vars={{ until: fullTowerDeal.until }}>
-  // After Sunday the €5.99 version shows by itself
-  if (Date.now() >= Date.parse(until)) {
-    document.querySelectorAll('.x3 [data-deal]').forEach((el) => (el.hidden = true));
-    document.querySelectorAll('.x3 [data-after]').forEach((el) => (el.hidden = false));
-  }
-</script>
 </Base>
 
 <style is:global>
@@ -368,7 +360,7 @@ import OptIn from '../components/OptIn.astro';
   .x3-mhero__for{margin:12px 0 0;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
   .x3-mhero .x3-ctas{margin-top:22px;padding-bottom:36px}
 }
-/* the €79 pack under the €1.99 card (6/11): three playbooks in an arc, same card language */
+/* the €79 pack under the Full card (6/11): three playbooks in an arc, same card language */
 .pk{position:relative;padding:40px 0 clamp(80px,10vw,130px);overflow:hidden}
 .pk__glow{position:absolute;inset:0;background:radial-gradient(55% 55% at 28% 50%,rgba(41,151,255,.42),rgba(41,151,255,0) 70%),radial-gradient(40% 40% at 90% 85%,rgba(0,113,227,.3),rgba(0,113,227,0) 70%);pointer-events:none}
 .pk .x3-card{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
@@ -398,7 +390,7 @@ import OptIn from '../components/OptIn.astro';
   .pk .x3-pay__price{flex-wrap:nowrap}
   .pk .x3-pay__price b{font-size:36px}
 }
-/* 2,000 followers offer bar (6/11): seen first, sends down to the €39 pack; the €1.99 card stays first on the page */
+/* 2,000 followers offer bar (6/11): seen first, sends down to the €39 pack; the Full card stays first on the page */
 .x3-flash{position:relative;z-index:5;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;padding:12px 18px;background:linear-gradient(90deg,#0071e3,#2997ff,#0071e3);color:#fff;text-decoration:none;font-weight:700;font-size:14px;letter-spacing:.04em;text-align:center;box-shadow:0 10px 30px -10px rgba(41,151,255,.9);animation:x3glow 2.2s ease-in-out infinite}
 .x3-flash b{font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:12px;background:#fff;color:#0071e3;padding:5px 10px;border-radius:999px}
 .x3-flash s{opacity:.7;margin-left:4px}

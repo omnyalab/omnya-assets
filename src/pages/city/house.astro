@@ -3,10 +3,9 @@
 // "View my home": the house in 3D on its lot, turning with a finger; number, district, neighbour, share.
 // 7/11/2026 (board approved by Nico, cozy yellow, no blue): the page fades in once the house is found;
 // MOVE UP (sticker, button, "Get a top spot" cards) opens the place picker (penthouse, top villa, fountain, €0.99 on Stripe);
-// the cozy book on the city and the card next to the house sell the Full City Guide (€1.99 until Sunday) or Everything (€59).
+// the cozy book on the city and the card next to the house sell the Full City Guide (€5.99, written in the page since 10/11) or Everything (€59).
 import CityHead from '../../components/CityHead.astro';
 import { cityUpgrades, cityWhatsApp } from '../../lib/city';
-import { fullCityDeal } from '../../lib/learn';
 
 const up: Record<string, any> = Object.fromEntries(cityUpgrades.map((o) => [o.id, o]));
 // 7/11 (Nico): townhouses on the water €0.99 (tranches 6/6/8) and seafront villas €2.99 (2 at a time), our own Stripe Checkout;
@@ -27,14 +26,16 @@ const places = [
   { id: 'fountain', img: '/city/up/fountain.jpg', name: 'By the fountain', pick: 'A house by the fountain', line: 'Downtown, one of the first 8 houses', card: 'Downtown, one of the first 8 houses of the city.' },
   { id: 'sky', img: '/city/up/penthouse.jpg', name: 'The penthouse', line: 'Top floor of a tower in The Residences', card: 'Top floor of a tower in The Residences, the whole city below.' },
   { id: 'np', img: '/city/up/np.jpg', name: 'Green towers', pick: 'A penthouse in the green towers', line: 'New towers in the park, roof garden', card: 'The top floor of a new tower in the park, garden and pool on the roof.' },
-  { id: 'villa', img: '/city/up/villa.jpg', name: 'A top villa', pick: 'A top villa in Omnyawood', line: 'Pool and view, under the letters', card: 'Omnyawood, the top terrace under the letters, with the pool.' },
+  // 10/11: "A top villa" (Omnyawood, €0.99) is off the page: its Stripe Payment Link is no longer active. To sell it again
+  // it needs a new link in lib/city.ts (or our own Checkout, like the fountain) and its line back here:
+  // { id: 'villa', img: '/city/up/villa.jpg', name: 'A top villa', pick: 'A top villa in Omnyawood', line: 'Pool and view, under the letters', card: 'Omnyawood, the top terrace under the letters, with the pool.' },
   { id: 'town', img: '/city/up/town.jpg', name: 'On the water', pick: 'A townhouse on the water', line: 'The Residences, garden on the beach', card: 'A townhouse on the beach of The Residences, the sea in front.' },
   { id: 'sea', img: '/city/up/sea.jpg', name: 'Seafront villa', pick: 'A seafront villa', line: 'Pool on the beach, by the marina', card: 'A villa on the beach by the marina, the pool facing the sea.' },
   { id: 'yacht', img: '/city/up/yacht.jpg', name: 'Yacht of ???', pick: 'Yacht of ???', line: 'Only one in the city · auction', card: 'The only yacht in the city. Its name will be yours.', gold: true },
   { id: 'island', img: '/city/up/island.jpg', name: 'Island of ???', pick: 'Island of ???', line: 'Only one in the city · auction', card: 'A villa alone on its own island. Only one.', gold: true },
 ];
 const pickBook = `<div class="pick" data-g="book">
-  <label class="on" data-go="/go/full-city?k=city" data-p="1.99"><i></i><div>The Full City Guide<span>every prompt to build a 3D city like this</span></div><strong data-full>€1.99<s>€19</s></strong></label>
+  <label class="on" data-go="/go/full-city?k=city" data-p="5.99"><i></i><div>The Full City Guide<span>every prompt to build a 3D city like this</span></div><strong data-full>€5.99<s>€29</s></strong></label>
   <label data-go="/go/everything?k=city" data-p="59"><i></i><div>Everything we teach<span>4 Full Guides + 3 playbooks</span><em class="tag">Only here</em></div><strong>€59<s>€164</s></strong></label>
 </div>`;
 ---
@@ -117,7 +118,7 @@ const pickBook = `<div class="pick" data-g="book">
           </div>
         </div>
         <Fragment set:html={pickBook} />
-        <a class="btn bookgo" href="/go/full-city?k=city">Get it · €1.99</a>
+        <a class="btn bookgo" href="/go/full-city?k=city">Get it · €5.99</a>
       </article>
 
       <footer class="foot">
@@ -175,11 +176,10 @@ const pickBook = `<div class="pick" data-g="book">
         <h2>Build a city like this</h2>
         <p class="sub">Every prompt we gave Claude to build Omnya City: the houses, the map and the links in the DMs.</p>
         <Fragment set:html={pickBook} />
-        <a class="btn bookgo" href="/go/full-city?k=city">Get it · €1.99</a>
+        <a class="btn bookgo" href="/go/full-city?k=city">Get it · €5.99</a>
         <button class="no" type="button" data-close>No thanks</button>
       </div>
     </div>
-    <script is:inline define:vars={{ dealUntil: fullCityDeal.until }}>window.__cityDeal = dealUntil;</script>
     <script type="module" src="/city/house.js"></script>
   </body>
 </html>

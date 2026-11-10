@@ -2,12 +2,12 @@
 // /the-city-blueprint (5/11/2026, Omnya City reel): the funnel for "I'm giving every follower a free house".
 // Built like /3d-to-film and /the-tower-blueprint (Montserrat, Apple blue, black, no site header), with bigger
 // buttons on the first screen (Nico: "fai bene i pulsanti") and a sticky bar on phones.
-// Free blueprint first (3 real prompts), the Full one right under it at the 1,000 followers price (fullCityDeal),
+// Free blueprint first (3 real prompts), the Full one right under it at €5.99 (written in the page, 10/11: the launch price and its switch are gone),
 // then the five steps, who it is for, questions and the last call.
 // Images are renders of the real city (public/city) and frames of the reel; the PDFs are built in
 // ~/Desktop/Omnya City Blueprint (free/build_free.py, full/build_full.py).
 import Base from '../layouts/Base.astro';
-import { goHref, fullCityDeal } from '../lib/learn';
+import { goHref } from '../lib/learn';
 
 const free = goHref('free-city', 'en');
 const full = goHref('full-city', 'en');
@@ -30,7 +30,7 @@ import OptIn from '../components/OptIn.astro';
       <p class="x3-lead"><b>The 3D city behind our free house reel, built by Claude from three prompts.</b> Grab them free.</p>
       <div class="ct-ctas">
         <a class="ct-free" href={free} target="_blank" rel="noopener"><span><b>Grab the free blueprint</b><small>PDF · the 3 prompts behind the city</small></span><i>↓</i></a>
-        <a class="ct-full" href="#full">Get the Full one<em><span data-deal><s>€19</s>€1.99</span><span data-after hidden>€5.99</span></em></a>
+        <a class="ct-full" href="#full">Get the Full one<em>€5.99</em></a>
       </div>
       <p class="ct-proof"><span>No SketchUp</span><span>No Blender</span><span>Runs on a phone</span></p>
     </div>
@@ -42,7 +42,6 @@ import OptIn from '../components/OptIn.astro';
   <div class="x3-deal__glow" aria-hidden="true"></div>
   <div class="x3-in">
     <div class="x3-card">
-      <span class="x3-card__tab" data-deal>Only on this page</span>
       <div class="x3-card__book"><div class="x3-card__halo" aria-hidden="true"></div><img src="/learn/ct_book.webp" width="600" height="700" alt="The Full City Blueprint, the book" loading="lazy"></div>
       <div class="x3-card__body">
         <p class="x3-kick">Everything you get</p>
@@ -55,10 +54,10 @@ import OptIn from '../components/OptIn.astro';
           <li><i></i><div><b>The money</b><span>the offers under every house, and how to adapt it to your brand</span></div><em>Included</em></li>
         </ul>
         <div class="x3-pay">
-          <div class="x3-pay__price" data-deal><small>Today</small><b>€1.99</b><s>€19</s><span>−90%</span></div><div class="x3-pay__price" data-after hidden><b>€5.99</b><s>€29</s></div>
+          <div class="x3-pay__price"><b>€5.99</b><s>€29</s></div>
           <a class="x3-cta" href={full}><span>Get the Full Blueprint</span><i>→</i></a>
         </div>
-        <p class="x3-pay__note"><span data-deal>Until Sunday 8 November at midnight, then €5.99. </span><span data-after hidden>These prices are only available on this page. </span>The PDF arrives right after payment.</p>
+        <p class="x3-pay__note">These prices are only available on this page. The PDF arrives right after payment.</p>
       </div>
     </div>
   </div>
@@ -111,20 +110,15 @@ import OptIn from '../components/OptIn.astro';
   <div class="x3-in">
     <p class="x3-kick">Your followers want a house</p>
     <h2 class="x3-T">Build<br><span class="x3-box">your city</span></h2>
-    <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={full}>Get the Full Blueprint<span data-deal> · €1.99</span> →</a><a class="x3-btn x3-btn--line" href={free} target="_blank" rel="noopener">Start with the free one</a></div>
+    <div class="x3-ctas"><a class="x3-btn x3-btn--blue" href={full}>Get the Full Blueprint →</a><a class="x3-btn x3-btn--line" href={free} target="_blank" rel="noopener">Start with the free one</a></div>
     <p class="x3-small">Or send us your project, <a href={sample}>the first image is free</a>.</p>
   </div>
 </section>
 
 <p class="x3-foot">OMNYA LAB</p>
-<nav class="ct-bar" aria-label="Get the blueprint" data-bar><a class="a" href={free} target="_blank" rel="noopener">Free blueprint ↓</a><a class="b" href="#full">Full <span data-deal>€1.99</span><span data-after hidden>€5.99</span></a></nav>
+<nav class="ct-bar" aria-label="Get the blueprint" data-bar><a class="a" href={free} target="_blank" rel="noopener">Free blueprint ↓</a><a class="b" href="#full">Full €5.99</a></nav>
 </div>
-<script is:inline define:vars={{ until: fullCityDeal.until }}>
-  // After Sunday the €5.99 version shows by itself
-  if (Date.now() >= Date.parse(until)) {
-    document.querySelectorAll('.x3 [data-deal]').forEach((el) => (el.hidden = true));
-    document.querySelectorAll('.x3 [data-after]').forEach((el) => (el.hidden = false));
-  }
+<script is:inline>
   // the bar on phones shows once the first buttons are out of sight
   (function () {
     const bar = document.querySelector('[data-bar]'), hero = document.querySelector('.x3-hero .ct-ctas');

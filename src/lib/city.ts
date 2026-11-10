@@ -18,7 +18,9 @@ export type CityUpgrade = { id: 'penthouse' | 'villa' | 'fountain'; title: strin
 export const cityUpgrades: CityUpgrade[] = [
   { id: 'penthouse', title: 'Get a penthouse', line: 'The top floor of a tower in The Residences. Only 3.', was: '€19', price: '€0.99', checkout: 'https://buy.stripe.com/7sY9ASfxb3bW9FY76l8so0o' },
   { id: 'fountain', title: 'A house by the fountain', line: 'One of the 8 houses around the fountain, downtown. Only 8.', was: '€19', price: '€0.99', checkout: 'https://buy.stripe.com/14AbJ098N4g019sgGV8so0n' },
-  { id: 'villa', title: 'A top villa in Omnyawood', line: 'The top terrace, under the OMNYAWOOD letters. Only 10.', was: '€19', price: '€0.99', checkout: 'https://buy.stripe.com/aFa5kC5WBfYIg4m9et8so0p' },
+  // 10/11: the villa's Payment Link (…g4m9et8so0p) is no longer active on Stripe, so the link is gone from here and the
+  // option is off /city/@username (pages/city/house.astro); with an empty checkout it could only open WhatsApp
+  { id: 'villa', title: 'A top villa in Omnyawood', line: 'The top terrace, under the OMNYAWOOD letters. Only 10.', was: '€19', price: '€0.99', checkout: '' },
 ];
 
 export const cityWhatsApp = 'https://wa.me/393792220465';
