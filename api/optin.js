@@ -29,6 +29,7 @@ function mailHtml(name, f, unsub) {
 <h1 style="margin:0 0 18px;font-size:28px;line-height:1.1;letter-spacing:-.02em">Here it is, ${esc(name)}.</h1>
 <p style="margin:0 0 26px;color:#ffffffc0">${esc(f.name)}, the method in five steps. Open it next to your screen and follow it step by step.</p>
 <p style="margin:0 0 30px"><a href="${SITE}${f.file}" style="display:inline-block;background:#2997ff;color:#fff;text-decoration:none;padding:14px 24px;border-radius:999px;font-weight:700">Download ${esc(f.name)}</a></p>
+<p style="margin:0 0 30px;color:#ffffffc0;font-size:14px">The photos and clips in our guides are made on Higgsfield, and right now new users get unlimited generations inside Claude with Higgsfield MCP: <a href="https://higgsfield.ai?fpr=omnya-5b7f71" style="color:#2997ff">higgsfield.ai</a> (affiliate link, it costs you nothing more)</p>
 <p style="margin:0;color:#ffffff80;font-size:13px">You get this because you asked for it on omnyalab.com. No spam, ever. <a href="${unsub}" style="color:#ffffff80">Unsubscribe</a> in one click.</p>
 </div></body></html>`;
 }
