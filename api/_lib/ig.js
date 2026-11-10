@@ -22,6 +22,7 @@ import { host } from './config.js';
 import * as T from './ig-texts.js';
 import { resolvePost, codeOf, cleanCode, isDest, POSTS, WORDS } from './ig-posts.js';
 import { linkFor, cleanName } from './city.js';
+import { placeIn } from './ig-places.js';
 
 export { clock };
 
@@ -540,6 +541,73 @@ export async function click(go, post, k, count = true) {
   return dest === 'city' && /^[A-Za-z0-9_-]{10,40}$/.test(k || '') ? `${url}?k=${k}` : url;
 }
 
+// ---------- which line comes next ----------
+
+// The public replies and the DMs of direct mode exist in several wordings (ig-texts.js) and are taken
+// in turn, so Instagram never sees the same line twice in a row under the same reel (its filter holds
+// back replies that look repeated: "code 20 sub 1772107", 10/11/2026). Every reel has its own count
+// for every list, kept in Redis (rot:<list>:<post>, one INCR, so two calls running together still get
+// two different turns); each time round the lines come in a new order, and the first of a round is
+// never the last of the one before.
+
+function seeded(text) {
+  let a = 2166136261;
+  for (const c of String(text)) a = Math.imul(a ^ c.codePointAt(0), 16777619);
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** The order of the lines for one round: the same for the same reel and round, different from round to round. */
+function roundOrder(n, salt, round) {
+  const order = Array.from({ length: n }, (_, i) => i);
+  const rnd = seeded(`${salt}:${round}`);
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  return order;
+}
+
+/**
+ * The line of turn number `turn` (0, 1, 2…): every line once per round, and never the same line on
+ * two turns in a row. Any number is fine (a broken count falls on a line all the same).
+ */
+export function lineAt(lines, turn, salt = '') {
+  const n = lines.length;
+  if (n < 2) return lines[0];
+  const t = Number.isFinite(turn) && turn >= 0 ? Math.floor(turn) : 0;
+  if (n === 2) return lines[t % 2];
+  const round = Math.floor(t / n);
+  const order = roundOrder(n, salt, round);
+  // (with three lines or more the swap never moves the last of a round, so one look back is enough)
+  if (round > 0 && order[0] === roundOrder(n, salt, round - 1)[n - 1]) [order[0], order[1]] = [order[1], order[0]];
+  return lines[order[t % n]];
+}
+
+const ROT_KEEP = 30 * 86_400;
+
+/**
+ * This comment's turn in a list of lines ('d' the DM of direct, 'p' the public reply, 'c' the public
+ * reply with the city, 'a' the "one step first" of comment mode), counted per reel. Kept on the job,
+ * so a DM that is tried again says the same words. Never throws: if Redis can't count, a turn at random.
+ */
+async function turnOf(job, list) {
+  const field = `k${list}`;
+  if (!Number.isInteger(job[field])) {
+    try {
+      job[field] = (await kv.incr(`rot:${list}:${job.m || '-'}`, ROT_KEEP)) - 1;
+    } catch (e) {
+      console.warn('[ig] the turn of the lines was not read, one at random instead:', e.message);
+      job[field] = Math.floor(Math.random() * 1_000_000);
+    }
+  }
+  return job[field];
+}
+
 // ---------- the flow ----------
 
 /** The DM with the link of the page (and, on the first two Blueprints, the question under it). */
@@ -575,7 +643,8 @@ async function sendHouse(lead) {
 async function directDm(job, onSecond, words) {
   const p = job.p;
   const t = T.textsFor(p.dest);
-  const say = words || t.direct.text;
+  // the text of direct in one of its wordings, in turn (every one asks for the follow, none checks it)
+  const say = words || lineAt(t.direct.texts || [t.direct.text], await turnOf(job, 'd'), `d:${job.m}`);
   const url = p.dest === 'city' ? await houseUrl(job.n, job.u, p.code) : track(t.url, p.code);
   const inText = { text: `${say}\n\n${url}` };
   if (await isPlain()) return send({ comment_id: job.c }, inText);
@@ -700,6 +769,12 @@ async function accept(job, info) {
     if (!(await kv.once(key))) return 'already'; // one answer per person per reel
   }
   job.p = { dest: post?.dest || 'blueprint', code: info.code || cleanPost(job.m), word, link: info.permalink || '' };
+  // "comment your city": under a post of the map, a comment that is not the word but a city or a
+  // country of our list (ig-places.js) gets the public reply that says the place back; the DM is the same
+  if (post?.any && !matchWord(job.t, [...post.words, ...WORDS.filter((x) => x.dest === post.dest).map((x) => x.word)])) {
+    const place = placeIn(job.t);
+    if (place) job.p.place = place;
+  }
   delete job.raw;
   return null;
 }
@@ -845,8 +920,17 @@ async function deliver(job, ctx) {
   if (!job.pub) {
     try {
       // comment mode: "one step first" under the first comment, nothing more under the "almost there"
-      const lines = !dm ? [t.cantDm] : job.sent === 'ask' ? t.comment.askReplies : job.sent === 'almost' ? [] : t.publicReplies;
-      if (lines.length) await replyComment(cid, lines[Math.floor(Math.random() * lines.length)]);
+      // (a city or a country in the comment: the lines that say it back, with the name as our list spells it)
+      let lines = [t.cantDm];
+      let list = '';
+      if (dm) {
+        if (job.sent === 'ask') [lines, list] = [t.comment.askReplies, 'a'];
+        else if (job.sent === 'almost') lines = [];
+        else if (p.place) [lines, list] = [T.placeReplies.map((say) => say(p.place)), 'c'];
+        else [lines, list] = [t.publicReplies, 'p'];
+      }
+      // in turn, never the same line twice in a row under the same reel
+      if (lines.length) await replyComment(cid, list ? lineAt(lines, await turnOf(job, list), `${list}:${job.m}`) : lines[0]);
       if (job.gate && lines.length) gateLog(job.n, dm ? 'public-reply-sent' : 'public-reply-sent (the DM could not go: "send us a text")');
     } catch (e) {
       // the public reply is one call for one comment: whatever Meta says, the DM is already out (or
@@ -878,6 +962,7 @@ async function keep(job, uid, dm, now) {
     kind: p.dest,
     post: p.code,
     comment: job.t,
+    ...(p.place ? { place: p.place } : {}), // the city or country they commented, as our list spells it
     commentId: cid,
     commentAt: job.at,
     // the link went out with the DM (direct, or comment mode once they follow): they have it;

@@ -12,14 +12,41 @@ export const CITY = 'https://www.omnyalab.com/city';
 export const BOOK_CALL = 'https://omnyalab.com/book/call';
 export const WHATSAPP = 'https://wa.me/393792220465';
 
-/** Under the comment, one at random, so Instagram doesn't see the same line a hundred times. */
-export const publicReplies = [
-  'Sent 🙌🏻 check your DMs for The Blueprint',
+/**
+ * Under the comment: twelve ways to say "I sent it to you in DM", taken in turn and never the same
+ * twice in a row under the same reel (lineAt in ig.js), so Instagram's filter doesn't see one line a
+ * hundred times (10/11/2026: it held a reply back with "code 20 sub 1772107"). The first six are the
+ * ones that were already there. One emoji each, short, the way Nico writes.
+ */
+const repliesFor = (name) => [
+  `Sent 🙌🏻 check your DMs for ${name}`,
   'Just sent it, check your DMs 👀',
   'Done! It’s in your DMs 🫶🏻',
-  'Check your DMs, The Blueprint is there 🙌🏻',
-  'Sent you a DM 👇🏻 enjoy The Blueprint',
+  `Check your DMs, ${name} is there 🙌🏻`,
+  `Sent you a DM 👇🏻 enjoy ${name}`,
   'It’s in your inbox now 🙌🏻',
+  'sent, it’s waiting for you in your DMs 🫶🏻',
+  'just dropped it in your DMs 👀',
+  'on its way, check your DMs 🙌🏻',
+  `${name} just landed in your DMs 👀`,
+  'you got it, check your DMs 👇🏻',
+  'all yours, I just sent it in DM 🙌🏻',
+];
+export const publicReplies = repliesFor('The Blueprint');
+
+/**
+ * "Comment your city" (10/11/2026): when the comment is not the word but a city or a country of our
+ * own list (ig-places.js), the public reply says the place back, and the DM is the one of always.
+ * `place` is the name as the list spells it, never the commenter's own text.
+ */
+export const placeReplies = [
+  (place) => `${place}, nice 🙌🏻 check your DMs`,
+  (place) => `${place} 👀 love it, I just sent it in DM`,
+  (place) => `hello ${place} 🙌🏻 it’s in your DMs`,
+  (place) => `${place}, love that 🫶🏻 sent you a DM`,
+  (place) => `${place} 🙌🏻 great, check your DMs, it’s there`,
+  (place) => `nice one, ${place} 👀 it’s in your inbox now`,
+  (place) => `${place}! done, it’s in your DMs 🫶🏻`,
 ];
 
 /** Under the comment when Instagram won't let us write to them. */
@@ -39,10 +66,19 @@ export const opener = {
  * that opens the page. Until Meta's App Review passes, the taps and messages of people without a role
  * on the app never reach us, so nothing can wait for a tap; the follow is asked in words.
  */
-const directFor = (name) => ({
-  text: `Hey 🙌🏻 ${name} is ready 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week`,
-  button: 'Get the Blueprint',
-});
+const directFor = (name) => {
+  // five ways to say the same thing, taken in turn like the public replies; every one asks for the
+  // follow in words ("follow @omnyalab so you catch the next one") and none of them checks it:
+  // the follow is asked, not required (Nico, 10/11/2026). `text` is the first, the one that was there.
+  const texts = [
+    `Hey 🙌🏻 ${name} is ready 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week`,
+    `Here you go 🙌🏻 ${name} is right below, and follow @omnyalab so you catch the next one, we drop a new build every week`,
+    `Thanks for the comment 🫶🏻 ${name} is one tap away 👇🏻 follow @omnyalab so you catch the next one, there’s a new build every week`,
+    `Hey, got your comment 👀 ${name} is ready for you below, follow @omnyalab so you catch the next one, a new build drops every week`,
+    `As promised 🙌🏻 tap below for ${name}, and follow @omnyalab so you catch the next one, we post a new build every week`,
+  ];
+  return { text: texts[0], texts, button: 'Get the Blueprint' };
+};
 export const direct = directFor('The Blueprint');
 
 /**
@@ -104,14 +140,7 @@ const towerRest = 'Quick question so I can point you to the right part: are you 
 const towerBlueprint = `The Tower Blueprint is free on this page, and right under it there’s the full method we use for our towers: ${TOWER_BLUEPRINT}\n\n${towerRest}`;
 
 const tower = {
-  publicReplies: [
-    'Sent 🙌🏻 check your DMs for The Tower Blueprint',
-    'Just sent it, check your DMs 👀',
-    'Done! It’s in your DMs 🫶🏻',
-    'Check your DMs, The Tower Blueprint is there 🙌🏻',
-    'Sent you a DM 👇🏻 enjoy The Tower Blueprint',
-    'It’s in your inbox now 🙌🏻',
-  ],
+  publicReplies: repliesFor('The Tower Blueprint'),
   cantDm: 'We can’t send you the Tower Blueprint unless you send us a text, if you want it, just send us a text 🫶🏻',
   opener: { text: 'Hey 🙌🏻 The Tower Blueprint is ready, tap below and I’ll send it over 👇🏻', button: 'Get the Blueprint' },
   direct: directFor('The Tower Blueprint'),
@@ -136,7 +165,8 @@ const floors = Object.fromEntries(Object.entries(tower).map(([k, v]) => [k, type
 const funnel = ({ name, url, page, replies, opener: first, nudge }) => ({
   url,
   ask: false,
-  publicReplies: replies || [`Sent 🙌🏻 check your DMs for ${name}`, 'Just sent it, check your DMs 👀', 'Done! It’s in your DMs 🫶🏻'],
+  // the page's own lines first, then the twelve of every page (the same line is never there twice)
+  publicReplies: [...new Set([...(replies || []), ...repliesFor(replies ? 'the blueprint' : name)])],
   cantDm: `We can’t send you ${name.replace(/^The /, 'the ')} unless you send us a text, if you want it, just send us a text 🫶🏻`,
   opener: { text: first || `Hey 🙌🏻 ${name} is ready, tap below and I’ll send it over 👇🏻`, button: 'Get the Blueprint' },
   direct: directFor(name),
@@ -173,10 +203,31 @@ const towers = funnel({
 const city = {
   url: CITY,
   ask: false,
-  publicReplies: ['Sent you a DM 🏠 your lot is waiting', 'Check your DMs, your house link is there 🔑', 'Done! Check your DMs (or Requests) 🏠'],
+  publicReplies: [
+    'Sent you a DM 🏠 your lot is waiting',
+    'Check your DMs, your house link is there 🔑',
+    'Done! Check your DMs (or Requests) 🏠',
+    'your house link is in your DMs 🏠',
+    'just sent it, your house is waiting in your DMs 🔑',
+    'check your DMs, your lot is ready 🏠',
+    'sent 🏠 your link is in your DMs',
+    'it’s in your DMs now, go get your house 🔑',
+    'done, your house link just landed in your DMs 🏠',
+    'you’re in 🏠 check your DMs for your link',
+  ],
   cantDm: 'We can’t send you your house link unless you send us a text, if you want it, just send us a text 🏠',
   opener: { text: 'Hey! Your free house in Omnya City is ready 🏠 Tap below and I’ll send you your personal link. It’s one link, one house, made for your username.', button: 'Get my house' },
-  direct: { text: 'Hey 🙌🏻 your house in Omnya City is ready 🏠 tap below, it’s one link, one house, made for your username, and follow @omnyalab so you watch the city grow', button: 'Get my house' },
+  direct: (() => {
+    // five ways, in turn, as for the Blueprints: the first is the one that was there
+    const texts = [
+      'Hey 🙌🏻 your house in Omnya City is ready 🏠 tap below, it’s one link, one house, made for your username, and follow @omnyalab so you watch the city grow',
+      'Here you go 🏠 your house in Omnya City is right below, it’s one link, one house, made for your username, and follow @omnyalab so you watch the city grow',
+      'Thanks for the comment 🙌🏻 your house in Omnya City is one tap away, one link, one house, made for your username, and follow @omnyalab so you watch the city grow',
+      'Hey, your lot is waiting 🏠 tap below for your house in Omnya City, it’s one link, one house, made for your username, and follow @omnyalab so you watch the city grow',
+      'As promised 🔑 tap below for your house in Omnya City, one link, one house, made for your username, and follow @omnyalab so you watch the city grow',
+    ];
+    return { text: texts[0], texts, button: 'Get my house' };
+  })(),
   comment: {
     ask: 'Hey 🙌🏻 your house in Omnya City is ready 🏠 one step first, the city is only for followers: follow @omnyalab, then comment DONE under the reel and I’ll send your link right over',
     almost: 'Almost there 👀 follow @omnyalab first, then comment again under the reel and the house is yours',
@@ -219,7 +270,7 @@ export const oldButtons = {
   done: { payload: 'DONE', kind: 'city' },
 };
 
-const base = { url: BLUEPRINT, ask: true, publicReplies, cantDm, opener, direct, comment, followFirst, stillNotFollowing, blueprintFollower, blueprintNewFollower, answerProject, answerCurious, nudgeFollow, nudgeQuestion };
+const base = { url: BLUEPRINT, ask: true, publicReplies, placeReplies, cantDm, opener, direct, comment, followFirst, stillNotFollowing, blueprintFollower, blueprintNewFollower, answerProject, answerCurious, nudgeFollow, nudgeQuestion };
 const kinds = { tower: { ...tower, url: TOWER_BLUEPRINT }, floors: { ...floors, url: TOWER_FLOORS }, film, build, towers, city, legacy };
 
 /** Every destination the bot knows: 'blueprint', 'tower', 'floors', 'film', 'build', 'towers', 'city' ('legacy' is only for old buttons). */

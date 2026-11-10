@@ -434,6 +434,47 @@ if (REDIS_RUN) {
     sent();
   });
 
+  await step('on Redis: the lines take turns per reel (the count is one INCR), and a city in the comment comes back in the public reply', async () => {
+    ahead += 2 * 3_600_000; // a clean hour (the cap is 20 here)
+    await leadsPage.GET(new Request('http://x/api/leads?key=k&action=mode&value=direct'));
+    const tw = T.textsFor('towers');
+    const reply = (s, id) => s.find((x) => x.path === `${id}/replies`).query.message;
+    const replies = [];
+    const dms = [];
+    const quiet = console.log;
+    console.log = () => {};
+    try {
+      for (let i = 0; i < 14; i++) {
+        const c = comment(`q${i}`, 'TOWERS', 'lazyreel');
+        assert.deepEqual(await c.res, ['sent']);
+        const s = sent();
+        replies.push(reply(s, c.id));
+        dms.push(msgText(pr(s)[0]));
+      }
+    } finally {
+      console.log = quiet;
+    }
+    for (let i = 1; i < 14; i++) {
+      assert.notEqual(replies[i], replies[i - 1]);
+      assert.notEqual(dms[i], dms[i - 1]);
+    }
+    assert.equal(new Set(replies).size, 12);
+    assert.equal(new Set(dms).size, 5);
+    for (const r of replies) assert.ok(tw.publicReplies.includes(r));
+    for (const d of dms) assert.ok(tw.direct.texts.includes(d) && /follow @omnyalab so you catch the next one/.test(d));
+    // a city: its own lines in the public reply, the usual DM
+    const c = comment('q20', 'dubai 🇦🇪', 'lazyreel');
+    assert.deepEqual(await c.res, ['sent']);
+    const s = sent();
+    assert.ok(T.placeReplies.map((say) => say('Dubai')).includes(reply(s, c.id)));
+    assert.ok(tw.direct.texts.includes(msgText(pr(s)[0])));
+    assert.equal(urlOf(pr(s)[0]), 'https://www.omnyalab.com/the-towers-blueprint?ig=DfTOWERS22');
+    assert.equal((await lead('q20')).place, 'Dubai');
+    const c2 = comment('q21', 'love it, greetings from Dubai', 'lazyreel');
+    assert.deepEqual(await c2.res, ['sent']);
+    assert.ok(tw.publicReplies.includes(reply(sent(), c2.id)));
+  });
+
   server.close();
   console.log(`\n${ok} prove su Redis passate`);
   process.exit(0);
@@ -1135,6 +1176,8 @@ await step('800 comments in one hour: 750 DMs, 50 wait in line and go out as the
 // Live test of the morning: with Standard Access Meta never delivers the tap of someone who has no
 // role on the app. So by default the DM that answers the comment already has the link.
 
+// direct mode says the same thing in five wordings, taken in turn: any of them is the text of direct
+const isDirect = (t, said) => t.direct.texts.includes(said);
 const dmsFor = (list, cid) => list.filter((x) => x.path === 'me/messages' && x.body.recipient.comment_id === cid);
 const urlButton = (c) => c.body.message.attachment?.payload?.buttons?.[0];
 // what went out for one comment: DMs and public replies (reminders of older tests may be due at the same time)
@@ -1171,7 +1214,7 @@ await step('direct: the comment gets ONE DM that already has the right link (TOW
     assert.equal(s.length, 2, media); // one private reply, one public reply: nothing else
     assert.equal(s[0].path, 'me/messages');
     assert.equal(s[0].body.recipient.comment_id, c.id);
-    assert.equal(msgText(s[0]), t.direct.text);
+    assert.ok(isDirect(t, msgText(s[0])), msgText(s[0]));
     assert.match(msgText(s[0]), /follow @omnyalab/); // the follow is asked in words, it can't be checked
     assert.deepEqual(s[0].body.message.attachment.payload.buttons, [{ type: 'web_url', title: 'Get the Blueprint', url: `${page}?ig=${code}` }], media);
     assert.equal(s[1].path, `${c.id}/replies`);
@@ -1182,8 +1225,11 @@ await step('direct: the comment gets ONE DM that already has the right link (TOW
     const l = await lead(u);
     assert.deepEqual([l.stage, l.kind, l.post, l.direct], ['asked', dest, code, true]); // they have the link
     assert.equal((await ig.postStats()).find((r) => r.post === code).link, before + 1); // counted as a link sent
-    assert.ok(t.direct.button.length <= 20 && t.direct.text.length < 640);
-    assert.doesNotMatch(t.direct.text, /\bAI\b|before it.?s built|free image|first image/i);
+    assert.equal(t.direct.texts[0], t.direct.text); // the wording that was already there is still the first
+    for (const w of t.direct.texts) {
+      assert.ok(t.direct.button.length <= 20 && w.length < 640);
+      assert.doesNotMatch(w, /\bAI\b|before it.?s built|free image|first image/i);
+    }
   }
   // the same comment twice, the same person twice: still one DM
   state.commentUser.ddup = 'd19';
@@ -1203,7 +1249,7 @@ await step('direct: Omnya City, the personal one-time link is made when they com
   assert.deepEqual(await c.res, ['sent']);
   const s = forComment(sent(), c.id);
   assert.equal(s.length, 2);
-  assert.equal(msgText(s[0]), ct.direct.text);
+  assert.ok(isDirect(ct, msgText(s[0])), msgText(s[0]));
   const b = urlButton(s[0]);
   assert.deepEqual([b.type, b.title], ['web_url', 'Get my house']);
   const m = b.url.match(/^https:\/\/www\.omnyalab\.com\/city\?k=([A-Za-z0-9_-]{10,40})&ig=DfCITYep2xx$/);
@@ -1227,7 +1273,8 @@ await step('direct: Instagram refuses the link button → the same text with the
   let d = dmsFor(s, c.id);
   assert.equal(d.length, 2); // the button, refused, then the text
   assert.equal(d[1].body.message.attachment, undefined);
-  assert.equal(d[1].body.message.text, `${t.direct.text}\n\n${url}`);
+  assert.equal(d[1].body.message.text, `${msgText(d[0])}\n\n${url}`); // the same words as the refused button
+  assert.ok(isDirect(t, msgText(d[0])));
   assert.equal(s.filter((x) => x.path === `${c.id}/replies`).length, 1);
   assert.equal((await ig.lineState()).sentLastHour >= 2, true); // both calls took their place in the hour
   // the next ones don't try the button again: one call per comment
@@ -1235,7 +1282,7 @@ await step('direct: Instagram refuses the link button → the same text with the
   assert.deepEqual(await c2.res, ['sent']);
   d = dmsFor(sent(), c2.id);
   assert.equal(d.length, 1);
-  assert.equal(d[0].body.message.text, `${t.direct.text}\n\n${url}`);
+  assert.ok(t.direct.texts.some((w) => d[0].body.message.text === `${w}\n\n${url}`), d[0].body.message.text);
   assert.match((await (await get(hook, '/api/instagram?health=k')).json()).linkAs, /^text/);
   // City too
   const c3 = comment('d32', 'house', 'cityreel');
@@ -1450,7 +1497,8 @@ await step('comment mode: still not following at the second comment → "almost 
   assert.deepEqual(await say('kd3', 'k2', 'DONE!!', 'towersreel'), ['sent']);
   mine = forComment(sent(), 'kd3');
   assert.equal(mine.length, 2);
-  assert.equal(msgText(mine[0]), t.direct.text); // still asks for the follow, in words
+  assert.ok(isDirect(t, msgText(mine[0]))); // still asks for the follow, in words
+  assert.match(msgText(mine[0]), /follow @omnyalab/);
   assert.equal(urlButton(mine[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
   assert.equal((await lead('k2')).stage, 'asked');
   assert.deepEqual(await say('kd4', 'k2', 'done', 'towersreel'), ['already']); // three answers per reel at most
@@ -1468,7 +1516,7 @@ await step('comment mode: the follow check fails (Meta refuses) → the link at 
   assert.ok(lines.some((l) => l.startsWith('[ig] probe name_k3 → ERROR 200 (#200) Requires instagram_manage_messages')), lines.join('\n'));
   const mine = forComment(sent(), 'ke2');
   assert.equal(mine.length, 2);
-  assert.equal(msgText(mine[0]), t.direct.text);
+  assert.ok(isDirect(t, msgText(mine[0])), msgText(mine[0]));
   assert.equal(urlButton(mine[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
   // and when Meta gives no id back with the first DM there is nothing to check at the second comment: the link
   state.noRecipient = true;
@@ -1661,7 +1709,7 @@ await step('every comment under a post of the map gets the public reply and the 
     const s = forComment(sent(), c.id);
     assert.equal(s.length, 2, words); // one DM, one public reply
     assert.equal(s[0].body.recipient.comment_id, c.id);
-    assert.equal(msgText(s[0]), tw.direct.text);
+    assert.ok(isDirect(tw, msgText(s[0])), msgText(s[0]));
     assert.equal(urlButton(s[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
     assert.equal(s[1].path, `${c.id}/replies`);
     assert.ok(tw.publicReplies.includes(s[1].query.message));
@@ -1885,6 +1933,299 @@ await step('/api/leads?action=media when Meta refuses: { media: [], error }, a 2
   j = await (await get(leadsPage, '/api/leads?key=k&action=media')).json();
   assert.equal(j.media.length, 1);
   assert.equal(j.error, undefined);
+});
+
+// ---------- 10/11/2026: many wordings in turn, the follow asked but not required, "comment your city" ----------
+
+const Places = await import('../api/_lib/ig-places.js');
+const EMOJI = /\p{Extended_Pictographic}/gu;
+const quietly = async (fn) => { const log = console.log; console.log = () => {}; try { return await fn(); } finally { console.log = log; } };
+/** n comments under a reel, one person each, in order: their public replies and their DMs. */
+const wave = async (prefix, n, media, words = () => 'TOWERS') => {
+  const out = [];
+  await quietly(async () => {
+    for (let i = 0; i < n; i++) {
+      const c = comment(`${prefix}${i}`, words(i), media);
+      assert.deepEqual(await c.res, ['sent'], `${prefix}${i}`);
+      const s = forComment(sent(), c.id);
+      assert.equal(s.length, 2); // one DM, one public reply, as always
+      out.push({ dm: s[0], said: msgText(s[0]), reply: s[1].query.message });
+    }
+  });
+  return out;
+};
+const noTwiceInARow = (list, what) => { for (let i = 1; i < list.length; i++) assert.notEqual(list[i], list[i - 1], `${what}: the same line twice in a row at ${i}: ${list[i]}`); };
+
+await step('ten or more public replies and five DMs for every page: short, one emoji, the follow asked in every DM', async () => {
+  for (const dest of ['blueprint', 'tower', 'floors', 'film', 'build', 'towers', 'city']) {
+    const t = T.textsFor(dest);
+    assert.ok(t.publicReplies.length >= 10, `${dest}: ${t.publicReplies.length} public replies`);
+    assert.equal(new Set(t.publicReplies).size, t.publicReplies.length, `${dest}: a public reply is there twice`);
+    for (const line of t.publicReplies) {
+      assert.match(line, /DMs?\b|inbox/, line); // every one says where it is
+      assert.ok(line.length <= 60, line);
+      assert.equal((line.match(EMOJI) || []).length, 1, line); // one emoji, no more
+      assert.doesNotMatch(line, /\bAI\b|before it.?s built|free image|first image|isn.?t real|—/i, line);
+      assert.doesNotMatch(line, /https?:|omnyalab\.com/, line); // never a link in public
+    }
+    assert.equal(t.direct.texts.length, 5, dest);
+    assert.equal(new Set(t.direct.texts).size, 5, dest);
+    assert.equal(t.direct.texts[0], t.direct.text);
+    for (const w of t.direct.texts) {
+      // the follow is written in every wording, and nothing in it makes it a condition
+      assert.match(w, dest === 'city' ? /follow @omnyalab so you watch the city grow/ : /follow @omnyalab so you catch the next one/, w);
+      assert.doesNotMatch(w, /first|before I|then I|once you|unless|comment DONE|tap Done/i, w);
+      assert.ok(w.length < 640);
+    }
+  }
+  // the six lines that were already there are still there
+  for (const old of ['Sent 🙌🏻 check your DMs for The Blueprint', 'Just sent it, check your DMs 👀', 'Done! It’s in your DMs 🫶🏻', 'Check your DMs, The Blueprint is there 🙌🏻', 'Sent you a DM 👇🏻 enjoy The Blueprint', 'It’s in your inbox now 🙌🏻']) assert.ok(T.publicReplies.includes(old), old);
+  for (const old of ['Sent it to your DMs 👀', 'Just sent you the link, check your DMs 👇🏻']) assert.ok(T.textsFor('film').publicReplies.includes(old), old);
+  for (const old of ['Sent you a DM 🏠 your lot is waiting', 'Done! Check your DMs (or Requests) 🏠']) assert.ok(T.textsFor('city').publicReplies.includes(old), old);
+});
+
+await step('the lines are taken in turn: never the same twice in a row, every line used, whatever the count', () => {
+  for (const n of [2, 3, 5, 7, 10, 12, 14]) {
+    const lines = Array.from({ length: n }, (_, i) => `line ${i}`);
+    for (const salt of ['p:towersreel', 'd:red', '']) {
+      const got = Array.from({ length: n * 40 }, (_, turn) => ig.lineAt(lines, turn, salt));
+      noTwiceInARow(got, `${n} lines`);
+      for (let r = 0; r < 40; r++) assert.equal(new Set(got.slice(r * n, (r + 1) * n)).size, n, `${n} lines: round ${r} doesn't use every line once`);
+    }
+  }
+  const twelve = T.textsFor('towers').publicReplies;
+  // the order changes from round to round and from reel to reel
+  const round = (r, salt) => Array.from({ length: 12 }, (_, i) => ig.lineAt(twelve, r * 12 + i, salt)).join('|');
+  assert.notEqual(round(0, 'p:a'), round(1, 'p:a'));
+  assert.notEqual(round(0, 'p:a'), round(0, 'p:b'));
+  // one line alone is that line, and a broken count still falls on a line
+  assert.equal(ig.lineAt(['only'], 7), 'only');
+  for (const bad of [NaN, -3, undefined, 2.7, 1e9, Infinity]) assert.ok(twelve.includes(ig.lineAt(twelve, bad, 'x')), String(bad));
+});
+
+await step('under the same reel: 40 comments, no public reply and no DM twice in a row, all twelve replies and all five DMs used', async () => {
+  ahead += 2 * 3_600_000;
+  await flushDue();
+  await get(leadsPage, '/api/leads?key=k&action=mode&value=direct');
+  const tw = T.textsFor('towers');
+  const got = await wave('rot', 40, 'lazyreel');
+  const replies = got.map((g) => g.reply);
+  const dms = got.map((g) => g.said);
+  noTwiceInARow(replies, 'public reply');
+  noTwiceInARow(dms, 'DM');
+  for (const r of replies) assert.ok(tw.publicReplies.includes(r), r);
+  assert.equal(new Set(replies).size, 12); // every wording came out
+  assert.equal(new Set(dms).size, 5);
+  for (const g of got) {
+    assert.ok(isDirect(tw, g.said));
+    assert.deepEqual(g.dm.body.message.attachment.payload.buttons, [{ type: 'web_url', title: 'Get the Blueprint', url: 'https://www.omnyalab.com/the-towers-blueprint?ig=DfTOWERS22' }]); // the same button under every wording
+  }
+  // each reel keeps its own turn: another reel, and City with its own lines
+  const red = await wave('rotred', 14, 'red', () => 'AI');
+  noTwiceInARow(red.map((g) => g.reply), 'public reply, red tower');
+  for (const g of red) assert.ok(T.textsFor('tower').publicReplies.includes(g.reply) && isDirect(T.textsFor('tower'), g.said));
+  const ct = T.textsFor('city');
+  const houses = await wave('rothouse', 12, 'cityreel', () => 'HOUSE');
+  noTwiceInARow(houses.map((g) => g.reply), 'public reply, City');
+  noTwiceInARow(houses.map((g) => g.said), 'DM, City');
+  for (const g of houses) {
+    assert.ok(ct.publicReplies.includes(g.reply) && isDirect(ct, g.said));
+    assert.equal(urlButton(g.dm).title, 'Get my house');
+  }
+});
+
+await step('the turn of the lines can never stop a comment: Redis not counting, and a DM tried again says the same words', async () => {
+  ahead += 2 * 3_600_000;
+  const tw = T.textsFor('towers');
+  // Redis can't count the turns: the DM and the public reply go out all the same, with a line at random
+  const incr = S.kv.incr;
+  S.kv.incr = async (k, ttl) => { if (String(k).startsWith('rot:')) throw new Error('redis is down'); return incr(k, ttl); };
+  const errs = await errorsNow();
+  let c;
+  const warn = console.warn;
+  const warned = [];
+  console.warn = (...a) => warned.push(a.join(' '));
+  try {
+    c = comment('rz1', 'TOWERS', 'towersreel');
+    assert.deepEqual(await c.res, ['sent']);
+  } finally {
+    S.kv.incr = incr;
+    console.warn = warn;
+  }
+  let s = forComment(sent(), c.id);
+  assert.equal(s.length, 2);
+  assert.ok(isDirect(tw, msgText(s[0])) && tw.publicReplies.includes(s[1].query.message));
+  assert.equal(urlButton(s[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
+  assert.equal(warned.filter((w) => /turn of the lines/.test(w)).length, 2); // said in the logs, once for the DM and once for the reply
+  assert.equal(await errorsNow(), errs); // and it is not an error of the bot
+  assert.equal((await ig.lineState()).stoppedUntil, null);
+  // Meta fails the DM, the comment goes back in line: the second try says the same words as the first
+  state.failPrivate = { message: '(#100) Unsupported request', type: 'OAuthException', code: 100 };
+  c = comment('rz2', 'TOWERS', 'towersreel');
+  assert.deepEqual(await c.res, ['retry']);
+  state.failPrivate = null;
+  const first = dmsFor(sent(), c.id).map(msgText);
+  ahead += 3 * 60_000;
+  await tickPage.GET();
+  const second = dmsFor(sent(), c.id).map(msgText);
+  assert.equal(second.length, 1);
+  assert.ok(first.length >= 1 && first.every((w) => w.split('\n\n')[0] === second[0]), `${first.join(' / ')} → ${second[0]}`); // (the refused tries: the button, then the same words with the link in the text)
+  await S.kv.del('fails');
+  sent();
+});
+
+await step('the follow is asked in the DM and never checked: who doesn’t follow gets the link all the same; gate and comment are still there, off', async () => {
+  ahead += 2 * 3_600_000;
+  assert.equal(await ig.getMode(), 'direct');
+  assert.deepEqual(ig.MODES, ['direct', 'gate', 'comment']); // the other two rounds stay in the code
+  const tw = T.textsFor('towers');
+  for (const follows of [false, true]) {
+    const u = `nf${follows ? 1 : 0}`;
+    state.follows[u] = follows;
+    const c = comment(u, 'TOWERS', 'towersreel');
+    assert.deepEqual(await c.res, ['sent']);
+    const all = sent();
+    const s = forComment(all, c.id);
+    assert.equal(s.length, 2);
+    assert.equal(urlButton(s[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`); // the link is already there
+    assert.match(msgText(s[0]), /follow @omnyalab so you catch the next one/);
+    assert.ok(isDirect(tw, msgText(s[0])));
+    // nothing about this person is asked to Instagram before the DM goes out
+    assert.ok(all.findIndex((x) => x.path === u) > all.findIndex((x) => x.path === 'me/messages'));
+    assert.equal((await lead(u)).stage, 'asked');
+    // and commenting again changes nothing: no "almost there", no second DM
+    assert.deepEqual(await comment(u, 'done', 'towersreel').res, ['already']);
+    assert.equal(posts_(sent()).length, 0);
+  }
+});
+
+await step('"comment your city": the list knows cities and countries in their common spellings, only when the whole short comment is one', () => {
+  assert.ok(Places.PLACE_COUNT.cities >= 300 && Places.PLACE_COUNT.countries >= 190, JSON.stringify(Places.PLACE_COUNT));
+  const yes = {
+    Dubai: 'Dubai', 'dubai!!': 'Dubai', 'DUBAI 🔥🔥': 'Dubai', '  Dubai 🇦🇪 ': 'Dubai', '#dubai': 'Dubai', 'دبي': 'Dubai', 'Дубай': 'Dubai',
+    'new york': 'New York', NYC: 'New York', 'New York City': 'New York', 'los angeles': 'Los Angeles', LA: 'LA', 'L.A.': 'LA',
+    'são paulo': 'São Paulo', 'Sao Paulo 🇧🇷': 'São Paulo', milano: 'Milan', Milan: 'Milan', 'Köln': 'Cologne', koln: 'Cologne', 'İstanbul': 'Istanbul',
+    Lagos: 'Lagos', 'Rio de Janeiro': 'Rio de Janeiro', 'Dar es Salaam': 'Dar es Salaam', 'Ho Chi Minh': 'Ho Chi Minh City', Tashkent: 'Tashkent',
+    Italy: 'Italy', italia: 'Italy', 'ITALY!!!': 'Italy', UAE: 'UAE', 'United Arab Emirates': 'UAE', usa: 'USA', US: 'USA', 'saudi arabia': 'Saudi Arabia',
+    'Côte d’Ivoire': 'Ivory Coast', "cote d'ivoire": 'Ivory Coast', Nigeria: 'Nigeria', 'Россия': 'Russia', Türkiye: 'Turkey',
+    // a city with its country, both in the list: the city
+    'Milan, Italy': 'Milan', 'Dubai UAE': 'Dubai', 'Lagos Nigeria 🇳🇬': 'Lagos', 'Paris, France': 'Paris',
+  };
+  for (const [said, place] of Object.entries(yes)) assert.equal(Places.placeIn(said), place, said);
+  const no = [
+    'I love Dubai', 'from Dubai', 'Dubai baby', 'Dubai is the best city in the world', 'Dubai 2026', 'dubai dubai dubai dubai', // not the whole comment, or too long
+    'la', 'us', 'ny', // small letters: everyday words
+    'nice', 'Nice', 'casa', 'wow', 'TOWERS', 'towers', 'build', 'house', 'AI', '🔥🔥🔥', '', '   ', '@dubai', 'hey @paris', // words, the keywords, emoji, mentions
+    'ho chi minh city', // four words: past the limit, the normal reply
+    'Atlantis', 'Gotham', 'Dubaii', 'constructor', '__proto__', 'toString', 'x'.repeat(200),
+  ];
+  for (const said of no) assert.equal(Places.placeIn(said), null, said);
+  assert.equal(Places.placeIn(null), null);
+  assert.equal(Places.placeIn(undefined), null);
+  // what comes out is always a name of the list as we spell it, never the comment
+  assert.equal(Places.placeIn('dUbAi'), 'Dubai');
+  assert.equal(Places.placeIn('SÃO PAULO'), 'São Paulo');
+  // the lines that say the place back: six or more, short, one emoji, all of them say where it is
+  assert.ok(T.placeReplies.length >= 6);
+  const lines = T.placeReplies.map((say) => say('Dubai'));
+  assert.equal(new Set(lines).size, lines.length);
+  for (const line of lines) {
+    assert.match(line, /Dubai/);
+    assert.match(line, /DMs?\b|inbox/);
+    assert.equal((line.match(EMOJI) || []).length, 1, line);
+    assert.ok(line.length <= 60, line);
+  }
+  assert.equal(lines[0], 'Dubai, nice 🙌🏻 check your DMs');
+});
+
+await step('"comment your city": a city or a country in the comment → the public reply says it back, the DM is the one of always; never a word of the comment that is not in the list', async () => {
+  ahead += 2 * 3_600_000;
+  await flushDue();
+  const tw = T.textsFor('towers');
+  const placeLines = (place) => T.placeReplies.map((say) => say(place));
+  let i = 0;
+  const one = async (words, media = 'towersreel') => {
+    const u = `pl${i++}`;
+    const c = comment(u, words, media);
+    assert.deepEqual(await quietly(() => c.res), ['sent'], words);
+    const s = forComment(sent(), c.id);
+    assert.equal(s.length, 2, words);
+    return { u, said: msgText(s[0]), dm: s[0], reply: s[1].query.message };
+  };
+  // a city, a country, other spellings, capitals and emoji: the name comes back as the list spells it
+  for (const [words, place] of [['dubai!!', 'Dubai'], ['ITALY 🇮🇹', 'Italy'], ['são paulo', 'São Paulo'], ['milano', 'Milan'], ['Lagos, Nigeria', 'Lagos'], ['NYC', 'New York']]) {
+    const g = await one(words);
+    assert.ok(placeLines(place).includes(g.reply), `${words} → ${g.reply}`);
+    // the DM is the same as for the word: one of the five wordings, the button with the link of the reel
+    assert.ok(isDirect(tw, g.said), g.said);
+    assert.doesNotMatch(g.said, new RegExp(place, 'i'));
+    assert.deepEqual(g.dm.body.message.attachment.payload.buttons, [{ type: 'web_url', title: 'Get the Blueprint', url: `${TOWERS_PAGE}?ig=DfTOWERS11` }]);
+    const l = await lead(g.u);
+    assert.deepEqual([l.stage, l.kind, l.place], ['asked', 'towers', place]); // kept with the lead, for Nico
+  }
+  // the word wins over everything, and it is never taken for a place
+  for (const words of ['TOWERS', 'towers 🔥', 'Towerss']) {
+    const g = await one(words);
+    assert.ok(tw.publicReplies.includes(g.reply), `${words} → ${g.reply}`);
+    assert.equal((await lead(g.u)).place, undefined);
+  }
+  // free text around a place, an unknown place, a long comment: the normal replies, and nothing of the comment comes back
+  for (const words of ['I love Dubai so much', 'Dubai baby', 'from Dubai bro', 'Dubai is the best city ever, greetings from the Marina', 'Atlantis', 'Dubaii', 'visit mysite.xyz', 'Dubai <b>free</b> money', '@dubai']) {
+    const g = await one(words);
+    assert.ok(tw.publicReplies.includes(g.reply), `${words} → ${g.reply}`);
+    assert.ok(isDirect(tw, g.said));
+    for (const bit of ['Dubai', 'baby', 'bro', 'Marina', 'Atlantis', 'mysite', 'money', '<b>']) assert.ok(!g.reply.includes(bit) && !g.said.includes(bit), `${words}: "${bit}" came back`);
+  }
+  // the city replies take turns too: the same city ten times, never the same line twice in a row, every line used
+  const many = [];
+  for (let k = 0; k < 14; k++) many.push((await one('Dubai')).reply);
+  noTwiceInARow(many, 'city reply');
+  assert.equal(new Set(many).size, T.placeReplies.length);
+  for (const r of many) assert.ok(placeLines('Dubai').includes(r), r);
+  // every page: City (word HOUSE) and a reel pinned by its code say the place back too, with their own DM
+  let g = await one('Miami', 'cityreel');
+  assert.ok(placeLines('Miami').includes(g.reply), g.reply);
+  assert.ok(isDirect(T.textsFor('city'), g.said));
+  assert.equal(urlButton(g.dm).title, 'Get my house');
+  g = await one('Abu Dhabi 🇦🇪', 'red');
+  assert.ok(placeLines('Abu Dhabi').includes(g.reply), g.reply);
+  assert.equal(urlButton(g.dm).url, 'https://omnyalab.com/the-tower-blueprint?ig=DfSXvGDtt4s');
+});
+
+await step('"comment your city" changes nothing where a comment gets no answer: posts outside the map, "every comment" off, one answer per person', async () => {
+  ahead += 2 * 3_600_000;
+  // a post that only answers its own word (not in the map), and a client teaser: a city is not the word
+  assert.deepEqual(await comment('pm1', 'Dubai').res, ['no word']);
+  assert.deepEqual(await comment('pm1', 'Dubai', 'client').res, ['no word']);
+  // "every comment" off: only the word, a city gets nothing; the word after it still works, with the normal reply
+  await get(leadsPage, '/api/leads?key=k&action=any&value=off');
+  assert.deepEqual(await comment('pm2', 'Dubai', 'towersreel').res, ['no word']);
+  assert.equal(posts_(sent()).length, 0);
+  let c = comment('pm2', 'TOWERS', 'towersreel');
+  assert.deepEqual(await c.res, ['sent']);
+  assert.ok(T.textsFor('towers').publicReplies.includes(forComment(sent(), c.id)[1].query.message));
+  await get(leadsPage, '/api/leads?key=k&action=any&value=on');
+  // one answer per person per reel, city or not
+  c = comment('pm3', 'Riyadh', 'towersreel');
+  assert.deepEqual(await c.res, ['sent']);
+  assert.match(forComment(sent(), c.id)[1].query.message, /Riyadh/);
+  assert.deepEqual(await comment('pm3', 'Jeddah', 'towersreel').res, ['already']);
+  assert.equal(posts_(sent()).length, 0);
+  // the DM can't go (this person doesn't take messages): the public "send us a text", not the city line
+  c = comment('pm4', 'Doha', 'towersreel');
+  state.refuseDm.add(c.id);
+  assert.deepEqual(await c.res, ['nodm']);
+  const pub = sent().filter((x) => x.path === `${c.id}/replies`);
+  assert.equal(pub.length, 1);
+  assert.equal(pub[0].query.message, T.textsFor('towers').cantDm);
+  // Instagram refuses the city reply (code 20): the DM went out, nothing stops
+  state.failReply = { message: 'This API call does not support the requested response format', type: 'OAuthException', code: 20, error_subcode: 1772107 };
+  c = comment('pm5', 'Cairo', 'towersreel');
+  const res = await quietly(async () => { const e = console.error; console.error = () => {}; try { return await c.res; } finally { console.error = e; } });
+  state.failReply = null;
+  assert.deepEqual(res, ['sent']);
+  assert.equal(dmsFor(sent(), c.id).length, 1);
+  assert.equal((await ig.lineState()).stoppedUntil, null);
 });
 
 server.close();
