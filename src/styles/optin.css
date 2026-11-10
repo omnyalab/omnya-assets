@@ -127,3 +127,14 @@ html:has(.oidim:not([hidden])),html:has(.oidim:not([hidden])) body{overflow:hidd
 .oi-fade{position:fixed;inset:0;z-index:200;pointer-events:none;opacity:0;transition:opacity .5s ease;background:radial-gradient(120% 90% at 50% 35%,#1d6636 0%,#0b2a17 45%,#05070a 100%)}
 .oi-fade.on{opacity:1}
 .oi-fade--blue{background:radial-gradient(120% 90% at 50% 35%,#163266 0%,#0b1630 45%,#05070a 100%)} /* 9/11 Towers page, same blue as the .inf of sent/towers.html */
+
+/* 10/11 (Nico, /fable): the card in the page, under something else, instead of covering it (OptIn `inline`). The page
+   scrolls as usual, the blurred picture behind is the page's own, the book still stands out of the top of the card and
+   the small footer still hangs under it. Nothing here touches a card that is not .oi--inline. */
+html:has(.oidim.oi--inline:not([hidden])),html:has(.oidim.oi--inline:not([hidden])) body{overflow:visible;height:auto}
+.oidim.oi--inline{position:static;z-index:auto;background:none;backdrop-filter:none;-webkit-backdrop-filter:none;overflow:visible;padding:174px 0 0}
+html.ocb-on .oidim.oi--inline{padding-bottom:0}
+.oidim.oi--inline::before{display:none}
+@media (width<=899px){
+ .oidim.oi--inline{padding-top:138px}
+}

@@ -31,12 +31,14 @@ interface Props {
   // on 9/11); the Tower pages say the views of the tower reel (143,479). Change the number only with a real one.
   after?: string; // 10/11: where "Have a look" goes after the email is sent, when the funnel has no /sent page
   // (the City page: "#full", the card goes away and the page shows the Full guide)
+  inline?: boolean; // 10/11 (Nico, /fable): the card sits in the page, under something else, instead of covering it: the
+  // page scrolls, the card is not a dialog and never moves or shrinks to fit the screen (styles/optin.css, .oi--inline)
 }
-const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, fade, after, landing, proof = '371 people asked for a blueprint in 4 days' } = Astro.props;
+const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, fade, after, landing, inline, proof = '371 people asked for a blueprint in 4 days' } = Astro.props;
 const next = after || `/${slug}/sent`;
 ---
 
-<div class={`oidim${book ? ' oi--book' : ''}${noClose ? ' oi--nox' : ''}${theme ? ' oi--' + theme : ''}${fade ? ' oi--fade' : ''}`} data-optin data-slug={slug} data-free={free} data-next={next} data-landing={landing ? '' : undefined} style={`--oi-cover:url(${cover});--oi-hero:url(${hero});--oi-hero-m:url(${heroMobile})`} role="dialog" aria-modal="true" aria-labelledby="oi-title">
+<div class={`oidim${book ? ' oi--book' : ''}${noClose ? ' oi--nox' : ''}${theme ? ' oi--' + theme : ''}${fade ? ' oi--fade' : ''}${inline ? ' oi--inline' : ''}`} data-optin data-slug={slug} data-free={free} data-next={next} data-landing={landing ? '' : undefined} style={`--oi-cover:url(${cover});--oi-hero:url(${hero});--oi-hero-m:url(${heroMobile})`} role={inline ? 'group' : 'dialog'} aria-modal={inline ? undefined : 'true'} aria-labelledby="oi-title">
   <div class="oisheet">
     <button type="button" class="oix" data-oi-close aria-label="Close">×</button>
     <div class="oibk" role="img" aria-label="The free blueprint"><div class="oibk__b"><span class="oibk__k"></span><span class="oibk__t"></span><span class="oibk__p"></span><span class="oibk__f"></span></div></div>
@@ -111,7 +113,7 @@ const next = after || `/${slug}/sent`;
     // card first moves up (less of the book shows above it), and if that is not enough it gets a little smaller.
     var sheet = box.querySelector('.oisheet');
     var fit = function () {
-      if (box.hidden) return;
+      if (box.hidden || box.classList.contains('oi--inline')) return; // in the page (/fable): nothing to fit
       box.style.paddingTop = ''; sheet.style.zoom = '';
       var cs = getComputedStyle(box), top = parseFloat(cs.paddingTop) || 0, bot = parseFloat(cs.paddingBottom) || 0;
       var room = box.clientHeight, h = sheet.offsetHeight, over = top + h + bot - room;

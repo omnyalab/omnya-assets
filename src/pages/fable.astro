@@ -1,0 +1,100 @@
+---
+// /fable (10/11/2026, Nico): the page of the reels that say "Comment FABLE to get the link". Two things only, phone first,
+// in the style and the colours of the Tower funnel (the same card, the same blue, Montserrat, the blurred SAMAR tower behind):
+//   1. on top, the Higgsfield offer read on their home on 10/11/2026 ("FABLE 5.2 × HIGGSFIELD MCP · Unlimited generations
+//      on frontier models via Claude MCP for new users"), with Nico's affiliate link, said as what it is. No lengths and
+//      no percentages here: only what that line says. When the offer changes, change the line (and views/Thanks.astro);
+//   2. under it, "Then build this with it": the free Tower Blueprint card of /the-tower-blueprint (name and email,
+//      components/OptIn.astro in the page instead of over it), which goes on to /the-tower-blueprint/sent like the Tower funnel.
+// The bot's link is /fable?ig=<reel code>: vercel.json sends it through /api/instagram, which counts the click.
+// No site header or footer, only the funnel's own small footer under the card. Out of search (it is an affiliate page).
+import Base from '../layouts/Base.astro';
+import OptIn from '../components/OptIn.astro';
+
+const offer = 'https://higgsfield.ai?fpr=omnya-5b7f71';
+---
+
+<Base page="learn" header={false} footer={false} noindex title="Fable 5.2 + Higgsfield" description="New users get unlimited generations in Claude through Higgsfield MCP. Get the offer, then build a tower with our free blueprint.">
+<div class="x3 fb">
+  <div class="fb-in">
+    <div class="fb-a">
+      <section class="fb-card" aria-labelledby="fb-title">
+        <p class="x3-kick">The link you asked for</p>
+        <h1 class="fb-T" id="fb-title"><span class="a">Fable 5.2</span><span class="b">+ Higgsfield</span></h1>
+        <p class="fb-lead">New users get unlimited generations in Claude through Higgsfield MCP.</p>
+        <a class="x3-btn x3-btn--blue" href={offer} target="_blank" rel="noopener sponsored">Get the Higgsfield offer →</a>
+        <p class="fb-aff">affiliate link, it costs you nothing more</p>
+      </section>
+      <h2 class="x3-T fb-then" id="fb-then">Then build<br /><span class="x3-box">this</span> with it <i aria-hidden="true">→</i></h2>
+    </div>
+    <section class="fb-b" aria-labelledby="fb-then">
+      <OptIn slug="fable" free="free-tower" word="Tower" noClose inline after="/the-tower-blueprint/sent" proof="From the reel with 143,479 views" cover="/learn/tw_cover_free.webp" hero="/learn/tw_hero.webp" heroMobile="/learn/tw_hero_mobile.webp" />
+    </section>
+  </div>
+</div>
+</Base>
+
+<style is:global>
+html,body{background:#05070a}
+@font-face{font-family:Montserrat;src:url(/fonts/montserrat-latin.woff2) format("woff2");font-weight:500 900;font-display:swap}
+/* the pieces of the Tower funnel this page uses (pages/the-tower-blueprint.astro) */
+.x3{--bg:#05070a;--bg2:#0d1117;--ink:#fff;--mute:rgba(255,255,255,.66);--line:rgba(255,255,255,.14);--blue:#2997ff;--blue2:#0071e3;background:var(--bg);color:var(--ink);font-family:Montserrat,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+:where(.x3) *{box-sizing:border-box}
+:where(.x3) img,:where(.x3) video{display:block;max-width:100%;height:auto}
+:where(.x3) a{color:inherit}
+.x3-T{margin:0;font-weight:900;text-transform:uppercase;line-height:.92;letter-spacing:-.01em;text-wrap:balance}
+.x3-T .x3-box{display:inline-block;white-space:nowrap;font-size:.72em;margin-top:.16em;border:.075em solid #fff;padding:.1em .32em .04em;font-weight:700;letter-spacing:.14em;text-indent:.14em;line-height:1}
+.x3-kick{margin:0 0 14px;font-weight:800;font-size:clamp(14px,1.3vw,17px);letter-spacing:.2em;text-transform:uppercase;color:var(--blue)}
+.x3-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:58px;padding:0 28px;border-radius:999px;font-weight:800;font-size:16px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none}
+.x3-btn--blue{background:var(--blue);color:#fff;box-shadow:0 18px 40px -18px rgba(41,151,255,.9)}
+@media (max-width:899px){.x3-btn{width:100%;font-size:14px;letter-spacing:.04em;padding:0 18px}}
+.x3 [hidden]{display:none !important}
+
+/* the page: the blurred tower of the Tower funnel behind everything, fixed (the same picture, blur and light as behind
+   the form of /the-tower-blueprint), and the two things in one column (side by side on a wide screen) */
+.fb{position:relative;isolation:isolate;min-height:100vh;min-height:100svh;background:transparent;overflow:visible;overflow-x:clip}
+.fb::before{content:"";position:fixed;inset:0;z-index:-1;background:#05070a url(/learn/tw_hero_mobile.webp) center/cover;transform:scale(1.15);filter:blur(16px) brightness(.45)}
+@media (min-width:900px){.fb::before{background-image:url(/learn/tw_hero.webp)}}
+.fb-in{display:grid;justify-items:center;max-width:552px;margin:0 auto;padding:28px 16px 120px}
+.fb-a,.fb-b{width:100%;max-width:520px;min-width:0}
+
+/* 1. the offer: the card of the funnel (the same blue as the form's), without the book */
+.fb-card{position:relative;isolation:isolate;text-align:center;border-radius:28px;padding:30px 18px 22px;background:linear-gradient(170deg,#163266 0%,#0b1630 38%,#070b14 70%,#05070a 100%);box-shadow:0 60px 120px -40px #2997ffa6,inset 0 1px #ffffff2e}
+.fb-card::before{content:"";position:absolute;left:50%;top:-110px;width:420px;max-width:150%;height:240px;transform:translateX(-50%);background:radial-gradient(closest-side,#2997ffa8,#2997ff33 55%,transparent);filter:blur(18px);z-index:-1;pointer-events:none}
+.fb-card .x3-kick{margin:0 0 14px;font-size:12px}
+.fb-T{margin:0;font-family:Montserrat,-apple-system,sans-serif;text-transform:uppercase;line-height:.95;display:grid;justify-items:center;gap:8px}
+.fb-T .a{font-weight:900;font-size:46px;letter-spacing:-.01em}
+.fb-T .b{font-weight:900;font-size:24px;letter-spacing:.14em;text-indent:.14em;border:.075em solid #fff;padding:.16em .36em .1em;white-space:nowrap}
+.fb-lead{margin:18px auto 0;max-width:340px;color:#ffffffd1;font:500 16px/1.45 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;text-wrap:balance}
+.fb-card .x3-btn{width:100%;margin-top:20px;min-height:56px}
+.fb-aff{margin:12px 0 0;color:#ffffff99;font:500 12.5px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+
+@media (max-width:359px){.fb-card .x3-btn{font-size:12.5px;letter-spacing:.02em;padding:0 10px}} /* the button on one line on the smallest phones */
+
+/* 2. the free Tower Blueprint: the title, then the card of the Tower funnel as it is */
+.fb-then{margin:44px 0 18px;text-align:center;font-size:34px}
+.fb-then i{display:none;font-style:normal;color:var(--blue)}
+.fb-b .oisheet{width:100%}
+
+@media (min-width:900px){
+  .fb-card{border-radius:30px;padding:38px 34px 28px}
+  .fb-card .x3-kick{font-size:14px}
+  .fb-T .a{font-size:60px}
+  .fb-T .b{font-size:32px}
+  .fb-lead{font-size:17px;max-width:380px}
+  .fb-aff{font-size:13px}
+  .fb-then{font-size:44px}
+  .fb-in{padding-top:48px}
+}
+@media (min-width:1100px){
+  .fb-in{grid-template-columns:minmax(0,520px) minmax(0,520px);justify-content:center;align-items:center;gap:72px;max-width:1240px;min-height:100vh;padding:20px 32px 100px}
+  .fb-a{justify-self:end}
+  .fb-b{justify-self:start}
+  .fb-then{margin:40px 0 0;font-size:40px}
+  .fb-then i{display:inline}
+}
+/* two things only: the round WhatsApp button of the site stays off this page, and the site's scroll mark takes the funnel's blue */
+html:has(.fb) .wa-fab{display:none}
+html:has(.fb) .sbar__thumb{background:#2997ff}
+html:has(.fb) .sbar::before{background:rgba(255,255,255,.3)}
+</style>
