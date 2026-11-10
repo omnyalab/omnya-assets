@@ -13,7 +13,30 @@ Gira sul sito, su Vercel, senza Mac acceso e senza costi. Dal 10/11/2026 fa tutt
 | `api/leads.js` | la pagina di Nico: contatti, coda, errori, numeri per post, comandi |
 | `scripts/ig-test.mjs` | le prove: `~/.local/node/bin/node scripts/ig-test.mjs` |
 
-## Il giro
+## Le due modalità: `direct` (di default) e `gate`
+
+**Perché esiste `direct`.** Prova dal vivo del 10/11/2026: con ManyChat tolto e Omnya Bot come app di routing predefinita, il tester @gghizzoo riceve tutto il giro, e i commenti di chiunque ricevono la risposta pubblica e il primo DM. Ma il tocco sul tasto di chi **non ha un ruolo sull'app** non arriva mai al webhook, né come messaggio né in standby: con lo Standard Access Meta non ci consegna i messaggi in entrata degli sconosciuti. Finché l'App Review non passa (Advanced Access) il bot non può dipendere da nessun tocco o messaggio in entrata.
+
+**`direct` (link diretto), il default.** Al commento escono la risposta pubblica e **un solo DM che ha già il link**: un testo corto che chiede il follow in una riga e un tasto che apre la pagina giusta del post (`Get the Blueprint`, per City `Get my house`), con `?ig=<codice>` per contare i clic. Per City il link personale monouso viene creato al momento del commento, dal nome utente del commento. Il follow non si controlla più, si chiede e basta. Se Instagram rifiuta il tasto con il link, parte subito lo stesso testo con il link scritto dentro, e per 6 ore il bot manda direttamente il testo (così ogni commento costa una chiamata sola); la salute lo dice in `linkAs`. Niente promemoria "check Requests" dopo 3 ore, perché senza i "visto" non sappiamo chi ha aperto il DM. I tocchi e i messaggi che arrivano lo stesso (tester, chi ha un ruolo) ricevono il link subito, senza controllo del follow.
+
+I testi di `direct` (`direct` in `ig-texts.js`), tutti con il tasto `Get the Blueprint`:
+
+| Post | Testo del DM |
+| --- | --- |
+| Blueprint normale | Hey 🙌🏻 The Blueprint is ready 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week |
+| torre rossa, 1 DAY | Hey 🙌🏻 The Tower Blueprint is ready 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week |
+| 3D KILLED, CLAUDE COOKED | Hey 🙌🏻 The 3D to film blueprint is ready 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week |
+| BUILD | Hey 🙌🏻 The Build Blueprint is ready 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week |
+| TOWERS | Hey 🙌🏻 The Towers Blueprint is ready 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week |
+| City (tasto `Get my house`) | Hey 🙌🏻 your house in Omnya City is ready 🏠 tap below, it’s one link, one house, made for your username, and follow @omnyalab so you watch the city grow |
+
+**`gate` (giro completo).** Quello descritto sotto: tasto da toccare → controllo del follow → link. Si torna a usarlo quando la review passa.
+
+**Cambiare modalità, senza deploy:** `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=mode&value=direct` oppure `&value=gate`. La scelta sta su Redis e vale entro 15 secondi; se non è mai stata scelta vale `direct`. La modalità in uso si legge nella pagina di Nico e nella salute (`flow`).
+
+**Dopo la review** (Advanced Access su `instagram_manage_messages`): prova con un account senza ruolo che il tocco arrivi (in `gate`, una riga `[ig] message … → get` nei log), poi `&action=mode&value=gate`. Con i messaggi in entrata tornano anche il controllo del follow, il promemoria a 3 ore, il follow-up a 20 ore e la mail a Nico quando qualcuno risponde.
+
+## Il giro in `gate`
 
 1. Qualcuno commenta sotto un reel. Il commento entra in coda e, se nell'ultima ora sono partiti meno di 750 DM, viene servito subito.
 2. Sotto il commento esce una risposta pubblica a rotazione e parte il DM con il tasto **Get the Blueprint** (per City **Get my house**). Ogni persona lo riceve una volta sola per reel.
@@ -73,14 +96,8 @@ Meta permette 750 risposte private l'ora (il DM che risponde a un commento) e og
 Chi svuota la coda:
 
 - **ogni evento che arriva da Meta** (commenti, tocchi, "visto"), quindi mentre un reel gira la coda si muove da sola;
-- **`/api/igtick`**, chiamato da GitHub Actions ogni 5 minuti (`.github/workflows/igtick.yml`, GitHub può tardare di qualche minuto);
-- **su Vercel Pro, il cron ogni minuto**. Sul piano Hobby un cron più frequente di una volta al giorno fa fallire il deploy, per questo non è in `vercel.json`. Quando il piano è Pro si aggiunge questo blocco in cima a `vercel.json`, subito dopo la prima `{`, e si fa push:
-
-  ```json
-  "crons": [
-    { "path": "/api/igtick", "schedule": "* * * * *" }
-  ],
-  ```
+- **il cron di Vercel ogni minuto** su `/api/igtick` (`crons` in cima a `vercel.json`, dal 10/11 con il piano Pro; sul piano Hobby un cron più frequente di una volta al giorno fa fallire il deploy, quindi se si torna a Hobby va tolto);
+- **GitHub Actions ogni 5 minuti** (`.github/workflows/igtick.yml`), come riserva.
 
 Se è Meta a dire "too many calls" (conta anche i DM di altre app collegate) il bot si ferma 10 minuti e riparte dallo stesso punto. Se cinque DM di fila falliscono per un problema non della persona (token, permessi, chat ancora di un'altra app) il bot si ferma 2 minuti, prova con uno, e se va ancora male aspetta di più (fino a 15 minuti): i commenti restano in coda e partono quando il problema è risolto. Un commento che fallisce viene riprovato dopo 2, 10, 30, 120 e 360 minuti.
 
@@ -93,7 +110,7 @@ Il link nel DM è quello della pagina con il post in coda, per esempio `https://
 ## Cosa guardare
 
 - **Pagina di Nico**: `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY` → contatti, commenti in coda, DM dell'ultima ora, errori dell'ultima ora, e per ogni post commenti, DM mandati, DM bloccati, link mandati, clic sul link. Con `&format=json` solo i numeri.
-- **Salute**: `https://www.omnyalab.com/api/instagram?health=IG_ADMIN_KEY` → `on` (acceso o spento), `mode` (tutti o solo i tester), `token` (valido, quale Pagina e quale Instagram), `webhook` (i campi accesi sulla Pagina e sull'app, e in `missing` quelli che mancano tra `comments`, `messages`, `messaging_postbacks`), `lastComment` (l'ultimo commento arrivato, anche se non ha avuto risposta: è la prova che il webhook è acceso), `line` (coda, DM dell'ultima ora, eventuale fermo), `errors` (ultima ora e gli ultimi cinque), `map` (i post e le parole).
+- **Salute**: `https://www.omnyalab.com/api/instagram?health=IG_ADMIN_KEY` → `on` (acceso o spento), `flow` (`direct` o `gate`), `linkAs` (il link va sul tasto o nel testo), `mode` (tutti o solo i tester), `token` (valido, quale Pagina e quale Instagram), `webhook` (i campi accesi sulla Pagina e sull'app, e in `missing` quelli che mancano tra `comments`, `messages`, `messaging_postbacks`), `lastComment` (l'ultimo commento arrivato, anche se non ha avuto risposta: è la prova che il webhook è acceso), `line` (coda, DM dell'ultima ora, eventuale fermo), `errors` (ultima ora e gli ultimi cinque), `map` (i post e le parole).
 - **Log**: Vercel → Logs → cerca `[ig]`; gli errori sono le righe `[ig] ERROR`. Nessun errore di Meta passa in silenzio: ognuno ha la sua riga con il codice (per esempio `[code 100 sub 2534037]` = la chat è ancora di un'altra app) e finisce nel contatore.
 
 ## Comandi (tutti con la chiave)
@@ -102,12 +119,14 @@ Il link nel DM è quello della pagina con il post in coda, per esempio `https://
 | --- | --- |
 | `/api/leads?key=…` | la pagina |
 | `/api/leads?key=…&action=post&code=…&dest=…` | aggiunge un reel alla mappa, subito |
+| `/api/leads?key=…&action=mode&value=direct` | il primo DM ha già il link (default) |
+| `/api/leads?key=…&action=mode&value=gate` | giro completo: tasto, controllo del follow, link |
 | `/api/leads?key=…&action=off` | **spegne il bot subito**, senza deploy (non risponde a nessuno e non tiene i commenti che arrivano) |
 | `/api/leads?key=…&action=on` | lo riaccende |
 | `/api/leads?key=…&action=subscribe` | collega la Pagina al webhook (una volta sola) |
 | `/api/instagram?health=…` | salute |
 
-## Modalità
+## Chi riceve risposta (`IG_ONLY`)
 
 - `IG_ONLY=gghizzoo` su Vercel (username o id, separati da virgola): il bot risponde **solo** a quegli account, a commenti e DM. Sotto i post senza "Comment PAROLA" il tester può usare le parole dei DM (BLUEPRINT, 3D, AI…).
 - `IG_ONLY` vuota o tolta: il bot risponde **a tutti**. Dopo aver cambiato una variabile su Vercel serve un Redeploy.
@@ -115,16 +134,13 @@ Il link nel DM è quello della pagina con il post in coda, per esempio `https://
 
 ## Per andare live al posto di ManyChat
 
-1. **Vercel su Pro prima del push.** Con i due file `api/file.js` e `api/files.js` del sito le funzioni in `api/` sono 14, e il limite di Vercel sul piano Hobby è di 12 per deploy: su Hobby il deploy può fallire e online resterebbe la versione di prima.
-2. **Push di `main`** da GitHub Desktop, e su Vercel il deploy deve dire Ready.
-3. Apri la **salute**: `token.ok` deve essere `true`, e in `webhook.missing` leggi i campi da riaccendere.
-4. **ManyChat**: metti in pausa tutte le automazioni (non cancellarle).
-5. **Meta**, app Omnya Bot (id 1607399760453809), nella pagina dei webhook di Instagram dove il 3/11 è stato messo in pausa `comments`: riaccendi **`comments`**, e controlla che siano accesi **`messages`**, **`messaging_postbacks`**, **`messaging_seen`** e **`standby`** (facoltativo `message_echoes`, serve al bot per farsi da parte quando Nico scrive a mano).
-6. **Chi gestisce le chat**: Meta Business Suite → Impostazioni → Integrazioni → Routing delle conversazioni → Instagram → App partner: a **Omnya Bot** vanno "Accedi a tutte le conversazioni" e "Prendi il controllo delle conversazioni", e ManyChat va tolto (oppure dalla Pagina Facebook → Configurazione della Pagina → Routing delle conversazioni su Instagram, Omnya Bot come app predefinita; Meta avvisa che non si torna a "non configurata", il ritorno è rimettere ManyChat come predefinita).
-7. **Prova da tester** con `IG_ONLY=gghizzoo` ancora su: @gghizzoo commenta sotto la torre rossa, devono arrivare la risposta pubblica e il DM, poi tocca il tasto e deve arrivare il link (o "follow" e poi il link). Se il tocco dà l'errore #100 nei log, il punto 6 non è a posto.
-8. **Vercel** → Settings → Environment Variables: **svuota o cancella `IG_ONLY`** (Production), poi Deployments → Redeploy.
-9. **Prova da un account senza nessun ruolo sull'app**: commento, DM, tocco, link. È la prova che conta.
-10. Quando esce il reel: la caption deve contenere `comment "TOWERS"`; primo commento di prova entro un minuto, poi la pagina di Nico per vedere commenti, DM e clic.
+Fatto il 10/11: Vercel su Pro, ManyChat tolto, Omnya Bot app di routing predefinita, `IG_ONLY` tolta, `comments` acceso. Resta:
+
+1. **Push di `main`** da GitHub Desktop, e su Vercel il deploy deve dire Ready (il cron compare in Settings → Cron Jobs).
+2. Apri la **salute**: `on` true, `flow` `direct`, `mode` `everyone`, `token.ok` true, `webhook.missing` vuoto.
+3. **Prova da un account senza nessun ruolo sull'app**: un commento sotto un reel in mappa, e devono arrivare la risposta pubblica e un DM con il testo e il tasto `Get the Blueprint` che apre la pagina giusta. Poi tocca il tasto e ricarica la pagina di Nico: il clic deve comparire nella riga di quel post (se la pagina si apre ma il clic non compare, è la regola `?ig=` di `vercel.json` che non scatta: il funnel funziona lo stesso, manca solo il conteggio).
+4. Se nel DM il link è scritto nel testo invece che sul tasto, Instagram ha rifiutato il tasto: va bene lo stesso, e la salute dice `linkAs: text`.
+5. Quando esce il reel: la caption deve contenere `comment "TOWERS"`; primo commento di prova entro un minuto, poi la pagina di Nico per vedere commenti, DM e clic.
 
 ### Tornare indietro
 
