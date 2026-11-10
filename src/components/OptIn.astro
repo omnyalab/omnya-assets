@@ -26,10 +26,13 @@ interface Props {
   // 10/11 (Nico): every funnel is noClose now, the free PDF only comes after the email
   landing?: boolean; // 10/11: there is a page behind the card (Tower, Floors, 3D to film, City): whoever already left
   // the email in this browser sees it straight away, with the download links working
+  proof?: string; // 10/11 (Nico, G5): one small line of real proof under the send button, a star and a TRUE number, never a
+  // review, a rating or a name. Without it the line says how many people asked for a blueprint in four days (371, counted
+  // on 9/11); the Tower pages say the views of the tower reel (143,479). Change the number only with a real one.
   after?: string; // 10/11: where "Have a look" goes after the email is sent, when the funnel has no /sent page
   // (the City page: "#full", the card goes away and the page shows the Full guide)
 }
-const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, fade, after, landing } = Astro.props;
+const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, fade, after, landing, proof = '371 people asked for a blueprint in 4 days' } = Astro.props;
 const next = after || `/${slug}/sent`;
 ---
 
@@ -47,6 +50,7 @@ const next = after || `/${slug}/sent`;
       <p class="oiag oiag--line">By sending you accept the <a href="/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.</p>
       <p class="oierr" data-oi-err hidden></p>
       <button class="x3-btn x3-btn--blue">Send me the blueprint →</button>
+      <p class="oiproof"><b aria-hidden="true">★</b> {proof}</p>
     </form>
   </div>
 </div>
