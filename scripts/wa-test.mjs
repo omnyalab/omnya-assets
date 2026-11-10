@@ -6,7 +6,8 @@ delete process.env.UPSTASH_REDIS_REST_URL;
 delete process.env.ANTHROPIC_API_KEY;
 
 const wa = await import('../api/_lib/wa.js');
-const { guard, turns } = await import('../api/_lib/wa-brain.js');
+const { guard, turns, system, PRICES } = await import('../api/_lib/wa-brain.js');
+const { KNOWLEDGE, WELCOME, DEMO_TOWER, DEMO_HOUSE } = await import('../api/_lib/wa-knowledge.js');
 const { handle } = await import('../api/whatsapp.js');
 
 let pass = 0;
@@ -34,7 +35,7 @@ await wa.setEnabled(true);
 
 // 2. new lead: answers with 2 messages + read/typing
 reset();
-await run(msg('972222', 'hi free sample?'));
+await run(msg('972222', 'hi'));
 ok(texts().length === 2, 'new lead gets 2 messages');
 ok(wa._sent.some((s) => s.typing_indicator), 'typing indicator sent');
 
@@ -129,15 +130,67 @@ await run(msg('393401112233', 'prova'));
 ok(texts().length === 1, 'test list wins over the italian rule');
 delete process.env.WA_ALLOW;
 
-// guard
-ok(guard(['the full tower blueprint is 4,99 € instead of 19 this week']) === null, 'guard: blueprint price ok');
-ok(guard(['playbooks 49 € or all three 79 €']) === null, 'guard: playbook prices ok');
-ok(guard(['a render is 90 €']) !== null, 'guard: work price blocked');
-ok(guard(['around 2k usd']) !== null, 'guard: 2k blocked');
+// guard: today's prices pass, every other amount, the dates, the old free image and "Nicola" never leave
+for (const said of [
+  'one image is 90 €', 'the pilot is 490 € one floor of your building clickable in 7 days', 'essential is 1.390 € and signature 2.290 €',
+  'choose your floor starts at 3.900 €', 'the house starts at 1.990 € and the full tower launch 5.900 €', 'films are 899 € 1.490 € or 2.490 €',
+  'the full guide is 5,99 €', '5.99 € for the full one', 'everything we teach is 59 €', 'the scene file is 12 €', '€1,390 for essential', '1390 eur',
+]) ok(guard([said]) === null, `guard: today's price ok: ${said}`);
+for (const said of [
+  'the full tower blueprint is 4,99 € instead of 19 this week', 'its 19 €', '1,99 € until sunday', 'all three for 39 €', 'playbooks 49 € or all three 79 €',
+  'a render is 70 €', 'around 2k usd', 'about 4000 €', 'the two together are 6.390 €', 'thats 2000 aed', 'we can do 1.200 € for you',
+]) ok(guard([said]) !== null, `guard: blocked: ${said}`);
 ok(guard(['we can deliver friday']) !== null, 'guard: weekday blocked');
 ok(guard(['ready by 12/11']) !== null, 'guard: date blocked');
-ok(guard(['4,99 € until sunday 8 november']) === null, 'guard: deal end ok');
 ok(guard(['first views in 1-2 working days']) === null, 'guard: process timing ok');
+ok(guard(['online in 7 days and if you start within 30 days the 490 € comes off']) === null, 'guard: pilot timing ok');
+ok(guard(['delivered in 4k in every format']) === null, 'guard: 4k is not money');
+ok(guard(['the free sample is one photo of your room']) !== null, 'guard: free sample offer blocked');
+ok(guard(['sure send me the plan and we make the first image free']) !== null, 'guard: first image free blocked');
+ok(guard(['ti facciamo una foto gratis del tuo progetto']) !== null, 'guard: foto gratis blocked');
+ok(guard(['we dont do the free image anymore']) === null, 'guard: saying the free image is gone is fine');
+ok(guard(['you can try the free demo here ' + DEMO_TOWER]) === null, 'guard: free demo ok');
+ok(guard(['nicola will get back to you']) !== null, 'guard: "Nicola" blocked');
+ok(guard(['nico will get back to you']) === null, 'guard: "Nico" ok');
+
+// what the bot knows and says (10/11): the demo and the pilot in place of the free image, today's prices, Nico's rules
+const brainText = system()[0].text;
+ok(brainText.includes(KNOWLEDGE), 'the facts are in what the bot reads');
+ok(KNOWLEDGE.includes(DEMO_TOWER) && KNOWLEDGE.includes(DEMO_HOUSE), 'facts: the two free demos');
+ok(DEMO_TOWER === 'https://www.omnyalab.com/demo/choose-your-floor' && DEMO_HOUSE === 'https://www.omnyalab.com/demo/hold-to-build', 'the demo links');
+ok(/pilot, 490 €: ONE floor of THEIR building, clickable, online in 7 days/i.test(KNOWLEDGE) && /within 30 days, the 490 € comes off its price in full/.test(KNOWLEDGE), 'facts: the pilot');
+for (const price of ['90 €', '899 €', '1.490 €', '2.490 €', '1.390 €', '2.290 €', '1.990 €', '3.900 €', '5.900 €', '490 €', '5,99 €', '59 €', '12 €']) ok(KNOWLEDGE.includes(price), `facts: ${price}`);
+ok(PRICES.length === 13 && guard(PRICES.map((n) => `${n} €`)) === null, 'the guard knows the same 13 prices');
+// every amount written in what the bot reads is one of today's prices: no 19 €, no launch price left anywhere
+const moneyStops = brainText.split('\n').map((l) => guard([l])).filter((r) => r && r.startsWith('money:'));
+ok(moneyStops.length === 0, `every amount in the rules and the facts is one of today's prices: ${moneyStops.join(' | ')}`);
+ok(!/\b19 ?€|€ ?19\b|(?<![\d.,])[14][.,]99(?!\d)|\b39 ?€|\b79 ?€|\b29 ?€|\b49 ?€|167|instead of|\{\{/.test(brainText), 'no old price, no "instead of", no empty placeholder');
+ok(!/first image free|first image is free|free sample \(one image\)|ONE photorealistic image/i.test(brainText), 'the free image is not offered anywhere');
+ok(/NO free image/.test(brainText) && /no longer there|not there anymore/.test(brainText), 'the bot is told the free image is gone');
+ok(!/nicola/i.test(brainText.replace('never Nicola', '')), 'Nico, never Nicola');
+ok(/FIRST ask what they want/.test(brainText), 'rule: first ask what they want');
+ok(/REAL project[^\n]*gets WORK proposed, never a pdf/.test(brainText), 'rule: a real project gets work, never the PDF');
+ok(/never invent, round, convert[^\n]*a price, a discount or a timing that is not written in the facts/.test(brainText), 'rule: never a price or a timing that is not in the list');
+ok(/max ~15 words/.test(brainText), 'rule: short messages');
+
+// the welcome: short, lowercase, asks about the project and what they need, the demo link, signed Nico
+for (const [lang, lines] of Object.entries(WELCOME)) {
+  ok(lines.length === 3 && lines.every((l) => l.length <= 100 && !l.includes('\n')), `welcome ${lang}: three short lines`);
+  ok(lines.every((l) => l === l.toLowerCase()), `welcome ${lang}: lowercase`);
+  ok(/\bnico\b/.test(lines[0]) && !/nicola/.test(lines.join(' ')), `welcome ${lang}: signed nico`);
+  ok(/project|progetto/.test(lines[1]) && /need|serve/.test(lines[1]) && lines[1].endsWith('?'), `welcome ${lang}: asks what project and what they need`);
+  ok(lines[2].endsWith(DEMO_TOWER), `welcome ${lang}: the demo link`);
+  ok(guard(lines) === null, `welcome ${lang}: passes the guard`);
+  ok(!/\p{Extended_Pictographic}|!|—/u.test(lines.join(' ')), `welcome ${lang}: no emoji, no "!"`);
+  ok(lines.every((l) => brainText.includes(l)), `welcome ${lang}: the bot has it in its rules`);
+}
+
+// the welcome goes out as three separate messages (here the fake brain says it, as the real one is told to)
+reset();
+brain = () => ({ decision: 'reply', reason: 'none', messages: WELCOME.en, summary_it: 'lead nuovo, ha solo salutato' });
+await run(msg('971700000001', 'hello'));
+ok(texts().length === 3 && texts()[2].includes(DEMO_TOWER), 'welcome: three messages, the last with the demo link');
+ok(wa._sent.filter((s) => s.type === 'text').at(-1).text.preview_url === true, 'welcome: the demo link shows its preview');
 
 // turns
 const t = turns([{ r: 'bot', t: 'x' }, { r: 'lead', t: 'a' }, { r: 'lead', t: 'b' }, { r: 'bot', t: 'c' }, { r: 'lead', t: 'd' }]);

@@ -1,8 +1,13 @@
 // Tone check with the real Claude (costs a few cents): fake leads, prints what the bot would answer.
 // Run: ~/.local/node/bin/node --env-file=.env.local scripts/wa-tone.mjs
 const { think } = await import('../api/_lib/wa-brain.js');
+// (10/11: the free image is over; these chats try the welcome, the demo, the pilot at 490 € and today's prices)
 const chats = [
+  ['hi'],
   ['free sample'],
+  ['we are building a 14 floor tower in dubai, we have plans and the revit model', 'how do we start?'],
+  ['how much is one render?'],
+  ['how much is the choose your floor for 4 towers?'],
   ['hi i saw your reel of the tower', 'how can i get this for my project?'],
   ['ciao ho visto il video della torre', 'quanto costa?'],
   ['hello', 'we are a developer in tashkent, 3 towers, we have the 3d model and plans', 'we want the interactive 3d where clients choose floor'],
