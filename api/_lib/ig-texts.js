@@ -72,7 +72,7 @@ export const nudgeQuestion = 'Did you get a chance to open The Blueprint? 👀 I
 
 /** Under the tower reels (caption mentions a tower): Nico's tower messages (4/11/2026), the rest as above. */
 const towerRest = 'Quick question so I can point you to the right part: are you working on a tower right now, or just curious how we make them? 👀';
-const towerBlueprint = `The Tower Blueprint is free on this page, and right under it there’s the full method we use for our towers: ${TOWER_BLUEPRINT}\n\n(and if you’d rather have us do it on your tower, the first image is free, it’s on the same page)\n\n${towerRest}`;
+const towerBlueprint = `The Tower Blueprint is free on this page, and right under it there’s the full method we use for our towers: ${TOWER_BLUEPRINT}\n\n${towerRest}`;
 
 const tower = {
   publicReplies: [
@@ -108,8 +108,8 @@ const funnel = ({ name, url, page, replies, opener: first, nudge }) => ({
   cantDm: `We can’t send you ${name.replace(/^The /, 'the ')} unless you send us a text, if you want it, just send us a text 🫶🏻`,
   opener: { text: first || `Hey 🙌🏻 ${name} is ready, tap below and I’ll send it over 👇🏻`, button: 'Get the Blueprint' },
   followFirst: { ...followFirst, text: followFirst.text.replace('The Blueprint', name) },
-  blueprintFollower: `Here you go 👇🏻 ${page}: ${url}\n\n(and if you’d rather have us do it on your project, the first image is free, it’s on the same page)`,
-  blueprintNewFollower: `Thanks for the follow 🙌🏻 ${page}: ${url}\n\n(and if you’d rather have us do it on your project, the first image is free, it’s on the same page)`,
+  blueprintFollower: `Here you go 👇🏻 ${page}: ${url}`,
+  blueprintNewFollower: `Thanks for the follow 🙌🏻 ${page}: ${url}`,
   nudgeFollow: { ...nudgeFollow, text: nudgeFollow.text.replace('The Blueprint', name) },
   nudgeQuestion: nudge || `Did you get a chance to open ${name}? 👀 If you’re working on a project, the first image is on us 🫶🏻`,
 });
