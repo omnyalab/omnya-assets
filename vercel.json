@@ -1,6 +1,35 @@
 {
   "redirects": [
     {
+      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint)",
+      "has": [
+        {
+          "type": "query",
+          "key": "ig",
+          "value": "(?<post>[A-Za-z0-9_-]+)"
+        }
+      ],
+      "destination": "/api/instagram?go=:page&p=:post",
+      "permanent": false
+    },
+    {
+      "source": "/city",
+      "has": [
+        {
+          "type": "query",
+          "key": "ig",
+          "value": "(?<post>[A-Za-z0-9_-]+)"
+        },
+        {
+          "type": "query",
+          "key": "k",
+          "value": "(?<k>[A-Za-z0-9_-]+)"
+        }
+      ],
+      "destination": "/api/instagram?go=city&p=:post&k=:k",
+      "permanent": false
+    },
+    {
       "source": "/demo/choose-your-floor",
       "has": [
         {
@@ -432,6 +461,12 @@
   "functions": {
     "api/whatsapp.js": {
       "maxDuration": 120
+    },
+    "api/instagram.js": {
+      "maxDuration": 60
+    },
+    "api/igtick.js": {
+      "maxDuration": 60
     },
     "api/file.js": {
       "includeFiles": "private/learn/**"

@@ -4,6 +4,11 @@
 
 export const BLUEPRINT = 'https://omnyalab.com/the-blueprint';
 export const TOWER_BLUEPRINT = 'https://omnyalab.com/the-tower-blueprint';
+export const TOWER_FLOORS = 'https://omnyalab.com/the-tower-floors';
+export const FILM = 'https://www.omnyalab.com/3d-to-film';
+export const BUILD = 'https://www.omnyalab.com/the-build-blueprint';
+export const TOWERS = 'https://www.omnyalab.com/the-towers-blueprint';
+export const CITY = 'https://www.omnyalab.com/city';
 export const BOOK_CALL = 'https://omnyalab.com/book/call';
 
 /** Under the comment, one at random, so Instagram doesn't see the same line a hundred times. */
@@ -88,7 +93,95 @@ const tower = {
   nudgeQuestion: 'Did you get a chance to open The Tower Blueprint? 👀 If you’re working on a tower, the first image is on us.',
 };
 
-const base = { publicReplies, cantDm, opener, followFirst, stillNotFollowing, blueprintFollower, blueprintNewFollower, answerProject, answerCurious, nudgeFollow, nudgeQuestion };
+/** The floors reel: the tower messages, the page with the floors. */
+const floors = Object.fromEntries(Object.entries(tower).map(([k, v]) => [k, typeof v === 'string' ? v.replace(TOWER_BLUEPRINT, TOWER_FLOORS) : v]));
 
-/** The texts for a post: 'tower' or anything else (the normal Blueprint). */
-export const textsFor = (kind) => (kind === 'tower' ? { ...base, ...tower } : base);
+/**
+ * The reels that came after (3D to film, Build, Towers): the messages of their ManyChat automations
+ * (docs/DM-INSTAGRAM.md), one DM with the link of the page and no question after it.
+ * name = how the DM calls it, page = the sentence about the page, url = the page.
+ */
+const funnel = ({ name, url, page, replies, opener: first, nudge }) => ({
+  url,
+  ask: false,
+  publicReplies: replies || [`Sent 🙌🏻 check your DMs for ${name}`, 'Just sent it, check your DMs 👀', 'Done! It’s in your DMs 🫶🏻'],
+  cantDm: `We can’t send you ${name.replace(/^The /, 'the ')} unless you send us a text, if you want it, just send us a text 🫶🏻`,
+  opener: { text: first || `Hey 🙌🏻 ${name} is ready, tap below and I’ll send it over 👇🏻`, button: 'Get the Blueprint' },
+  followFirst: { ...followFirst, text: followFirst.text.replace('The Blueprint', name) },
+  blueprintFollower: `Here you go 👇🏻 ${page}: ${url}\n\n(and if you’d rather have us do it on your project, the first image is free, it’s on the same page)`,
+  blueprintNewFollower: `Thanks for the follow 🙌🏻 ${page}: ${url}\n\n(and if you’d rather have us do it on your project, the first image is free, it’s on the same page)`,
+  nudgeFollow: { ...nudgeFollow, text: nudgeFollow.text.replace('The Blueprint', name) },
+  nudgeQuestion: nudge || `Did you get a chance to open ${name}? 👀 If you’re working on a project, the first image is on us 🫶🏻`,
+});
+
+const film = funnel({
+  name: 'The 3D to film blueprint',
+  url: FILM,
+  page: 'Our 3D to film method is free on this page, and right under it there’s the Full Blueprint with every prompt we used for this villa',
+  replies: ['Sent it to your DMs 👀', 'Check your DMs, the blueprint is there 🙌🏻', 'Just sent you the link, check your DMs 👇🏻'],
+  opener: 'Hey, thanks for the comment 🙌🏻 The 3D to film blueprint is ready for you, tap the button below and I’ll send it over 👇🏻',
+  nudge: 'Did you get a chance to open the blueprint? 👀 If you’re working on a house, the first image is on us 🫶🏻',
+});
+
+const build = funnel({
+  name: 'The Build Blueprint',
+  url: BUILD,
+  page: 'The Build Blueprint is free on this page, and right under it there’s the full method behind the house that builds itself',
+});
+
+const towers = funnel({
+  name: 'The Towers Blueprint',
+  url: TOWERS,
+  page: 'The Towers Blueprint is free on this page, and right after it there’s the full method behind the three towers where you choose the view',
+});
+
+/** Omnya City (word HOUSE): the messages of the ManyChat flow; the link is personal and is made at the moment (api/_lib/city.js). */
+const city = {
+  url: CITY,
+  ask: false,
+  publicReplies: ['Sent you a DM 🏠 your lot is waiting', 'Check your DMs, your house link is there 🔑', 'Done! Check your DMs (or Requests) 🏠'],
+  cantDm: 'We can’t send you your house link unless you send us a text, if you want it, just send us a text 🏠',
+  opener: { text: 'Hey! Your free house in Omnya City is ready 🏠 Tap below and I’ll send you your personal link. It’s one link, one house, made for your username.', button: 'Get my house' },
+  followFirst: { text: 'Almost there! The city is only for followers 🏠 Follow @omnyalab, then tap Done and your link comes right away.', button: 'Done' },
+  stillNotFollowing: { text: 'Hmm, I can’t see the follow yet 👀 follow @omnyalab and tap Done again 👇🏻', button: 'Done' },
+  link: { text: 'Here’s your link 🔑 Tap Reserve my spot and your house lands on the next free lot. The earlier you tap, the closer to downtown. Your username designs it.', button: 'Reserve my spot' },
+  nudgeFollow: { text: 'Still want your house in Omnya City? 🏠 follow @omnyalab and tap Done, your link comes right away 👇🏻', button: 'Done' },
+  nudgeQuestion: '',
+};
+
+/**
+ * Someone taps a button of an old ManyChat DM ("Get the Blueprint", "Following") and we never saw
+ * their comment, so we can't know which reel it was: after the follow they get the pages to choose
+ * from, as the ManyChat automation "Vecchi tasti Blueprint" did (7/11/2026).
+ */
+const legacy = {
+  ask: false,
+  followFirst: { ...followFirst, text: followFirst.text.replace('The Blueprint is ready for you', 'Your Blueprint is ready') },
+  link: {
+    text: 'Here you go 👇🏻 tap the one you asked for, every page has the free Blueprint and the full method right under it',
+    buttons: [['Tower Blueprint', 'tower'], ['3D to film', 'film'], ['Build Blueprint', 'build']],
+  },
+  nudgeFollow: { ...nudgeFollow, text: nudgeFollow.text.replace('The Blueprint', 'your Blueprint') },
+  nudgeQuestion: '',
+};
+
+/**
+ * The buttons of the DMs ManyChat sent before the bot took over: what they do here, and which
+ * messages they belong to when we don't know the person. Instagram gives us the label, not
+ * ManyChat's own code. The same words typed as a message count too.
+ */
+export const oldButtons = {
+  'get the blueprint': { payload: 'GET', kind: 'legacy' },
+  following: { payload: 'DONE', kind: 'legacy' },
+  'get my house': { payload: 'GET', kind: 'city' },
+  done: { payload: 'DONE', kind: 'city' },
+};
+
+const base = { url: BLUEPRINT, ask: true, publicReplies, cantDm, opener, followFirst, stillNotFollowing, blueprintFollower, blueprintNewFollower, answerProject, answerCurious, nudgeFollow, nudgeQuestion };
+const kinds = { tower: { ...tower, url: TOWER_BLUEPRINT }, floors: { ...floors, url: TOWER_FLOORS }, film, build, towers, city, legacy };
+
+/** Every destination the bot knows: 'blueprint', 'tower', 'floors', 'film', 'build', 'towers', 'city' ('legacy' is only for old buttons). */
+export const KINDS = ['blueprint', ...Object.keys(kinds)];
+
+/** The texts for a destination; anything unknown gets the normal Blueprint. */
+export const textsFor = (kind) => (kinds[kind] ? { ...base, ...kinds[kind] } : base);
