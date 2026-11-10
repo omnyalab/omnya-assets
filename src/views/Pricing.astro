@@ -34,6 +34,15 @@ const filmWas = (i: number) => (i === 0 ? film30Full : filmUnits[i] * film30);
 // Packs: the same images at the single price plus the film of the same length, struck through
 const packParts = [[8, 0], [15, 1], [25, 2]];
 const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packParts[i][1]][1]);
+// 10/11 (Nico): prices by zone. The page is written with today's prices; /api/geo says the zone of the visitor and
+// scripts/pages.ts (priceZone) swaps the text of the marked elements. data-geo-190 = Europe, the Gulf and North America,
+// where the single image is €190 (so the "bought one by one" prices struck through next to the packs grow with it);
+// data-geo-gulf = the six Gulf countries, where Choose your floor and Full tower launch are at their full price,
+// €4,900 and €7,900, with no launch offer (data-geo-off hides the struck price and "You save" there).
+const single190 = 190;
+const zImg = (q: string, price: string) => ({ was: money(perUnit(q) * single190), save: /^\d+$/.test(q) && Number(q) > 1 ? `${P.save} ${money(Number(q) * single190 - num(price))}` : '' });
+const packWas190 = (i: number) => packParts[i][0] * single190 + num(P.filmsRows[packParts[i][1]][1]);
+const gulfRows = [1, 2]; // Choose your floor, Full tower launch
 // The "i" next to a name (8/11): the description and a moving preview in a small card, instead of text under the row
 type Media = { video?: string; img?: string; poster?: string };
 const byId = (id: string) => projects.find((p) => p.id === id);
@@ -45,9 +54,9 @@ const i3Media: Media[] = [
 ];
 const filmMedia: Media[] = ['30', '60', '90'].map((n) => ({ video: `/prices/film-${n}.mp4`, poster: `/prices/film-${n}.webp` }));
 const packMedia: Media[] = ['02_villa_cape_town', '01_penthouse_dubai', '05_corfu_resort'].map((id) => ({ img: byId(id)?.gallery[0]?.mobile }));
-const infos: { id: string; name: string; price: string; text: string; media?: Media }[] = [
+const infos: { id: string; name: string; price: string; text: string; media?: Media; gulf?: string }[] = [
   { id: 'i3p', name: P.i3Pilot[0], price: P.i3Pilot[1], text: P.i3Pilot[3], media: i3Media[1] },
-  ...P.i3Rows.map(([name, , price, text], i) => ({ id: `i3-${i}`, name, price, text, media: i3Media[i] })),
+  ...P.i3Rows.map(([name, was, price, text], i) => ({ id: `i3-${i}`, name, price, text, media: i3Media[i], gulf: gulfRows.includes(i) ? was : undefined })),
   ...P.i3Extras.map(([name, price, text], i) => ({ id: `i3x-${i}`, name, price, text })),
   ...P.filmsRows.map(([len, price, use], i) => ({ id: `film-${i}`, name: `${len} ${P.filmsUnit}`, price, text: `${use}. ${P.filmsNoteShort}`, media: filmMedia[i] })),
   ...P.launchRows.map(([name, price, what], i) => ({ id: `pack-${i}`, name, price, text: what, media: packMedia[i] })),
@@ -90,9 +99,9 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
                 <span class="ptable__qn">{name}<button type="button" class="pinfo" data-info={`i3-${i}`} aria-label={`${P.info} ${name}`}><span aria-hidden="true">i</span></button></span>
               </th>
               <td class="ptable__price">
-                <s class="ptable__was">{was}</s>
-                <span class="ptable__now">{price}</span>
-                <span class="ptable__save">{P.save} {money(num(was) - num(price))}</span>
+                <s class="ptable__was" data-geo-off={gulfRows.includes(i) ? 'gulf' : undefined}>{was}</s>
+                <span class="ptable__now" data-geo-gulf={gulfRows.includes(i) ? was : undefined}>{price}</span>
+                <span class="ptable__save" data-geo-off={gulfRows.includes(i) ? 'gulf' : undefined}>{P.save} {money(num(was) - num(price))}</span>
               </td>
             </tr>
           ))
@@ -164,9 +173,9 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
                 <span class="ptable__qn">{name}<button type="button" class="pinfo" data-info={`pack-${i}`} aria-label={`${P.info} ${name}`}><span aria-hidden="true">i</span></button></span>
               </th>
               <td class="ptable__price">
-                <s class="ptable__was">{money(packWas(i))}</s>
+                <s class="ptable__was" data-geo-190={money(packWas190(i))}>{money(packWas(i))}</s>
                 <span class="ptable__now">{price}</span>
-                <span class="ptable__save">{P.save} {money(packWas(i) - num(price))}</span>
+                <span class="ptable__save" data-geo-190={`${P.save} ${money(packWas190(i) - num(price))}`}>{P.save} {money(packWas(i) - num(price))}</span>
               </td>
             </tr>
           ))
@@ -193,11 +202,11 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
                 <span class="ptable__qn">{q}{/^\d+$/.test(q) && <span class="ptable__unit">{q === '1' ? P.imagesUnit[0] : P.imagesUnit[1]}</span>}</span>
               </th>
               <td class="ptable__price">
-                {perUnit(q) > 1 && <s class="ptable__was">{money(perUnit(q) * single)}</s>}
-                <span class="ptable__now">{price}</span>
-                {saving(q, price) > 0 && <span class="ptable__save">{P.save} {money(saving(q, price))}</span>}
+                {perUnit(q) > 1 && <s class="ptable__was" data-geo-190={zImg(q, price).was}>{money(perUnit(q) * single)}</s>}
+                <span class="ptable__now" data-geo-190={q === '1' ? money(single190) : undefined}>{price}</span>
+                {saving(q, price) > 0 && <span class="ptable__save" data-geo-190={zImg(q, price).save}>{P.save} {money(saving(q, price))}</span>}
               </td>
-              <td class="ptable__each" data-label={P.imagesCols[2]}>{each}</td>
+              <td class="ptable__each" data-label={P.imagesCols[2]} data-geo-190={q === '1' ? money(single190) : undefined}>{each}</td>
             </tr>
           ))
         }
@@ -256,7 +265,7 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
             {f.media.video ? <video src={f.media.video} poster={f.media.poster} muted playsinline loop preload="none"></video> : <img src={f.media.img} alt="" />}
           </div>
         )}
-        <p class="pinfo-pop__name"><span>{f.name}</span><span>{f.price}</span></p>
+        <p class="pinfo-pop__name"><span>{f.name}</span><span data-geo-gulf={f.gulf}>{f.price}</span></p>
         <p class="pinfo-pop__text">{f.text}</p>
       </template>
     ))

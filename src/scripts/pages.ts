@@ -232,6 +232,43 @@ export function lazyVideos() {
 
 /* ---------- Prices, the "i" next to a name: a small card with the description and a preview.
    Next to the button on desktop (hover or click), a sheet from the bottom on phones. ---------- */
+/* ---------- Prices by zone (10/11, Nico). The page is built with today's prices. /api/geo reads the country Vercel
+   gives and answers a zone: "gulf" (Choose your floor €4,900, Full tower launch €7,900, single image €190), "west"
+   (Europe and North America: single image €190) or nothing (the prices as written). Only then the marked texts change:
+   data-geo-gulf="…" in the Gulf, data-geo-190="…" in both zones, data-geo-off="gulf" hides. If the country is not
+   known, or the call fails, nothing changes. The zone is kept for the visit (sessionStorage). ---------- */
+let zone: string | null = null;
+export function applyZone(root: ParentNode) {
+  if (!zone) return;
+  root.querySelectorAll<HTMLElement>('[data-geo-gulf], [data-geo-190], [data-geo-off]').forEach((el) => {
+    const off = el.getAttribute('data-geo-off');
+    if (off && off.split(' ').includes(zone!)) { el.remove(); return; }
+    const text = (zone === 'gulf' && el.getAttribute('data-geo-gulf')) || el.getAttribute('data-geo-190');
+    if (text) el.textContent = text;
+  });
+}
+export function priceZone() {
+  if (!document.querySelector('[data-geo-gulf], [data-geo-190], [data-geo-off]') && !document.querySelector('template[id^="info-"]')) return;
+  const paint = () => {
+    applyZone(document);
+    document.querySelectorAll<HTMLTemplateElement>('template[id^="info-"]').forEach((t) => applyZone(t.content));
+    document.documentElement.dataset.zone = zone || '';
+  };
+  if (zone !== null) return paint();
+  try {
+    const kept = sessionStorage.getItem('omnya-zone');
+    if (kept !== null) { zone = kept; return paint(); }
+  } catch {}
+  fetch('/api/geo')
+    .then((r) => (r.ok ? r.json() : null))
+    .then((g) => {
+      zone = g && (g.zone === 'gulf' || g.zone === 'west') ? g.zone : '';
+      try { sessionStorage.setItem('omnya-zone', zone); } catch {}
+      paint();
+    })
+    .catch(() => {});
+}
+
 export function priceInfo() {
   const pop = document.querySelector<HTMLElement>('[data-info-pop]');
   const btns = document.querySelectorAll<HTMLButtonElement>('[data-info]');
@@ -289,6 +326,7 @@ export function priceInfo() {
     window.clearTimeout(timer);
     stopAll();
     body.replaceChildren(...content);
+    applyZone(body); // a card made before the zone was known gets its price here
     pop.setAttribute('aria-label', b.getAttribute('aria-label') || '');
     pop.hidden = false;
     open = b;
