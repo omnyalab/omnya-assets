@@ -204,6 +204,11 @@
       "permanent": true
     },
     {
+      "source": "/learn/files/:path*",
+      "destination": "/api/file",
+      "permanent": false
+    },
+    {
       "source": "/blueprint",
       "destination": "/the-blueprint",
       "permanent": true
@@ -406,15 +411,6 @@
   ],
   "headers": [
     {
-      "source": "/learn/files/(.*)",
-      "headers": [
-        {
-          "key": "X-Robots-Tag",
-          "value": "noindex, nofollow"
-        }
-      ]
-    },
-    {
       "source": "/view/(.*)",
       "headers": [
         {
@@ -436,6 +432,9 @@
   "functions": {
     "api/whatsapp.js": {
       "maxDuration": 120
+    },
+    "api/file.js": {
+      "includeFiles": "private/learn/**"
     }
   },
   "rewrites": [

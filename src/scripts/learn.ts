@@ -116,6 +116,7 @@ export function learn() {
 
 // Thank-you page: the smaller offer stays hidden until "no thanks", then slides in.
 export function thanksPage() {
+  paidFiles();
   const down = document.querySelector<HTMLElement>('[data-oto-down]');
   const no = document.querySelector<HTMLButtonElement>('[data-oto-no]');
   if (!down || !no) return;
@@ -127,6 +128,37 @@ export function thanksPage() {
     requestAnimationFrame(() => down.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' }));
   }, { signal: ac.signal });
   onDestroy(() => ac.abort());
+}
+
+// Thank-you page (10/11): the PDFs show only after the server has checked the payment with Stripe
+// (api/files.js, ?session_id= from the checkout). No id, not paid, Stripe or the server not answering:
+// no buttons, and the line that says the PDFs are in the inbox, with WhatsApp and the email to write to.
+function paidFiles() {
+  const box = document.querySelector<HTMLElement>('[data-dl]');
+  if (!box) return;
+  const text = box.querySelector<HTMLElement>('[data-dl-text]')!;
+  const btns = box.querySelector<HTMLElement>('[data-dl-btns]')!;
+  const tpl = (n: string) => box.querySelector<HTMLTemplateElement>(`template[data-dl-${n}]`)!.content;
+  const closed = () => {
+    text.textContent = text.dataset.closed!;
+    btns.append(tpl('help').cloneNode(true));
+  };
+  const id = new URLSearchParams(location.search).get('session_id');
+  if (!id) return closed();
+  fetch(`/api/files?session_id=${encodeURIComponent(id)}&lang=${box.dataset.dl}`)
+    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    .then((j: { files?: { name: string; href: string }[] }) => {
+      const files = (j.files || []).filter((f) => f.href.startsWith('/api/file?'));
+      if (!files.length) return closed();
+      text.textContent = text.dataset.ok!;
+      for (const f of files) {
+        const a = tpl('file').firstElementChild!.cloneNode(true) as HTMLAnchorElement;
+        a.href = f.href;
+        a.querySelector('span')!.textContent = f.name;
+        btns.append(a);
+      }
+    })
+    .catch(closed);
 }
 
 // Learn: "Buy" on a playbook first asks "Are you sure?" (7/11): the big button takes the pack,

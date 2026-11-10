@@ -1,17 +1,12 @@
-# Link privati dei playbook
+# Link privati dei PDF a pagamento
 
-Non sono collegati da nessuna pagina e Google non li indicizza. Si mandano a chi ha pagato (per ora su WhatsApp, poi dalla pagina di grazie di Stripe).
+Dal 10/11 i PDF a pagamento non sono più in una cartella pubblica: stanno in `private/learn/` e si aprono solo con un link firmato che scade (`/api/file?f=…&e=…&s=…`). I vecchi indirizzi `/learn/files/61dd51d89913fd69/…` non danno più il file ma una pagina gentile che dice di scriverci.
 
-## Inglese
-- https://omnyalab.com/learn/files/61dd51d89913fd69/en/bundle-the-checklist-before-every-delivery.pdf
-- https://omnyalab.com/learn/files/61dd51d89913fd69/en/bundle-the-full-prompt-files.pdf
-- https://omnyalab.com/learn/files/61dd51d89913fd69/en/playbook-01-from-3d-to-real-photo.pdf
-- https://omnyalab.com/learn/files/61dd51d89913fd69/en/playbook-02-the-reel-they-comment-on.pdf
-- https://omnyalab.com/learn/files/61dd51d89913fd69/en/playbook-03-sell-it-before-it-exists.pdf
+## Chi li riceve e come
+- Dopo il pagamento il webhook di Stripe manda la mail con un bottone per ogni PDF, e quei link valgono un anno
+- La pagina `/learn/thanks/<prodotto>?session_id=…` mostra i bottoni solo se Stripe conferma il pagamento, con link da 24 ore, e il `session_id` vale 30 giorni
+- Se un cliente scrive che il link non va, apri `https://www.omnyalab.com/api/files?key=<IG_ADMIN_KEY>` e trovi un link nuovo da 30 giorni per ogni file, da incollare su WhatsApp o in mail (manda solo quelli che ha pagato)
 
-## Italiano
-- https://omnyalab.com/learn/files/61dd51d89913fd69/it/pacchetto-i-file-di-prompt-completi.pdf
-- https://omnyalab.com/learn/files/61dd51d89913fd69/it/pacchetto-il-controllo-prima-di-ogni-consegna.pdf
-- https://omnyalab.com/learn/files/61dd51d89913fd69/it/playbook-01-dal-3d-alla-foto-vera.pdf
-- https://omnyalab.com/learn/files/61dd51d89913fd69/it/playbook-02-il-reel-che-fa-commentare.pdf
-- https://omnyalab.com/learn/files/61dd51d89913fd69/it/playbook-03-vendilo-prima-che-esista.pdf
+## Dove sono i file
+- `private/learn/en/` e `private/learn/it/`, stessi nomi di prima
+- Per sostituire un PDF basta sovrascrivere il file con lo stesso nome; per aggiungerne uno nuovo va messo anche in `api/_lib/learn-files.js` (nome del prodotto Stripe → file)

@@ -147,47 +147,9 @@ export function fallback(id: ProductId, lang: Lang, name: string, word?: string)
 export const goHref = (id: ProductId, lang: Lang, word?: string) =>
   `${lang === 'it' ? '/it' : ''}/go/${id}${word ? `?k=${word}` : ''}`;
 
-/** The paid files: private links, not linked from any page and not indexed (see vercel.json).
-    The page after a purchase is the only place that shows them. */
-const FILES = '/learn/files/61dd51d89913fd69';
-const pdfs = {
-  en: {
-    'white-to-real': ['From 3D to real photo', 'playbook-01-from-3d-to-real-photo.pdf'],
-    reel: ['The reel they comment on', 'playbook-02-the-reel-they-comment-on.pdf'],
-    'before-it-exists': ['Sell it before it exists', 'playbook-03-sell-it-before-it-exists.pdf'],
-    prompts: ['The full prompt files', 'bundle-the-full-prompt-files.pdf'],
-    checklist: ['The checklist before every delivery', 'bundle-the-checklist-before-every-delivery.pdf'],
-    'full-tower': ['How to build a tower that sells with AI', 'full-tower-blueprint.pdf'],
-    'full-3d': ['How to make a 3D that sells with AI', 'full-3d-blueprint.pdf'],
-    'full-city': ['How to build a 3D city that goes viral with AI', 'full-city-blueprint.pdf'],
-    'full-build': ['How to build a house that builds itself', 'full-build-blueprint.pdf'],
-    'full-towers': ['How to build three towers you choose the view of', 'full-towers-blueprint.pdf'],
-  },
-  it: {
-    'white-to-real': ['Dal 3D alla foto vera', 'playbook-01-dal-3d-alla-foto-vera.pdf'],
-    reel: ['Il reel che fa commentare', 'playbook-02-il-reel-che-fa-commentare.pdf'],
-    'before-it-exists': ['Vendilo prima che esista', 'playbook-03-vendilo-prima-che-esista.pdf'],
-    prompts: ['I file di prompt completi', 'pacchetto-i-file-di-prompt-completi.pdf'],
-    checklist: ['Il controllo prima di ogni consegna', 'pacchetto-il-controllo-prima-di-ogni-consegna.pdf'],
-    // only in English: the Italian page gives the English file
-    'full-tower': ['How to build a tower that sells with AI (EN)', '../en/full-tower-blueprint.pdf'],
-    'full-3d': ['How to make a 3D that sells with AI (EN)', '../en/full-3d-blueprint.pdf'],
-    'full-city': ['How to build a 3D city that goes viral with AI (EN)', '../en/full-city-blueprint.pdf'],
-    'full-build': ['How to build a house that builds itself (EN)', '../en/full-build-blueprint.pdf'],
-    'full-towers': ['How to build three towers you choose the view of (EN)', '../en/full-towers-blueprint.pdf'],
-  },
-} as const;
-type FileKey = keyof (typeof pdfs)['en'];
-const bundleFiles: FileKey[] = ['white-to-real', 'reel', 'before-it-exists', 'prompts', 'checklist'];
-// 9/11 (Nico): the Full Build Blueprint replaces the Full City one in the pack
-// 9/11 (Nico): the Full Towers Blueprint joins the pack, nothing taken out
-const everythingFiles: FileKey[] = ['full-tower', 'full-3d', 'full-build', 'full-towers', ...bundleFiles];
-
-/** What a buyer downloads after paying for a PDF product (the bundle gets all five files). */
-export function filesFor(id: ProductId, lang: Lang) {
-  const keys: FileKey[] = id === 'bundle' ? bundleFiles : id === 'everything' ? everythingFiles : id in pdfs.en ? [id as FileKey] : [];
-  return keys.map((k) => ({ name: pdfs[lang][k][0], href: `${FILES}/${lang}/${pdfs[lang][k][1]}` }));
-}
+// The paid files (10/11): they are not in public/ any more and no page is built with their links.
+// They live in private/learn/, the map from Stripe product to files is api/_lib/learn-files.js, and
+// /learn/thanks shows them only after api/files.js has checked the payment with Stripe (views/Thanks.astro).
 
 /** Where a lesson buyer picks the day and time: our booking pages (Session 60 min, Build two calls of 90). */
 export const booking: Partial<Record<ProductId, string>> = {

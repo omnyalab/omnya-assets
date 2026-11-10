@@ -5,7 +5,7 @@
 // thanks page is a bonus, not the only way to get what they paid for.
 import Stripe from 'stripe';
 import { sendMail } from './_lib/mail.js';
-import { filesForProduct } from './_lib/learn-files.js';
+import { filesForProduct } from './_lib/learn-files.js'; // 10/11: each file comes with a signed link good for one year (/api/file)
 import { host } from './_lib/config.js';
 import { upgrade, placeBid } from './_lib/city.js';
 import { metaEvent } from './_lib/meta.js';
@@ -18,7 +18,7 @@ const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SEC
 
 function filesEmail(name, files) {
   const btn = (f) =>
-    `<a href="https://www.omnyalab.com${f.href}" style="display:inline-block;background:#b8613c;color:#fff;text-decoration:none;padding:12px 20px;border-radius:999px;margin:4px 8px 4px 0">${f.name}</a>`;
+    `<a href="https://www.omnyalab.com${f.href.replace(/&/g, '&amp;')}" style="display:inline-block;background:#b8613c;color:#fff;text-decoration:none;padding:12px 20px;border-radius:999px;margin:4px 8px 4px 0">${f.name}</a>`;
   return `<!doctype html><html><body style="margin:0;background:#edeae4;font:16px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#111">
 <div style="max-width:520px;margin:0 auto;padding:40px 24px">
 <p style="margin:0 0 28px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#6b6761">Omnya Lab</p>
