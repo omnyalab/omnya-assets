@@ -2,7 +2,7 @@
 import type { APIRoute } from 'astro';
 import { projects, slug } from '../lib/data';
 
-const pages = ['/', '/work', '/studio', '/pricing', '/learn', '/contact', '/privacy-policy', ...projects.map((p) => `/work/${slug(p)}`)];
+const pages = ['/', '/work', '/studio', '/pricing', '/learn', '/contact', '/privacy-policy', '/terms', ...projects.map((p) => `/work/${slug(p)}`)];
 const site = 'https://www.omnyalab.com';
 const url = (p: string) => {
   const en = site + p, it = site + (p === '/' ? '/it' : `/it${p}`);

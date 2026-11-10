@@ -3,11 +3,19 @@ import Base from '../layouts/Base.astro';
 import Duo from '../components/Duo.astro';
 import mdEn from '../../docs/PRIVACY.md?raw';
 import mdIt from '../../docs/PRIVACY.it.md?raw';
-import { t, langFromPath } from '../i18n';
+import termsEn from '../../docs/TERMS.md?raw';
+import termsIt from '../../docs/TERMS.it.md?raw';
+import { t, langFromPath, localize } from '../i18n';
 
+interface Props {
+  /** 10/11: the same page shows the terms of sale (docs/TERMS.md and TERMS.it.md), on /terms */
+  doc?: 'privacy' | 'terms';
+}
+const { doc = 'privacy' } = Astro.props;
 const lang = langFromPath(Astro.url.pathname);
 const T = t(lang);
-const md = lang === 'it' ? mdIt : mdEn;
+const md = doc === 'terms' ? (lang === 'it' ? termsIt : termsEn) : lang === 'it' ? mdIt : mdEn;
+const meta = doc === 'terms' ? T.terms : T.privacy;
 
 // docs/PRIVACY.md (and PRIVACY.it.md) are the single source: "# Title", an update line, an intro,
 // then "## 01 Heading" sections made of plain paragraphs.
@@ -23,7 +31,7 @@ const linkify = (t: string) =>
   t
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
     .replace(/\b(info@omnyalab\.com)\b/g, '<a class="u" href="mailto:$1">$1</a>')
-    .replace(/\b((?:vercel|calendly)\.com\/[\w\-/]+)/g, '<a class="u" href="https://$1" target="_blank" rel="noopener">$1</a>');
+    .replace(/\b((?:vercel|stripe|resend|anthropic|facebook)\.com\/[\w\-/]+)/g, '<a class="u" href="https://$1" target="_blank" rel="noopener">$1</a>');
 
 type Section = { n: string; h: string; paras: string[] };
 const intro: string[] = [];
@@ -51,7 +59,7 @@ for (const l of lines) {
 flush();
 ---
 
-<Base page="privacy" title={T.privacy.title} description={T.privacy.description}>
+<Base page="privacy" title={meta.title} description={meta.description}>
   <section class="phead wrap">
     <Duo as="h1" size="h1" a={`${titleA},`} b={titleB} intro />
     <div class="phead__meta"><span class="mute" data-fade data-intro>{T.privacy.updated} {updatedNice}</span></div>
@@ -63,7 +71,7 @@ flush();
     </div>
     {
       sections.map((s) => (
-        <article class="legal__sec" data-fade id={s.n === '04' ? 'cookies' : undefined}>
+        <article class="legal__sec" data-fade id={doc === 'privacy' && s.n === '04' ? 'cookies' : undefined}>
           <h2 class="t-h3">
             <small>{s.n}</small>
             <span>{s.h}</span>
@@ -76,6 +84,7 @@ flush();
         </article>
       ))
     }
+    <p class="legal__cookie">{doc === 'terms' ? <a class="u" href={localize('/privacy-policy', lang)}>{T.footer.privacy}</a> : <a class="u" href={localize('/terms', lang)}>{T.terms.title}</a>}</p>
     <p class="legal__cookie"><button type="button" class="u" onclick="window.omnyaConsent && window.omnyaConsent.open()">{lang === 'it' ? 'Impostazioni cookie' : 'Cookie settings'}</button></p>
   </section>
 </Base>

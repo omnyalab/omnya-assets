@@ -6,14 +6,16 @@ Omnya Lab® ("noi") gestisce il sito omnyalab.com. In questa pagina spieghiamo c
 Usando il sito accetti quanto descritto in questa informativa. Se non sei d'accordo, ti chiediamo di non usarlo.
 
 ## 01 Cosa raccogliamo
-Quando ci scrivi via email, ci chiami o ci contatti su WhatsApp, possiamo raccogliere il tuo nome, l'indirizzo email, il numero di telefono e tutto quello che decidi di scriverci nel messaggio. Quando prenoti una chiamata con Calendly, il tuo nome, la tua email e le preferenze sull'appuntamento vengono raccolti da Calendly per nostro conto.
+Quando ci scrivi via email, ci chiami o ci contatti su WhatsApp, possiamo raccogliere il tuo nome, l'indirizzo email, il numero di telefono e tutto quello che decidi di scriverci nel messaggio. Quando prenoti una chiamata dalla nostra pagina di prenotazione raccogliamo il tuo nome, la tua email, l'orario che hai scelto e la nota che eventualmente lasci.
+
+Quando commenti un nostro post su Instagram o scrivi a @omnyalab, un assistente automatico può rispondere al commento e mandarti un messaggio diretto con il link che hai chiesto. Per farlo trattiamo il tuo nome utente Instagram, il commento o il messaggio e il post da cui arriva. Quando ci scrivi su WhatsApp, anche le prime risposte possono arrivare da un assistente automatico, poi una persona legge la chat e prosegue; trattiamo il tuo numero di telefono, il nome WhatsApp e i messaggi che mandi.
 
 Quando chiedi un blueprint gratuito raccogliamo il tuo nome e la tua email, la pagina da cui ti sei iscritto e la data e il testo del consenso che hai dato. Quando compri una guida, i dati di pagamento li raccoglie Stripe; a noi arrivano nome, email e cosa hai comprato.
 
 Mentre navighi sul sito vengono raccolti in automatico alcuni dati tecnici, come il tipo di browser, il dispositivo e le pagine visitate, in forma anonima e aggregata.
 
 ## 02 Come usiamo i tuoi dati
-Usiamo i dati raccolti per rispondere alle tue richieste, fornirti i servizi che ci chiedi, organizzare le chiamate, migliorare il sito e capire come i visitatori usano i nostri contenuti.
+Usiamo i dati raccolti per rispondere alle tue richieste, ai commenti e ai messaggi, fornirti i servizi che ci chiedi, organizzare le chiamate, migliorare il sito e capire come i visitatori usano i nostri contenuti.
 
 Usiamo la tua email per mandarti quello che hai chiesto. Se la casella che hai spuntato lo dice, ogni tanto possiamo mandarti un aggiornamento, mai spam, e in ogni email c'è il link per cancellarti con un clic.
 
@@ -26,17 +28,19 @@ Stripe gestisce i pagamenti (stripe.com/privacy). Resend consegna le nostre emai
 
 Meta Platforms (Facebook, Instagram) fornisce il Meta Pixel e la Conversions API che usiamo per misurare le nostre inserzioni; vedi la sezione Cookie e facebook.com/privacy/policy.
 
-Calendly serve per prenotare le chiamate. Quando fissi un appuntamento, Calendly raccoglie il tuo nome, la tua email e le informazioni che inserisci durante la prenotazione. La sua informativa è disponibile su calendly.com/privacy.
+Meta Platforms gestisce anche i commenti e i messaggi di Instagram e le chat di WhatsApp Business a cui rispondono i nostri assistenti. Anthropic fornisce il modello che scrive le risposte automatiche su WhatsApp: i messaggi della chat gli vengono inviati solo per scrivere la risposta (anthropic.com/legal/privacy).
+
+Le chiamate si prenotano dalla nostra pagina, senza servizi esterni di prenotazione: l'invito ti arriva per email.
 
 ## 04 Cookie
 Usiamo un solo cookie di marketing, il Meta Pixel. Si attiva solo se clicchi Accetta nel banner dei cookie e dice a Meta quali nostre pagine hai visto, se hai chiesto un blueprint gratuito e se hai aperto un pagamento, così possiamo misurare le inserzioni e mostrarle a chi ci conosce già. Se clicchi Rifiuta, o non scegli, nessun cookie di Meta viene impostato. Puoi cambiare scelta quando vuoi con il pulsante Impostazioni cookie in fondo a questa pagina.
 
 Quando compri una guida, il nostro server comunica a Meta che c'è stato un acquisto, con l'importo e la tua email cifrata (hash), per capire quali inserzioni portano vendite. Meta tratta questi dati come descritto nella sua informativa.
 
-Le statistiche di Vercel non usano cookie. Servizi di terze parti come Calendly o Stripe possono impostare i propri cookie quando li usi.
+Le statistiche di Vercel non usano cookie. Servizi di terze parti come Stripe possono impostare i propri cookie quando li usi.
 
 ## 05 Conservazione dei dati
-Conserviamo i dati personali solo per il tempo necessario agli scopi per cui sono stati raccolti, compresi gli obblighi di legge. La corrispondenza via email viene conservata per tutta la durata del rapporto di lavoro e cancellata su richiesta. Le iscrizioni restano finché non ti cancelli o ci chiedi di eliminarle.
+Conserviamo i dati personali solo per il tempo necessario agli scopi per cui sono stati raccolti, compresi gli obblighi di legge. La corrispondenza via email viene conservata per tutta la durata del rapporto di lavoro e cancellata su richiesta. Le iscrizioni restano finché non ti cancelli o ci chiedi di eliminarle. Le conversazioni su Instagram e WhatsApp restano finché siamo in contatto e vengono cancellate su richiesta.
 
 ## 06 I tuoi diritti
 In base alle leggi sulla protezione dei dati, compreso il GDPR, hai diritto di accedere ai dati personali che conserviamo su di te, di correggerli o di chiederne la cancellazione. Puoi anche chiedere di limitarne il trattamento, opporti al trattamento e richiederne la portabilità.

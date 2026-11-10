@@ -63,7 +63,7 @@ const pages = [
     <div class="ftr__bottom">
       <span>© {year} Omnya Lab®</span>
       <span>{contact.legal} · {T.footer.vat} {contact.vat}</span>
-      <a class="u" href={localize('/privacy-policy', lang)}>{T.footer.privacy}</a>
+      <span class="ftr__legal"><a class="u" href={localize('/privacy-policy', lang)}>{T.footer.privacy}</a> · <a class="u" href={localize('/terms', lang)}>{T.footer.terms}</a></span>
     </div>
   </div>
 </footer>
