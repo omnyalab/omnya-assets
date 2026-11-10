@@ -212,9 +212,9 @@ html,body{min-height:100%}
 .pick .scn .scn__ds{grid-area:ds;margin:0;color:#ffffffb3;font:500 12.5px/1.4 -apple-system,sans-serif}
 .pick .scn .scn__ds b{color:#fff;font-weight:600}
 .scn.can{cursor:pointer}
-.pick .scn.can .scn__k i{display:block}
+.pick .scn.can .scn__k i{display:block;position:relative;font-size:0}
 .scn.can.on{border-style:solid;border-color:#2997ff;background:#2997ff2e}
-.pick .scn.can.on .scn__k i{background:#2997ff;box-shadow:none;color:#fff}
+.pick .scn.can.on .scn__k i{background:#2997ff;box-shadow:none}.pick .scn.can.on .scn__k i::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:10px;border:solid #fff;border-width:0 2.4px 2.4px 0;transform:translate(-50%,-62%) rotate(45deg)}
 .w.all .scn{opacity:.45}
 @media (width>=900px){.scn{grid-template-columns:150px 1fr;grid-template-areas:"im hd" "im ds";gap:6px 16px;padding:12px}.scn img{width:150px;height:96px}.scn__hd{align-self:end}.pick .scn .scn__ds{align-self:start;font-size:13px}}
 /* on short phones (375x667) the card is shorter (preview, name and price, no description) and the rest a little tighter */
