@@ -530,7 +530,11 @@ async function infoFor(mediaId) {
 
 // ---------- Nico ----------
 
+// 10/11 (Nico): no mail when the one writing is Nico himself from his own profile (he tests the bot with it)
+const NO_MAIL = new Set(['gghizzoo']);
+
 async function tellNico(lead, subject, lines = []) {
+  if (NO_MAIL.has(String(lead.username || '').toLowerCase())) return;
   const who = lead.username ? `@${lead.username}` : `utente ${lead.id}`;
   const body = [
     ...lines,
