@@ -121,6 +121,10 @@ const schema = {
     <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:image:alt" content={ogAlt} />
     <script is:inline>
+      // 10/11 (Nico): which reel brought this visit. The bot's links carry the reel's code (?ig=<code>; ?reel=<code> or
+      // #ig=<code> are read too). It is kept in this browser (localStorage omnya-ig,
+      // with the day in omnya-ig-at) and /go/<product> adds it to the Stripe link as client_reference_id=ig_<code>.
+      (function () { try { var q = new URLSearchParams(location.search), c = q.get('ig') || q.get('reel') || (location.hash.match(/[#&]ig=([^&]+)/) || [])[1] || ''; c = c.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 60); if (c) { localStorage.setItem('omnya-ig', c); localStorage.setItem('omnya-ig-at', String(Date.now())); } } catch (e) {} })();
       document.documentElement.classList.add('js');
       // Safety net: never leave content hidden if the app script fails.
       setTimeout(function () { if (!window.__omApp) document.documentElement.classList.remove('js'); }, 5000);

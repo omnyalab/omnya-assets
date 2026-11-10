@@ -3,6 +3,12 @@
 // moves on to the checkout, the booking page or (while those are empty) WhatsApp.
 // The reel word (?k=3d) travels to the checkout as client_reference_id, so every sale
 // in the Stripe dashboard shows which reel brought it.
+// 10/11 (Nico): the reel's own code wins over the word. The links of the Instagram bot carry it (?ig=<code>), the first
+// page of the visit keeps it in localStorage (omnya-ig, layouts/Base.astro) and here it goes on the Stripe Payment Link
+// as client_reference_id=ig_<code> (letters, numbers, - and _ only; 30 days at most after the click). In Stripe it is
+// the field "client_reference_id" of the Checkout Session (checkout.session.completed), which is where the app on the
+// Mac reads it. Only Stripe links get it, and never the Omnya City ones: those are made by /api/city/buy with the
+// username in the same field, and they do not pass from this page.
 import { products, fallback, type ProductId } from '../lib/learn';
 import { t, langFromPath } from '../i18n';
 
@@ -53,11 +59,19 @@ const fallbacks = Object.fromEntries(['', '3d', 'ai', 'claude', 'dubai'].map((k)
   <body>
     <p><a href={gate || link || fallbacks['']} data-go>{name} →</a></p>
     <script is:inline define:vars={{ checkout: link, fallbacks, lang, gate, id }}>
-      const k = (new URLSearchParams(location.search).get('k') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const q = new URLSearchParams(location.search);
+      const k = (q.get('k') || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      // the reel's code: from this address if it has one, or the one kept by the first page of the visit (30 days)
+      let ig = (q.get('ig') || q.get('reel') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 60);
+      try {
+        if (ig) { localStorage.setItem('omnya-ig', ig); localStorage.setItem('omnya-ig-at', String(Date.now())); }
+        else if (Date.now() - (Number(localStorage.getItem('omnya-ig-at')) || 0) < 30 * 864e5) ig = (localStorage.getItem('omnya-ig') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 60);
+      } catch (e) {}
       let to = fallbacks[k] || fallbacks[''];
       if (checkout) {
         const u = new URL(checkout, location.origin);
-        if (k) u.searchParams.set('client_reference_id', k);
+        if (ig && u.hostname === 'buy.stripe.com') u.searchParams.set('client_reference_id', 'ig_' + ig);
+        else if (k) u.searchParams.set('client_reference_id', k);
         to = u.toString();
       }
       if (gate) {
