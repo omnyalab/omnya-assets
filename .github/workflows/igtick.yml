@@ -1,9 +1,11 @@
-# Wakes the Instagram bot every half hour, so the "check Requests" reminders and the
-# follow-ups go out on time even when nobody is commenting.
+# Wakes the Instagram bot every 5 minutes: it sends the DMs of the comments waiting in line
+# (Meta allows 750 an hour), the "check Requests" reminders and the follow-ups, even when
+# nobody is commenting. GitHub can run it late; on the Vercel Pro plan the every-minute cron
+# of docs/INSTAGRAM-BOT.md does the same job on time.
 name: Instagram bot tick
 on:
   schedule:
-    - cron: '7,37 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 jobs:
   tick:
