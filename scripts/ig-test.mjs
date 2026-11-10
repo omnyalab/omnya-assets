@@ -12,7 +12,7 @@ for (const k of ['KV_REST_API_URL', 'UPSTASH_REDIS_REST_URL', 'RESEND_API_KEY', 
 // ---- fake graph.instagram.com ----
 const OWN = '999';
 const calls = [];
-const state = { follows: {}, commentUser: {}, refuseTemplate: false, refuseDm: new Set(), failPrivate: null, failSend: null, captionDown: false, sid: {}, probeFail: null, probeBlank: false, noRecipient: false };
+const state = { follows: {}, commentUser: {}, refuseTemplate: false, refuseDm: new Set(), failPrivate: null, failSend: null, captionDown: false, sid: {}, probeFail: null, probeBlank: false, noRecipient: false, failReply: null };
 let mid = 0;
 let simNow = () => Date.now(); // the bot's clock, set below: every fake call remembers the bot's time
 // posts by the id Meta gives in the comment event: caption and link, as Instagram would answer
@@ -57,7 +57,7 @@ const server = http.createServer(async (req, res) => {
     const to = cid ? state.sid[state.commentUser[cid]] || state.commentUser[cid] : j.recipient.id;
     return out(cid && state.noRecipient ? { message_id: `m${++mid}` } : { recipient_id: to, message_id: `m${++mid}` });
   }
-  if (path.endsWith('/replies')) return out({ id: `r${++mid}` });
+  if (path.endsWith('/replies')) return state.failReply ? out({ error: state.failReply }, 400) : out({ id: `r${++mid}` });
   if (posts[path]) return state.captionDown ? out({ error: { message: 'An unexpected error has occurred. Please retry your request later.', code: 2 } }, 500) : out(posts[path]);
   if (path.startsWith('media')) return out({ caption: 'From rough 3D to final photo ✨ Comment “PROJECT” below and I’ll send you The Blueprint', permalink: 'https://www.instagram.com/reel/abc/' });
   if (/^[a-z]\d+$/.test(path)) {
@@ -1619,7 +1619,7 @@ await step('gate round for testers: also from the env var IG_GATE_FOR, and an em
   assert.equal(linkOf(sent().filter((x) => x.path === 'me/messages')[0]), `${TOWERS_PAGE}?ig=DfTOWERS11`); // direct: the link at once
 });
 
-// ===================== 10/11/2026, evening: every comment =====================
+// ===================== 10/11/2026, evening: every comment, the refused public reply =====================
 
 const health = async () => (await get(hook, '/api/instagram?health=k')).json();
 const numbers = async () => (await get(leadsPage, '/api/leads?key=k&format=json')).json();
@@ -1725,6 +1725,71 @@ await step('"every comment" switched off from /api/leads, without a deploy: back
   c = comment('a25', 'so beautiful', 'towersreel');
   assert.deepEqual(await c.res, ['sent']);
   assert.equal(forComment(sent(), c.id).length, 2);
+});
+
+await step('Instagram refuses the public reply (code 20 sub 1772107): the DM went out all the same, nothing stops, the error is readable', async () => {
+  ahead += 2 * 3_600_000;
+  await flushDue();
+  assert.equal(ig.replyRefused({ code: 20, sub: 1772107 }), true);
+  assert.equal(ig.replyRefused({ code: 100, message: 'instagram POST x/replies: (#100) Unsupported request' }), false);
+  assert.equal(ig.replyRefused({ code: 190, message: 'Error validating access token' }), false);
+  // exactly what Meta answered on 10/11 at 09:56
+  state.failReply = { message: 'This API call does not support the requested response format', type: 'OAuthException', code: 20, error_subcode: 1772107, is_transient: false, error_user_title: 'Instagram Comment Not Added', error_user_msg: 'Your Instagram comment was not added' };
+  const before = await errorsNow();
+  const newest = async () => (await ig.errorState(3)).last.map((e) => e.msg); // two errors can fall in the same millisecond
+  const cs = [];
+  const lines = [];
+  const realErr = console.error;
+  console.error = (...a) => { lines.push(a.join(' ')); };
+  try {
+    // more in a row than the five failed DMs that stop the line: a refused public reply never counts for that
+    for (let i = 1; i <= 7; i++) {
+      cs.push(comment(`q${i}`, i % 2 ? 'love it' : 'TOWERS', 'towersreel'));
+      assert.deepEqual(await cs.at(-1).res, ['sent'], `q${i}`);
+    }
+  } finally {
+    console.error = realErr;
+  }
+  let s = sent();
+  for (const c of cs) {
+    const d = dmsFor(s, c.id);
+    assert.equal(d.length, 1, c.id); // the DM, once
+    assert.equal(urlButton(d[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
+    assert.equal(s.filter((x) => x.path === `${c.id}/replies`).length, 1, c.id); // tried once, not again (Meta says it is not transient)
+    assert.ok(idx(s, (x) => x === d[0]) < idx(s, (x) => x.path === `${c.id}/replies`), 'the DM goes first');
+  }
+  const line = await ig.lineState();
+  assert.equal(line.stoppedUntil, null); // no stop
+  assert.equal(line.waiting, 0); // nobody back in line
+  assert.equal(line.sentLastHour, 7);
+  assert.equal(await errorsNow(), before + 7); // each one counted
+  const last = (await ig.errorState(1)).last[0];
+  assert.equal(last.where, 'public reply');
+  assert.match(last.msg, /^Instagram did not add our public reply \[code 20 sub 1772107\], the DM went out all the same: /);
+  assert.ok(lines.some((l) => l.startsWith(`[ig] ERROR public reply comment ${cs[0].id} @name_q1: Instagram did not add our public reply [code 20 sub 1772107]`)), lines.join('\n'));
+  assert.equal((await lead('q1')).stage, 'asked'); // they have the link
+  assert.match(await (await get(leadsPage, '/api/leads?key=k')).text(), /Instagram did not add our public reply \[code 20 sub 1772107\]/);
+  // the next minute's tick finds nothing to do again: no second DM, no second try of the reply
+  assert.equal((await (await tickPage.GET()).json()).sent, 0);
+  assert.deepEqual(await say(cs[0].id, 'q1', 'love it', 'towersreel'), ['dup']);
+  assert.deepEqual(await comment('q1', 'did you send it?', 'towersreel').res, ['already']);
+  assert.equal(posts_(sent()).length, 0);
+  // someone who can't get DMs, and the reply under their comment is refused too: said, counted, and the line goes on
+  const c8 = comment('q8', 'me too', 'towersreel');
+  state.refuseDm.add(c8.id);
+  assert.deepEqual(await c8.res, ['nodm']);
+  assert.ok((await newest()).some((m) => /\[code 20 sub 1772107\], and the DM could not go either/.test(m)));
+  assert.equal((await ig.lineState()).stoppedUntil, null);
+  // any other error of a public reply keeps Meta's own words, and doesn't stop anything either
+  state.failReply = { message: '(#10) Application does not have permission for this action', type: 'OAuthException', code: 10 };
+  assert.deepEqual(await comment('q9', 'wow', 'towersreel').res, ['sent']);
+  assert.ok((await newest()).some((m) => /replies: \(#10\) Application does not have permission/.test(m)));
+  state.failReply = null;
+  sent();
+  // Instagram takes the replies again: the next comment has both
+  const c10 = comment('q10', 'wow', 'towersreel');
+  assert.deepEqual(await c10.res, ['sent']);
+  assert.equal(forComment(sent(), c10.id).length, 2);
 });
 
 server.close();

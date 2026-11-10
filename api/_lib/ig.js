@@ -261,6 +261,7 @@ async function graph(path, token, { method = 'GET', body, query, timeout = 12_00
     const er = j.error || {};
     throw Object.assign(new Error(`instagram ${method} ${path}: ${er.message || res.status}${er.code ? ` [code ${er.code}${er.error_subcode ? ` sub ${er.error_subcode}` : ''}]` : ''}`), {
       code: er.code, sub: er.error_subcode, type: er.type, status: res.status, said: String(er.message || res.status),
+      title: String(er.error_user_title || ''), // Meta's own name for the refusal, when it gives one ("Instagram Comment Not Added")
     });
   }
   return j;
@@ -319,6 +320,23 @@ const question = (id, t) =>
   send({ id }, { text: t, quick_replies: [{ content_type: 'text', title: T.choices.project, payload: 'PROJECT' }, { content_type: 'text', title: T.choices.curious, payload: 'CURIOUS' }] });
 
 const replyComment = (commentId, message) => api(`${commentId}/replies`, { method: 'POST', query: { message } });
+
+/**
+ * Instagram did not add our reply under a comment: "This API call does not support the requested
+ * response format [code 20 sub 1772107]", which Meta calls "Instagram Comment Not Added" (seen on
+ * 10/11/2026). It is not about the format and not about the token: Instagram's own filter held that
+ * one reply back (the same few lines under many comments look automated), or the comment can't take
+ * a reply (hidden by Instagram, deleted, restricted). Meta marks it as not transient, so trying
+ * again is no use; it is about that one comment and never a reason to stop the line.
+ */
+export const replyRefused = (e) => e?.code === 20 || [1772107, 1772111].includes(e?.sub) || /comment (was )?not added|does not support the requested response format/i.test(`${e?.message || ''} ${e?.title || ''}`);
+
+/** The error of a public reply, in words Nico can read; the DM is a separate call and is not touched by it. */
+async function noteReplyError(e, job, dm) {
+  if (!replyRefused(e)) return noteError('public reply', e, `comment ${job.c}`);
+  const why = `Instagram did not add our public reply [code ${e.code || 0}${e.sub ? ` sub ${e.sub}` : ''}], ${dm ? 'the DM went out all the same' : 'and the DM could not go either'}: its filter held the reply back or the comment is hidden or deleted, nothing to fix`;
+  return noteError('public reply', Object.assign(new Error(why), { code: e.code, sub: e.sub }), `comment ${job.c}${job.n ? ` @${job.n}` : ''}`);
+}
 
 /** Whether they follow @omnyalab: true, false, or null when Instagram doesn't say. */
 async function profile(id) {
@@ -831,7 +849,9 @@ async function deliver(job, ctx) {
       if (lines.length) await replyComment(cid, lines[Math.floor(Math.random() * lines.length)]);
       if (job.gate && lines.length) gateLog(job.n, dm ? 'public-reply-sent' : 'public-reply-sent (the DM could not go: "send us a text")');
     } catch (e) {
-      await noteError('public reply', e, `comment ${cid}`);
+      // the public reply is one call for one comment: whatever Meta says, the DM is already out (or
+      // already given up) and the line goes on; nothing here can stop the bot
+      await noteReplyError(e, job, dm);
     }
     job.pub = true;
   }
