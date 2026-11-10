@@ -69,6 +69,14 @@ html:has(.oidim:not([hidden])),html:has(.oidim:not([hidden])) body{overflow:hidd
 .oif .oiproof{margin:4px 0 0;text-align:center;color:#ffffffb8;font:600 12.5px/1.3 -apple-system,sans-serif;letter-spacing:.01em}
 .oif .oiproof b{color:#2997ff;font-weight:800;margin-right:3px}
 .oi--c1 .oif .oiproof b{color:#22d35e}
+/* 10/11 (Nico): the funnel's own small footer under the card (the site's header and footer stay off the funnels). It hangs
+   below the card without moving it, so the send button is where it was; on a short screen it is reached by scrolling */
+.oiff{position:absolute;left:0;right:0;top:100%;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 0;padding:16px 6px 20px;color:#ffffff8c;font:500 11.5px/1.6 -apple-system,sans-serif;text-align:center}
+.oiff>*+*::before{content:"·";margin:0 7px;color:#2997ff;font-weight:800}
+.oi--c1 .oiff>*+*::before{color:#22d35e}
+.oiff a{color:#ffffffb3;text-decoration:none}
+.oiff a:hover{color:#fff;text-decoration:underline;text-underline-offset:3px}
+@media (width<=560px){.oiff a:last-child{flex-basis:100%}.oiff a:last-child::before{display:none}}
 .oidim[hidden]{display:none!important}
 .oif .oierr{color:#ffb4a8;font:500 13px -apple-system,sans-serif;margin:0}
 .oif button[disabled]{opacity:.6}

@@ -72,6 +72,7 @@ const en = {
     kit: 'Download our kit',
     vat: 'VAT',
     privacy: 'Privacy policy',
+    terms: 'Terms',
   },
   sheet: {
     kicker: 'Free image',
@@ -499,6 +500,12 @@ const en = {
       only: 'Only on this page',
       no: 'No thanks, show me something else',
       upgradeNo: 'No thanks, take me to my PDF',
+      // 10/11 (Nico): one short line of conditions next to where people pay, and the same promise next to the downloads
+      digital: 'Digital product, in your inbox right after you pay.',
+      fixA: 'Something wrong with your files?',
+      fixB: 'Write us',
+      fixC: 'and we fix it.',
+      terms: 'Terms of sale',
       upgradeSub: 'You already paid €5.99 of it, so here you only pay the rest',
       // 10/11 (Nico): the community card says what it is, next to the Skool logo
       skoolTag: 'Private community · opening soon',
@@ -632,6 +639,10 @@ const en = {
     description: 'How Omnya Lab collects, uses and protects your personal information.',
     updated: 'Last updated',
   },
+  terms: {
+    title: 'Terms of sale',
+    description: 'The conditions for the digital products and the services you buy from Omnya Lab.',
+  },
   notFound: { title: 'Not found', a: 'Not built', b: 'yet', back: 'Back to the home' },
   messages: {
     whatsapp: 'Hi Omnya team, I’d like to request a free image.',
@@ -697,6 +708,7 @@ const it: Dict = {
     kit: 'Scarica il kit',
     vat: 'P.IVA',
     privacy: 'Privacy policy',
+    terms: 'Condizioni',
   },
   sheet: {
     kicker: 'Immagine gratis',
@@ -1123,6 +1135,11 @@ const it: Dict = {
       only: 'Solo su questa pagina',
       no: 'No grazie, fammi vedere altro',
       upgradeNo: 'No grazie, portami al mio PDF',
+      digital: 'Prodotto digitale, ti arriva per mail appena paghi.',
+      fixA: 'Qualcosa non va con i file?',
+      fixB: 'Scrivici',
+      fixC: 'e lo sistemiamo.',
+      terms: 'Condizioni di vendita',
       upgradeSub: 'Ne hai già pagati 5,99, quindi qui paghi solo il resto',
       skoolTag: 'Community privata · apre presto',
       skoolLine: 'La nostra community privata su Skool, dove si costruisce insieme, e si entra dalla lista d’attesa.',
@@ -1254,6 +1271,10 @@ const it: Dict = {
     title: 'Privacy policy',
     description: 'Come Omnya Lab raccoglie, usa e protegge i tuoi dati personali.',
     updated: 'Ultimo aggiornamento',
+  },
+  terms: {
+    title: 'Condizioni di vendita',
+    description: 'Le condizioni per i prodotti digitali e i servizi che compri da Omnya Lab.',
   },
   notFound: { title: 'Pagina non trovata', a: 'Questa pagina', b: 'non esiste ancora', back: 'Torna alla home' },
   messages: {
