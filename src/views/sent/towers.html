@@ -196,23 +196,51 @@ html,body{min-height:100%}
 .inf{position:fixed;inset:0;z-index:200;pointer-events:none;background:radial-gradient(120% 90% at 50% 35%,#163266 0%,#0b1630 45%,#05070a 100%);animation:inf .6s ease .05s forwards}
 @keyframes inf{to{opacity:0;visibility:hidden}}
 @media (prefers-reduced-motion:reduce){.inf{animation-duration:.01s}}
-/* 10/11 (Nico): one quiet line under the Full Towers Guide option. The Towers Scene File (€12) is a recommended product of
-   that Stripe payment link, so it is added in the checkout, not here; it fades when the other option is the chosen one */
-.pick .add{margin:-3px 4px 0;text-align:center;text-wrap:balance;color:#2997ff;font:600 12px/1.35 -apple-system,sans-serif;transition:opacity .3s}
-.w.all .pick .add{opacity:.45}
-/* on short phones (375x667) the line must not push GET IT under the cookie bar: the same card, a little tighter */
-@media (width<=899px) and (height<=700px){.u{padding-top:8px}.w .uc{margin-top:32px}.pick{margin:14px 0 12px}.pick label{padding:12px 16px}}
+/* 10/11 (Nico): The Towers Scene File (€12) is a real card under the Full Towers Guide option, in the funnel's own look:
+   the preview of the scene, what is inside and the price. It is a recommended product of the guide's Stripe payment link, so
+   today it is added in the checkout ("Add it at checkout"). When lib/learn.ts has the second link (guide + scene,
+   product full-towers-scene) the card becomes a tick: "Add it now", and the button says "Get both · €17.99".
+   It fades when the other option is the chosen one */
+.scn{display:grid;grid-template-columns:104px 1fr;grid-template-areas:"im hd" "ds ds";gap:9px 12px;align-items:center;margin:-2px 0 0;padding:10px;border-radius:18px;border:1.5px dashed #2997ff99;background:linear-gradient(120deg,#2997ff24,#2997ff0a);text-align:left;transition:opacity .3s,border-color .2s,background .2s}
+.scn img{grid-area:im;width:104px;height:68px;object-fit:cover;object-position:64% 50%;border-radius:11px;box-shadow:0 8px 18px -8px #000c,0 0 0 1px #ffffff24}
+.scn__hd{grid-area:hd;min-width:0;display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center}
+.pick .scn .scn__k{grid-column:1/-1;display:flex;align-items:center;gap:7px;color:#2997ff;font:800 10px/1.2 Montserrat,sans-serif;letter-spacing:.14em;text-transform:uppercase}
+.pick .scn .scn__k i{display:none;flex:0 0 18px;height:18px;border-radius:6px;box-shadow:inset 0 0 0 1.5px #ffffff8c;font:800 11px/18px -apple-system,sans-serif;font-style:normal;text-align:center;color:transparent}
+.pick .scn .scn__k span{display:inline;color:inherit;font:inherit}
+.pick .scn .scn__hd b{font:800 15px/1.2 Montserrat,sans-serif;letter-spacing:.01em;color:#fff}
+.pick .scn .scn__hd strong{font:900 22px/1 Montserrat,sans-serif;white-space:nowrap;color:#fff}
+.pick .scn .scn__ds{grid-area:ds;margin:0;color:#ffffffb3;font:500 12.5px/1.4 -apple-system,sans-serif}
+.pick .scn .scn__ds b{color:#fff;font-weight:600}
+.scn.can{cursor:pointer}
+.pick .scn.can .scn__k i{display:block}
+.scn.can.on{border-style:solid;border-color:#2997ff;background:#2997ff2e}
+.pick .scn.can.on .scn__k i{background:#2997ff;box-shadow:none;color:#fff}
+.w.all .scn{opacity:.45}
+@media (width>=900px){.scn{grid-template-columns:150px 1fr;grid-template-areas:"im hd" "im ds";gap:6px 16px;padding:12px}.scn img{width:150px;height:96px}.scn__hd{align-self:end}.pick .scn .scn__ds{align-self:start;font-size:13px}}
+/* on short phones (375x667) the card is shorter (preview, name and price, no description) and the rest a little tighter */
+@media (width<=899px) and (height<=700px){.u{padding-top:8px}.w .uc{margin-top:32px}.pick{margin:14px 0 12px}.pick label{padding:12px 16px}.scn{grid-template-areas:"im hd";padding:8px}.scn img{width:84px;height:52px}.pick .scn .scn__ds{display:none}}
 </style><div class="inf" aria-hidden="true"></div><div class="ok"><i>✓</i><span data-mail><b>Your blueprint is on its way.</b> <br class="br">Check your inbox in a couple of minutes.</span><span data-nomail><b>Your blueprint is downloading.</b> <br class="br">One thing before you open it.</span></div><section class="x3-deal u w"><div class="wbg a"></div><div class="wbg b"></div><div class="u-in"><div class="uc">
 <img class="ub" data-one src="/learn/tt_book_tight.webp" alt="The Full Towers Blueprint"><div class="arc" data-all><img src="/learn/pk_pb01.webp" alt="From 3D to real photo"><img src="/learn/pk_pb02.webp" alt="The reel they comment on"><img src="/learn/pk_pb03.webp" alt="Sell it before it exists"></div>
 <p class="x3-kick">These prices are only here</p>
 <h1 data-one>The Full Guide<br><span>Choose your view</span></h1><h1 data-all>Everything<br><span>we teach</span></h1>
 <div class="pick">
 <label class="on" data-p="5.99"><i></i><div>The Full Towers Guide<span>every prompt and file for three towers you fly around</span></div><strong>€5.99<s>€29</s></strong></label>
-<p class="add">At checkout you can add the base 3D scene itself, to open and edit in your browser, for €12</p>
+<div class="scn" data-scn data-both="__SCENE_GO__"><img src="/learn/tt_scene_preview.webp" width="800" height="450" alt="The Towers Scene File open in the browser, with its panel">
+<div class="scn__hd"><span class="scn__k"><i>✓</i><span data-scn-k>Add it at checkout</span></span><b>The Towers Scene File</b><strong>+€12</strong></div>
+<p class="scn__ds"><b>The base 3D scene of the three towers</b>, to open and edit in your browser: 6 views, 3 lights, tower height, fog and video recording</p></div>
 <label data-p="59"><i></i><div>Everything we teach<span><b class="inc">✓ This guide is inside</b><br>+ 3 more Full Guides and 3 playbooks</span><em class="tag2">Only here</em><em class="tag2 tag3">★ Best value</em></div><strong>€59<s>€190</s></strong></label>
 </div><a class="x3-btn x3-btn--blue" id="go" href="/go/full-towers">Get it · €5.99 →</a>
 <div data-one><ul class="ul"><li><span><b>Every prompt, word for word</b>, for the photos, the six views and the six clips</span></li><li><span><b>The 3D code and the page</b>, the three towers in three.js and the choose your view page, ready to change</span></li><li><span><b>The fog and the loop</b>, how the clips join with no cut and the video plays forwards and backwards</span></li><li><span><b>Delivery to the client</b>, how it goes online and what to charge</span></li></ul></div><div data-all><ul class="ul"><li><span><b>The Full Tower Guide</b>, every prompt to build a tower that sells</span></li><li><span><b>The Full 3D Guide</b>, how to make a 3D that sells with AI</span></li><li><span><b>The Full Build Guide</b>, the house that builds itself</span></li><li><span><b>The Full Towers Guide</b>, this guide, three towers you choose the view of</span></li><li><span><b>3 playbooks</b>, from 3D to real photo, the reel they comment on, sell it before it exists</span></li><li><span><b>€190 one by one</b>, the 4 guides at €5.99 each and the playbooks at €79, €49 and €39, <b>here only €59</b></span></li></ul></div></div><a class="nt" href="/go/free-towers" target="_blank" rel="noopener">No thanks, the free one is enough</a></div></section>
-<script>document.querySelectorAll('.pick label').forEach(l=>l.onclick=()=>{document.querySelectorAll('.pick label').forEach(x=>x.classList.remove('on'));l.classList.add('on');var all=l.dataset.p==='59';var g=document.getElementById('go');g.textContent='Get it · €'+l.dataset.p+' →';g.href=l.dataset.p==='59'?'/go/everything':'/go/full-towers';document.querySelector('.w').classList.toggle('all',all)})</script></div><script>
+<script>document.querySelectorAll('.pick label').forEach(l=>l.onclick=()=>{document.querySelectorAll('.pick label').forEach(x=>x.classList.remove('on'));l.classList.add('on');var all=l.dataset.p==='59';var g=document.getElementById('go');g.textContent='Get it · €'+l.dataset.p+' →';g.href=l.dataset.p==='59'?'/go/everything':'/go/full-towers';document.querySelector('.w').classList.toggle('all',all)})</script><script>
+// The Towers Scene File card. With no "guide + scene" link (data-both empty) it only says the scene is added at checkout.
+// With the link it is a tick: ticked, the button buys both; choosing "Everything we teach" unticks it.
+(function(){var c=document.querySelector('[data-scn]'),g=document.getElementById('go'),both=c&&c.dataset.both;if(!c||!both)return;
+c.classList.add('can');c.setAttribute('role','checkbox');c.setAttribute('aria-checked','false');c.tabIndex=0;c.querySelector('[data-scn-k]').textContent='Add it now';
+var L=document.querySelectorAll('.pick label');
+function upd(){var one=document.querySelector('.pick label.on').dataset.p!=='59';if(!one)c.classList.remove('on');var on=c.classList.contains('on');c.setAttribute('aria-checked',on?'true':'false');if(!one)return;g.textContent=on?'Get both · €17.99 →':'Get it · €5.99 →';g.href=on?both:'/go/full-towers'}
+function tog(){if(document.querySelector('.pick label.on').dataset.p==='59')L[0].click();c.classList.toggle('on');upd()}
+c.addEventListener('click',tog);c.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();tog()}});
+L.forEach(function(l){l.addEventListener('click',function(){setTimeout(upd,0)})})})()</script></div><script>
 // senza mail: stessa pagina, cambia solo la riga in alto
 if(location.hash==='#nomail'){document.querySelectorAll('[data-mail]').forEach(e=>e.hidden=true);document.querySelectorAll('[data-nomail]').forEach(e=>e.hidden=false)}
 else{document.querySelectorAll('[data-nomail]').forEach(e=>e.hidden=true)}

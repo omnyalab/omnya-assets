@@ -33,7 +33,9 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'full-build'
   // the free and the paid three-tower PDFs, on /the-towers-blueprint (9/11, "Choose your view" reels, word TOWERS)
   | 'free-towers'
-  | 'full-towers';
+  | 'full-towers'
+  // the Full Towers Blueprint and The Towers Scene File in one payment (10/11, ready but off: its link is empty below)
+  | 'full-towers-scene';
 
 /**
  * Step 2 (10/11, Nico): after a Full guide (€5.99) the page /learn/thanks/full-* offers "Everything we teach" for the
@@ -87,6 +89,12 @@ export const products: { id: ProductId; checkout: string }[] = [
   { id: 'free-towers', checkout: '/learn/free/omnya-lab-towers-blueprint.pdf' },
   // the Full Towers Blueprint at €5.99 (€29 struck), Stripe link created 9/11 with Nico's ok (product "The Full Towers Blueprint", back to /learn/thanks/full-towers)
   { id: 'full-towers', checkout: 'https://buy.stripe.com/28E00i2Kp4g04lEbmB8so0E' },
+  // THE SWITCH of the scene card on /the-towers-blueprint/sent (10/11, Nico): a second Stripe Payment Link with the two
+  // products in it, "The Full Towers Blueprint" (€5.99) and "The Towers Scene File" (€12), €17.99, back to
+  // https://www.omnyalab.com/learn/thanks/full-towers?session_id={CHECKOUT_SESSION_ID} (the webhook already delivers both
+  // by their names). While this is an empty string the card only says "Add it at checkout" and the button is the guide's;
+  // paste the link here and the card becomes a tick, with the button "Get both · €17.99" going to /go/full-towers-scene.
+  { id: 'full-towers-scene', checkout: '' },
 ];
 
 // 10/11 (site check 2 and 21): the launch prices are gone from the code. fullTowerDeal, full3dDeal and fullCityDeal (the Full
