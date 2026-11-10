@@ -31,6 +31,7 @@ const posts = {
   newreel: { caption: 'Three towers, pick your view 👀', permalink: 'https://www.instagram.com/reel/DfNEWREEL01/' },
   fablereel: { caption: 'Unlimited generations in Claude 👇🏻\n\nComment FABLE to get the link', permalink: 'https://www.instagram.com/reel/DfFABLE0001/' },
   villareel: { caption: 'HOW TO USE THIS COMBO 👇🏻\n\nLike and comment "VILLA" and I’ll send it', permalink: 'https://www.instagram.com/reel/DfVILLA0001/' },
+  pizzareel: { caption: 'Comment “PIZZA” and I’ll send you the link', permalink: 'https://www.instagram.com/reel/DfPIZZA0001/' },
 };
 const server = http.createServer(async (req, res) => {
   let body = '';
@@ -475,6 +476,46 @@ if (REDIS_RUN) {
     const c2 = comment('q21', 'love it, greetings from Dubai', 'lazyreel');
     assert.deepEqual(await c2.res, ['sent']);
     assert.ok(tw.publicReplies.includes(reply(sent(), c2.id)));
+  });
+
+  await step('on Redis: a word registered from /api/leads links its reel, FABLE goes to /fable, and "Postato" pins the newest reel', async () => {
+    ahead += 2 * 3_600_000; // a clean hour (the cap is 20 here)
+    const call = async (more) => (await leadsPage.GET(new Request(`http://x/api/leads?key=k${more}`))).json();
+    // FABLE is in the code: the reel goes to /fable with the texts about the link
+    let c = comment('rw1', 'fable', 'fablereel');
+    assert.deepEqual(await c.res, ['sent']);
+    let s = sent();
+    assert.equal(urlOf(pr(s)[0]), 'https://www.omnyalab.com/fable?ig=DfFABLE0001');
+    assert.ok(T.textsFor('fable').direct.texts.includes(msgText(pr(s)[0])));
+    // a word nobody registered: only who writes it, and the normal Blueprint
+    assert.deepEqual(await comment('rw2', 'so good', 'villareel').res, ['no word']);
+    const r = await call('&action=word&word=villa&dest=film');
+    assert.deepEqual([r.ok, r.word, r.dest, r.words], [true, 'VILLA', 'film', { VILLA: 'film' }]);
+    assert.ok(redisUsed.has('SET') && redisUsed.has('GET'));
+    assert.deepEqual((await call('&format=json')).map.words.at(-1), { word: 'VILLA', dest: 'film', added: 'from /api/leads' });
+    c = comment('rw3', 'so good', 'villareel');
+    assert.deepEqual(await c.res, ['sent']);
+    assert.equal(urlOf(pr(sent())[0]), 'https://www.omnyalab.com/3d-to-film?ig=DfVILLA0001');
+    // the Towers reel is where it was
+    c = comment('rw4', 'TOWERS', 'towersreel');
+    assert.deepEqual(await c.res, ['sent']);
+    assert.equal(urlOf(pr(sent())[0]), 'https://www.omnyalab.com/the-towers-blueprint?ig=DfTOWERS11');
+    // "Postato": the reel of a few minutes ago, by the word of its caption
+    const iso = (t) => new Date(t).toISOString().replace(/\.\d{3}Z$/, '+0000');
+    state.media = [{ id: '19001', shortcode: 'DfVILLA0001', caption: posts.villareel.caption, permalink: posts.villareel.permalink, media_type: 'VIDEO', timestamp: iso(ig.clock.now() - 5 * 60_000) }];
+    const p1 = await call('&action=posted&format=json');
+    assert.deepEqual([p1.ok, p1.already, p1.word, p1.dest, p1.page, p1.reel.code], [true, false, 'VILLA', 'film', '/3d-to-film', 'DfVILLA0001']);
+    const p2 = await call('&action=posted&format=json');
+    assert.deepEqual([p2.ok, p2.already, p2.dest], [true, true, 'film']);
+    assert.equal((await call('&format=json')).map.posts.filter((x) => x.code === 'DfVILLA0001').length, 1);
+    // the word taken out: the reel stays pinned, a new reel with that word is not linked any more
+    assert.deepEqual((await call('&action=word&word=VILLA&dest=')).words, {});
+    c = comment('rw5', '🔥', 'villareel');
+    assert.deepEqual(await c.res, ['sent']);
+    assert.equal(urlOf(pr(sent())[0]), 'https://www.omnyalab.com/3d-to-film?ig=DfVILLA0001');
+    await call('&action=post&code=DfVILLA0001'); // out of the map again
+    state.media = [];
+    sent();
   });
 
   server.close();
@@ -2233,7 +2274,7 @@ await step('"comment your city" changes nothing where a comment gets no answer: 
   assert.equal((await ig.lineState()).stoppedUntil, null);
 });
 
-// ---------- 10/11/2026: words registered without a deploy, the FABLE page ----------
+// ---------- 10/11/2026: words registered without a deploy, the FABLE page, the "Postato" button ----------
 
 const FABLE_PAGE = 'https://www.omnyalab.com/fable';
 const leadsJson = async (more = '') => (await get(leadsPage, `/api/leads?key=k${more}`)).json();
@@ -2439,6 +2480,145 @@ await step('FABLE: the reel that says "Comment FABLE to get the link" goes to /f
   // by hand too: &action=post&dest=fable
   assert.equal((await leadsJson('&action=post&code=DfNEWFABLE1&dest=fable')).added.DfNEWFABLE1, 'fable');
   await leadsJson('&action=post&code=DfNEWFABLE1');
+});
+
+await step('"Postato" (/api/leads?action=posted): the newest reel of the last 3 hours is pinned to the page of its word, and it says what is missing', async () => {
+  ahead += 2 * 3_600_000;
+  await quietly(flushDue); // the follow-ups of the tests above that come due with the clock
+  const iso = (ago) => new Date(ig.clock.now() - ago).toISOString().replace(/\.\d{3}Z$/, '+0000'); // as Meta writes it
+  const MIN = 60_000;
+  const reel = (code, caption, ago, more = {}) => ({ id: `19${code.length}${ago}`, shortcode: code, caption, permalink: `https://www.instagram.com/reel/${code}/`, thumbnail_url: 'https://cdn.example/t.jpg', media_type: 'VIDEO', timestamp: iso(ago), ...more });
+  const mapNow = async () => (await leadsJson('&format=json')).map.posts;
+  const tap = () => leadsJson('&action=posted&format=json');
+  const before = await mapNow();
+  sent();
+
+  // the same key as the rest
+  assert.equal((await get(leadsPage, '/api/leads?action=posted')).status, 404);
+  assert.equal((await get(leadsPage, '/api/leads?key=wrong&action=posted&format=json')).status, 404);
+
+  // Meta doesn't give the list: said, nothing changed (also when an older list is still in memory)
+  state.media = [reel('DfFABLE0001', posts.fablereel.caption, 5 * MIN)];
+  state.mediaFail = { message: '(#10) Application does not have permission for this action', type: 'OAuthException', code: 10 };
+  let r = await quietly(async () => { const w = console.warn; console.warn = () => {}; try { return await tap(); } finally { console.warn = w; } });
+  state.mediaFail = null;
+  assert.deepEqual([r.ok, r.why], [false, 'meta']);
+  assert.match(r.error, /#10/);
+  assert.match(r.say, /Instagram non mi ha dato i contenuti.*non ho cambiato niente/);
+  assert.deepEqual(await mapNow(), before);
+
+  // no reel of the last 3 hours: a reel of 3 hours and a minute ago, and a newer photo that is not a reel
+  state.media = [
+    { id: '19900', shortcode: 'DfPHOTO0002', caption: 'Comment "FABLE"', permalink: 'https://www.instagram.com/p/DfPHOTO0002/', media_url: 'https://cdn.example/p.jpg', media_type: 'IMAGE', timestamp: iso(10 * MIN) },
+    reel('DfOLDREEL01', 'Like and comment "TOWERS"', 181 * MIN),
+  ];
+  r = await tap();
+  assert.deepEqual([r.ok, r.why, r.last.code, r.last.minutesAgo], [false, 'no-reel', 'DfOLDREEL01', 181]);
+  assert.match(r.say, /^Nessun reel nuovo: .*DfOLDREEL01.*3 ore/);
+  state.media = [];
+  r = await tap();
+  assert.deepEqual([r.ok, r.why, r.last], [false, 'no-reel', null]);
+  assert.match(r.say, /^Nessun reel nuovo/);
+  assert.deepEqual(await mapNow(), before);
+
+  // a new reel whose caption has no Comment "WORD"
+  state.media = [reel('DfNOWORD001', 'Three towers in the fog 👀', 4 * MIN), reel('DfOLDREEL01', 'Like and comment "TOWERS"', 181 * MIN)];
+  r = await tap();
+  assert.deepEqual([r.ok, r.why, r.reel.code, r.reel.minutesAgo], [false, 'no-word', 'DfNOWORD001', 4]);
+  assert.match(r.say, /DfNOWORD001.*manca la parola.*Comment "PAROLA"/);
+  assert.deepEqual(await mapNow(), before);
+
+  // a new reel with a word nobody registered: not linked, and it says how to register it
+  state.media = [reel('DfPIZZA0001', posts.pizzareel.caption, 2 * MIN)];
+  r = await tap();
+  assert.deepEqual([r.ok, r.why, r.reel.code, r.words], [false, 'unknown-word', 'DfPIZZA0001', ['PIZZA']]);
+  assert.match(r.say, /PIZZA.*non è registrata.*&action=word&word=PIZZA&dest=/);
+  assert.match(r.say, /fable/);
+  assert.deepEqual(await mapNow(), before);
+
+  // the FABLE reel of 20 minutes ago, with an older TOWERS reel under it: the newest is taken and pinned to /fable
+  state.media = [reel('DfTOWERS11', posts.towersreel.caption, 150 * MIN), reel('DfFABLE0001', posts.fablereel.caption, 20 * MIN)]; // in any order
+  r = await tap();
+  assert.deepEqual([r.ok, r.already, r.word, r.dest, r.page], [true, false, 'FABLE', 'fable', '/fable']);
+  assert.deepEqual(r.reel, { code: 'DfFABLE0001', permalink: 'https://www.instagram.com/reel/DfFABLE0001/', minutesAgo: 20 });
+  assert.match(r.say, /^Collegato: il reel DfFABLE0001 \(parola FABLE, postato 20 min fa\) porta a omnyalab\.com\/fable$/);
+  assert.deepEqual((await mapNow()).filter((p) => p.code === 'DfFABLE0001'), [{ code: 'DfFABLE0001', dest: 'fable', added: 'from /api/leads' }]);
+  assert.equal((await mapNow()).length, before.length + 1);
+  // Meta is asked every time, not read from the 10 minutes of memory
+  assert.equal(sent().filter((x) => x.path === `${OWN}/media`).length, 6);
+
+  // tapped again: the same answer, nothing added, nothing moved
+  r = await tap();
+  assert.deepEqual([r.ok, r.already, r.dest, r.page], [true, true, 'fable', '/fable']);
+  assert.match(r.say, /era già collegato a omnyalab\.com\/fable, non ho cambiato niente/);
+  assert.equal((await mapNow()).length, before.length + 1);
+  // the reel answers every comment with its page, as before the tap
+  let c = comment('po1', 'wow', 'fablereel');
+  assert.deepEqual(await c.res, ['sent']);
+  assert.equal(urlButton(own(sent(), c.id)[0]).url, `${FABLE_PAGE}?ig=DfFABLE0001`);
+
+  // a TOWERS reel of 2 hours and 59 minutes ago is still new
+  state.media = [reel('DfTOWERS33', 'Like and comment "TOWERS"', 179 * MIN)];
+  r = await tap();
+  assert.deepEqual([r.ok, r.already, r.word, r.dest, r.page, r.reel.code], [true, false, 'TOWERS', 'towers', '/the-towers-blueprint', 'DfTOWERS33']);
+  // a reel of the code's own map is said as it is and not written again
+  state.media = [reel('Dfh1ppmtT8t', 'Like and comment "BUILD"', 30 * MIN)];
+  r = await tap();
+  assert.deepEqual([r.ok, r.already, r.dest, r.page], [true, true, 'build', '/the-build-blueprint']);
+  assert.equal((await mapNow()).filter((p) => p.code === 'Dfh1ppmtT8t').length, 1);
+  // a reel Nico put in the map by hand stays where he put it, whatever its word says
+  await leadsJson('&action=post&code=DfHAND00001&dest=build');
+  state.media = [reel('DfHAND00001', 'Comment "FABLE" to get the link', 3 * MIN)];
+  r = await tap();
+  assert.deepEqual([r.ok, r.already, r.word, r.dest, r.page], [true, true, 'FABLE', 'build', '/the-build-blueprint']);
+  assert.equal((await mapNow()).find((p) => p.code === 'DfHAND00001').dest, 'build');
+  // the house word: the page is the City
+  state.media = [reel('DfCITYep3xx', 'Comment “HOUSE” and I’ll send you your free house', 1 * MIN)];
+  r = await tap();
+  assert.deepEqual([r.ok, r.dest, r.page], [true, 'city', '/city']);
+
+  // a registered word counts as the fixed ones; taken out afterwards, the reel stays pinned
+  state.media = [reel('DfPIZZA0001', posts.pizzareel.caption, 2 * MIN)];
+  await leadsJson('&action=word&word=PIZZA&dest=film');
+  r = await tap();
+  assert.deepEqual([r.ok, r.already, r.word, r.dest, r.page], [true, false, 'PIZZA', 'film', '/3d-to-film']);
+  await leadsJson('&action=word&word=PIZZA&dest=');
+  c = comment('po2', 'wow', 'pizzareel');
+  assert.deepEqual(await c.res, ['sent']);
+  assert.equal(urlButton(own(sent(), c.id)[0]).url, 'https://www.omnyalab.com/3d-to-film?ig=DfPIZZA0001');
+
+  // on Nico's page: the row "Reel di oggi" with the button, and what the tap did written on top
+  const plain = await (await get(leadsPage, '/api/leads?key=k')).text();
+  assert.match(plain, /<div class="today"><span>Reel di oggi<\/span><a href="\?key=k&amp;action=posted">Postato<\/a><\/div>/);
+  assert.doesNotMatch(plain, /class="said/);
+  assert.ok(plain.indexOf('Reel di oggi') < plain.indexOf('<h1>Contatti</h1>')); // at the top
+  state.media = [reel('DfFABLE0001', posts.fablereel.caption, 21 * MIN)];
+  const page = await get(leadsPage, '/api/leads?key=k&action=posted');
+  assert.equal(page.status, 200);
+  assert.match(page.headers.get('content-type'), /text\/html/);
+  const html = await page.text();
+  assert.match(html, /<p class="said ok" role="status">Il reel DfFABLE0001 \(parola FABLE, postato 21 min fa\) era già collegato a omnyalab\.com\/fable, non ho cambiato niente<\/p>/);
+  assert.match(html, /Reel di oggi/);
+  assert.match(html, /<h1>Contatti<\/h1>/);
+  state.media = [reel('DfNOWORD001', '<b>Three towers</b>', 4 * MIN)];
+  assert.match(await (await get(leadsPage, '/api/leads?key=k&action=posted')).text(), /<p class="said no" role="status">Il reel DfNOWORD001 c’è/);
+  // the store fails while it pins: said as a failure, never a crash
+  state.media = [reel('DfSTOREDOWN', 'Comment "FABLE"', 1 * MIN)];
+  const setKv = S.kv.set;
+  S.kv.set = async (k, ...a) => { if (k === 'posts') throw new Error('redis is down'); return setKv(k, ...a); };
+  try {
+    r = await tap();
+  } finally {
+    S.kv.set = setKv;
+  }
+  assert.deepEqual([r.ok, r.why], [false, 'meta']);
+  assert.match(r.error, /redis is down/);
+
+  // put back as it was
+  for (const code of ['DfFABLE0001', 'DfTOWERS33', 'DfHAND00001', 'DfCITYep3xx', 'DfPIZZA0001']) await leadsJson(`&action=post&code=${code}`);
+  assert.deepEqual(await mapNow(), before);
+  state.media = [];
+  sent();
 });
 
 server.close();

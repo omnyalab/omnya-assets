@@ -1320,6 +1320,45 @@ export async function postMap() {
 }
 
 /**
+ * "Postato" (10/11/2026): Nico taps it on his page right after posting. The bot asks Meta for the last
+ * posts, takes the newest reel (not older than 3 hours), reads the word its caption asks for
+ * (Comment "WORD") and, when the word is one it knows (WORDS or a registered one), pins that reel in
+ * the map with the word's destination, as action=post does. It says what it did, or what is missing:
+ *   why 'meta'          Instagram didn't give the list (nothing is changed)
+ *   why 'no-reel'       no reel of the last 3 hours
+ *   why 'no-word'       the caption has no Comment "WORD"
+ *   why 'unknown-word'  the word is not one the bot knows
+ * Tapping it twice changes nothing; a reel that is already in the map is never moved to another page.
+ */
+const POSTED_WINDOW = 3 * H;
+const stamp = (t) => Date.parse(String(t || '').replace(/([+-]\d{2})(\d{2})$/, '$1:$2')) || 0; // Meta writes +0000, without the colon
+export async function posted() {
+  const now = clock.now();
+  const r = await recentMedia(true);
+  if (r.error) return { ok: false, why: 'meta', error: r.error };
+  const reels = r.media
+    .filter((m) => m.media_type === 'VIDEO' && stamp(m.timestamp))
+    .map((m) => ({ ...m, at: stamp(m.timestamp), code: cleanCode(m.shortcode || m.permalink) }))
+    .sort((a, b) => b.at - a.at);
+  const last = reels[0];
+  const minutes = (m) => Math.max(0, Math.round((now - m.at) / 60_000));
+  if (!last || now - last.at > POSTED_WINDOW || !last.code) {
+    return { ok: false, why: 'no-reel', last: last ? { code: last.code, minutesAgo: minutes(last), permalink: last.permalink } : null };
+  }
+  const reel = { code: last.code, permalink: last.permalink, minutesAgo: minutes(last) };
+  const words = captionWords(last.caption);
+  if (!words.length) return { ok: false, why: 'no-word', reel };
+  const hit = (await knownWords()).find((w) => words.includes(w.word));
+  if (!hit) return { ok: false, why: 'unknown-word', reel, words };
+  // already in the map (in the code, or put there by hand or by an earlier tap): left where it is
+  const pinned = POSTS.find((p) => p.code === reel.code)?.dest || (await kv.get('posts'))?.[reel.code];
+  const dest = isDest(pinned) ? pinned : hit.dest;
+  if (!isDest(pinned)) await setPost(reel.code, dest);
+  console.log(`[ig] posted: reel ${reel.code} (word ${hit.word}) ${isDest(pinned) ? 'was already in the map,' : 'pinned'} → ${dest}`);
+  return { ok: true, already: isDest(pinned), reel, word: hit.word, dest, page: dest === 'city' ? '/city' : pathOf(T.textsFor(dest).url) };
+}
+
+/**
  * Everything Nico needs to know before a reel: is the token good, which webhook fields are on,
  * when the last comment came in, the line, the errors of the last hour. Asks Meta three things
  * (who am I, what is the Page subscribed to, what is the app subscribed to) and never throws.

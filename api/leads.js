@@ -9,6 +9,9 @@
 // &action=word&word=<WORD>&dest=<a destination> registers a word without a deploy: a reel whose caption says
 //   Comment "WORD" then goes to that destination by itself, as TOWERS does (empty dest = takes the word out).
 //   The fixed words of ig-posts.js can't be changed from here, and always win.
+// &action=posted is the "Postato" button at the top of the page ("Reel di oggi"): the newest reel of the account,
+//   not older than 3 hours, is pinned in the map with the destination of the word its caption asks for; the page
+//   (or the JSON, with &format=json) says which page it was linked to, or what is missing.
 // &action=mode&value=direct|gate|comment changes how the bot answers, without a deploy: direct (the default) = the DM
 //   that answers the comment already has the link; gate = button, follow check, then the link; comment = the
 //   follow is asked first and checked when they comment again, then the link.
@@ -22,7 +25,7 @@
 //   10 minutes (&fresh=1 asks now). When Meta refuses: { media: [], error }.
 // &action=off stops the bot at once, without a deploy (it answers nobody and keeps nothing), &action=on starts it again.
 // &format=json gives the numbers alone.
-import { listLeads, api, page, lineState, errorState, postStats, postMap, setPost, setWord, setOff, isOff, getMode, setMode, MODES, probeState, gateFor, setGateFor, anyComment, setAnyComment, recentMedia } from './_lib/ig.js';
+import { listLeads, api, page, lineState, errorState, postStats, postMap, setPost, setWord, posted, setOff, isOff, getMode, setMode, MODES, probeState, gateFor, setGateFor, anyComment, setAnyComment, recentMedia } from './_lib/ig.js';
 import { DESTS } from './_lib/ig-posts.js';
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -37,6 +40,25 @@ const stages = {
   project: 'Ha un progetto',
   curious: 'Solo curioso',
 };
+
+/** What "Postato" did, in words Nico reads on the phone. */
+function saidPosted(r) {
+  const ago = (m) => (m < 1 ? 'adesso' : m < 90 ? `${m} min fa` : `${Math.round(m / 60)} ore fa`);
+  if (r.ok) {
+    const where = `omnyalab.com${r.page}`;
+    return r.already
+      ? `Il reel ${r.reel.code} (parola ${r.word}, postato ${ago(r.reel.minutesAgo)}) era già collegato a ${where}, non ho cambiato niente`
+      : `Collegato: il reel ${r.reel.code} (parola ${r.word}, postato ${ago(r.reel.minutesAgo)}) porta a ${where}`;
+  }
+  if (r.why === 'no-reel') {
+    return r.last
+      ? `Nessun reel nuovo: l’ultimo che Instagram mi dà (${r.last.code}) è di ${ago(r.last.minutesAgo)}, e ne cerco uno delle ultime 3 ore. Se l’hai appena pubblicato aspetta un minuto e premi di nuovo`
+      : 'Nessun reel nuovo: Instagram non mi dà nessun reel. Se l’hai appena pubblicato aspetta un minuto e premi di nuovo';
+  }
+  if (r.why === 'no-word') return `Il reel ${r.reel.code} c’è (postato ${ago(r.reel.minutesAgo)}), ma nella caption manca la parola: serve scritto Comment "PAROLA". Correggi la caption e premi di nuovo`;
+  if (r.why === 'unknown-word') return `Il reel ${r.reel.code} chiede la parola ${r.words.join(', ')}, che non è registrata: non l’ho collegato. Registrala con &action=word&word=${r.words[0]}&dest=… (${DESTS.join(', ')}) e premi di nuovo`;
+  return `Instagram non mi ha dato i contenuti (${r.error || 'nessuna risposta'}): non ho cambiato niente, riprova tra un minuto`;
+}
 
 const when = (ms) => (ms ? new Intl.DateTimeFormat('it-IT', { timeZone: 'Europe/Rome', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }).format(ms) : '');
 
@@ -109,6 +131,14 @@ export async function GET(request) {
     });
   }
 
+  // "Postato": the newest reel is pinned to the page of its word. As JSON for the app, or on top of the page below.
+  let postedNow = null;
+  if (q.get('action') === 'posted') {
+    postedNow = await posted().catch((e) => ({ ok: false, why: 'meta', error: String(e?.message || e).slice(0, 200) }));
+    postedNow.say = saidPosted(postedNow);
+    if (q.get('format') === 'json') return new Response(JSON.stringify(postedNow, null, 2), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
+  }
+
   const [leads, line, errors, posts, botOff, flow, probe, gateList, every, map] = await Promise.all([listLeads(), lineState(), errorState(8), postStats(), isOff(), getMode(), probeState(), gateFor(), anyComment(), postMap()]);
   if (q.get('format') === 'json') {
     return new Response(JSON.stringify({ on: !botOff, mode: flow, anyComment: every, gateFor: gateList, followProbe: probe, line, errors, posts, map }, null, 2), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
@@ -169,8 +199,17 @@ td:first-child{white-space:nowrap;color:var(--mute)}a{color:inherit}tr.hot td:nt
 .empty{color:var(--mute);padding:24px 0}
 h2{margin:36px 0 10px;font-size:20px;letter-spacing:-.02em;font-weight:600}.state{margin:-12px 0 0;color:var(--mute)}
 table.small td:first-child{color:inherit}table.small{min-width:560px}
+.today{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 14px;padding:12px 12px 12px 18px;border:1px solid var(--line);border-radius:18px}
+.today span{font-size:17px;font-weight:600;letter-spacing:-.01em}
+.today a{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 26px;border-radius:999px;background:var(--ink);color:var(--bg);font-size:16px;font-weight:600;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.said{margin:0 0 14px;padding:14px 18px;border-radius:18px;font-size:16px;line-height:1.4;overflow-wrap:anywhere}
+.said.ok{background:#1f8a4c;color:#fff}.said.no{background:var(--accent);color:#fff}
+.today+h1,.said+h1{margin-top:22px}
 </style></head><body><main>
-<p class="k">Omnya Lab · bot Instagram</p><h1>Contatti</h1>
+<p class="k">Omnya Lab · bot Instagram</p>
+<div class="today"><span>Reel di oggi</span><a href="?key=${encodeURIComponent(q.get('key'))}&amp;action=posted">Postato</a></div>
+${postedNow ? `<p class="said ${postedNow.ok ? 'ok' : 'no'}" role="status">${esc(postedNow.say)}</p>` : ''}
+<h1>Contatti</h1>
 <div class="stats">${stats.map(([t, n]) => `<div><b>${n}</b><span>${t}</span></div>`).join('')}</div>
 <p class="state">${state}</p>
 ${postRows ? `<h2>Post</h2><div class="wrap"><table class="small"><thead><tr><th>Post</th><th>Porta a</th><th>Commenti</th><th>DM mandati</th><th>DM bloccati</th><th>Link mandati</th><th>Clic sul link</th><th>Lo apre</th></tr></thead><tbody>${postRows}</tbody></table></div>` : ''}

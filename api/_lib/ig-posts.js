@@ -9,7 +9,8 @@
 //   fable     → /fable, the Higgsfield offer and the free Tower Blueprint under it (word FABLE)
 //
 // How a comment finds its destination, first match wins:
-//   1. the post is in POSTS (or was added without a deploy from /api/leads?key=…&action=post&code=…&dest=…)
+//   1. the post is in POSTS (or was added without a deploy from /api/leads?key=…&action=post&code=…&dest=…,
+//      or by the "Postato" button of Nico's page, &action=posted)
 //   2. the caption says "Comment WORD" and WORD is in WORDS, or was registered without a deploy from
 //      /api/leads?key=…&action=word&word=…&dest=… (the words of WORDS always win over the registered ones)
 //   3. the caption says "Comment WORD" with any other word: the Tower Blueprint when the caption
