@@ -3,7 +3,10 @@
 // "View my home": the house in 3D on its lot, turning with a finger; number, district, neighbour, share.
 // 7/11/2026 (board approved by Nico, cozy yellow, no blue): the page fades in once the house is found;
 // MOVE UP (sticker, button, "Get a top spot" cards) opens the place picker (penthouse, top villa, fountain, €0.99 on Stripe);
-// the cozy book on the city and the card next to the house sell the Full City Guide (€5.99, written in the page since 10/11) or Everything (€59).
+// 10/11 (Nico, after the board: "from there I'd take away the free PDF and the paid one, nobody took it to build the city"):
+// the page no longer sells a PDF. The card "FULL GUIDE · Build a city like this" (the Full City Guide €5.99 or Everything €59)
+// and its dialog with the cozy book are gone; what stays are the house and MOVE UP. /the-city-blueprint, /go/full-city and
+// /learn/thanks/full-city are untouched, so who bought can still download.
 import CityHead from '../../components/CityHead.astro';
 import { cityUpgrades, cityWhatsApp } from '../../lib/city';
 
@@ -21,7 +24,6 @@ Object.assign(up, {
   yacht: { title: 'The Yacht', view: '/city/yacht' },
   island: { title: 'The Island', view: '/city/island' },
 });
-const book = `<span class="bk4" aria-hidden="true"><span class="b"><span class="k"></span><span class="p"></span><span class="tp"></span><span class="s"><i>OMNYA CITY</i></span><span class="f"></span></span></span>`;
 const places = [
   { id: 'fountain', img: '/city/up/fountain.jpg', name: 'By the fountain', pick: 'A house by the fountain', line: 'Downtown, one of the first 8 houses', card: 'Downtown, one of the first 8 houses of the city.' },
   { id: 'sky', img: '/city/up/penthouse.jpg', name: 'The penthouse', line: 'Top floor of a tower in The Residences', card: 'Top floor of a tower in The Residences, the whole city below.' },
@@ -34,10 +36,6 @@ const places = [
   { id: 'yacht', img: '/city/up/yacht.jpg', name: 'Yacht of ???', pick: 'Yacht of ???', line: 'Only one in the city · auction', card: 'The only yacht in the city. Its name will be yours.', gold: true },
   { id: 'island', img: '/city/up/island.jpg', name: 'Island of ???', pick: 'Island of ???', line: 'Only one in the city · auction', card: 'A villa alone on its own island. Only one.', gold: true },
 ];
-const pickBook = `<div class="pick" data-g="book">
-  <label class="on" data-go="/go/full-city?k=city" data-p="5.99"><i></i><div>The Full City Guide<span>every prompt to build a 3D city like this</span></div><strong data-full>€5.99<s>€29</s></strong></label>
-  <label data-go="/go/everything?k=city" data-p="59"><i></i><div>Everything we teach<span>4 Full Guides + 3 playbooks</span><em class="tag">Only here</em></div><strong>€59<s>€164</s></strong></label>
-</div>`;
 ---
 
 <!doctype html>
@@ -107,20 +105,6 @@ const pickBook = `<div class="pick" data-g="book">
         <div class="three jobsgrid" id="jobcards" data-spane="jobs" hidden></div>
       </section>
 
-      <article class="card ux buy low">
-        <span class="stamp">FULL GUIDE</span>
-        <div class="buy__in">
-          <button class="buy__bk" type="button" data-open="book" aria-label="The Full City Guide" set:html={book} />
-          <div class="buy__tx">
-            <p class="kick" data-kick>These prices are only available on this page</p>
-            <h2>Build a city like this</h2>
-            <p class="sub">Every prompt we gave Claude to build Omnya City.</p>
-          </div>
-        </div>
-        <Fragment set:html={pickBook} />
-        <a class="btn bookgo" href="/go/full-city?k=city">Get it · €5.99</a>
-      </article>
-
       <footer class="foot">
         <a href="/city">See the whole city →</a>
       </footer>
@@ -167,19 +151,6 @@ const pickBook = `<div class="pick" data-g="book">
       </div>
     </div>
 
-    <div class="ux dim" id="book" hidden>
-      <button class="x" type="button" data-close aria-label="Close">×</button>
-      <div class="card" role="dialog" aria-modal="true" aria-label="Build a city like this">
-        <span class="stamp">FULL GUIDE</span>
-        <Fragment set:html={book} />
-        <p class="kick" data-kick>These prices are only available on this page</p>
-        <h2>Build a city like this</h2>
-        <p class="sub">Every prompt we gave Claude to build Omnya City: the houses, the map and the links in the DMs.</p>
-        <Fragment set:html={pickBook} />
-        <a class="btn bookgo" href="/go/full-city?k=city">Get it · €5.99</a>
-        <button class="no" type="button" data-close>No thanks</button>
-      </div>
-    </div>
     <script type="module" src="/city/house.js"></script>
   </body>
 </html>

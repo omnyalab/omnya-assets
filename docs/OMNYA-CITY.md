@@ -51,6 +51,7 @@ Use www: the apex answers 308.
 ### 7/11 house page upsell (board approved by Nico)
 - Cozy yellow, no blue. The page fades in once the house is found (no "Finding the house…" screen).
 - MOVE UP: the sticker on the house card, the "Move up my house" button (black, turning yellow border), the "Get a top spot" cards and their sticker all open the place picker (`#move`): penthouse / top villa / fountain, €0.99, the `cityUpgrades` Stripe links with `client_reference_id`. Only what is still for sale shows; the counts come from `/api/city/houses` → `forSale.left`. The bars look almost full on purpose (Nico).
+- 10/11 (Nico): the house page no longer sells a PDF, the "FULL GUIDE" card and its dialog are gone (nobody took it to build the city); /the-city-blueprint, /go/full-city and /learn/thanks/full-city stay for who bought. What follows is how it was until then.
 - The cozy book (top right on the city, and the card next to the house, which replaced the free "Steal our city method" card) sells the Full City Guide (`/go/full-city?k=city`, €1.99 until Sunday, then €19 by itself) or Everything (`/go/everything?k=city`, €39). Images in `public/city/up/`.
 - Fountain fix: whoever lived on the bought fountain house moves to a free Omnyawood villa or, when those are gone, to the buyer's old house (before, any empty lot: @jakesplosion went to #484 and @gghizzoo to #507).
 
