@@ -490,6 +490,14 @@
     {
       "source": "/city/:user",
       "destination": "/city/house/index.html"
+    },
+    {
+      "source": "/centrale",
+      "destination": "/api/centrale"
+    },
+    {
+      "source": "/centrale/:f*",
+      "destination": "/api/centrale?f=:f*"
     }
   ]
 }

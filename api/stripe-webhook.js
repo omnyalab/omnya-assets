@@ -10,6 +10,7 @@ import { everythingUpgrade } from './_lib/learn-upgrade.js';
 import { host } from './_lib/config.js';
 import { upgrade, placeBid } from './_lib/city.js';
 import { metaEvent } from './_lib/meta.js';
+import { noteSale } from './_lib/centrale-sales.js';
 
 // Omnya City upsell (6/11/2026): these products move the buyer (client_reference_id = username, dots sent as dashes).
 const CITY = { 'Omnya City · The penthouse': 'penthouse', 'Omnya City · The best villa in Omnyawood': 'villa', 'Omnya City · A house by the fountain': 'fountain',
@@ -181,6 +182,11 @@ export async function POST(request) {
         'Nico · Omnya Lab',
       ].join('\n'),
     });
+    // the buyer is served: one row on the short list the mirror of Nico's app reads when his Mac is off (api/centrale.js).
+    // Not waited for, and nothing in it can fail the delivery
+    try {
+      noteSale(event, session, productNames);
+    } catch {}
   } catch (e) {
     console.error('[stripe-webhook] mail', e);
     return new Response('mail failed', { status: 502 });
