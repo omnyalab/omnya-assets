@@ -495,6 +495,9 @@ const en = {
       only: 'Only on this page',
       no: 'No thanks, show me something else',
       upgradeNo: 'No thanks, take me to my PDF',
+      // 10/11 (Nico): the community card says what it is, next to the Skool logo
+      skoolTag: 'Private community · opening soon',
+      skoolLine: 'Our private community on Skool, where we build together, and you get in from the waiting list.',
       or: 'Or',
       back: 'Back to Learn',
       offers: {
@@ -505,7 +508,7 @@ const en = {
         'rest-50': { a: 'The other two playbooks', b: 'with the prompt files and the checklist', price: '€50', was: '€78 bought one by one', text: 'The three together cost €79 and you already paid €29, so you only pay the rest, and the full prompt files and the delivery checklist come with them.', cta: 'Add the other two for €50' },
         'build-upgrade': { a: 'The full Build', b: 'three hours on your project', price: '€300', was: '€490 for the Build', text: 'The Build is three hours over two calls, with the method set up on your accounts, 5 finished images of your project and a clip, and you already paid €190 of it with the Session.', cta: 'Upgrade to Build for €300' },
         sample: { a: 'One image of your project', b: 'made by us, free', price: '€0', was: '', text: 'Send us the plans, the model or a photo and we make the first image of your project for free, and if you go ahead, what you paid here comes off your first order.', cta: 'Get my free image' },
-        community: { a: '“Before It Exists”', b: 'first on the list', price: '€0', was: '', text: 'Every reel taken apart step by step, the project files and live calls with us, and since you already bought, you get in first the day it opens.', cta: 'Put me on the list' },
+        community: { a: '“Before It Exists”', b: 'first on the list', price: '€0', was: '', text: 'Every reel taken apart step by step, the project files and live calls with us, and since you already bought, you get in first the day it opens.', cta: 'Put me on the waiting list' },
         'everything-upgrade': { a: 'Upgrade to Everything we teach', b: 'for the difference', price: '€53', was: '€59 on its own', text: 'Everything we teach costs €59 and you already paid €5.99 of it, so here you only pay the rest and you get the four Full guides and the three playbooks, with the prompt files and the checklist.', cta: 'Upgrade for €53' },
       },
     },
@@ -1112,6 +1115,8 @@ const it: Dict = {
       only: 'Solo su questa pagina',
       no: 'No grazie, fammi vedere altro',
       upgradeNo: 'No grazie, portami al mio PDF',
+      skoolTag: 'Community privata · apre presto',
+      skoolLine: 'La nostra community privata su Skool, dove si costruisce insieme, e si entra dalla lista d’attesa.',
       or: 'Oppure',
       back: 'Torna a Impara',
       offers: {
@@ -1122,7 +1127,7 @@ const it: Dict = {
         'rest-50': { a: 'Gli altri due playbook', b: 'con i file di prompt e la checklist', price: '50 €', was: '78 € comprati uno per uno', text: 'I tre insieme costano 79 € e tu hai già pagato 29 €, quindi paghi solo il resto, e con loro arrivano i file di prompt completi e il controllo prima della consegna.', cta: 'Aggiungi gli altri due a 50 €' },
         'build-upgrade': { a: 'La Build completa', b: 'tre ore sul tuo progetto', price: '300 €', was: '490 € la Build', text: 'La Build sono tre ore in due incontri, con il metodo montato sui tuoi account, 5 immagini finite del tuo progetto e una clip, e 190 € li hai già pagati con la Session.', cta: 'Passa alla Build a 300 €' },
         sample: { a: 'Un’immagine del tuo progetto', b: 'fatta da noi, gratis', price: '0 €', was: '', text: 'Mandaci le piante, il modello o una foto e facciamo gratis la prima immagine del tuo progetto, e se poi andiamo avanti quello che hai pagato qui te lo scaliamo dal primo ordine.', cta: 'Voglio la mia immagine gratis' },
-        community: { a: '“Before It Exists”', b: 'primo in lista', price: '0 €', was: '', text: 'Ogni reel smontato passo per passo, i file dei progetti e le call dal vivo con noi, e visto che hai già comprato entri per primo il giorno che apre.', cta: 'Mettimi in lista' },
+        community: { a: '“Before It Exists”', b: 'primo in lista', price: '0 €', was: '', text: 'Ogni reel smontato passo per passo, i file dei progetti e le call dal vivo con noi, e visto che hai già comprato entri per primo il giorno che apre.', cta: 'Mettimi in lista d’attesa' },
         'everything-upgrade': { a: 'Passa a Everything we teach', b: 'pagando la differenza', price: '53 €', was: '59 € da solo', text: 'Everything we teach costa 59 € e tu ne hai già pagati 5,99, quindi qui paghi solo il resto e ricevi le quattro guide Full e i tre playbook, con i file di prompt e la checklist.', cta: 'Passa al pacchetto a 53 €' },
       },
     },

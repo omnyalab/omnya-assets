@@ -1943,8 +1943,26 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 .oto__book--1 { transform: translate(-50%, -50%) translateX(-60%) rotate(-9deg); }
 .oto__book--2 { transform: translate(-50%, -53%) scale(1.06); z-index: 2; }
 .oto__book--3 { transform: translate(-50%, -50%) translateX(60%) rotate(9deg); }
-.oto__skool { padding: 40px; }
-.oto__skool img { width: min(320px, 70%); height: auto; margin: auto; }
+.oto__skool { display: grid; justify-items: center; gap: 18px; width: 100%; padding: 40px; }
+.oto__skool img { width: min(320px, 70%); height: auto; }
+/* 10/11 (Nico): the community card says what it is. The Skool logo on a light ground tinted with its own colours,
+   "Private community" under it, and one line under the name (a private community on Skool, the way in is the waiting list).
+   On phones the logo part is short, so the logo, the name and the line are in the same screen. */
+.oto__card--skool .oto__visual {
+  background:
+    radial-gradient(60% 90% at 0% 0%, rgba(107, 183, 238, 0.34), transparent 62%),
+    radial-gradient(60% 90% at 100% 0%, rgba(224, 180, 103, 0.36), transparent 62%),
+    radial-gradient(80% 90% at 50% 125%, rgba(211, 81, 62, 0.24), transparent 62%), #fff;
+}
+.oto__skool-tag { display: inline-flex; align-items: center; min-height: 30px; padding: 0 14px; border-radius: 999px; background: #263397; color: #fff; font-size: var(--fs-small); letter-spacing: 0.01em; }
+.oto__card--skool .oto__name { max-width: none; }
+.oto__card--skool .oto__name .mute { display: block; }
+.oto__what { margin-top: 14px; max-width: 34ch; font-size: 1.0625rem; line-height: 1.4; color: #3a3936; }
+@media (max-width: 899px) {
+  .oto__card--skool .oto__visual { min-height: 0; }
+  .oto__skool { padding: 34px 24px 30px; gap: 16px; }
+  .oto__skool img { width: min(230px, 62%); }
+}
 .oto__body { padding: clamp(28px, 4vw, 56px); display: flex; flex-direction: column; align-items: flex-start; }
 .oto__only { display: inline-flex; align-items: center; height: 28px; padding: 0 12px; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: 12px; }
 .oto__name { margin-top: 16px; max-width: 14ch; }
