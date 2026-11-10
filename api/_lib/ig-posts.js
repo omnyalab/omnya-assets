@@ -6,6 +6,7 @@
 //   floors    → /the-tower-floors                  film   → /3d-to-film
 //   build     → /the-build-blueprint               towers → /the-towers-blueprint
 //   city      → Omnya City, the personal one-time link (word HOUSE)
+//   fable     → /fable, the Higgsfield offer and the free Tower Blueprint under it (word FABLE)
 //
 // How a comment finds its destination, first match wins:
 //   1. the post is in POSTS (or was added without a deploy from /api/leads?key=…&action=post&code=…&dest=…)
@@ -33,6 +34,7 @@ export const WORDS = [
   { word: 'TOWERS', dest: 'towers' },
   { word: 'BUILD', dest: 'build' },
   { word: 'HOUSE', dest: 'city' },
+  { word: 'FABLE', dest: 'fable' },
 ];
 
 /** instagram.com/reel/DfSXvGDtt4s/ → DfSXvGDtt4s */

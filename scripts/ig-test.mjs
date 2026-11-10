@@ -29,6 +29,7 @@ const posts = {
   cityreel: { caption: 'The city is EXPANDING 🏠 Comment “HOUSE” and I’ll send you your free house', permalink: 'https://www.instagram.com/reel/DfCITYep2xx/' },
   city1: { caption: 'Don’t miss your house! 🏡', permalink: 'https://www.instagram.com/reel/DfXg47dtoyz/' },
   newreel: { caption: 'Three towers, pick your view 👀', permalink: 'https://www.instagram.com/reel/DfNEWREEL01/' },
+  fablereel: { caption: 'Unlimited generations in Claude 👇🏻\n\nComment FABLE to get the link', permalink: 'https://www.instagram.com/reel/DfFABLE0001/' },
 };
 const server = http.createServer(async (req, res) => {
   let body = '';
@@ -1960,7 +1961,7 @@ const wave = async (prefix, n, media, words = () => 'TOWERS') => {
 const noTwiceInARow = (list, what) => { for (let i = 1; i < list.length; i++) assert.notEqual(list[i], list[i - 1], `${what}: the same line twice in a row at ${i}: ${list[i]}`); };
 
 await step('ten or more public replies and five DMs for every page: short, one emoji, the follow asked in every DM', async () => {
-  for (const dest of ['blueprint', 'tower', 'floors', 'film', 'build', 'towers', 'city']) {
+  for (const dest of ['blueprint', 'tower', 'floors', 'film', 'build', 'towers', 'city', 'fable']) {
     const t = T.textsFor(dest);
     assert.ok(t.publicReplies.length >= 10, `${dest}: ${t.publicReplies.length} public replies`);
     assert.equal(new Set(t.publicReplies).size, t.publicReplies.length, `${dest}: a public reply is there twice`);
@@ -2229,6 +2230,80 @@ await step('"comment your city" changes nothing where a comment gets no answer: 
   assert.deepEqual(res, ['sent']);
   assert.equal(dmsFor(sent(), c.id).length, 1);
   assert.equal((await ig.lineState()).stoppedUntil, null);
+});
+
+// ---------- 10/11/2026: the FABLE page ----------
+
+const FABLE_PAGE = 'https://www.omnyalab.com/fable';
+const leadsJson = async (more = '') => (await get(leadsPage, `/api/leads?key=k${more}`)).json();
+/** What went out for one comment: its DM and its public reply (a follow-up of an older test that comes due is not it). */
+const own = (list, cid) => list.filter((x) => x.method === 'POST' && ((x.path === 'me/messages' && x.body.recipient.comment_id === cid) || x.path === `${cid}/replies`));
+
+await step('FABLE: the reel that says "Comment FABLE to get the link" goes to /fable, the bot talks about the link and the click is counted', async () => {
+  ahead += 2 * 3_600_000;
+  await quietly(flushDue); // the follow-ups of the tests above that come due with the clock
+  const fb = T.textsFor('fable');
+  assert.ok(T.KINDS.includes('fable') && P.isDest('fable'));
+  assert.equal(fb.url, FABLE_PAGE);
+  assert.deepEqual(P.resolvePost({ code: 'new', words: ['FABLE'] }), { dest: 'fable', any: true, words: ['FABLE'] });
+  assert.deepEqual(ig.captionWords(posts.fablereel.caption), ['FABLE']);
+  // the words: the link, never the blueprint; the same numbers as the other pages (twelve and five), the button "Get the link"
+  assert.equal(fb.publicReplies.length, 12);
+  assert.equal(fb.direct.texts.length, 5);
+  assert.equal(fb.direct.button, 'Get the link');
+  assert.equal(fb.opener.button, 'Get the link');
+  assert.equal(fb.publicReplies[0], 'sent 🙌🏻 the link is in your DMs');
+  assert.equal(fb.direct.texts[0], 'Hey 🙌🏻 here’s the link 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week');
+  for (const line of [...fb.publicReplies, ...fb.direct.texts, fb.cantDm, fb.opener.text, fb.nudgeFollow.text, fb.nudgeQuestion, fb.followFirst.text, ...Object.values(fb.comment).flat()]) assert.doesNotMatch(line, /blueprint|\bAI\b|%|\bdays?\b/i, line);
+  assert.ok(fb.publicReplies.filter((l) => /link/.test(l)).length >= 7);
+  for (const w of fb.direct.texts) assert.match(w, /\blink\b/);
+  // the other pages say what they said
+  assert.equal(T.textsFor('towers').direct.button, 'Get the Blueprint');
+  assert.equal(T.textsFor('towers').publicReplies[0], 'Sent 🙌🏻 check your DMs for The Towers Blueprint');
+
+  // any comment under the reel: one DM with the button that opens /fable?ig=<code>, one public reply
+  sent();
+  let c = comment('fa1', '🔥🔥', 'fablereel');
+  assert.deepEqual(await c.res, ['sent']);
+  let s = own(sent(), c.id);
+  assert.equal(s.length, 2);
+  assert.ok(isDirect(fb, msgText(s[0])), msgText(s[0]));
+  assert.deepEqual(urlButton(s[0]), { type: 'web_url', title: 'Get the link', url: `${FABLE_PAGE}?ig=DfFABLE0001` });
+  assert.ok(fb.publicReplies.includes(s[1].query.message));
+  const l = await lead('fa1');
+  assert.deepEqual([l.stage, l.kind, l.post, l.direct], ['asked', 'fable', 'DfFABLE0001', true]);
+  // in turn like the others: 14 comments, never the same line twice in a row, all twelve and all five used
+  await quietly(flushDue);
+  const got = [{ dm: s[0], said: msgText(s[0]), reply: s[1].query.message }, ...(await wave('fw', 14, 'fablereel', (i) => (i % 2 ? 'FABLE' : 'fable please')))];
+  noTwiceInARow(got.map((g) => g.reply), 'fable public replies');
+  noTwiceInARow(got.map((g) => g.said), 'fable DMs');
+  assert.equal(new Set(got.map((g) => g.reply)).size, 12);
+  assert.equal(new Set(got.map((g) => g.said)).size, 5);
+  for (const g of got) assert.ok(fb.publicReplies.includes(g.reply) && fb.direct.texts.includes(g.said) && urlButton(g.dm).url === `${FABLE_PAGE}?ig=DfFABLE0001`);
+  // Instagram refuses the button: the same words with the link written in
+  state.refuseTemplate = true;
+  c = comment('fa2', 'fable', 'fablereel');
+  assert.deepEqual(await quietly(async () => { const w = console.warn; console.warn = () => {}; try { return await c.res; } finally { console.warn = w; } }), ['sent']);
+  state.refuseTemplate = false;
+  s = dmsFor(sent(), c.id);
+  assert.match(msgText(s.at(-1)), /\n\nhttps:\/\/www\.omnyalab\.com\/fable\?ig=DfFABLE0001$/);
+  await quietly(() => get(leadsPage, '/api/leads?key=k&action=mode&value=direct')); // setting the mode again makes the bot try the button again
+
+  // the click: vercel.json sends /fable?ig=<code> to /api/instagram, which counts it and opens /fable?reel=<code>
+  const { readFileSync } = await import('node:fs');
+  const rule = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8')).redirects[0];
+  assert.match('/fable', new RegExp(`^${rule.source.replace(/:(\w+)\(([^)]+)\)/g, '(?:$2)')}$`));
+  assert.equal(rule.destination, '/api/instagram?go=:page&p=:post');
+  for (const page of ['the-blueprint', 'the-tower-blueprint', 'the-tower-floors', '3d-to-film', 'the-build-blueprint', 'the-towers-blueprint']) assert.ok(rule.source.includes(page), page); // the pages that were there are still there
+  const r = await get(hook, '/api/instagram?go=fable&p=DfFABLE0001', { 'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) Instagram 400.0' });
+  assert.equal(r.status, 302);
+  assert.equal(r.headers.get('location'), `${FABLE_PAGE}?reel=DfFABLE0001`);
+  const row = (await ig.postStats()).find((x) => x.post === 'DfFABLE0001');
+  assert.deepEqual([row.click, row.dest], [1, 'fable']);
+  assert.ok(row.c >= 15 && row.link >= 15);
+  // by hand too: &action=post&dest=fable
+  assert.equal((await leadsJson('&action=post&code=DfNEWFABLE1&dest=fable')).added.DfNEWFABLE1, 'fable');
+  await leadsJson('&action=post&code=DfNEWFABLE1');
 });
 
 server.close();

@@ -7,7 +7,7 @@
   ],
   "redirects": [
     {
-      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint)",
+      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint|fable)",
       "has": [
         {
           "type": "query",

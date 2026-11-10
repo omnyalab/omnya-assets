@@ -9,6 +9,7 @@ export const FILM = 'https://www.omnyalab.com/3d-to-film';
 export const BUILD = 'https://www.omnyalab.com/the-build-blueprint';
 export const TOWERS = 'https://www.omnyalab.com/the-towers-blueprint';
 export const CITY = 'https://www.omnyalab.com/city';
+export const FABLE = 'https://www.omnyalab.com/fable';
 export const BOOK_CALL = 'https://omnyalab.com/book/call';
 export const WHATSAPP = 'https://wa.me/393792220465';
 
@@ -243,6 +244,50 @@ const city = {
 };
 
 /**
+ * FABLE (10/11/2026): the reel says "Comment FABLE to get the link". The page, /fable, opens with the
+ * Higgsfield offer (Nico's affiliate link) and has the free Tower Blueprint card right under it. Here
+ * the bot talks about "the link", never about a blueprint: twelve public replies and five DMs, taken
+ * in turn like the others, the button says "Get the link".
+ */
+const fable = {
+  url: FABLE,
+  ask: false,
+  publicReplies: [
+    'sent 🙌🏻 the link is in your DMs',
+    'Just sent it, check your DMs 👀',
+    'Done! The link is in your DMs 🫶🏻',
+    'Check your DMs, the link is there 🙌🏻',
+    'Sent you a DM 👇🏻 the link is inside',
+    'It’s in your inbox now 🙌🏻',
+    'sent, the link is waiting in your DMs 🫶🏻',
+    'just dropped the link in your DMs 👀',
+    'on its way, check your DMs 🙌🏻',
+    'the link just landed in your DMs 👀',
+    'you got it, check your DMs 👇🏻',
+    'all yours, I just sent the link in DM 🙌🏻',
+  ],
+  cantDm: 'We can’t send you the link unless you send us a text, if you want it, just send us a text 🫶🏻',
+  opener: { text: 'Hey 🙌🏻 the link is ready, tap below and I’ll send it over 👇🏻', button: 'Get the link' },
+  direct: (() => {
+    // five ways, in turn, as for the Blueprints; every one asks for the follow in words and none checks it
+    const texts = [
+      'Hey 🙌🏻 here’s the link 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week',
+      'Here you go 🙌🏻 the link is right below, and follow @omnyalab so you catch the next one, we drop a new build every week',
+      'Thanks for the comment 🫶🏻 the link is one tap away 👇🏻 follow @omnyalab so you catch the next one, there’s a new build every week',
+      'Hey, got your comment 👀 the link is ready for you below, follow @omnyalab so you catch the next one, a new build drops every week',
+      'As promised 🙌🏻 tap below for the link, and follow @omnyalab so you catch the next one, we post a new build every week',
+    ];
+    return { text: texts[0], texts, button: 'Get the link' };
+  })(),
+  comment: commentFor('the link'),
+  followFirst: { ...followFirst, text: followFirst.text.replace('The Blueprint is ready for you', 'the link is ready for you') },
+  blueprintFollower: `Here you go 👇🏻 the Higgsfield offer is on this page, and right under it there’s our free Tower Blueprint to build with it: ${FABLE}`,
+  blueprintNewFollower: `Thanks for the follow 🙌🏻 the Higgsfield offer is on this page, and right under it there’s our free Tower Blueprint to build with it: ${FABLE}`,
+  nudgeFollow: { ...nudgeFollow, text: nudgeFollow.text.replace('The Blueprint', 'the link') },
+  nudgeQuestion: 'Did you get a chance to open the link? 👀 If you’re working on a project, tell me a few lines about it here and I’ll show you how it could look in 3D',
+};
+
+/**
  * Someone taps a button of an old ManyChat DM ("Get the Blueprint", "Following") and we never saw
  * their comment, so we can't know which reel it was: after the follow they get the pages to choose
  * from, as the ManyChat automation "Vecchi tasti Blueprint" did (7/11/2026).
@@ -271,9 +316,9 @@ export const oldButtons = {
 };
 
 const base = { url: BLUEPRINT, ask: true, publicReplies, placeReplies, cantDm, opener, direct, comment, followFirst, stillNotFollowing, blueprintFollower, blueprintNewFollower, answerProject, answerCurious, nudgeFollow, nudgeQuestion };
-const kinds = { tower: { ...tower, url: TOWER_BLUEPRINT }, floors: { ...floors, url: TOWER_FLOORS }, film, build, towers, city, legacy };
+const kinds = { tower: { ...tower, url: TOWER_BLUEPRINT }, floors: { ...floors, url: TOWER_FLOORS }, film, build, towers, city, fable, legacy };
 
-/** Every destination the bot knows: 'blueprint', 'tower', 'floors', 'film', 'build', 'towers', 'city' ('legacy' is only for old buttons). */
+/** Every destination the bot knows: 'blueprint', 'tower', 'floors', 'film', 'build', 'towers', 'city', 'fable' ('legacy' is only for old buttons). */
 export const KINDS = ['blueprint', ...Object.keys(kinds)];
 
 /** The texts for a destination; anything unknown gets the normal Blueprint. */
