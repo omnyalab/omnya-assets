@@ -9,9 +9,12 @@ const json = (o) => new Response(JSON.stringify(o), { headers: { 'Content-Type':
 
 export async function GET() {
   if (await isOff().catch(() => false)) return json({ ok: true, off: true });
-  let sent = 0, done = [], line = null;
+  let sent = 0, done = [], waiting = null;
   try {
-    sent = [...(await drain({ budget: Number(process.env.IG_TICK_MS) || 40_000, max: 1000 })).values()].filter((r) => r === 'sent').length;
+    const out = await drain({ budget: Number(process.env.IG_TICK_MS) || 40_000, max: 1000 });
+    sent = [...out.values()].filter((r) => r === 'sent').length;
+    // an idle minute costs Redis two questions (the line, the reminders): the count is asked only when something moved or waits
+    if (!out.idle || sent) waiting = (await lineState()).waiting;
   } catch (e) {
     await noteError('line', e);
   }
@@ -20,11 +23,6 @@ export async function GET() {
   } catch (e) {
     await noteError('tick', e);
   }
-  try {
-    line = await lineState();
-  } catch (e) {
-    await noteError('line', e);
-  }
-  if (sent || line?.waiting) console.log('[ig] tick', sent, 'DMs sent from the line,', line?.waiting ?? '?', 'still waiting');
-  return json({ ok: true, sent, done, waiting: line?.waiting ?? null });
+  if (sent || waiting) console.log('[ig] tick', sent, 'DMs sent from the line,', waiting ?? 0, 'still waiting');
+  return json({ ok: true, sent, done, waiting });
 }

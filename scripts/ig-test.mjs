@@ -191,6 +191,7 @@ let ok = 0;
 const step = async (name, fn) => { await fn(); ok++; console.log('✓', name); };
 
 if (ONLY_RUN) {
+  await ig.setMode('gate'); // the tester run tries the whole round
   await step('tester mode: everyone else is left to ManyChat, comments and DMs', async () => {
     assert.deepEqual(await comment('x1', 'PROJECT').res, ['not tester']);
     assert.deepEqual(await dm('x1', { text: 'BLUEPRINT' }), ['not tester']);
@@ -224,6 +225,8 @@ if (VERCEL_RUN) {
     for (let i = 0; i < 100 && calls.filter((x) => x.method === 'POST').length < 3; i++) await new Promise((res) => setTimeout(res, 20));
     const s = sent().filter((x) => x.method === 'POST');
     assert.equal(s.filter((x) => x.path === 'me/messages' && x.body.recipient.comment_id === 'v1').length, 1);
+    // nothing was ever set: direct, the DM has the link on a button
+    assert.equal(s.find((x) => x.body?.recipient?.comment_id === 'v1').body.message.attachment.payload.buttons[0].url, 'https://www.omnyalab.com/the-towers-blueprint?ig=DfTOWERS11');
     assert.equal(s.filter((x) => x.path === 'v1/replies').length, 1);
     assert.equal(s.filter((x) => x.path === 'me/messages' && x.body.recipient.id === 'u9').length, 1);
     assert.equal((await ig.lineState()).waiting, 0);
@@ -238,6 +241,35 @@ if (REDIS_RUN) {
   const urlOf = (c) => (msgText(c).match(/https:\/\/\S+/) || [])[0] || c.body?.message?.attachment?.payload?.buttons?.[0]?.url;
   let ahead = 0;
   ig.clock.now = () => Date.now() + ahead;
+
+  await step('on Redis: direct by default (the link in the first DM, City too), then gate set from /api/leads', async () => {
+    assert.equal(await ig.getMode(), 'direct');
+    const c = comment('r1', 'TOWERS', 'towersreel');
+    assert.deepEqual(await c.res, ['sent']);
+    const c2 = comment('r2', 'house', 'cityreel');
+    assert.deepEqual(await c2.res, ['sent']);
+    const s = sent().filter((x) => x.method === 'POST');
+    assert.equal(s.length, 4);
+    assert.deepEqual(pr(s).map((x) => x.body.message.attachment.payload.buttons[0].type), ['web_url', 'web_url']);
+    assert.equal(urlOf(pr(s)[0]), 'https://www.omnyalab.com/the-towers-blueprint?ig=DfTOWERS11');
+    const k = urlOf(pr(s)[1]).match(/\/city\?k=([A-Za-z0-9_-]+)&ig=DfCITYep2xx$/)[1];
+    assert.equal((await city.peek(k)).u, 'name_r2');
+    assert.equal((await lead('r1')).stage, 'asked');
+    // the button refused: text with the link, remembered on Redis
+    state.refuseTemplate = true;
+    const c3 = comment('r3', 'TOWERS', 'towersreel');
+    await c3.res;
+    const c4 = comment('r4', 'TOWERS', 'towersreel');
+    await c4.res;
+    state.refuseTemplate = false;
+    const t = sent().filter((x) => x.path === 'me/messages');
+    assert.equal(t.filter((x) => x.body.recipient.comment_id === c3.id).length, 2);
+    assert.equal(t.filter((x) => x.body.recipient.comment_id === c4.id).length, 1);
+    assert.match(t.at(-1).body.message.text, /\n\nhttps:\/\/www\.omnyalab\.com\/the-towers-blueprint\?ig=DfTOWERS11$/);
+    assert.equal((await (await leadsPage.GET(new Request('http://x/api/leads?key=k&action=mode&value=gate'))).json()).mode, 'gate');
+    assert.equal(await ig.getMode(), 'gate');
+    ahead += 2 * 3_600_000; // a clean hour for the steps below
+  });
 
   await step('on Redis: comment → DM + public reply → tap → follow → Done → the link, each event once', async () => {
     const c = comment('u1', 'TOWERS', 'towersreel');
@@ -274,7 +306,7 @@ if (REDIS_RUN) {
     assert.equal(sent().filter((x) => x.path === 'me/messages').pop().body.message.attachment.payload.buttons.length, 3);
     for (let i = 0; i < 2; i++) await hook.GET(new Request('http://x/api/instagram?go=the-towers-blueprint&p=DfTOWERS11'));
     const row = (await ig.postStats()).find((r) => r.post === 'DfTOWERS11');
-    assert.deepEqual([row.c, row.dm, row.link, row.click, row.dest], [1, 1, 1, 2, 'towers']);
+    assert.deepEqual([row.c, row.dm, row.link, row.click, row.dest], [4, 4, 4, 2, 'towers']); // three in direct in the first step, one in gate
     assert.deepEqual(await comment('u3', 'hello', 'newreel').res, ['no word']);
     await leadsPage.GET(new Request('http://x/api/leads?key=k&action=post&code=DfNEWREEL01&dest=towers'));
     assert.deepEqual(await comment('u4', 'hello', 'newreel').res, ['sent']);
@@ -338,6 +370,14 @@ if (REDIS_RUN) {
   console.log(`\n${ok} prove su Redis passate`);
   process.exit(0);
 }
+
+await step('the mode is "direct" when nothing was ever set; the tests of the whole round run in "gate"', async () => {
+  assert.equal(await ig.getMode(), 'direct');
+  assert.equal((await (await hook.GET(new Request('http://x/api/instagram?health=k'))).json()).flow, 'direct');
+  assert.deepEqual(await (await leadsPage.GET(new Request('http://x/api/leads?key=k&action=mode&value=gate'))).json(), { ok: true, mode: 'gate' });
+  assert.equal((await (await hook.GET(new Request('http://x/api/instagram?health=k'))).json()).flow, 'gate');
+  sent();
+});
 
 await step('caption words', () => {
   assert.deepEqual(ig.captionWords('Comment “PROJECT” below'), ['PROJECT']);
@@ -922,8 +962,8 @@ await step('vercel.json: links with ?ig= pass through /api/instagram for every p
   }
   assert.ok(v.functions['api/instagram.js'].maxDuration >= 30);
   assert.ok(v.functions['api/igtick.js'].maxDuration >= 60);
-  // the every-minute cron is added on the Pro plan only (docs/INSTAGRAM-BOT.md): when it is there, it must call the tick
-  for (const c of v.crons || []) assert.equal(c.path, '/api/igtick');
+  // Vercel Pro since 10/11: the line is emptied every minute
+  assert.deepEqual(v.crons, [{ path: '/api/igtick', schedule: '* * * * *' }]);
 });
 
 await step('health check: token, webhook fields, last comment, the line, errors of the last hour', async () => {
@@ -1021,6 +1061,211 @@ await step('800 comments in one hour: 750 DMs, 50 wait in line and go out as the
   const times = all.map((x) => x.at).sort((a, b) => a - b);
   for (let i = 750; i < times.length; i++) assert.ok(times[i] - times[i - 750] >= 3_600_000, `DM ${i} is the 751st within an hour`);
   assert.ok(times[0] >= t0);
+});
+
+// ===================== 10/11/2026 afternoon: "link diretto" =====================
+// Live test of the morning: with Standard Access Meta never delivers the tap of someone who has no
+// role on the app. So by default the DM that answers the comment already has the link.
+
+const dmsFor = (list, cid) => list.filter((x) => x.path === 'me/messages' && x.body.recipient.comment_id === cid);
+const urlButton = (c) => c.body.message.attachment?.payload?.buttons?.[0];
+// what went out for one comment: DMs and public replies (reminders of older tests may be due at the same time)
+const forComment = (list, cid) => list.filter((x) => x.method === 'POST' && (x.path === 'me/messages' || x.path === `${cid}/replies`));
+const flushDue = async () => { for (let i = 0; i < 80; i++) await ig.tick(); sent(); };
+
+await step('direct mode, switched on from /api/leads without a deploy', async () => {
+  ahead += 2 * 3_600_000; // a clean hour
+  assert.equal((await get(leadsPage, '/api/leads?key=k&action=mode&value=direct')).status, 200);
+  assert.equal((await (await get(hook, '/api/instagram?health=k')).json()).flow, 'direct');
+  assert.equal((await (await get(leadsPage, '/api/leads?key=k&format=json')).json()).mode, 'direct');
+  assert.match(await (await get(leadsPage, '/api/leads?key=k')).text(), /link diretto/);
+  await flushDue();
+});
+
+await step('direct: the comment gets ONE DM that already has the right link (TOWER, floors, 3D, BUILD, TOWERS, Blueprint), no tap needed', async () => {
+  const cases = [
+    ['red', 'DfSXvGDtt4s', 'https://omnyalab.com/the-tower-blueprint', 'tower', 'AI'],
+    ['floors', 'DfaH3QkN4qs', 'https://omnyalab.com/the-tower-floors', 'floors', '🔥'],
+    ['killed', 'DfU-nniRvNQ', 'https://www.omnyalab.com/3d-to-film', 'film', '3D'],
+    ['buildreel', 'DfBUILDnew1', 'https://www.omnyalab.com/the-build-blueprint', 'build', 'Build'],
+    ['towersreel', 'DfTOWERS11', TOWERS_PAGE, 'towers', 'TOWERS'],
+    ['media1', 'abc', 'https://omnyalab.com/the-blueprint', 'blueprint', 'project'],
+  ];
+  let i = 10;
+  for (const [media, code, page, dest, words] of cases) {
+    const u = `d${i++}`;
+    const t = T.textsFor(dest);
+    const before = (await ig.postStats()).find((r) => r.post === code)?.link || 0;
+    const c = comment(u, words, media);
+    assert.deepEqual(await c.res, ['sent'], media);
+    const all = sent();
+    const s = forComment(all, c.id);
+    assert.equal(s.length, 2, media); // one private reply, one public reply: nothing else
+    assert.equal(s[0].path, 'me/messages');
+    assert.equal(s[0].body.recipient.comment_id, c.id);
+    assert.equal(msgText(s[0]), t.direct.text);
+    assert.match(msgText(s[0]), /follow @omnyalab/); // the follow is asked in words, it can't be checked
+    assert.deepEqual(s[0].body.message.attachment.payload.buttons, [{ type: 'web_url', title: 'Get the Blueprint', url: `${page}?ig=${code}` }], media);
+    assert.equal(s[1].path, `${c.id}/replies`);
+    assert.ok(t.publicReplies.includes(s[1].query.message));
+    assert.equal(all.filter((x) => x.path === u).length, 0); // nobody's follow was asked to Instagram
+    const l = await lead(u);
+    assert.deepEqual([l.stage, l.kind, l.post, l.direct], ['asked', dest, code, true]); // they have the link
+    assert.equal((await ig.postStats()).find((r) => r.post === code).link, before + 1); // counted as a link sent
+    assert.ok(t.direct.button.length <= 20 && t.direct.text.length < 640);
+    assert.doesNotMatch(t.direct.text, /\bAI\b|before it.?s built|free image|first image/i);
+  }
+  // the same comment twice, the same person twice: still one DM
+  state.commentUser.ddup = 'd19';
+  const ev = { changes: [{ field: 'comments', value: { id: 'ddup', text: 'TOWERS', from: { id: 'd19', username: 'name_d19' }, media: { id: 'towersreel' } } }] };
+  assert.deepEqual(await post(ev), ['sent']);
+  assert.deepEqual(await post(ev), ['dup']);
+  assert.deepEqual(await comment('d19', 'towers!!', 'towersreel').res, ['already']);
+  assert.equal(dmsFor(sent(), 'ddup').length, 1);
+  // no "check Requests" under the comment 3 hours later: in direct mode we can't know who opened the DM
+  for (let k = 0; k < 80; k++) await ig.tick(ig.clock.now() + ig.REMIND_AFTER + 60_000);
+  assert.equal(sent().filter((x) => x.path === 'ddup/replies').length, 0);
+});
+
+await step('direct: Omnya City, the personal one-time link is made when they comment, from the username of the comment', async () => {
+  const ct = T.textsFor('city');
+  const c = comment('d20', 'HOUSE 🏠', 'cityreel');
+  assert.deepEqual(await c.res, ['sent']);
+  const s = forComment(sent(), c.id);
+  assert.equal(s.length, 2);
+  assert.equal(msgText(s[0]), ct.direct.text);
+  const b = urlButton(s[0]);
+  assert.deepEqual([b.type, b.title], ['web_url', 'Get my house']);
+  const m = b.url.match(/^https:\/\/www\.omnyalab\.com\/city\?k=([A-Za-z0-9_-]{10,40})&ig=DfCITYep2xx$/);
+  assert.ok(m, b.url);
+  assert.equal((await city.peek(m[1])).u, 'name_d20');
+  assert.equal((await city.reserve(m[1])).house.u, 'name_d20');
+  assert.equal((await city.reserve(m[1])).error, 'used'); // one link, one house
+  // someone who already has a house gets the link of their house
+  const again = comment('d20', '🏡', 'city1');
+  await again.res;
+  assert.equal(urlButton(dmsFor(sent(), again.id)[0]).url, 'https://www.omnyalab.com/city/@name_d20');
+});
+
+await step('direct: Instagram refuses the link button → the same text with the link in it, and from then on at once', async () => {
+  const t = T.textsFor('towers');
+  const url = `${TOWERS_PAGE}?ig=DfTOWERS11`;
+  state.refuseTemplate = true;
+  const c = comment('d30', 'TOWERS', 'towersreel');
+  assert.deepEqual(await c.res, ['sent']);
+  let s = sent();
+  let d = dmsFor(s, c.id);
+  assert.equal(d.length, 2); // the button, refused, then the text
+  assert.equal(d[1].body.message.attachment, undefined);
+  assert.equal(d[1].body.message.text, `${t.direct.text}\n\n${url}`);
+  assert.equal(s.filter((x) => x.path === `${c.id}/replies`).length, 1);
+  assert.equal((await ig.lineState()).sentLastHour >= 2, true); // both calls took their place in the hour
+  // the next ones don't try the button again: one call per comment
+  const c2 = comment('d31', 'TOWERS', 'towersreel');
+  assert.deepEqual(await c2.res, ['sent']);
+  d = dmsFor(sent(), c2.id);
+  assert.equal(d.length, 1);
+  assert.equal(d[0].body.message.text, `${t.direct.text}\n\n${url}`);
+  assert.match((await (await get(hook, '/api/instagram?health=k')).json()).linkAs, /^text/);
+  // City too
+  const c3 = comment('d32', 'house', 'cityreel');
+  await c3.res;
+  assert.match(dmsFor(sent(), c3.id)[0].body.message.text, /made for your username[\s\S]*\n\nhttps:\/\/www\.omnyalab\.com\/city\?k=[A-Za-z0-9_-]+&ig=DfCITYep2xx$/);
+  state.refuseTemplate = false;
+  // setting the mode again makes the bot try the button again
+  await get(leadsPage, '/api/leads?key=k&action=mode&value=direct');
+  const c4 = comment('d33', 'TOWERS', 'towersreel');
+  await c4.res;
+  assert.equal(urlButton(dmsFor(sent(), c4.id)[0]).url, url);
+  assert.equal((await (await get(hook, '/api/instagram?health=k')).json()).linkAs, 'button');
+  // a refusal that is not about the button (Meta's side) doesn't switch to text: the comment waits and goes later, once
+  state.failPrivate = { message: '(#100) Unsupported request - method type: post', type: 'OAuthException', code: 100 };
+  const c5 = comment('d34', 'TOWERS', 'towersreel');
+  assert.deepEqual(await c5.res, ['retry']);
+  state.failPrivate = null;
+  assert.equal((await (await get(hook, '/api/instagram?health=k')).json()).linkAs, 'button');
+  sent();
+  ahead += 3 * 60_000;
+  assert.equal((await (await tickPage.GET()).json()).sent, 1);
+  const late = sent();
+  assert.equal(urlButton(dmsFor(late, c5.id)[0]).url, url);
+  assert.equal(late.filter((x) => x.path === `${c5.id}/replies`).length, 1);
+});
+
+await step('direct: the taps and messages that do reach us (testers, people with a role) get the link at once', async () => {
+  // a tap on a button sent while the bot was in gate mode, by someone who doesn't follow
+  assert.deepEqual(await tap('d40', 'GET:towers:DfTOWERS11'), ['get']);
+  let s = sent();
+  assert.equal(linkOf(s.filter((x) => x.path === 'me/messages')[0]), `${TOWERS_PAGE}?ig=DfTOWERS11`);
+  assert.equal(s.filter((x) => x.path === 'd40').length, 0); // no follow check
+  // an old ManyChat button
+  assert.deepEqual(await tap('d41', '{"mc":1}', 'Get my house'), ['get']);
+  assert.match(sent().filter((x) => x.path === 'me/messages')[0].body.message.attachment.payload.buttons[0].url, /\/city\?k=/);
+  // the word written in a DM
+  assert.deepEqual(await dm('d42', { text: 'TOWERS' }), ['get']);
+  assert.equal(linkOf(sent().filter((x) => x.path === 'me/messages')[0]), `${TOWERS_PAGE}?ig=dm`);
+  // someone who got the direct DM and writes back: no second link, Nico gets the email
+  assert.deepEqual(await dm('d14', { text: 'thanks man' }), ['free']);
+  assert.equal(sent().filter((x) => x.path === 'me/messages').length, 0);
+});
+
+await step('direct: 800 comments in one hour → 750 DMs with the link, 50 wait in line, one call each, nobody twice', async () => {
+  ahead += 10 * 24 * 3_600_000;
+  await flushDue(); // the reminders of the gate tests above, out of the way
+  const base = ahead;
+  const ids = [];
+  const results = [];
+  const quiet = console.log;
+  console.log = () => {};
+  try {
+    for (let i = 0; i < 800; i++) {
+      ahead = base + i * 4000;
+      const c = comment(`e${i}`, 'TOWERS', 'towersreel');
+      ids.push(c.id);
+      results.push(...(await c.res));
+    }
+  } finally {
+    console.log = quiet;
+  }
+  assert.deepEqual(results, [...Array(750).fill('sent'), ...Array(50).fill('queued')]);
+  const mine = new Set(ids);
+  let s = sent();
+  const dms = () => privateReplies(s).filter((x) => mine.has(x.body.recipient.comment_id));
+  assert.equal(dms().length, 750); // one private reply per comment, the whole hour of Meta used and not one more
+  assert.equal(s.filter((x) => x.method === 'POST').length, 1500); // 750 DMs + 750 public replies
+  const line = await ig.lineState();
+  assert.deepEqual([line.waiting, line.sentLastHour], [50, 750]);
+  ahead = base + 59 * 60_000;
+  assert.equal((await (await tickPage.GET()).json()).sent, 0);
+  ahead = base + 3_600_000 + 5 * 60_000;
+  const t = await (await tickPage.GET()).json();
+  assert.deepEqual([t.sent, t.waiting], [50, 0]);
+  s = [...s, ...sent()];
+  const all = dms();
+  assert.equal(all.length, 800);
+  assert.equal(new Set(all.map((x) => x.body.recipient.comment_id)).size, 800);
+  assert.deepEqual(all.slice(750).map((x) => x.body.recipient.comment_id), ids.slice(750));
+  for (const x of all) assert.equal(urlButton(x).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
+  const times = all.map((x) => x.at).sort((a, b) => a - b);
+  for (let i = 750; i < times.length; i++) assert.ok(times[i] - times[i - 750] >= 3_600_000);
+});
+
+await step('back to gate from /api/leads: the whole round again (button to tap → follow check → link)', async () => {
+  ahead += 2 * 3_600_000;
+  assert.equal((await get(leadsPage, '/api/leads?key=k&action=mode&value=nope')).status, 400);
+  assert.deepEqual(await (await get(leadsPage, '/api/leads?key=k&action=mode&value=gate')).json(), { ok: true, mode: 'gate' });
+  const tw = T.textsFor('towers');
+  const c = comment('d50', 'TOWERS', 'towersreel');
+  assert.deepEqual(await c.res, ['sent']);
+  let s = forComment(sent(), c.id);
+  assert.equal(msgText(s[0]), tw.opener.text);
+  assert.deepEqual(s[0].body.message.attachment.payload.buttons, [{ type: 'postback', title: 'Get the Blueprint', payload: 'GET:towers:DfTOWERS11' }]);
+  assert.equal((await lead('d50')).stage, 'opened');
+  await tap('d50', 'GET:towers:DfTOWERS11');
+  assert.equal(msgText(sent().filter((x) => x.path === 'me/messages')[0]), tw.followFirst.text); // no link before the follow
+  state.follows.d50 = true;
+  await tap('d50', 'DONE');
+  assert.equal(linkOf(sent().filter((x) => x.path === 'me/messages')[0]), `${TOWERS_PAGE}?ig=DfTOWERS11`);
 });
 
 server.close();

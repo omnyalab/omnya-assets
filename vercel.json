@@ -1,4 +1,10 @@
 {
+  "crons": [
+    {
+      "path": "/api/igtick",
+      "schedule": "* * * * *"
+    }
+  ],
   "redirects": [
     {
       "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint)",

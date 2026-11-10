@@ -1,7 +1,10 @@
 // The Instagram bot of @omnyalab, in place of ManyChat. Instagram Messaging and comments
 // through the Facebook Page linked to @omnyalab (graph.facebook.com, Meta's "unified login" for new apps).
 //
-// The way it goes (decided with Nico, 3/11/2026; since 10/11/2026 for every reel ManyChat had):
+// Two modes (getMode): 'direct', the default since 10/11/2026, where the DM that answers the comment
+// already carries the link (Meta's Standard Access doesn't deliver the taps of people without a role
+// on the app), and 'gate', the whole round below, for after the App Review.
+// The way it goes in gate (decided with Nico, 3/11/2026; since 10/11/2026 for every reel ManyChat had):
 // comment → it joins the line → its turn: public reply + one DM with a button (Instagram only
 // allows one DM after a comment, and only once they tap can we see whether they follow) → tap →
 // following: one DM with the link of the page; not following: "follow and tap Done" → Done → the link.
@@ -97,6 +100,43 @@ export async function setOff(v) {
   off = { at: Date.now(), v: !!v };
   console.log(v ? '[ig] the bot was switched OFF from /api/leads' : '[ig] the bot was switched ON from /api/leads');
   return off.v;
+}
+
+// ---------- the mode ----------
+
+// 'direct' (the default): the DM that answers the comment already has the link. With Standard Access
+// Meta doesn't hand us the taps and messages of people who have no role on the app, so the bot can't
+// wait for a tap. 'gate': the whole round (button → follow check → link), for after the App Review.
+// Changed without a deploy: /api/leads?key=…&action=mode&value=direct|gate
+export const MODES = ['direct', 'gate'];
+let mode = { at: 0, v: 'direct' };
+export async function getMode() {
+  if (Date.now() - mode.at > 15_000) {
+    const v = await kv.get('mode');
+    mode = { at: Date.now(), v: MODES.includes(v) ? v : 'direct' };
+  }
+  return mode.v;
+}
+export async function setMode(v) {
+  if (!MODES.includes(v)) return null;
+  await kv.set('mode', v, 400 * 86_400);
+  await kv.del('plain'); // a new start: the link button is tried again
+  mode = { at: Date.now(), v };
+  textOnly = { at: 0, v: false };
+  console.log(`[ig] mode set to ${v} from /api/leads`);
+  return v;
+}
+
+// When Instagram refuses the link button in the answer to a comment, the link goes in the text; the
+// bot remembers it for 6 hours and sends the text at once, so every comment costs one call, not two.
+let textOnly = { at: 0, v: false };
+async function isPlain() {
+  if (Date.now() - textOnly.at > 15_000) textOnly = { at: Date.now(), v: !!(await kv.get('plain')) };
+  return textOnly.v;
+}
+async function setPlain() {
+  await kv.set('plain', 1, 6 * 3600);
+  textOnly = { at: Date.now(), v: true };
 }
 
 // ---------- errors ----------
@@ -399,15 +439,43 @@ async function sendBlueprint(lead, newFollower) {
 }
 
 /** Omnya City: the personal one-time link, made by the same code as POST /api/city/link (ManyChat's External Request). */
+async function houseUrl(username, id, post) {
+  const t = T.textsFor('city');
+  const u = cleanName(username);
+  if (!u) {
+    await noteError('city', new Error('no username for the house link, sent the city map instead'), `user ${id}`);
+    return t.url;
+  }
+  const r = await linkFor(u, String(id).slice(0, 40));
+  return r.house ? `${t.url}/@${u}` : track(`${t.url}?k=${r.token}`, post);
+}
+
 async function sendHouse(lead) {
   const t = T.textsFor('city');
-  const u = cleanName(lead.username);
-  let url = t.url;
-  if (u) {
-    const r = await linkFor(u, String(lead.id).slice(0, 40));
-    url = r.house ? `${t.url}/@${u}` : track(`${t.url}?k=${r.token}`, lead.post);
-  } else await noteError('city', new Error('no username for the house link, sent the city map instead'), `user ${lead.id}`);
-  await linkButtons(lead.id, t.link.text, [[t.link.button, url]]);
+  await linkButtons(lead.id, t.link.text, [[t.link.button, await houseUrl(lead.username, lead.id, lead.post)]]);
+}
+
+/**
+ * Direct mode: the one DM that answers a comment, with the link on a button that opens the page
+ * (for City the personal link, made now from the commenter's username). If Instagram refuses the
+ * button the same text goes out with the link written in it, and from then on at once.
+ */
+async function directDm(job, onSecond) {
+  const p = job.p;
+  const t = T.textsFor(p.dest);
+  const url = p.dest === 'city' ? await houseUrl(job.n, job.u, p.code) : track(t.url, p.code);
+  const inText = { text: `${t.direct.text}\n\n${url}` };
+  if (await isPlain()) return send({ comment_id: job.c }, inText);
+  try {
+    return await send({ comment_id: job.c }, { attachment: { type: 'template', payload: { template_type: 'button', text: t.direct.text, buttons: [{ type: 'web_url', title: t.direct.button, url }] } } });
+  } catch (e) {
+    if (!refusedShape(e)) throw e;
+    console.warn('[ig] link button refused in the answer to a comment, link in the text instead:', e.message);
+    if (onSecond) await onSecond();
+    const r = await send({ comment_id: job.c }, inText);
+    await setPlain(); // the text went through: it was the button
+    return r;
+  }
 }
 
 /** A tap on an old ManyChat button from someone we don't know: the pages to choose from. */
@@ -426,6 +494,12 @@ async function sendLink(lead, newFollower) {
 
 /** They tapped "Get the Blueprint" (afterDone false) or "Done" (true). */
 async function giveBlueprint(lead, afterDone) {
+  // direct mode: whoever reaches us with a tap or a message (testers, people with a role) gets the link at once
+  if ((await getMode()) === 'direct') {
+    // the house link is made for a username: asked to Instagram only when the comment didn't give it
+    if (lead.kind === 'city' && !lead.username) lead.username = (await profile(lead.id)).username || '';
+    return sendLink(lead, false);
+  }
   const p = await profile(lead.id);
   if (p.username) lead.username ||= p.username;
   // Instagram doesn't say: on Done we take their word for it, first time we ask for the follow
@@ -522,11 +596,14 @@ async function deliver(job, ctx) {
   if (!job.dm) {
     try {
       if (ONLY.size) await kv.set(`tester:${job.u}`, 1, 7 * 86_400);
-      // the button carries its post, so the tap finds the right link even when Instagram gives the tap another id
-      const r = await button({ comment_id: cid }, t.opener.text, t.opener.button, `GET:${p.dest}:${p.code}`, () => z.add('sent', now, `${cid}:2`));
+      const second = () => z.add('sent', now, `${cid}:2`); // a second call for the same comment takes its place in the hour too
+      const direct = (await getMode()) === 'direct';
+      // direct: the link is in this DM. gate: a button to tap, which carries its post, so the tap finds the right link even when Instagram gives the tap another id
+      const r = direct ? await directDm(job, second) : await button({ comment_id: cid }, t.opener.text, t.opener.button, `GET:${p.dest}:${p.code}`, second);
       if (r.recipient_id) uid = r.recipient_id;
       if (ONLY.size) await kv.set(`tester:${uid}`, 1, 7 * 86_400);
       job.dm = 'sent';
+      job.direct = direct;
       if (ctx.probing) {
         await kv.del('hold'); // it works again
         ctx.probing = false;
@@ -603,13 +680,17 @@ async function keep(job, uid, dm, now) {
     comment: job.t,
     commentId: cid,
     commentAt: job.at,
-    stage: dm ? 'opened' : 'nodm',
+    // direct: the link went out with the DM, so they have it; gate: they have a button to tap
+    stage: !dm ? 'nodm' : job.direct ? 'asked' : 'opened',
     seen: false,
     reels: [...new Set([...(lead.reels || []), job.m])],
   });
+  if (dm && job.direct) Object.assign(lead, { direct: true, sentAt: now });
   await saveLead(lead);
   await h.incr('stats', `${p.code}|${dm ? 'dm' : 'nodm'}`);
-  if (dm) await later(now + REMIND_AFTER, { k: 'remind', id: uid, c: cid });
+  if (dm && job.direct) await h.incr('stats', `${p.code}|link:${p.dest}`);
+  // the "check Requests" reminder needs to know whether the DM was opened, and in direct mode Meta doesn't tell us: none
+  if (dm && !job.direct) await later(now + REMIND_AFTER, { k: 'remind', id: uid, c: cid });
   await done(cid);
   return dm ? 'sent' : 'nodm';
 }
@@ -623,7 +704,7 @@ export async function drain({ budget = 6000, max = 100 } = {}) {
   const out = new Map();
   const started = Date.now();
   const now = clock.now();
-  if (!(await z.range('q', '-inf', now, 1)).length) return out; // nobody waiting: one question to Redis and that's it
+  if (!(await z.range('q', '-inf', now, 1)).length) return (out.idle = true), out; // nobody due: one question to Redis and that's it
   const hold = await kv.get('hold');
   if (hold && hold.until > now) return out;
   // after a stop the first DM is a try: if it goes, back to normal; if not, a longer stop
@@ -860,7 +941,13 @@ export async function postMap() {
  */
 export async function health() {
   const now = clock.now();
-  const out = { time: new Date(now).toISOString(), on: !(await isOff().catch(() => false)), mode: ONLY.size ? `only testers: ${[...ONLY].join(', ')}` : 'everyone' };
+  const out = {
+    time: new Date(now).toISOString(),
+    on: !(await isOff().catch(() => false)),
+    flow: await getMode().catch(() => 'direct'), // direct = the link in the first DM, gate = button, follow check, link
+    linkAs: (await isPlain().catch(() => false)) ? 'text (Instagram refused the link button)' : 'button',
+    mode: ONLY.size ? `only testers: ${[...ONLY].join(', ')}` : 'everyone',
+  };
   let p = {};
   try {
     p = await page(true);
