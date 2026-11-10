@@ -52,11 +52,21 @@ const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_T
 const ALL = new Set(EVERY.flatMap((f) => (f.it ? [f.file, f.it[1]] : [f.file])));
 export const allFiles = () => EVERY.flatMap((f) => [{ name: f.name, file: f.file }, ...(f.it ? [{ name: f.it[0], file: f.it[1] }] : [])]);
 
+// "Everything we teach" (7/11, €39 after a free blueprint): the three Full blueprints and the three playbooks with the extras
+// 9/11 (Nico): the Full Build Blueprint took the place of the Full City one in the pack, then the Full Towers one joined it
+const PACK = [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST];
+/** True for every Stripe product that is the pack, whatever its price: "Everything we teach" (€59),
+    "Everything we teach · upgrade" (€53 after a Full guide) and "Everything we teach · thank you price" (€29, sent by hand). */
+export const isPack = (name) => /everything we teach/i.test(String(name || ''));
+
 /** One Stripe product name → the files it should deliver. Checked in order, first match wins. */
 const RULES = [
-  // "Everything we teach" (7/11, €39 after a free blueprint): the three Full blueprints and the three playbooks with the extras
-  // 9/11 (Nico): the Full Build Blueprint took the place of the Full City one in the pack, then the Full Towers one joined it
-  [/everything we teach/i, [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST]],
+  // 10/11 (Nico), two more prices of the same pack, both deliver all of it and come back to /learn/thanks/everything:
+  // the upgrade after a Full guide (lib/learn.ts everythingUpgrade) and the thank you price (everythingApology).
+  // They are written out so the names are in the code; the plain rule under them would catch them too.
+  [/everything we teach\s*[·•\-–—:]?\s*upgrade/i, PACK],
+  [/everything we teach\s*[·•\-–—:]?\s*thank you price/i, PACK],
+  [/everything we teach/i, PACK],
   // "build blueprint", never /build/ alone: the Build lesson is a product too
   [/full build blueprint/i, [FULL_BUILD]],
   // "full towers blueprint" before /tower/: the Full Tower Blueprint (one tower) is another product (9/11)

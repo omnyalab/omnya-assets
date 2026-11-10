@@ -147,9 +147,12 @@ function paidFiles() {
   if (!id) return closed();
   fetch(`/api/files?session_id=${encodeURIComponent(id)}&lang=${box.dataset.dl}`)
     .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-    .then((j: { files?: { name: string; href: string }[] }) => {
+    .then((j: { files?: { name: string; href: string }[]; pack?: boolean }) => {
       const files = (j.files || []).filter((f) => f.href.startsWith('/api/file?'));
       if (!files.length) return closed();
+      // step 2 (10/11): the upgrade to the pack shows only now, with the payment confirmed, and not to who paid for the pack
+      const up = document.querySelector<HTMLElement>('[data-upgrade]');
+      if (up && j.pack === false) up.hidden = false;
       text.textContent = text.dataset.ok!;
       for (const f of files) {
         const a = tpl('file').firstElementChild!.cloneNode(true) as HTMLAnchorElement;

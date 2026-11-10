@@ -1960,6 +1960,7 @@ html[lang='it'] .ptable__each[data-label]::after { content: ' a vista'; }
 .oto__no { margin-top: 14px; align-self: center; min-height: 44px; font-size: var(--fs-small); color: var(--mute); text-decoration: underline; text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
 .oto-down { padding-bottom: clamp(48px, 7vw, 96px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); scroll-margin-top: calc(var(--hdr) + 16px); }
 .oto-down.is-hidden { display: none; }
+.oto__card[hidden] { display: none; } /* 10/11: the upgrade card waits for the payment check */
 .oto__card--small { margin-top: 0; border-radius: 22px; }
 .oto__card--small .oto__visual { min-height: 240px; }
 .oto__or { color: var(--mute); }

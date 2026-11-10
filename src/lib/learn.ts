@@ -11,6 +11,8 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'session-reader' | 'rest-30' | 'rest-50' | 'build-upgrade' | 'sample'
   // the other two playbooks after buying 02 (€30) or 03 (€40), with the 7/11 prices (01 €79, 02 €49, 03 €39)
   | 'rest-02' | 'rest-03'
+  // step 2 (10/11, ready but off): "Everything we teach" for the difference, €53, offered on /learn/thanks/full-* after a verified payment
+  | 'everything-upgrade'
   // everything we teach: four Full blueprints (Tower, 3D, Build, Towers: the City one left the pack on 9/11, Towers joined it the same day, Nico) and the three playbooks, €59 from 9/11 (€39 on 7/11), only in the funnels
   | 'everything'
   // the free PDF people claim from the reel DM, on /learn/<word>
@@ -32,6 +34,23 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'free-towers'
   | 'full-towers';
 
+/**
+ * Step 2 (10/11, Nico): after a Full guide (€5.99) the page /learn/thanks/full-* offers "Everything we teach" for the
+ * difference, €53 (€59 minus the €5.99 already paid), only once Stripe has confirmed the payment (views/Thanks.astro).
+ * THE SWITCH: while this is an empty string the block is not in the page at all. Paste the Stripe Payment Link here to
+ * turn it on. Stripe product name: "Everything we teach · upgrade" (api/_lib/learn-files.js delivers the whole pack),
+ * back to https://www.omnyalab.com/learn/thanks/everything?session_id={CHECKOUT_SESSION_ID}
+ */
+export const everythingUpgrade = '';
+
+/**
+ * The pack at €29 for someone we owe a thank you or an apology: a link Nico sends by hand, on no public page and
+ * with no /go/ address. Kept here only so the link is written in one place. Stripe product name:
+ * "Everything we teach · thank you price" (the webhook delivers the whole pack), back to
+ * https://www.omnyalab.com/learn/thanks/everything?session_id={CHECKOUT_SESSION_ID}
+ */
+export const everythingApology = '';
+
 export const products: { id: ProductId; checkout: string }[] = [
   { id: 'white-to-real', checkout: 'https://buy.stripe.com/aFaeVcbgVdQA2dwaix8so0s' },
   { id: 'reel', checkout: 'https://buy.stripe.com/3cI28q84J5k47xQ3U98so0t' },
@@ -47,6 +66,8 @@ export const products: { id: ProductId; checkout: string }[] = [
   { id: 'rest-03', checkout: 'https://buy.stripe.com/6oUfZget7aEoaK29et8so0w' },
   // €59 from 9/11 (Nico: "only here"); the €39 link was https://buy.stripe.com/9B68wOgBf13O6tMbmB8so0r
   { id: 'everything', checkout: 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C' },
+  // empty until the switch above is on: /go/everything-upgrade then opens WhatsApp, and no page links to it
+  { id: 'everything-upgrade', checkout: everythingUpgrade },
   { id: 'build-upgrade', checkout: 'https://buy.stripe.com/8x23cufxbcMw4lE76l8so09' },
   { id: 'sample', checkout: '' },
   { id: 'free', checkout: '/learn/free/omnya-lab-blueprint.pdf' },
@@ -73,7 +94,7 @@ export const products: { id: ProductId; checkout: string }[] = [
 // €5.99, written in its page, and /go/<id> opens the one link of the product above.
 
 /** Playbook prices from 7/11 (one by one €167, all three €79). Used for the "Are you sure?" box and the funnels. */
-export const prices = { 'white-to-real': 79, reel: 49, 'before-it-exists': 39, bundle: 79, everything: 59 } as const;
+export const prices = { 'white-to-real': 79, reel: 49, 'before-it-exists': 39, bundle: 79, everything: 59, 'everything-upgrade': 53 } as const;
 
 /**
  * After each purchase the checkout returns to /learn/thanks/<product>. That page makes one

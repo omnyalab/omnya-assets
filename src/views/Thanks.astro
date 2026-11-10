@@ -7,7 +7,7 @@
 // no "no thanks" button and no second card.
 import Base from '../layouts/Base.astro';
 import Arrow from '../components/Arrow.astro';
-import { goHref, thanks, booking, type ProductId } from '../lib/learn';
+import { goHref, thanks, booking, everythingUpgrade, type ProductId } from '../lib/learn';
 import { t, langFromPath, localize } from '../i18n';
 
 interface Props {
@@ -34,6 +34,11 @@ const visual = (id: string) => {
   return { kind: 'skool' as const };
 };
 const v = visual(flow.oto);
+// Step 2 (10/11, ready but off): after a Full guide, "Everything we teach" for the difference (€53). The card is in
+// the page only when lib/learn.ts has the Stripe link (everythingUpgrade), it starts hidden, and the script shows it
+// only after api/files.js has confirmed the payment of a Full guide (never for who already has the pack).
+const upId = 'everything-upgrade';
+const up = everythingUpgrade && Astro.props.id.startsWith('full-') ? { o: offers[upId], x: extra[upId] } : null;
 const vd = flow.down ? visual(flow.down) : null;
 const bookIds = ['white-to-real', 'reel', 'before-it-exists'];
 const book = booking[Astro.props.id as ProductId];
@@ -60,6 +65,28 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
       <h1 class="t-h2 oto__title" data-split="intro">{X.only} <span class="mute">{X.headB}</span></h1>
       <span class="oto__down" aria-hidden="true">↓</span>
     </header>
+
+    {
+      up && (
+        <article class="oto__card" data-upgrade hidden>
+          <div class="oto__visual">
+            <div class="oto__books">
+              {bookIds.map((b, i) => <img class={`oto__book oto__book--${i + 1}`} src={`/studio/book_${b}_${lang}_mobile.webp`} alt="" width="540" height="720" loading="lazy" />)}
+            </div>
+          </div>
+          <div class="oto__body">
+            <h2 class="t-h2 oto__name">{up.o.a} <span class="mute">{up.o.b}</span></h2>
+            <p class="oto__price">
+              <span class="oto__now">{up.o.price}</span>
+              <s class="oto__was">{up.x.strike}</s>
+            </p>
+            <ul class="oto__items">{up.x.items.map((it) => <li>{it}</li>)}</ul>
+            <a class="btn btn--fill oto__yes" href={goHref(upId, lang)}>{up.o.cta} <Arrow /></a>
+            <a class="oto__no" href="#download">{X.upgradeNo}</a>
+          </div>
+        </article>
+      )
+    }
 
     <article class="oto__card" data-fade>
       <div class="oto__visual">

@@ -7,7 +7,7 @@
 // PDFs are in the buyer's inbox (the webhook sends them, with or without this page).
 // GET ?key=IG_ADMIN_KEY → a fresh 30-day link for every file, as text: for Nico, to answer a buyer by hand.
 import Stripe from 'stripe';
-import { filesForProduct, allFiles, signedHref, PAGE_TTL, DAY } from './_lib/learn-files.js';
+import { filesForProduct, allFiles, signedHref, isPack, PAGE_TTL, DAY } from './_lib/learn-files.js';
 
 const SITE = 'https://www.omnyalab.com';
 const DAYS = 30;
@@ -42,7 +42,8 @@ export async function GET(request) {
     // the Omnya City products are houses, not PDFs (the webhook handles them before the files too)
     const names = (session.line_items?.data || []).map((it) => it.price?.product?.name || it.description || '').filter((n) => n && !/^omnya city/i.test(n));
     const files = filesForProduct(names, { ttl: PAGE_TTL, lang: q.get('lang') === 'it' ? 'it' : 'en' });
-    return json({ files: files.map((f) => ({ name: f.name, href: f.href })) });
+    // pack: this payment already holds "Everything we teach" (any of its prices), so the page does not offer the upgrade
+    return json({ files: files.map((f) => ({ name: f.name, href: f.href })), pack: names.some(isPack) });
   } catch (e) {
     console.error('[files]', e.message);
     return json({ error: 'could not check' }, e.statusCode === 404 ? 404 : 502);
