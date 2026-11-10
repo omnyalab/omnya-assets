@@ -399,6 +399,24 @@ if (REDIS_RUN) {
     assert.deepEqual((await (await leadsPage.GET(new Request('http://x/api/leads?key=k&action=gatefor&value='))).json()).gateFor, []);
   });
 
+  await step('on Redis: "every comment" switched off and on from /api/leads', async () => {
+    ahead += 2 * 3_600_000; // a clean hour (the cap is 20 here)
+    await leadsPage.GET(new Request('http://x/api/leads?key=k&action=mode&value=direct'));
+    const json = async () => (await leadsPage.GET(new Request('http://x/api/leads?key=k&format=json'))).json();
+    assert.equal((await json()).anyComment, true); // nothing was ever set: on
+    assert.deepEqual(await comment('j1', 'so good 🔥', 'towersreel').res, ['sent']);
+    assert.equal(urlOf(pr(sent())[0]), 'https://www.omnyalab.com/the-towers-blueprint?ig=DfTOWERS11');
+    assert.deepEqual(await (await leadsPage.GET(new Request('http://x/api/leads?key=k&action=any&value=off'))).json(), { ok: true, anyComment: false });
+    assert.equal((await json()).anyComment, false);
+    assert.deepEqual(await comment('j2', 'so good 🔥', 'towersreel').res, ['no word']);
+    assert.deepEqual(await comment('j2', 'towers', 'towersreel').res, ['sent']);
+    assert.deepEqual(await (await leadsPage.GET(new Request('http://x/api/leads?key=k&action=any&value=on'))).json(), { ok: true, anyComment: true });
+    assert.equal((await (await hook.GET(new Request('http://x/api/instagram?health=k'))).json()).anyComment, true);
+    assert.deepEqual(await comment('j3', '😍', 'towersreel').res, ['sent']);
+    assert.ok(redisUsed.has('DEL'));
+    sent();
+  });
+
   server.close();
   console.log(`\n${ok} prove su Redis passate`);
   process.exit(0);
@@ -1599,6 +1617,114 @@ await step('gate round for testers: also from the env var IG_GATE_FOR, and an em
   assert.deepEqual(await say('gd3', 'g1', 'Build', 'buildreel'), ['already']);
   assert.deepEqual(await tap('g9', 'GET:towers:DfTOWERS11', 'Get the Blueprint'), ['get']);
   assert.equal(linkOf(sent().filter((x) => x.path === 'me/messages')[0]), `${TOWERS_PAGE}?ig=DfTOWERS11`); // direct: the link at once
+});
+
+// ===================== 10/11/2026, evening: every comment =====================
+
+const health = async () => (await get(hook, '/api/instagram?health=k')).json();
+const numbers = async () => (await get(leadsPage, '/api/leads?key=k&format=json')).json();
+const posts_ = (list) => list.filter((x) => x.method === 'POST');
+// a comment as Meta sends it, with whatever else the test wants in it (parent_id, another sender)
+const raw = (id, value) => post({ changes: [{ field: 'comments', value: { id, media: { id: 'towersreel', media_product_type: 'REELS' }, ...value } }] });
+
+await step('every comment under a post of the map gets the public reply and the DM with the link of that reel, whatever it says', async () => {
+  ahead += 2 * 3_600_000; // a clean hour
+  await flushDue();
+  assert.equal(await ig.getMode(), 'direct');
+  assert.equal((await health()).anyComment, true); // on when nothing was ever set
+  assert.equal((await numbers()).anyComment, true);
+  assert.match(await (await get(leadsPage, '/api/leads?key=k')).text(), /risponde a ogni commento/);
+  const tw = T.textsFor('towers');
+  // no word at all: words, a question, emoji only
+  let i = 1;
+  for (const words of ['so beautiful', 'how did you make this??', '🔥🔥🔥', 'price?']) {
+    const c = comment(`a${i++}`, words, 'towersreel');
+    assert.deepEqual(await c.res, ['sent'], words);
+    const s = forComment(sent(), c.id);
+    assert.equal(s.length, 2, words); // one DM, one public reply
+    assert.equal(s[0].body.recipient.comment_id, c.id);
+    assert.equal(msgText(s[0]), tw.direct.text);
+    assert.equal(urlButton(s[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
+    assert.equal(s[1].path, `${c.id}/replies`);
+    assert.ok(tw.publicReplies.includes(s[1].query.message));
+  }
+  assert.equal((await lead('a1')).stage, 'asked');
+  assert.equal((await lead('a1')).kind, 'towers');
+  // a reel pinned by its code, and City with a caption that asks for nothing: their own links
+  let c = comment('a5', 'insane', 'red');
+  assert.deepEqual(await c.res, ['sent']);
+  assert.equal(urlButton(forComment(sent(), c.id)[0]).url, 'https://omnyalab.com/the-tower-blueprint?ig=DfSXvGDtt4s');
+  c = comment('a6', 'where is this?', 'city1');
+  assert.deepEqual(await c.res, ['sent']);
+  assert.match(urlButton(forComment(sent(), c.id)[0]).url, /^https:\/\/www\.omnyalab\.com\/city\?k=[\w-]+&ig=DfXg47dtoyz$/);
+  // someone else answering under another person's comment (a reply, with parent_id) is a comment like the others
+  state.commentUser.aR1 = 'a7';
+  assert.deepEqual(await raw('aR1', { text: '@name_a1 agree!', parent_id: 'c1', from: { id: 'a7', username: 'name_a7' } }), ['sent']);
+  assert.equal(forComment(sent(), 'aR1').length, 2);
+  // the same person again, under the same reel: nothing, whatever they write (also under our reply)
+  assert.deepEqual(await comment('a1', 'thanks!', 'towersreel').res, ['already']);
+  assert.deepEqual(await raw('aR2', { text: 'got it 🙏', parent_id: 'r1', from: { id: 'a2', username: 'name_a2' } }), ['already']);
+  assert.deepEqual(await comment('a1', 'TOWERS', 'towersreel').res, ['already']);
+  assert.equal(posts_(sent()).length, 0);
+  // a post that is not in the map: without the word nothing, with the word as always
+  assert.deepEqual(await comment('a8', 'so beautiful').res, ['no word']); // its caption says Comment "PROJECT"
+  assert.deepEqual(await comment('a8', '🔥', 'client').res, ['no word']); // a client teaser: asks for nothing
+  assert.equal(posts_(sent()).length, 0);
+  c = comment('a8', 'project');
+  assert.deepEqual(await c.res, ['sent']);
+  assert.equal(urlButton(forComment(sent(), c.id)[0]).url, 'https://omnyalab.com/the-blueprint?ig=abc');
+});
+
+await step('our own comments and our own replies under the reels are never answered, by the account id and by its name', async () => {
+  sent();
+  // the public reply the bot just wrote comes back from Meta as a comment of ours
+  assert.deepEqual(await raw('own1', { text: T.publicReplies[0], parent_id: 'c1', from: { id: OWN, username: 'omnyalab' } }), ['skip']);
+  assert.deepEqual(await raw('own2', { text: 'New reel tomorrow 👀', from: { id: OWN, username: 'omnyalab' } }), ['skip']);
+  // the same account seen with another id (Instagram has more than one id for an account): the name is enough
+  assert.deepEqual(await raw('own3', { text: 'Sent 🙌🏻 check your DMs', parent_id: 'c1', from: { id: '17841400000000000', username: 'OmnyaLab' } }), ['skip']);
+  assert.deepEqual(await raw('own4', { text: 'no sender' }), ['skip']);
+  assert.equal(sent().length, 0); // not one call to Instagram, not even for the caption
+  assert.equal((await ig.lineState()).waiting, 0);
+  assert.equal(await lead(OWN), undefined);
+});
+
+await step('"every comment" switched off from /api/leads, without a deploy: back to the word only; on again and every comment counts', async () => {
+  assert.equal((await get(leadsPage, '/api/leads?key=wrong&action=any&value=off')).status, 404);
+  const no = await get(leadsPage, '/api/leads?key=k&action=any&value=maybe');
+  assert.equal(no.status, 400);
+  assert.equal((await no.json()).anyComment, true); // a wrong value changes nothing
+  assert.deepEqual(await (await get(leadsPage, '/api/leads?key=k&action=any&value=off')).json(), { ok: true, anyComment: false });
+  assert.equal((await health()).anyComment, false);
+  assert.equal((await numbers()).anyComment, false);
+  assert.match(await (await get(leadsPage, '/api/leads?key=k')).text(), /solo a chi scrive la parola/);
+  assert.equal(await ig.getMode(), 'direct'); // the mode is another switch
+  sent();
+  // the TOWERS reel (in the map by the word of its caption): only the word, typos forgiven
+  assert.deepEqual(await comment('a20', 'so beautiful', 'towersreel').res, ['no word']);
+  assert.equal(posts_(sent()).length, 0);
+  let c = comment('a20', 'Towers 🔥', 'towersreel'); // the comment without the word didn't use up their turn
+  assert.deepEqual(await c.res, ['sent']);
+  assert.equal(urlButton(forComment(sent(), c.id)[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`);
+  // a reel pinned by its code: the word its caption asks for
+  assert.deepEqual(await comment('a21', 'insane', 'red').res, ['no word']);
+  assert.deepEqual(await comment('a21', 'AI', 'red').res, ['sent']);
+  // pinned, and its caption asks for nothing: the word of its page (HOUSE for City, TOWERS for a reel added by hand)
+  assert.deepEqual(await comment('a22', '😍', 'city1').res, ['no word']);
+  assert.deepEqual(await comment('a22', 'house', 'city1').res, ['sent']);
+  assert.deepEqual(await comment('a23', 'yes please', 'newreel').res, ['no word']);
+  assert.deepEqual(await comment('a23', 'towers', 'newreel').res, ['sent']);
+  // posts outside the map are as before, on or off
+  assert.deepEqual(await comment('a24', 'wow').res, ['no word']);
+  assert.deepEqual(await comment('a24', 'project').res, ['sent']);
+  assert.deepEqual(await comment('a24', 'AI', 'client').res, ['no word']);
+  sent();
+  // on again
+  assert.deepEqual(await (await get(leadsPage, '/api/leads?key=k&action=any&value=on')).json(), { ok: true, anyComment: true });
+  assert.equal((await health()).anyComment, true);
+  assert.equal((await numbers()).anyComment, true);
+  c = comment('a25', 'so beautiful', 'towersreel');
+  assert.deepEqual(await c.res, ['sent']);
+  assert.equal(forComment(sent(), c.id).length, 2);
 });
 
 server.close();

@@ -51,6 +51,9 @@ const DEFAULT_WORDS = (process.env.IG_WORDS || 'BLUEPRINT,PROJECT,3D,AI,CLAUDE,D
 // leave everyone else alone; under posts without "Comment WORD" they can use the DM words too.
 // Empty = the bot answers everyone.
 const ONLY = new Set((process.env.IG_ONLY || '').split(',').map((w) => w.trim().replace(/^@/, '').toLowerCase()).filter(Boolean));
+// Our own account, by name: its comments and its replies under the reels are never answered (they are
+// already left out by the account's id; this is the second lock, now that every comment gets an answer).
+const OWN_NAMES = new Set((process.env.IG_USERNAME || 'omnyalab').split(',').map((w) => w.trim().replace(/^@/, '').toLowerCase()).filter(Boolean));
 // words that follow "comment" in a caption without being the keyword
 const NOT_WORDS = new Set(['BELOW', 'DOWN', 'HERE', 'THE', 'AND', 'FOR', 'TO', 'IF', 'YOUR', 'ME', 'US', 'SOTTO', 'QUI', 'LA', 'IL', 'WITH', 'NOW']);
 
@@ -128,6 +131,31 @@ export async function setMode(v) {
   textOnly = { at: 0, v: false };
   console.log(`[ig] mode set to ${v} from /api/leads`);
   return v;
+}
+
+// Every comment (Nico, 10/11/2026: "we always send everything in DM, even when they write something
+// else"). On, the default: under a post of the map every comment of another person gets the public
+// reply and the DM of that post, whatever it says. Off: only who writes the word, as with a keyword
+// on ManyChat. Changed without a deploy: /api/leads?key=…&action=any&value=on|off (kept in Redis, on
+// when nothing was ever set). Posts that are not in the map keep their rule either way: the word
+// their caption asks for, or nothing.
+let every = { at: 0, v: true };
+export async function anyComment() {
+  if (Date.now() - every.at > 15_000) {
+    try {
+      every = { at: Date.now(), v: (await kv.get('any')) !== 'off' };
+    } catch (e) {
+      console.warn('[ig] "every comment" switch not read, it stays as it was:', e.message); // never a reason to lose a comment
+    }
+  }
+  return every.v;
+}
+export async function setAnyComment(on) {
+  if (on) await kv.del('any');
+  else await kv.set('any', 'off', 400 * 86_400);
+  every = { at: Date.now(), v: !!on };
+  console.log(`[ig] every comment under a post of the map gets the answer: ${on ? 'ON' : 'OFF (only the word)'} (set from /api/leads)`);
+  return every.v;
 }
 
 // The whole round (gate) for a few people only, whatever the mode: for the screencast of the App
@@ -615,12 +643,25 @@ async function giveBlueprint(lead, afterDone, gate = false) {
 
 // ---------- comments: the line ----------
 
+/**
+ * The words of a post of the map while "every comment" is off: the ones its caption asks for and the
+ * ones of its page (TOWERS, BUILD, HOUSE); a post with neither takes the DM words (BLUEPRINT, AI, 3D…).
+ */
+const wordsOf = (post) => {
+  const w = [...new Set([...post.words, ...WORDS.filter((x) => x.dest === post.dest).map((x) => x.word)])];
+  return w.length ? w : DEFAULT_WORDS;
+};
+
 /** Whether this comment gets a DM: fills job.p with the post's destination, or says why not. */
 async function accept(job, info) {
   const post = resolvePost({ id: job.m, code: info.code, words: info.words, tower: info.tower }, await extraPosts());
-  // posts in the map answer any comment; the others only the word their caption asks for
+  // posts in the map answer any comment (unless "every comment" was switched off from /api/leads: then
+  // only their word); the others only the word their caption asks for
   // (a tester, under a post that asks for nothing, can use the DM words)
-  const named = post?.any ? matchWord(job.t, post.words) || post.words[0] || 'ANY' : matchWord(job.t, post ? post.words : ONLY.size ? DEFAULT_WORDS : []);
+  const named =
+    post?.any && (await anyComment())
+      ? matchWord(job.t, post.words) || post.words[0] || 'ANY'
+      : matchWord(job.t, post ? (post.any ? wordsOf(post) : post.words) : ONLY.size ? DEFAULT_WORDS : []);
   let word = named;
   const key = `once:${job.m}:${job.u}`;
   if (await inGate(job.n, job.u)) {
@@ -652,6 +693,7 @@ async function accept(job, info) {
 export async function onComment(ownId, v) {
   const from = v.from || {};
   if (!from.id || String(from.id) === String(ownId) || !v.id) return 'skip';
+  if (OWN_NAMES.has(String(from.username || '').toLowerCase())) return 'skip'; // our own comment or reply
   if (ONLY.size && !ONLY.has(String(from.id)) && !ONLY.has(String(from.username || '').toLowerCase())) return 'not tester';
   // Meta can deliver the same comment twice: the second one stops here
   if (!(await kv.once(`c:${v.id}`, 8 * 86_400))) return 'dup';
@@ -1106,6 +1148,7 @@ export async function health() {
     on: !(await isOff().catch(() => false)),
     flow: await getMode().catch(() => 'direct'), // direct = the link in the first DM, gate = button, follow check, link, comment = follow checked through comments
     linkAs: (await isPlain().catch(() => false)) ? 'text (Instagram refused the link button)' : 'button',
+    anyComment: await anyComment().catch(() => true), // true = every comment under a post of the map gets the answer, false = only the word
     gateFor: await gateFor().catch(() => []), // these usernames always get the whole round (for the review screencast)
     mode: ONLY.size ? `only testers: ${[...ONLY].join(', ')}` : 'everyone',
   };
