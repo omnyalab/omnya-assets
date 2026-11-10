@@ -57,7 +57,7 @@ Instagram frena le risposte che gli sembrano fatte in serie (è l'errore `code 2
 11. you got it, check your DMs 👇🏻
 12. all yours, I just sent it in DM 🙌🏻
 
-(Il nome della guida cambia con il reel; i reel 3D "KILLED" e "COOKED" tengono anche le loro tre frasi di prima, quindi ne hanno quattordici; City ne ha dieci sue, con la casa e la chiave.)
+(Il nome della guida cambia con il reel; i reel 3D "KILLED" e "COOKED" tengono anche le loro tre frasi di prima, quindi ne hanno quattordici; City ne ha dieci sue, con la casa e la chiave; FABLE ne ha dodici sue, che parlano del link: vedi "FABLE" più sotto.)
 
 **Come vengono scelte.** Non a caso: a turno. Per ogni reel il bot tiene un contatore su Redis (uno per le risposte pubbliche, uno per i DM, uno per le risposte con la città) e a ogni commento prende la frase successiva. Finito il giro delle dodici ricomincia con un ordine diverso, e la prima del giro nuovo non è mai l'ultima di quello prima: **sotto lo stesso reel la stessa frase non esce mai due volte di fila**, né in pubblico né nei DM. Se Redis per un momento non risponde il bot prende una frase a caso e va avanti: il conteggio non può mai fermare un commento. Un DM che fallisce e viene riprovato dice le stesse parole del primo tentativo.
 
@@ -174,7 +174,7 @@ Tutto in `api/_lib/ig-posts.js`. Vince la prima regola che trova:
    | Hold to build | `Dfh1ppmtT8t` | omnyalab.com/the-build-blueprint |
    | Omnya City Ep.1 | `DfXg47dtoyz` | link monouso della City |
 
-2. **la caption dice "Comment PAROLA"** e la parola è in `WORDS`: `TOWERS` → /the-towers-blueprint, `BUILD` → /the-build-blueprint, `HOUSE` → City. Il reel TOWERS dell'11/11 e quello del 12/11 passano di qui da soli, senza scrivere il loro codice da nessuna parte.
+2. **la caption dice "Comment PAROLA"** e la parola è una di quelle che il bot conosce. Quelle fisse, scritte nel codice (`WORDS`): `TOWERS` → /the-towers-blueprint, `BUILD` → /the-build-blueprint, `HOUSE` → City, `FABLE` → /fable. Poi quelle che registri tu senza deploy (vedi "Una parola nuova, senza deploy"). Il reel TOWERS dell'11/11 e quello del 12/11 passano di qui da soli, senza scrivere il loro codice da nessuna parte.
 3. la caption dice "Comment PAROLA" con un'altra parola: Tower Blueprint se la caption parla di una torre, Blueprint normale altrimenti, e solo a chi scrive quella parola (un errore di battitura è perdonato).
 4. niente di tutto questo (teaser per i clienti ecc.): il bot non risponde.
 
@@ -193,14 +193,88 @@ Chi resta fuori, sempre:
 
 La coda e il tetto dei 750 DM l'ora sono gli stessi: più commenti con risposta vuol dire solo che l'ora si riempie prima, e chi arriva dopo aspetta in coda e riceve più tardi.
 
-**Spegnerlo, senza deploy:** `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=any&value=off`, e `&value=on` per riaccenderlo. Vale entro 15 secondi e resta su Redis. Da spento i reel in mappa tornano a rispondere **solo a chi scrive la parola** (quella della caption, più `TOWERS`, `BUILD` o `HOUSE` se il reel porta a quelle pagine; errori di battitura perdonati), e chi aveva scritto altro può ancora scrivere la parola dopo. Lo stato si legge come `anyComment: true|false` in `&format=json` e nella salute, e in una riga della pagina di Nico.
+**Spegnerlo, senza deploy:** `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=any&value=off`, e `&value=on` per riaccenderlo. Vale entro 15 secondi e resta su Redis. Da spento i reel in mappa tornano a rispondere **solo a chi scrive la parola** (quella della caption, più `TOWERS`, `BUILD`, `HOUSE`, `FABLE` o una parola registrata se il reel porta a quelle pagine; errori di battitura perdonati), e chi aveva scritto altro può ancora scrivere la parola dopo. Lo stato si legge come `anyComment: true|false` in `&format=json` e nella salute, e in una riga della pagina di Nico.
 
 ### Aggiungere un reel
 
-- **Non serve fare niente** se la caption contiene `comment "TOWERS"`, `comment "BUILD"` o `comment "HOUSE"`.
-- **Subito, senza deploy**: apri `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=post&code=LINK-DEL-REEL&dest=towers` (in `code` va il link del reel o solo il codice; `dest` è uno tra `blueprint`, `tower`, `floors`, `film`, `build`, `towers`, `city`; senza `dest` lo toglie). Vale dal commento dopo.
+- **Non serve fare niente** se la caption contiene `comment "TOWERS"`, `comment "BUILD"`, `comment "HOUSE"`, `comment "FABLE"` o una parola che hai registrato.
+- **Dal telefono, appena pubblicato**: apri la pagina del bot e premi **Postato** (vedi "Postato" qui sotto). Non è obbligatorio, il reel funziona anche senza: serve a vedere scritto che il bot l'ha visto e a quale pagina l'ha collegato.
+- **Subito, senza deploy**: apri `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=post&code=LINK-DEL-REEL&dest=towers` (in `code` va il link del reel o solo il codice; `dest` è uno tra `blueprint`, `tower`, `floors`, `film`, `build`, `towers`, `city`, `fable`; senza `dest` lo toglie). Vale dal commento dopo.
 - **Per sempre**: una riga in `POSTS` dentro `api/_lib/ig-posts.js`, per esempio `{ code: 'DfXXXXXXXXX', dest: 'towers', note: 'Choose your view, 11/11' },` e push.
 - Una **pagina nuova** (un funnel nuovo): una serie di frasi in `ig-texts.js` con `funnel({ name, url, page })`, il nome aggiunto a `kinds`, una riga in `WORDS` o `POSTS`, e lo slug della pagina aggiunto alla prima regola di `vercel.json` (quella con `"key": "ig"`); la prova "vercel.json" avvisa se manca.
+
+### Una parola nuova, senza deploy
+
+Le destinazioni (le pagine con i loro testi) stanno nel codice; le **parole** invece si possono aggiungere da qui, in un attimo. Apri:
+
+`https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=word&word=PAROLA&dest=DESTINAZIONE`
+
+- `word` è la parola come la scrivi nella caption dopo "Comment": solo lettere e numeri, da 2 a 24, maiuscole o minuscole è uguale (`villa` diventa `VILLA`);
+- `dest` è una destinazione che esiste: `blueprint`, `tower`, `floors`, `film`, `build`, `towers`, `city`, `fable`;
+- `&dest=` vuoto **toglie** la parola.
+
+Da quel momento (entro 30 secondi) un reel con `Comment "PAROLA"` nella caption si collega da solo a quella pagina, esattamente come succede con TOWERS: risponde a ogni commento, con le frasi e il link di quella destinazione. La parola resta salvata su Redis come le altre impostazioni, e si vede in `&format=json` dentro `map.words`, accanto alle parole fisse, con scritto `"added": "from /api/leads"`; sulla pagina è nella riga grigia sotto i numeri ("parole che collegano un reel da sole").
+
+Tre cose sicure:
+
+- **le parole fisse vincono sempre**: `TOWERS`, `BUILD`, `HOUSE` e `FABLE` non si possono cambiare da qui (la risposta dice "fixed word"), e se un giorno finissero tra le registrate verrebbero ignorate;
+- un reel già fissato nella mappa per codice resta dov'è, qualunque parola abbia nella caption;
+- **se Redis non risponde** le parole fisse vanno avanti come sempre, perché stanno nel codice: non si rompe niente. Le parole registrate, in quel momento, sono quelle lette l'ultima volta (o nessuna, se il bot era appena partito), e vengono rilette dopo pochi secondi.
+
+Se la parola o la destinazione sono sbagliate la risposta è un errore con l'elenco delle destinazioni, e non cambia niente.
+
+### "Postato": il bottone sulla pagina del bot
+
+In cima alla pagina del bot c'è la riga **Reel di oggi** con il bottone **Postato**. Premilo dopo aver pubblicato il reel. Il bot:
+
+1. chiede a Instagram gli ultimi contenuti (in quel momento, senza aspettare i 10 minuti di memoria);
+2. prende **il reel più nuovo, se non ha più di 3 ore** (le foto e i caroselli non contano);
+3. legge la parola dalla caption (`Comment "PAROLA"`);
+4. se la parola è una di quelle che conosce (fisse o registrate), **fissa quel reel nella mappa** con la sua destinazione, come fa `action=post`.
+
+Poi scrive in chiaro, in cima alla pagina, com'è andata:
+
+| Cosa leggi | Cosa vuol dire |
+| --- | --- |
+| **Collegato: il reel … (parola FABLE, postato 4 min fa) porta a omnyalab.com/fable** | fatto |
+| **Il reel … era già collegato a …, non ho cambiato niente** | l'avevi già premuto, o il reel era già in mappa (anche messo a mano su un'altra pagina: non lo sposta mai) |
+| **Nessun reel nuovo: l'ultimo che Instagram mi dà (…) è di 5 ore fa…** | non trova un reel delle ultime 3 ore: se l'hai appena pubblicato aspetta un minuto e premi di nuovo |
+| **Il reel … c'è, ma nella caption manca la parola** | nella caption non c'è `Comment "PAROLA"`: correggi la caption e premi di nuovo |
+| **Il reel … chiede la parola XYZ, che non è registrata** | la parola non è tra quelle che il bot conosce: registrala con `action=word` e premi di nuovo |
+| **Instagram non mi ha dato i contenuti (…): non ho cambiato niente** | Meta non ha risposto: riprova tra un minuto |
+
+Premerlo due volte non fa danni: la seconda volta dice "era già collegato". La stessa cosa come chiamata, per l'app sul Mac: `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY&action=posted&format=json`, che risponde `{ "ok": true, "already": false, "reel": { "code", "permalink", "minutesAgo" }, "word": "FABLE", "dest": "fable", "page": "/fable", "say": "…" }`, oppure `{ "ok": false, "why": "no-reel" | "no-word" | "unknown-word" | "meta", "say": "…" }` (`say` è la frase in italiano che vedi sulla pagina).
+
+## FABLE: il link di Higgsfield (10/11)
+
+Il reel dice "Comment FABLE to get the link". La parola `FABLE` è fissa nel codice e porta alla destinazione `fable`, cioè alla pagina **omnyalab.com/fable**: in alto l'offerta di Higgsfield letta sulla loro home il 10/11 ("New users get unlimited generations in Claude through Higgsfield MCP") con il bottone "Get the Higgsfield offer" che apre il link affiliato di Nico in una scheda nuova, e sotto "Then build this with it" con la card del Tower Blueprint gratis (nome e mail), che manda a `/the-tower-blueprint/sent` come il funnel Tower. Il link nel DM è `https://www.omnyalab.com/fable?ig=<codice del reel>` e passa dal contatore dei clic come gli altri.
+
+Qui il bot parla del **link**, non del blueprint. Il tasto nel DM è **Get the link**. I cinque DM, a turno:
+
+1. Hey 🙌🏻 here’s the link 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week
+2. Here you go 🙌🏻 the link is right below, and follow @omnyalab so you catch the next one, we drop a new build every week
+3. Thanks for the comment 🫶🏻 the link is one tap away 👇🏻 follow @omnyalab so you catch the next one, there’s a new build every week
+4. Hey, got your comment 👀 the link is ready for you below, follow @omnyalab so you catch the next one, a new build drops every week
+5. As promised 🙌🏻 tap below for the link, and follow @omnyalab so you catch the next one, we post a new build every week
+
+Le dodici risposte pubbliche, a turno:
+
+1. sent 🙌🏻 the link is in your DMs
+2. Just sent it, check your DMs 👀
+3. Done! The link is in your DMs 🫶🏻
+4. Check your DMs, the link is there 🙌🏻
+5. Sent you a DM 👇🏻 the link is inside
+6. It’s in your inbox now 🙌🏻
+7. sent, the link is waiting in your DMs 🫶🏻
+8. just dropped the link in your DMs 👀
+9. on its way, check your DMs 🙌🏻
+10. the link just landed in your DMs 👀
+11. you got it, check your DMs 👇🏻
+12. all yours, I just sent the link in DM 🙌🏻
+
+Se il commento è una città ("Dubai") escono le frasi con la città, come sotto gli altri reel. Se il DM non può partire, sotto il commento esce "We can’t send you the link unless you send us a text, if you want it, just send us a text 🫶🏻".
+
+Quando Higgsfield cambia l'offerta va cambiata la riga in `src/pages/fable.astro` e quella della pagina dopo l'acquisto (`src/views/Thanks.astro`): nessuna delle due scrive durate o percentuali.
 
 ## Omnya City
 
@@ -258,7 +332,7 @@ Il link nel DM è quello della pagina con il post in coda, per esempio `https://
 
 ## Cosa guardare
 
-- **Pagina di Nico**: `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY` → contatti, commenti in coda, DM dell'ultima ora, errori dell'ultima ora, e per ogni post commenti, DM mandati, DM bloccati, link mandati, clic sul link. Con `&format=json` solo i numeri (dentro ci sono anche `on`, `mode` e `anyComment`).
+- **Pagina di Nico**: `https://www.omnyalab.com/api/leads?key=IG_ADMIN_KEY` → in cima la riga "Reel di oggi" con il bottone **Postato**, poi contatti, commenti in coda, DM dell'ultima ora, errori dell'ultima ora, e per ogni post commenti, DM mandati, DM bloccati, link mandati, clic sul link. Con `&format=json` solo i numeri (dentro ci sono anche `on`, `mode` e `anyComment`).
 - **Salute**: `https://www.omnyalab.com/api/instagram?health=IG_ADMIN_KEY` → `on` (acceso o spento), `flow` (`direct`, `gate` o `comment`), `anyComment` (`true` = sui reel in mappa risponde a ogni commento, `false` = solo alla parola), `followProbe` (la sonda del follow), `gateFor` (chi riceve sempre il giro completo), `linkAs` (il link va sul tasto o nel testo), `mode` (tutti o solo i tester), `token` (valido, quale Pagina e quale Instagram), `webhook` (i campi accesi sulla Pagina e sull'app, e in `missing` quelli che mancano tra `comments`, `messages`, `messaging_postbacks`), `lastComment` (l'ultimo commento arrivato, anche se non ha avuto risposta: è la prova che il webhook è acceso), `line` (coda, DM dell'ultima ora, eventuale fermo), `errors` (ultima ora e gli ultimi cinque), `map` (i post e le parole).
 - **Log**: Vercel → Logs → cerca `[ig]`; gli errori sono le righe `[ig] ERROR`. Nessun errore di Meta passa in silenzio: ognuno ha la sua riga con il codice (per esempio `[code 100 sub 2534037]` = la chat è ancora di un'altra app) e finisce nel contatore.
 
@@ -268,6 +342,8 @@ Il link nel DM è quello della pagina con il post in coda, per esempio `https://
 | --- | --- |
 | `/api/leads?key=…` | la pagina |
 | `/api/leads?key=…&action=post&code=…&dest=…` | aggiunge un reel alla mappa, subito |
+| `/api/leads?key=…&action=word&word=…&dest=…` | registra una parola: i reel con `Comment "PAROLA"` vanno da soli a quella destinazione (`&dest=` vuoto la toglie) |
+| `/api/leads?key=…&action=posted` | il bottone **Postato**: collega il reel appena pubblicato alla pagina della sua parola e dice com'è andata (`&format=json` per l'app) |
 | `/api/leads?key=…&action=mode&value=direct` | il primo DM ha già il link (default) |
 | `/api/leads?key=…&action=mode&value=gate` | (non si usa) giro completo: tasto, controllo del follow, link |
 | `/api/leads?key=…&action=mode&value=comment` | (non si usa) cancello a commenti: prima il follow, poi "comment DONE", poi il link |
