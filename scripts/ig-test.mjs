@@ -459,10 +459,10 @@ if (REDIS_RUN) {
     }
     for (let i = 1; i < 14; i++) {
       assert.notEqual(replies[i], replies[i - 1]);
-      assert.notEqual(dms[i], dms[i - 1]);
+      // 11/11 (Nico): one DM wording for everyone, so only the public replies change from one to the next
     }
     assert.equal(new Set(replies).size, 12);
-    assert.equal(new Set(dms).size, 5);
+    assert.equal(new Set(dms).size, 1);
     for (const r of replies) assert.ok(tw.publicReplies.includes(r));
     for (const d of dms) assert.ok(tw.direct.texts.includes(d) && /follow @omnyalab so you catch the next one/.test(d));
     // a city: its own lines in the public reply, the usual DM
@@ -2014,8 +2014,8 @@ await step('ten or more public replies and five DMs for every page: short, one e
       assert.doesNotMatch(line, /\bAI\b|before it.?s built|free image|first image|isn.?t real|—/i, line);
       assert.doesNotMatch(line, /https?:|omnyalab\.com/, line); // never a link in public
     }
-    assert.equal(t.direct.texts.length, 5, dest);
-    assert.equal(new Set(t.direct.texts).size, 5, dest);
+    assert.equal(t.direct.texts.length, dest === 'city' || dest === 'fable' ? 5 : 1, dest);
+    assert.equal(new Set(t.direct.texts).size, t.direct.texts.length, dest);
     assert.equal(t.direct.texts[0], t.direct.text);
     for (const w of t.direct.texts) {
       // the follow is written in every wording, and nothing in it makes it a condition
@@ -2049,7 +2049,7 @@ await step('the lines are taken in turn: never the same twice in a row, every li
   for (const bad of [NaN, -3, undefined, 2.7, 1e9, Infinity]) assert.ok(twelve.includes(ig.lineAt(twelve, bad, 'x')), String(bad));
 });
 
-await step('under the same reel: 40 comments, no public reply and no DM twice in a row, all twelve replies and all five DMs used', async () => {
+await step('under the same reel: 40 comments, no public reply twice in a row, all twelve replies used, the one DM wording', async () => {
   ahead += 2 * 3_600_000;
   await flushDue();
   await get(leadsPage, '/api/leads?key=k&action=mode&value=direct');
@@ -2058,10 +2058,9 @@ await step('under the same reel: 40 comments, no public reply and no DM twice in
   const replies = got.map((g) => g.reply);
   const dms = got.map((g) => g.said);
   noTwiceInARow(replies, 'public reply');
-  noTwiceInARow(dms, 'DM');
   for (const r of replies) assert.ok(tw.publicReplies.includes(r), r);
   assert.equal(new Set(replies).size, 12); // every wording came out
-  assert.equal(new Set(dms).size, 5);
+  assert.equal(new Set(dms).size, 1); // one DM wording (Nico 11/11)
   for (const g of got) {
     assert.ok(isDirect(tw, g.said));
     assert.deepEqual(g.dm.body.message.attachment.payload.buttons, [{ type: 'web_url', title: 'Get the Blueprint', url: 'https://www.omnyalab.com/the-towers-blueprint?ig=DfTOWERS22' }]); // the same button under every wording
