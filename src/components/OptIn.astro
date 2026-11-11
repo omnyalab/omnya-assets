@@ -66,7 +66,7 @@ const next = after || `/${slug}/sent`;
      with `allset` (Towers, 11/11) "You're all set" and the Full offer instead -->
 {allset ? (
 <div class="oil oil--as" hidden data-oil data-as>
-  <AllSetOffer next={next} hero={heroMobile} kind={theme === 'c1' ? 'build' : 'towers'} />
+  <AllSetOffer next={next} hero={heroMobile} kind={slug === 'the-build-blueprint' ? 'build' : slug === 'the-tower-blueprint' ? 'tower' : 'towers'} />
 </div>
 ) : (
 <div class="oil" hidden data-oil>
@@ -171,9 +171,7 @@ const next = after || `/${slug}/sent`;
         var t0 = Date.now();
         sent.then(function (ok) {
           if (!ok) {
-            if (next.charAt(0) !== '#') next = next + '#nomail';
-            oil.querySelectorAll('[data-oil-go]').forEach(function (a) { a.setAttribute('href', next); });
-            // no email went: the receipt says the blueprint is ready and opens next, not that it was delivered
+            // the buttons go straight to Stripe (O3), nothing to change there; no email went: the receipt says the blueprint is ready and opens next, not that it was delivered
             var rt = oil.querySelector('[data-aso-rt]'); if (rt) rt.innerHTML = 'Your <u>FREE</u> blueprint is ready';
             var to = oil.querySelector('[data-aso-to]'); if (to) to.textContent = 'It opens on the next page';
             var kb = oil.querySelector('.vk .b'); if (kb) kb.textContent = '✓ FREE blueprint ready';
@@ -183,7 +181,7 @@ const next = after || `/${slug}/sent`;
             // 11/11 night (Nico, A1): about 4 s of the envelope, then 3 s of "Your FREE blueprint arrived", then the offer
             T(function () { aso.classList.add('s2', 'play'); }, 3000);
             T(function () { aso.classList.add('s3'); }, 4000);
-            T(function () { if (!oil.hidden) go(next); }, 3000 + 15000);
+            // O3 (11/11 late): the choices are all here now, so no automatic move to the old /sent page
           }, Math.max(0, 4200 - (Date.now() - t0)));
         });
         return;

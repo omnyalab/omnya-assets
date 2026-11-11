@@ -13,39 +13,29 @@
 // ("Sending your FREE blueprint…", about 4 s), then a big green check, "You're all set, <name>" and the green receipt
 // "Your FREE blueprint arrived · Delivered to <email>" (3 s); then the title closes, the receipt stays on top, the line
 // "Now get every prompt, word for word ↓" and the offer come in, and "No thanks, I'm good with the free one" is in sight.
+// 11/11 late (Nico, board "Offerta unita", O3): no prices page in between any more. Under the price the button for
+// the Full goes straight to Stripe (/go/full-…), then "or go bigger, only here" with two boxes, + the 3D scene (€17.99,
+// Towers only: the Full + "The Towers Scene File" in one Stripe link) and Everything we teach (€59, with the yellow pill
+// "This guide is inside"); the table free against Full is gone. Also on /the-tower-blueprint (kind "tower").
 interface Props {
-  next: string; // the /sent page
+  next: string; // the old /sent page (no longer linked from here, kept for the pages that pass it)
   hero: string; // the blurred photo behind
-  kind?: 'towers' | 'build';
+  kind?: 'towers' | 'build' | 'tower';
 }
-const { next, hero, kind = 'towers' } = Astro.props;
+const { hero, kind = 'towers' } = Astro.props;
 const isBuild = kind === 'build';
-const bookSrc = isBuild ? '/learn/bd_book_tight.webp' : '/learn/tt_book_tight.webp';
-const bookAlt = isBuild ? 'The Full Build Blueprint' : 'The Full Towers Blueprint';
-const freeSrc = isBuild ? '/learn/bd_cover_book.webp' : '/learn/tt_cover_book.webp'; // the FREE blueprint's own cover
+const K = {
+  towers: { book: '/learn/tt_book_tight.webp', alt: 'The Full Towers Blueprint', free: '/learn/tt_cover_book.webp', full: '/go/full-towers', scene: '/go/full-towers-scene' },
+  build: { book: '/learn/bd_book_tight.webp', alt: 'The Full Build Blueprint', free: '/learn/bd_cover_book.webp', full: '/go/full-build', scene: '' },
+  tower: { book: '/learn/tw_book.webp', alt: 'The Full Tower Blueprint', free: '/learn/tw_cover_free.webp', full: '/go/full-tower', scene: '' },
+}[kind];
+const bookSrc = K.book, bookAlt = K.alt, freeSrc = K.free; // freeSrc: the FREE blueprint's own cover
 const ard = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15M5.5 12.5L12 19l6.5-6.5"/></svg>';
 const burst = Array.from({ length: 44 }, (_, i) => {
   const r = i % 2 === 0 ? 50 : 43, a = (Math.PI * i) / 22;
   return `${(50 + r * Math.cos(a)).toFixed(1)},${(50 + r * Math.sin(a)).toFixed(1)}`;
 }).join(' ');
 const ck = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 12.4l3.9 3.9 7.7-8.1"/></svg>';
-const xx = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.6 7.6l8.8 8.8M16.4 7.6l-8.8 8.8"/></svg>';
-const Y = `<i class="aso-ic aso-ic--y">${ck}</i>`, N = `<i class="aso-ic aso-ic--n">${xx}</i>`;
-const rows: [string, string, string][] = isBuild ? [
-  ['The 5-step method', Y, Y],
-  ['Prompts for 9 phases + clips', '<span class="aso-tx aso-tx--d">1</span>', '<span class="aso-tx">All</span>'],
-  ['The 3D house code', N, Y],
-  ['The hold to build page', N, Y],
-  ['Light frames for phones', N, Y],
-  ['What to charge the client', N, Y],
-] : [
-  ['The 5-step method', Y, Y],
-  ['Prompts for 6 views + 6 clips', '<span class="aso-tx aso-tx--d">1</span>', '<span class="aso-tx">All</span>'],
-  ['The 3D scene code', N, Y],
-  ['The choose your view page', N, Y],
-  ['Fog + seamless loop', N, Y],
-  ['What to charge the client', N, Y],
-];
 ---
 
 <div class={`aso${isBuild ? ' aso--c1' : ''}`} data-aso style={`--aso-hero:url(${hero})`}>
@@ -84,12 +74,16 @@ const rows: [string, string, string][] = isBuild ? [
                 <span class="aso-sv">You save €23, only here</span>
               </div>
             </div>
-            <div class="aso-tb">
-              <div class="aso-tb__full" aria-hidden="true"></div>
-              <div class="aso-tr aso-th"><span>What you get</span><span class="c">Free</span><span class="c">Full<small>€5.99</small></span></div>
-              {rows.map(([a, b, c], i) => <div class="aso-tr" style={`--i:${i}`}><span>{a}</span><span class="c" set:html={b} /><span class="c" set:html={c} /></div>)}
+            <div class="po po3">
+              <a class="aso-cta" data-oil-go data-astro-reload href={K.full}><b>Get the full one · €5.99 →</b></a>
+              <p class="po-or"><span>or go bigger, only here</span></p>
+              <div class={`po-tl${K.scene ? '' : ' po-tl--one'}`}>
+                {K.scene && (
+                  <a class="po-tile" data-astro-reload href={K.scene}><img class="po-tile__im" src="/learn/tt_scene_preview.webp" alt="The Towers Scene File open in the browser" width="800" height="450" /><b>+ The 3D scene</b><small>the Full + the scene file</small><strong>€17.99</strong></a>
+                )}
+                <a class="po-tile po-tile--all" data-astro-reload href="/go/everything"><span class="po-in">★ This guide is inside</span><span class="po-cv"><img src="/learn/pk_pb01.webp" alt="" /><img src="/learn/pk_pb02.webp" alt="" /><img src="/learn/pk_pb03.webp" alt="" /></span><b>Everything we teach</b><small>4 Full guides + 3 playbooks</small><strong>€59 <s>€190</s></strong></a>
+              </div>
             </div>
-            <a class="aso-cta" data-oil-go data-astro-reload href={next}><b>Get the full one · €5.99 →</b></a>
           </div>
           <button type="button" class="aso-no" data-oil-skip>No thanks, I'm good with the free one</button>
         </div>
@@ -142,24 +136,6 @@ const rows: [string, string, string][] = isBuild ? [
 .aso-stk__t small{font-size:10px;font-weight:900;letter-spacing:.12em;margin-top:4px}
 .aso-stk__t em{font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.14em;margin-bottom:3px}
 
-.aso-tb{position:relative;border-radius:18px;background:#05070a8c;border:1px solid var(--line);overflow:hidden}
-.aso-tb__full{position:absolute;top:0;bottom:0;right:0;width:72px;background:linear-gradient(180deg,rgb(var(--ac) / .25),rgb(var(--ac) / .08));border-left:1.5px solid rgb(var(--ac));box-shadow:inset 0 0 30px rgb(var(--ac) / .19)}
-.aso-tr{position:relative;display:grid;grid-template-columns:1fr 46px 72px;align-items:center;min-height:31px}
-.aso-tr+.aso-tr{border-top:1px solid #ffffff12}
-.aso-tr>span{padding:6px;font-size:11px}
-.aso-tr>span:first-child{padding-left:11px;line-height:1.3;color:#ffffffd6;font-weight:600;white-space:nowrap}
-.aso-tr .c{text-align:center;font-weight:900;display:flex;justify-content:center}
-.aso-th>span{font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--dim);padding-block:7px}
-.aso-th .c{flex-direction:column;align-items:center}
-.aso-th .c:last-child{color:#fff}
-.aso-th .c:last-child small{display:block;font-size:14px;letter-spacing:-.01em;margin-top:2px}
-.aso-ic{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;line-height:0}
-.aso-ic svg{width:12px;height:12px;display:block;fill:none;stroke:currentColor;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
-.aso-ic--y{background:var(--yes);color:#04210f}
-.aso-ic--n{background:#ff453a26;color:var(--no)}
-.aso-ic--n svg{stroke-width:3}
-.aso-tx{font-size:11px;font-weight:800}
-.aso-tx--d{color:var(--dim)}
 
 .aso-cta{position:relative;display:flex;align-items:center;justify-content:center;min-height:58px;padding:10px 18px;border-radius:999px;text-decoration:none;color:#fff;background:linear-gradient(180deg,var(--cta1),var(--cta2));box-shadow:0 18px 40px -12px rgb(var(--ac) / .8),inset 0 1px 0 #ffffff55;overflow:hidden}
 .aso-cta b{font-size:16px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
@@ -170,7 +146,7 @@ const rows: [string, string, string][] = isBuild ? [
 @media (max-height:700px){
   .vA-st{height:140px}.vA-in{zoom:.85}
   .aso-hi__t{font-size:30px}.aso:not(.s2) .aso-hi__t{font-size:40px}
-  .aso-tr{min-height:28px}.aso-card{gap:9px;padding-block:12px}
+  .aso-card{gap:9px;padding-block:12px}
   .aso-bk{width:88px}.aso-deal{grid-template-columns:96px 1fr}
   .aso-stk{width:84px;height:84px}.aso-stk__t b{font-size:24px}
 }
@@ -187,12 +163,7 @@ const rows: [string, string, string][] = isBuild ? [
   .aso-pr{justify-content:center}
   .aso-pr__new{font-size:66px}
   .aso-pr__old{font-size:30px;margin-bottom:6px}
-  .aso-tb{grid-column:2;grid-row:1}
   .aso-cta{grid-column:2;grid-row:2}
-  .aso-tr{grid-template-columns:1fr 70px 110px;min-height:38px}
-  .aso-tb__full{width:110px}
-  .aso-tr>span{font-size:13.5px}
-  .aso-th>span{font-size:9.5px;padding-block:10px}
 }
 
 /* the timing: s1 at once, sent when the email went, s2 + play opens the offer, s3 lets the sticker out */
@@ -203,9 +174,6 @@ const rows: [string, string, string][] = isBuild ? [
 .aso.play .aso-pr__old::after{animation:aso-strike .35s ease-out 1.9s both}
 .aso.play .aso-pr__new{animation:aso-pricepop .55s cubic-bezier(.3,1.6,.5,1) 2.05s both}
 .aso.play .aso-sv{animation:aso-up .4s ease-out 2.25s both}
-.aso.play .aso-tb{animation:aso-up .5s ease-out 2.2s both}
-.aso.play .aso-tr{animation:aso-rowin .4s ease-out both;animation-delay:calc(2.35s + var(--i,0) * .1s)}
-.aso.play .aso-tr .aso-ic--y{animation:aso-pop .35s cubic-bezier(.3,1.7,.5,1) both;animation-delay:calc(2.45s + var(--i,0) * .1s)}
 .aso.play .aso-cta{animation:aso-up .5s cubic-bezier(.2,.8,.2,1) 2.9s both,aso-breathe 2.2s ease-in-out 3.5s infinite}
 .aso.play .aso-no{animation:aso-fade .5s ease-out 3.1s both}
 @keyframes aso-up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
@@ -310,4 +278,38 @@ const rows: [string, string, string][] = isBuild ? [
 .aso.s2 .v .vfr{margin-top:0}
 @container (min-width:760px){.vbr p{font-size:20px}}
 @media (prefers-reduced-motion:reduce){.aso.sent .vA-env{opacity:0}.aso.sent .vA-ok{opacity:1;transform:none}.aso.sent .vA-ok svg{stroke-dashoffset:0}.aso.s1 .vA-pdf{transform:none}.aso.s1 .vA-flap2{transform:none}}
+
+/* O3 (Nico 11/11 late): the Full button, then "or go bigger" with the scene and Everything */
+.po{display:flex;flex-direction:column;gap:8px}
+.po3 .aso-cta{margin-top:28px}
+.po-or{margin:4px 0 0;display:flex;align-items:center;gap:10px;font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.po-or::before,.po-or::after{content:"";flex:1;height:1px;background:var(--line)}
+.po-tl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.po-tl--one{grid-template-columns:1fr}
+.po-tile{position:relative;display:flex;flex-direction:column;gap:4px;padding:10px;border-radius:16px;text-decoration:none;color:#fff;background:#05070a8c;border:1.5px solid rgb(var(--ac) / .45);text-align:left}
+.po-tile__im{width:100%;height:auto;aspect-ratio:16/8;object-fit:cover;border-radius:9px;margin-bottom:2px}
+.po-tile b{font-size:13px;font-weight:900;line-height:1.15}
+.po-tile small{font-size:10.5px;color:var(--mute);font-weight:600}
+.po-tile strong{margin-top:auto;padding-top:4px;font-size:17px;font-weight:900;white-space:nowrap;line-height:1}
+.po-tile strong s{font-size:12px;color:var(--dim);font-weight:700;margin-left:4px}
+.po-tile--all{border-color:#ffd60a99;background:linear-gradient(180deg,#ffd60a1a,#05070a8c)}
+.po-tile--all strong{color:#ffd60a}
+.po-in{position:absolute;left:10px;top:-10px;z-index:1;font-size:9.5px;font-weight:900;letter-spacing:.02em;color:#111;background:#ffd60a;padding:3px 8px;border-radius:999px;white-space:nowrap;box-shadow:0 4px 10px #0008,0 0 14px -2px #ffd60a99}
+.po-cv{display:flex;flex:none;padding:10px 0 4px 4px}
+.po-cv img{width:34px;height:auto;border-radius:3px;box-shadow:0 3px 8px #000a;transform:rotate(-6deg)}
+.po-cv img+img{margin-left:-9px;transform:rotate(0)}.po-cv img+img+img{transform:rotate(6deg)}
+.po-tl--one .po-tile--all{display:grid;grid-template-columns:auto 1fr auto;column-gap:12px;row-gap:2px;align-items:center;min-width:0;padding-top:18px}
+.po-tl--one .po-tile--all .po-cv{grid-column:1;grid-row:1/3;padding:4px 0 0 4px}
+.po-tl--one .po-tile--all b{grid-column:2;grid-row:1;align-self:end}
+.po-tl--one .po-tile--all small{grid-column:2;grid-row:2;align-self:start}
+.po-tl--one .po-tile--all strong{grid-column:3;grid-row:1/3;margin:0;padding:0;text-align:right}
+.po-tl--one .po-tile--all strong s{display:block;margin:3px 0 0}
+.aso.play .po-or,.aso.play .po-tl{animation:aso-up .55s cubic-bezier(.2,.8,.2,1) 2.2s both}
+/* a tall free cover (the Tower one is 9:16) takes the same shape as the others, its top showing */
+.vA-pdf,.vfr-cv img{aspect-ratio:600/825;object-fit:cover;object-position:top}
+@container (min-width:760px){
+  .po{grid-column:2;grid-row:1/3;align-self:center}
+  .po3 .aso-cta{margin-top:0}
+  .po-tile b{font-size:15px}.po-tile small{font-size:12px}
+}
 </style>
