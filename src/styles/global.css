@@ -3098,3 +3098,17 @@ button.pinfo { vertical-align: middle; position: relative; top: -0.06em; }
   .plist .i3card[data-slot='0'] { grid-column: 1 / span 7; }
   .plist .i3card[data-slot='1'] { grid-column: 9 / span 4; margin-top: 24vh; }
 }
+
+/* 11/11 (a buyer did not find the PDF under the offer): the download is the first thing on the page after a payment,
+   a white card right under the steps, with big buttons; the offer comes after it */
+html[data-page='thanks'] .oto-dl {
+  margin-top: clamp(20px, 3vw, 32px); padding: clamp(22px, 3vw, 34px); border: 0; border-radius: 24px;
+  background: #fff; box-shadow: 0 30px 60px -36px rgba(120, 80, 60, 0.45), 0 0 0 2px #1f6b35 inset;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
+}
+html[data-page='thanks'] .oto-dl [data-dl-text], html[data-page='thanks'] .oto-dl > .t-sub { margin: 0; font-size: clamp(1.15rem, 2.2vw, 1.5rem); font-weight: 600; letter-spacing: -0.02em; color: #111; }
+html[data-page='thanks'] .oto-dl [data-dl-text]::before, html[data-page='thanks'] .oto-dl > .t-sub::before { content: '✓'; display: inline-grid; place-items: center; width: 28px; height: 28px; margin-right: 10px; border-radius: 50%; background: #1f6b35; color: #fff; font-size: 15px; vertical-align: 2px; }
+html[data-page='thanks'] .oto-dl__btns .btn { min-height: 52px; }
+html[data-page='thanks'] .oto-dl__btns .btn--fill { background: #1f6b35; border-color: #1f6b35; }
+html[data-page='thanks'] .oto-dl__note { flex: none; }
+.oto-hf { padding-block: 0 var(--section); }
