@@ -9,6 +9,7 @@
 // omnya-optin-<free>): only then /go/<free> opens the PDF, otherwise it comes back to this card (views/Go.astro).
 import '../styles/optin.css';
 import '../styles/optin-build.css';
+import AllSetOffer from './AllSetOffer.astro';
 
 interface Props {
   slug: string; // the funnel page, e.g. the-tower-blueprint
@@ -31,10 +32,12 @@ interface Props {
   // on 9/11); the Tower pages say the views of the tower reel (143,479). Change the number only with a real one.
   after?: string; // 10/11: where "Have a look" goes after the email is sent, when the funnel has no /sent page
   // (the City page: "#full", the card goes away and the page shows the Full guide)
+  allset?: boolean; // 11/11 (Nico, Towers board A): after the form, "You're all set" alone and then the Full offer under it
+  // (components/AllSetOffer.astro) instead of the loading steps and the "Have a look" line
   inline?: boolean; // 10/11 (Nico, /fable): the card sits in the page, under something else, instead of covering it: the
   // page scrolls, the card is not a dialog and never moves or shrinks to fit the screen (styles/optin.css, .oi--inline)
 }
-const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, fade, after, landing, inline, proof = '371 people asked for a blueprint in 4 days' } = Astro.props;
+const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, fade, after, landing, inline, allset, proof = '371 people asked for a blueprint in 4 days' } = Astro.props;
 const next = after || `/${slug}/sent`;
 ---
 
@@ -59,7 +62,13 @@ const next = after || `/${slug}/sent`;
   </div>
 </div>
 
-<!-- After "Send me the blueprint": the loading steps, then the gentle line about the course (K1, 7/11) -->
+<!-- After "Send me the blueprint": the loading steps, then the gentle line about the course (K1, 7/11);
+     with `allset` (Towers, 11/11) "You're all set" and the Full offer instead -->
+{allset ? (
+<div class="oil oil--as" hidden data-oil data-as>
+  <AllSetOffer next={next} hero={heroMobile} />
+</div>
+) : (
 <div class="oil" hidden data-oil>
   <div class="oil__bg"></div>
   <div class="oil__in">
@@ -83,6 +92,7 @@ const next = after || `/${slug}/sent`;
     </div>
   </div>
 </div>
+)}
 
 <script is:inline>
   (function () {
@@ -147,6 +157,25 @@ const next = after || `/${slug}/sent`;
       var fbp = (document.cookie.match(/(?:^|; )_fbp=([^;]+)/) || [])[1] || '';
       var sent = fetch('/api/optin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, free: free, page: slug, company: form.elements.company.value, k: new URLSearchParams(location.search).get('k') || '', cv: 'v3', nl: form.elements.nl.checked, ads: ads, eid: eid, fbp: ads ? fbp : '' }) })
         .then(function (r) { return r.ok; }).catch(function () { return false; });
+      // 11/11 Towers (AllSetOffer): "You're all set" at once, "Delivered" once the email went, then the offer opens
+      var aso = oil.querySelector('[data-aso]');
+      if (aso) {
+        oil.querySelector('[data-oil-nm]').innerHTML = ', <span></span>';
+        oil.querySelector('[data-oil-nm] span').textContent = name.split(' ')[0];
+        oil.querySelectorAll('[data-aso-em]').forEach(function (x) { x.textContent = email; });
+        oil.hidden = false; aso.classList.add('s1');
+        var t0 = Date.now();
+        sent.then(function (ok) {
+          if (!ok) { location.href = '/go/' + free; return; }
+          T(function () {
+            aso.classList.add('sent');
+            T(function () { aso.classList.add('s2', 'play'); }, 1100);
+            T(function () { aso.classList.add('s3'); }, 2100);
+            T(function () { if (!oil.hidden) go(next); }, 1100 + 15000);
+          }, Math.max(0, 3600 - (Date.now() - t0)));
+        });
+        return;
+      }
       oil.querySelector('[data-oil-em]').textContent = 'to ' + email;
       oil.querySelector('[data-oil-nm]').textContent = ', ' + name.split(' ')[0];
       oil.hidden = false;
