@@ -171,7 +171,7 @@ const next = after || `/${slug}/sent`;
         var t0 = Date.now();
         sent.then(function (ok) {
           if (!ok) {
-            next = next + '#nomail';
+            if (next.charAt(0) !== '#') next = next + '#nomail';
             oil.querySelectorAll('[data-oil-go]').forEach(function (a) { a.setAttribute('href', next); });
             var hp = oil.querySelector('.aso-hi__p'); if (hp) hp.innerHTML = 'Your <b>free blueprint</b> is ready';
             var hm = oil.querySelector('.aso-hm'); if (hm) hm.style.display = 'none';
@@ -195,7 +195,7 @@ const next = after || `/${slug}/sent`;
       // "Sent" only once the server said the email went out; if it didn't, the PDF opens right away
       T(function () {
         sent.then(function (ok) {
-          if (!ok) { next = next + '#nomail'; var gb = oil.querySelector('[data-oil-go]'); if (gb) gb.setAttribute('href', next); }
+          if (!ok && next.charAt(0) !== '#') { next = next + '#nomail'; var gb = oil.querySelector('[data-oil-go]'); if (gb) gb.setAttribute('href', next); }
           st(2).classList.add('is-done');
           T(function () { st(2).classList.add('is-out'); }, 700);
           T(function () { st(3).classList.add('is-in'); }, 1000);
