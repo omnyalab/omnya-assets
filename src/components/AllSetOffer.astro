@@ -81,7 +81,7 @@ const rows: [string, string, string][] = [
 .aso__bg{position:absolute;inset:-30px;background:var(--aso-hero) center 30%/cover;filter:blur(22px) saturate(1.2);opacity:.55;transform:scale(1.1)}
 .aso__bg::after{content:"";position:absolute;inset:0;background:radial-gradient(90% 60% at 50% 28%,#1a4fa0aa 0%,#0a1a33cc 45%,#05070af2 80%)}
 .aso__sc{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.aso__in{position:relative;min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:11px;padding:max(22px,env(safe-area-inset-top)) 16px max(18px,env(safe-area-inset-bottom));max-width:460px;margin:0 auto}
+.aso__in{position:relative;min-height:100%;display:flex;flex-direction:column;justify-content:center;gap:11px;padding:max(22px,env(safe-area-inset-top)) 16px calc(max(18px,env(safe-area-inset-bottom)) + var(--ocb,0px));max-width:460px;margin:0 auto}
 .aso-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
 .aso-hi{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}
