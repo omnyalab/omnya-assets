@@ -149,7 +149,7 @@ function paidFiles() {
   text.textContent = text.dataset.checking!;
   fetch(`/api/files?session_id=${encodeURIComponent(id)}&lang=${box.dataset.dl}`)
     .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-    .then((j: { files?: { name: string; href: string; kind?: string }[]; pack?: boolean }) => {
+    .then((j: { files?: { name: string; href: string; kind?: string }[]; pack?: boolean; email?: string }) => {
       const files = (j.files || []).filter((f) => f.href.startsWith('/api/file?'));
       if (!files.length) return closed();
       // step 2 (10/11): the upgrade to the pack shows only now, with the payment confirmed, and not to who paid for the pack
@@ -164,6 +164,13 @@ function paidFiles() {
         a.href = f.href;
         a.querySelector('span')!.textContent = f.kind === 'zip' ? `${f.name} · zip` : f.name;
         btns.append(a);
+      }
+      // 11/11: where the copy by email went, so a wrong address or a mail in spam is found here and not days later
+      if (j.email && text.dataset.sentNote) {
+        const sent = document.createElement('p');
+        sent.className = 'oto-dl__note';
+        sent.textContent = text.dataset.sentNote.replace('{email}', j.email);
+        btns.after(sent);
       }
       // the line that says what the scene file is: added here, under the buttons, only for who has the scene
       if (scene && text.dataset.sceneNote) {

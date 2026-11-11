@@ -8,6 +8,7 @@
 // GET ?key=IG_ADMIN_KEY → a fresh 30-day link for every file (the PDFs and the Towers scene zip), as text: for Nico, to answer a buyer by hand.
 import Stripe from 'stripe';
 import { filesForProduct, allFiles, signedHref, isPack, PAGE_TTL, DAY } from './_lib/learn-files.js';
+import { fixEmail } from './_lib/mail-fix.js';
 
 const SITE = 'https://www.omnyalab.com';
 const DAYS = 30;
@@ -44,7 +45,9 @@ export async function GET(request) {
     const files = filesForProduct(names, { ttl: PAGE_TTL, lang: q.get('lang') === 'it' ? 'it' : 'en' });
     // pack: this payment already holds "Everything we teach" (any of its prices), so the page does not offer the upgrade
     // kind: 'zip' only on the Towers scene file (10/11), so the page can say what it is; the PDFs are as before
-    return json({ files: files.map((f) => ({ name: f.name, href: f.href, ...(f.kind ? { kind: f.kind } : {}) })), pack: names.some(isPack) });
+    // email (11/11): the address the copy went to (the same one the webhook writes to), so the page can show it and a
+    // buyer who typed it wrong sees it now. Only who holds the session id of the payment gets here
+    return json({ files: files.map((f) => ({ name: f.name, href: f.href, ...(f.kind ? { kind: f.kind } : {}) })), pack: names.some(isPack), email: fixEmail(session.customer_details?.email) || '' });
   } catch (e) {
     console.error('[files]', e.message);
     return json({ error: 'could not check' }, e.statusCode === 404 ? 404 : 502);

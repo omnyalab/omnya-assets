@@ -10,6 +10,7 @@ import { everythingUpgrade } from './_lib/learn-upgrade.js';
 import { host } from './_lib/config.js';
 import { upgrade, placeBid } from './_lib/city.js';
 import { metaEvent } from './_lib/meta.js';
+import { fixEmail } from './_lib/mail-fix.js';
 import { noteSale } from './_lib/centrale-sales.js';
 
 // Omnya City upsell (6/11/2026): these products move the buyer (client_reference_id = username, dots sent as dashes).
@@ -109,7 +110,8 @@ export async function POST(request) {
     return new Response('ok');
   }
 
-  const email = session.customer_details?.email;
+  // 11/11: a slip in the domain (hoymail, gmial, gmail.con…) is put right before anything is sent, or the PDFs go to nobody
+  const email = fixEmail(session.customer_details?.email);
   const name = session.customer_details?.name || 'there';
 
   // Meta Conversions API (8/11): the Purchase comes from here, not from the browser. event_id = the Checkout
