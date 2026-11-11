@@ -84,6 +84,30 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
       {X.steps.map((s, i) => <li class:list={{ 'is-done': i === 0, 'is-now': i === 1 }}><span>{i === 0 ? '✓' : i + 1}</span>{s}</li>)}
     </ol>
 
+    <!-- 11/11 (a buyer from Brazil did not see it): what they paid for comes FIRST, before the offer: the PDFs to download (only after the server has checked the payment), or the link to pick the time of the lesson -->
+    <div class="oto-dl" id="download" data-dl={flow.kind === 'pdf' ? lang : undefined}>
+      {
+        flow.kind === 'pdf' ? (
+          <>
+            <p class="t-sub" data-dl-text data-checking={X.checking} data-ok={X.paidPdf} data-ok-scene={X.paidScene} data-only-scene={X.paidSceneOnly} data-closed={X.closed} data-scene-note={X.sceneNote} data-sent-note={X.sentNote}>{X.closed}</p>
+            <div class="oto-dl__btns" data-dl-btns>
+              <template data-dl-file><a class="btn btn--fill" download><span></span> <Arrow /></a></template>
+              <template data-dl-help>
+                <a class="btn btn--fill" href={help} target="_blank" rel="noopener">WhatsApp <Arrow /></a>
+                <a class="btn" href="mailto:info@omnyalab.com">info@omnyalab.com</a>
+              </template>
+            </div>
+            <p class="oto-dl__note">{X.fixA} <a class="u" href="mailto:info@omnyalab.com">{X.fixB}</a> {X.fixC} <a class="u" href={localize('/terms', lang)}>{X.terms}</a></p>
+          </>
+        ) : (
+          <>
+            <p class="t-sub">{X.paidLesson}</p>
+            <div class="oto-dl__btns">{book && <a class="btn btn--fill" href={localize(book, lang)}>{X.pick} <Arrow /></a>}</div>
+          </>
+        )
+      }
+    </div>
+
     <header class="oto__head">
       <p class="oto__done" data-fade>{X.headA}</p>
       <h1 class="t-h2 oto__title" data-split="intro">{X.only} <span class="mute">{X.headB}</span></h1>
@@ -159,39 +183,20 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
     )
   }
 
-  <!-- What they paid for: the PDFs to download (only after the server has checked the payment), or the link to pick the time of the lesson -->
-  <section class="oto-dl wrap" id="download" data-dl={flow.kind === 'pdf' ? lang : undefined}>
-    {
-      flow.kind === 'pdf' ? (
-        <>
-          <p class="t-sub" data-dl-text data-checking={X.checking} data-ok={X.paidPdf} data-ok-scene={X.paidScene} data-only-scene={X.paidSceneOnly} data-closed={X.closed} data-scene-note={X.sceneNote} data-sent-note={X.sentNote}>{X.closed}</p>
-          <div class="oto-dl__btns" data-dl-btns>
-            <template data-dl-file><a class="btn btn--fill" download><span></span> <Arrow /></a></template>
-            <template data-dl-help>
-              <a class="btn btn--fill" href={help} target="_blank" rel="noopener">WhatsApp <Arrow /></a>
-              <a class="btn" href="mailto:info@omnyalab.com">info@omnyalab.com</a>
-            </template>
-          </div>
-          <p class="oto-dl__note">{X.fixA} <a class="u" href="mailto:info@omnyalab.com">{X.fixB}</a> {X.fixC} <a class="u" href={localize('/terms', lang)}>{X.terms}</a></p>
-          {/* 10/11 (Nico): his Higgsfield referral link, said as what it is. The offer is the one on Higgsfield's home,
-              read on 10/11/2026 ("FABLE 5.2 × HIGGSFIELD MCP · Unlimited generations on frontier models via Claude MCP for new
-              users"), the same as on /fable: no lengths and no percentages. When it changes, change the line here and there */}
-          <p class="oto-dl__note">
-            {lang === 'it'
-              ? 'Le foto e le clip delle guide le facciamo su Higgsfield, e adesso i nuovi utenti hanno generazioni illimitate dentro Claude con Higgsfield MCP: '
-              : 'The photos and clips in the guides are made on Higgsfield, and right now new users get unlimited generations inside Claude with Higgsfield MCP: '}
-            <a class="u" href="https://higgsfield.ai?fpr=omnya-5b7f71" target="_blank" rel="noopener sponsored">higgsfield.ai</a>
-            {lang === 'it' ? ' (link affiliato, a te non costa niente in più)' : ' (affiliate link, it costs you nothing more)'}
-          </p>
-        </>
-      ) : (
-        <>
-          <p class="t-sub">{X.paidLesson}</p>
-          <div class="oto-dl__btns">{book && <a class="btn btn--fill" href={localize(book, lang)}>{X.pick} <Arrow /></a>}</div>
-        </>
-      )
-    }
+  {flow.kind === 'pdf' && (
+  <section class="oto-hf wrap">
+    {/* 10/11 (Nico): his Higgsfield referral link, said as what it is. The offer is the one on Higgsfield's home,
+        read on 10/11/2026 ("FABLE 5.2 × HIGGSFIELD MCP · Unlimited generations on frontier models via Claude MCP for new
+        users"), the same as on /fable: no lengths and no percentages. When it changes, change the line here and there */}
+    <p class="oto-dl__note">
+      {lang === 'it'
+        ? 'Le foto e le clip delle guide le facciamo su Higgsfield, e adesso i nuovi utenti hanno generazioni illimitate dentro Claude con Higgsfield MCP: '
+        : 'The photos and clips in the guides are made on Higgsfield, and right now new users get unlimited generations inside Claude with Higgsfield MCP: '}
+      <a class="u" href="https://higgsfield.ai?fpr=omnya-5b7f71" target="_blank" rel="noopener sponsored">higgsfield.ai</a>
+      {lang === 'it' ? ' (link affiliato, a te non costa niente in più)' : ' (affiliate link, it costs you nothing more)'}
+    </p>
   </section>
+  )}
 </Base>
 
 <style is:global>
