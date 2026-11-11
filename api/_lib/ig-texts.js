@@ -68,15 +68,12 @@ export const opener = {
  * on the app never reach us, so nothing can wait for a tap; the follow is asked in words.
  */
 const directFor = (name) => {
-  // five ways to say the same thing, taken in turn like the public replies; every one asks for the
-  // follow in words ("follow @omnyalab so you catch the next one") and none of them checks it:
-  // the follow is asked, not required (Nico, 10/11/2026). `text` is the first, the one that was there.
+  // 11/11 night (Nico, "vai con la 1"): one wording for every DM that answers a comment. Instagram only takes text
+  // there (no Advanced Access for the button), so the link goes on its own line right under these words. The follow
+  // is asked in words and never checked (Nico, 10/11/2026).
+  const s = name.replace(/^The /, '');
   const texts = [
-    `Hey 🙌🏻 ${name} is ready 👇🏻 follow @omnyalab so you catch the next one, we drop a new build every week`,
-    `Here you go 🙌🏻 ${name} is right below, and follow @omnyalab so you catch the next one, we drop a new build every week`,
-    `Thanks for the comment 🫶🏻 ${name} is one tap away 👇🏻 follow @omnyalab so you catch the next one, there’s a new build every week`,
-    `Hey, got your comment 👀 ${name} is ready for you below, follow @omnyalab so you catch the next one, a new build drops every week`,
-    `As promised 🙌🏻 tap below for ${name}, and follow @omnyalab so you catch the next one, we post a new build every week`,
+    `As promised 🙌🏻 here’s your free ${s}, it’s all in the link below 👇🏻 and don’t forget to follow @omnyalab so you catch the next one, we drop a new build every week 🔥`,
   ];
   return { text: texts[0], texts, button: 'Get the Blueprint' };
 };
