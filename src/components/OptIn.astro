@@ -173,15 +173,18 @@ const next = after || `/${slug}/sent`;
           if (!ok) {
             if (next.charAt(0) !== '#') next = next + '#nomail';
             oil.querySelectorAll('[data-oil-go]').forEach(function (a) { a.setAttribute('href', next); });
-            var hp = oil.querySelector('.aso-hi__p'); if (hp) hp.innerHTML = 'Your <b>free blueprint</b> is ready';
-            var hm = oil.querySelector('.aso-hm'); if (hm) hm.style.display = 'none';
+            // no email went: the receipt says the blueprint is ready and opens next, not that it was delivered
+            var rt = oil.querySelector('[data-aso-rt]'); if (rt) rt.innerHTML = 'Your <u>FREE</u> blueprint is ready';
+            var to = oil.querySelector('[data-aso-to]'); if (to) to.textContent = 'It opens on the next page';
+            var kb = oil.querySelector('.vk .b'); if (kb) kb.textContent = '✓ FREE blueprint ready';
           }
           T(function () {
             aso.classList.add('sent');
-            T(function () { aso.classList.add('s2', 'play'); }, 1100);
-            T(function () { aso.classList.add('s3'); }, 2100);
-            T(function () { if (!oil.hidden) go(next); }, 1100 + 15000);
-          }, Math.max(0, 3600 - (Date.now() - t0)));
+            // 11/11 night (Nico, A1): about 4 s of the envelope, then 3 s of "Your FREE blueprint arrived", then the offer
+            T(function () { aso.classList.add('s2', 'play'); }, 3000);
+            T(function () { aso.classList.add('s3'); }, 4000);
+            T(function () { if (!oil.hidden) go(next); }, 3000 + 15000);
+          }, Math.max(0, 4200 - (Date.now() - t0)));
         });
         return;
       }

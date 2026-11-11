@@ -9,6 +9,10 @@
 // (classes s1, sent, s2/play, s3 on .aso). -79% is exact: 5.99 is 79.3% off 29.
 // 11/11 evening (Nico): the same screen on the Build funnel, green (theme c1, #22d35e like the rest of Build), with the
 // Full Build book and its own table; the button goes to /the-build-blueprint/sent (Full €5.99 or the pack €59).
+// 11/11 night (Nico, board "Towers inviato", A1 + P1): the free blueprint goes into an envelope that closes and flies off
+// ("Sending your FREE blueprint…", about 4 s), then a big green check, "You're all set, <name>" and the green receipt
+// "Your FREE blueprint arrived · Delivered to <email>" (3 s); then the title closes, the receipt stays on top, the line
+// "Now get every prompt, word for word ↓" and the offer come in, and "No thanks, I'm good with the free one" is in sight.
 interface Props {
   next: string; // the /sent page
   hero: string; // the blurred photo behind
@@ -18,6 +22,8 @@ const { next, hero, kind = 'towers' } = Astro.props;
 const isBuild = kind === 'build';
 const bookSrc = isBuild ? '/learn/bd_book_tight.webp' : '/learn/tt_book_tight.webp';
 const bookAlt = isBuild ? 'The Full Build Blueprint' : 'The Full Towers Blueprint';
+const freeSrc = isBuild ? '/learn/bd_cover_book.webp' : '/learn/tt_cover_book.webp'; // the FREE blueprint's own cover
+const ard = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v15M5.5 12.5L12 19l6.5-6.5"/></svg>';
 const burst = Array.from({ length: 44 }, (_, i) => {
   const r = i % 2 === 0 ? 50 : 43, a = (Math.PI * i) / 22;
   return `${(50 + r * Math.cos(a)).toFixed(1)},${(50 + r * Math.sin(a)).toFixed(1)}`;
@@ -46,17 +52,23 @@ const rows: [string, string, string][] = isBuild ? [
   <div class="aso__bg" aria-hidden="true"></div>
   <div class="aso__sc">
     <div class="aso__in">
-      <div class="aso-hi">
-        <span class="aso-hi__ck" set:html={'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 12.4l3.9 3.9 7.7-8.1"/></svg>'} />
+      <div class="aso-hi v vA">
+        <div class="vA-st" aria-hidden="true"><div class="vA-in">
+          <div class="vA-env"><div class="vA-back"></div><img class="vA-pdf" src={freeSrc} alt="" /><div class="vA-flap"></div><div class="vA-front"></div><div class="vA-flap2"></div></div>
+          <i class="vA-tr"></i><i class="vA-tr t2"></i><i class="vA-tr t3"></i>
+          <div class="vA-ok" set:html={ck} />
+        </div></div>
+        <p class="vk"><span class="a dots">Sending your <u>FREE</u> blueprint</span><span class="b">✓ FREE blueprint delivered</span></p>
         <p class="aso-hi__t" role="status">You're all set<span data-oil-nm></span></p>
-        <p class="aso-hi__p">Your <b>free blueprint</b> is in your inbox</p>
-        <span class="aso-hm">
-          <span class="aso-hm__a"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></svg><span>Sending to <span data-aso-em></span></span><i class="aso-hm__bar"><b></b></i></span>
-          <span class="aso-hm__b"><Fragment set:html={ck} /><span>Delivered to <span data-aso-em></span></span></span>
-        </span>
+        <div class="vfr">
+          <span class="vfr-cv"><img src={freeSrc} alt="The free blueprint" /><em>FREE</em></span>
+          <span class="vfr-tx"><b data-aso-rt>Your <u>FREE</u> blueprint arrived</b><small data-aso-to>Delivered to <span data-aso-em></span></small></span>
+          <i class="vfr-ck" set:html={ck} />
+        </div>
       </div>
       <div class="aso-rev">
         <div class="aso-rev__in">
+          <div class="vbr"><p>Now get <b>every prompt</b>, word for word</p><i class="vbr-ar" set:html={ard} /></div>
           <div class="aso-card">
             <div class="aso-deal">
               <div class="aso-bk">
@@ -79,7 +91,7 @@ const rows: [string, string, string][] = isBuild ? [
             </div>
             <a class="aso-cta" data-oil-go data-astro-reload href={next}><b>Get the full one · €5.99 →</b></a>
           </div>
-          <button type="button" class="aso-no" data-oil-skip>I'm good with the free one, thanks</button>
+          <button type="button" class="aso-no" data-oil-skip>No thanks, I'm good with the free one</button>
         </div>
       </div>
     </div>
@@ -99,27 +111,9 @@ const rows: [string, string, string][] = isBuild ? [
 .aso-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
 .aso-hi{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}
-.aso-hi__ck{position:relative;width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#5ff08a,#30d158 55%,#1fa84a);display:grid;place-items:center;box-shadow:0 12px 30px -8px #30d158aa;transition:width .9s,height .9s}
-.aso-hi__ck::before{content:"";position:absolute;inset:-7px;border-radius:50%;border:2px solid #30d15855}
-.aso-hi__ck svg{display:block;width:24px;height:24px;fill:none;stroke:#fff;stroke-width:3.6;stroke-linecap:round;stroke-linejoin:round}
-.aso-hi__ck path{stroke-dasharray:30;stroke-dashoffset:0}
 .aso-hi__t{margin:4px 0 0;font-weight:900;font-size:34px;line-height:.95;text-transform:uppercase;letter-spacing:-.01em;text-wrap:balance;transition:font-size .9s cubic-bezier(.2,.8,.2,1)}
 .aso-hi__t span span{color:var(--yes)}
-.aso-hi__p{margin:0;font-size:13.5px;line-height:1.4;color:#ffffffd0;font-weight:500}
-.aso-hi__p b{color:#fff;font-weight:800}
 .aso:not(.s2) .aso-hi__t{font-size:44px}
-.aso:not(.s2) .aso-hi__ck{width:66px;height:66px}
-.aso-hm{position:relative;display:inline-grid;font-size:11.5px;font-weight:700;max-width:100%}
-.aso-hm>span>span{overflow:hidden;text-overflow:ellipsis}
-.aso-hm>span{grid-area:1/1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:6px 12px;border-radius:999px;transition:opacity .35s,transform .35s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.aso-hm svg{flex:none;width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.aso-hm__a{position:relative;color:var(--acl);background:rgb(var(--ac) / .12);border:1px solid rgb(var(--ac) / .25)}
-.aso-hm__bar{position:absolute;left:0;bottom:0;height:2px;width:100%;background:rgb(var(--ac) / .15)}
-.aso-hm__bar b{display:block;height:100%;width:0;background:rgb(var(--ac))}
-.aso-hm__b{color:var(--yes);background:#30d1581f;border:1px solid #30d15855;opacity:0;transform:scale(.9)}
-.aso-hm__b svg{stroke-width:3.2}
-.aso.sent .aso-hm__a{opacity:0;transform:scale(.9)}
-.aso.sent .aso-hm__b{opacity:1;transform:none}
 
 .aso-rev{display:grid;grid-template-rows:0fr;transition:grid-template-rows .9s cubic-bezier(.2,.8,.2,1)}
 .aso-rev__in{min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:10px;margin:0 -12px;padding:0 12px}
@@ -171,11 +165,11 @@ const rows: [string, string, string][] = isBuild ? [
 .aso-cta b{font-size:16px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
 .aso-cta::after{content:"";position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(90deg,#fff0,#ffffff70,#fff0);transform:skewX(-20deg);animation:aso-shine 3.2s ease-in-out 2.6s infinite}
 .aso-cta:focus-visible{outline:3px solid #fff;outline-offset:3px}
-.aso-no{background:none;border:0;color:var(--dim);font:600 12px Montserrat,sans-serif;text-decoration:underline;cursor:pointer;align-self:center;padding:4px}
+.aso-no{background:none;border:0;color:#ffffffc4;font:600 13px Montserrat,sans-serif;text-decoration:underline;cursor:pointer;align-self:center;padding:8px 6px 2px}
 
 @media (max-height:700px){
+  .vA-st{height:140px}.vA-in{zoom:.85}
   .aso-hi__t{font-size:30px}.aso:not(.s2) .aso-hi__t{font-size:40px}
-  .aso-hi__ck{width:42px;height:42px}
   .aso-tr{min-height:28px}.aso-card{gap:9px;padding-block:12px}
   .aso-bk{width:88px}.aso-deal{grid-template-columns:96px 1fr}
   .aso-stk{width:84px;height:84px}.aso-stk__t b{font-size:24px}
@@ -183,9 +177,6 @@ const rows: [string, string, string][] = isBuild ? [
 @container (min-width:760px){
   .aso__in{max-width:1020px;padding:34px 60px;gap:22px}
   .aso-hi__t{font-size:62px}.aso:not(.s2) .aso-hi__t{font-size:78px}
-  .aso-hi__ck{width:80px;height:80px}.aso:not(.s2) .aso-hi__ck{width:96px;height:96px}
-  .aso-hi__ck svg{width:36px;height:36px}.aso-hi__ck::before{inset:-9px}
-  .aso-hi__p{font-size:16px}
   .aso-rev__in{gap:14px}
   .aso-card{display:grid;grid-template-columns:1fr 1.1fr;column-gap:44px;row-gap:14px;align-items:center;padding:28px 34px}
   .aso-deal{grid-column:1;grid-row:1/3;grid-template-columns:1fr;justify-items:center;text-align:center;gap:16px}
@@ -205,13 +196,6 @@ const rows: [string, string, string][] = isBuild ? [
 }
 
 /* the timing: s1 at once, sent when the email went, s2 + play opens the offer, s3 lets the sticker out */
-.aso.s1 .aso-hi__ck{animation:aso-pop .6s cubic-bezier(.3,1.6,.5,1) .1s both}
-.aso.s1 .aso-hi__ck::before{animation:aso-ring 1.4s ease-out .5s both}
-.aso.s1 .aso-hi__ck path{animation:aso-draw .5s ease-out .45s both}
-.aso.s1 .aso-hi__t{animation:aso-up .6s cubic-bezier(.2,.8,.2,1) .55s both}
-.aso.s1 .aso-hi__p{animation:aso-up .5s cubic-bezier(.2,.8,.2,1) 1s both}
-.aso.s1 .aso-hm{animation:aso-up .5s cubic-bezier(.2,.8,.2,1) 1.25s both}
-.aso.s1 .aso-hm__bar b{animation:aso-fill 2s cubic-bezier(.4,0,.2,1) 1.5s forwards}
 .aso.play .aso-card{animation:aso-cardin .7s cubic-bezier(.2,.8,.2,1) 1.1s both}
 .aso.play .aso-bk img{animation:aso-bookin .7s cubic-bezier(.2,.8,.2,1) 1.35s both}
 .aso.play .aso-px{animation:aso-up .6s cubic-bezier(.2,.8,.2,1) 1.45s both}
@@ -240,4 +224,89 @@ const rows: [string, string, string][] = isBuild ? [
 @keyframes aso-shine{0%{left:-40%}45%,100%{left:130%}}
 @keyframes aso-breathe{0%,100%{box-shadow:0 18px 40px -12px rgb(var(--ac) / .8),inset 0 1px 0 #ffffff55}50%{box-shadow:0 18px 56px -6px rgb(var(--ac) / 1),inset 0 1px 0 #ffffff55}}
 @media (prefers-reduced-motion:reduce){.aso *,.aso *::before,.aso *::after{animation:none!important;transition:none!important}}
+
+/* 11/11 night (Nico, A1 + P1): the envelope, the FREE receipt, the line to the offer */
+.aso{--env0:#174a8c;--env00:#0b2347;--env1:#3b8ef0;--env2:#1b5fc2;--env3:#5aa4f7}
+.aso.aso--c1{--env0:#13602e;--env00:#082814;--env1:#36d86d;--env2:#139a42;--env3:#62e891}
+
+.aso u{text-decoration:none;color:#ffd60a}
+.vk u{color:#ffd60a}
+.vfr{display:grid;grid-template-columns:46px 1fr 30px;gap:12px;align-items:center;width:100%;max-width:360px;padding:9px 12px 9px 9px;border-radius:18px;background:linear-gradient(90deg,#0d3a1dee,#08240fe6);border:1.5px solid #30d158aa;box-shadow:0 0 30px -8px #30d15899,0 16px 30px -14px #000;text-align:left}
+.vfr-cv{position:relative;display:block}
+.vfr-cv img{display:block;width:46px;border-radius:4px;box-shadow:0 6px 12px #0009}
+.vfr-cv em{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);font-style:normal;font-size:8.5px;font-weight:900;letter-spacing:.1em;color:#111;background:#ffd60a;padding:2px 5px;border-radius:4px;box-shadow:0 2px 6px #0008}
+.vfr-tx{min-width:0;display:flex;flex-direction:column;gap:2px}
+.vfr-tx b{font-size:14.5px;font-weight:900;color:#fff;line-height:1.15;white-space:nowrap}
+.vfr-tx small{font-size:11px;font-weight:700;color:#9ff0b6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vfr-ck{width:30px;height:30px;border-radius:50%;background:var(--yes);display:grid;place-items:center;box-shadow:0 0 0 4px #30d15830}
+.vfr-ck svg{width:17px;height:17px;fill:none;stroke:#04210f;stroke-width:3.6;stroke-linecap:round;stroke-linejoin:round}
+.aso.s1 .v .vfr{animation:none;opacity:0;transform:translateY(14px) scale(.96);transition:opacity .55s cubic-bezier(.2,.8,.2,1),transform .55s cubic-bezier(.3,1.5,.5,1)}
+.aso.sent .v .vfr{opacity:1;transform:none;transition-delay:.75s}
+.aso.sent .v .vfr-ck{animation:vpop .5s cubic-bezier(.3,1.6,.5,1) 1.15s both}
+@container (min-width:760px){.vfr{max-width:460px;zoom:1.15}}
+
+.v{width:100%}
+.vk{margin:0;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--acl);display:grid}
+.vk>span{grid-area:1/1;transition:opacity .35s,transform .35s}
+.vk .b{opacity:0;transform:translateY(6px);color:var(--yes)}
+.aso.sent .vk .a{opacity:0;transform:translateY(-6px)}
+.aso.sent .vk .b{opacity:1;transform:none}
+.dots::after{content:"";display:inline-block;width:1.2em;text-align:left;animation:vdots 1.2s steps(4) infinite}
+@keyframes vdots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+/* the title and the pill come in only once the email went */
+.aso.sent .v .aso-hi__t{opacity:1;transform:none;transition-delay:.45s}
+.aso.sent .v .aso-hi__p{opacity:1;transform:none;transition-delay:.65s}
+@keyframes vpop{0%{opacity:0;transform:scale(0)}70%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes vring{0%{opacity:.9;transform:scale(.8)}100%{opacity:0;transform:scale(1.9)}}
+
+.vA-st{position:relative;width:100%;height:170px;display:grid;place-items:center;transition:height .9s cubic-bezier(.2,.8,.2,1),opacity .4s}
+.vA-in{position:relative;width:220px;height:170px}
+.vA-env{position:absolute;left:50%;bottom:8px;width:176px;height:112px;margin-left:-88px;perspective:700px;animation:vpop .5s cubic-bezier(.3,1.5,.5,1) .05s both}
+.vA-back{position:absolute;inset:0;border-radius:12px;background:linear-gradient(180deg,var(--env0),var(--env00));box-shadow:0 26px 44px -14px #000}
+.vA-pdf{position:absolute;left:50%;bottom:10px;width:72px;margin-left:-36px;border-radius:4px;box-shadow:0 12px 24px #000a;z-index:1;transform:translateY(-92px) rotate(-7deg)}
+.vA-front{position:absolute;inset:0;z-index:2;border-radius:12px;background:linear-gradient(165deg,var(--env1),var(--env2));clip-path:polygon(0 34%,50% 68%,100% 34%,100% 100%,0 100%);box-shadow:inset 0 1px 0 #ffffff40}
+.vA-front::after{content:"";position:absolute;left:12px;bottom:12px;width:44px;height:6px;border-radius:3px;background:#ffffff55;box-shadow:0 -11px 0 -1px #ffffff33}
+.vA-flap{position:absolute;left:0;right:0;bottom:100%;height:56px;z-index:0;transform-origin:50% 100%;background:linear-gradient(0deg,var(--env2),var(--env3));clip-path:polygon(0 100%,100% 100%,50% 0)}
+.vA-flap2{position:absolute;left:0;right:0;top:0;height:72%;z-index:3;transform-origin:50% 0;transform:scaleY(0);background:linear-gradient(180deg,var(--env3),var(--env2));clip-path:polygon(0 0,100% 0,100% 47%,50% 100%,0 47%);border-radius:12px 12px 0 0;filter:drop-shadow(0 3px 4px #0006)}
+.aso.s1 .vA-pdf{animation:vA-drop .75s cubic-bezier(.5,0,.3,1) .55s forwards}
+.aso.s1 .vA-flap{animation:vA-fold .2s ease-in 1.35s forwards}
+.aso.s1 .vA-flap2{animation:vA-shut .28s cubic-bezier(.2,.8,.3,1.2) 1.55s forwards}
+.aso.s1 .vA-env{animation:vpop .5s cubic-bezier(.3,1.5,.5,1) .05s both,vA-wait 1.1s ease-in-out 2s infinite}
+@keyframes vA-drop{to{transform:translateY(0) rotate(0)}}
+@keyframes vA-fold{to{transform:scaleY(0)}}
+@keyframes vA-shut{to{transform:scaleY(1)}}
+@keyframes vA-wait{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(-1.5deg)}}
+.aso.sent .vA-env{animation:vA-fly .75s cubic-bezier(.6,0,.4,1) forwards}
+@keyframes vA-fly{0%{transform:none;opacity:1}25%{transform:translate(-10px,10px) scale(1.04) rotate(4deg);opacity:1}100%{transform:translate(190px,-170px) scale(.18) rotate(-22deg);opacity:0}}
+.vA-tr{position:absolute;left:40%;top:52%;width:120px;height:3px;border-radius:3px;background:linear-gradient(90deg,#fff0,rgb(var(--ac)));transform:rotate(-42deg);transform-origin:right center;opacity:0}
+.vA-tr.t2{left:30%;top:62%;width:80px}.vA-tr.t3{left:48%;top:44%;width:60px}
+.aso.sent .vA-tr{animation:vA-trail .7s ease-out .15s both}
+.aso.sent .vA-tr.t2{animation-delay:.22s}.aso.sent .vA-tr.t3{animation-delay:.3s}
+@keyframes vA-trail{0%{opacity:0;transform:rotate(-42deg) scaleX(.2)}40%{opacity:.9}100%{opacity:0;transform:rotate(-42deg) translate(60px,0) scaleX(1)}}
+.vA-ok{position:absolute;left:50%;top:50%;width:92px;height:92px;margin:-46px 0 0 -46px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#5ff08a,#30d158 55%,#1fa84a);display:grid;place-items:center;box-shadow:0 16px 40px -8px #30d158bb;opacity:0;transform:scale(0)}
+.vA-ok::before{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid #30d15866;opacity:0}
+.vA-ok svg{width:44px;height:44px;fill:none;stroke:#fff;stroke-width:3.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:30;stroke-dashoffset:30}
+.aso.sent .vA-ok{animation:vpop .55s cubic-bezier(.3,1.6,.5,1) .5s both}
+.aso.sent .vA-ok::before{animation:vring 1.2s ease-out .8s 2 both}
+.aso.sent .vA-ok svg{animation:vA-draw .45s ease-out .85s forwards}
+@keyframes vA-draw{to{stroke-dashoffset:0}}
+.aso.s2 .vA-st{height:0;opacity:0}
+.aso.s2 .vA .vk{display:none}
+@container (min-width:760px){.vA-in{zoom:1.35}.vA-st{height:230px}}
+
+.vbr{display:flex;flex-direction:column;align-items:center;text-align:center;gap:3px;margin-top:2px}
+.aso.play .vbr{animation:aso-up .55s cubic-bezier(.2,.8,.2,1) .45s both}
+.vbr p{margin:0;font-size:16px;font-weight:800;color:#fff;line-height:1.2;white-space:nowrap}
+.vbr b{color:rgb(var(--ac));font-weight:900}
+.vbr-ar{display:grid;place-items:center;width:26px;height:26px;color:rgb(var(--ac))}
+.vbr-ar svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.aso.play .vbr-ar{animation:vbr-bob 1.1s ease-in-out 1s infinite}
+@keyframes vbr-bob{0%,100%{transform:translateY(-2px)}50%{transform:translateY(4px)}}
+.v .vfr{margin-top:12px}
+.aso:not(.sent) .v .aso-hi__t,.aso:not(.sent) .v .vfr{opacity:0}
+.v .aso-hi__t{max-height:260px}
+.aso.s2 .v .aso-hi__t,.aso.s2 .v .vk{opacity:0;max-height:0;margin:0;overflow:hidden;transition:opacity .3s,max-height .7s cubic-bezier(.2,.8,.2,1),margin .7s}
+.aso.s2 .v .vfr{margin-top:0}
+@container (min-width:760px){.vbr p{font-size:20px}}
+@media (prefers-reduced-motion:reduce){.aso.sent .vA-env{opacity:0}.aso.sent .vA-ok{opacity:1;transform:none}.aso.sent .vA-ok svg{stroke-dashoffset:0}.aso.s1 .vA-pdf{transform:none}.aso.s1 .vA-flap2{transform:none}}
 </style>
