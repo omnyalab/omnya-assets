@@ -66,7 +66,7 @@ const next = after || `/${slug}/sent`;
      with `allset` (Towers, 11/11) "You're all set" and the Full offer instead -->
 {allset ? (
 <div class="oil oil--as" hidden data-oil data-as>
-  <AllSetOffer next={next} hero={heroMobile} />
+  <AllSetOffer next={next} hero={heroMobile} kind={theme === 'c1' ? 'build' : 'towers'} />
 </div>
 ) : (
 <div class="oil" hidden data-oil>
