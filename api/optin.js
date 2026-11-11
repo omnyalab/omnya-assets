@@ -19,6 +19,7 @@ const FREE = {
   free: { name: 'The Blueprint', file: '/learn/free/omnya-lab-blueprint.pdf' },
 };
 const KEY = 'omnya:optin';
+const FREE_CAP = Number(process.env.FREE_MAIL_CAP || 65); // free blueprint emails a day; with Resend Pro set FREE_MAIL_CAP on Vercel to 1500
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'Content-Type': 'application/json' } });
 
@@ -60,6 +61,21 @@ export async function POST(request) {
       ip: (request.headers.get('x-forwarded-for') || '').split(',')[0].trim(), ua: request.headers.get('user-agent') || '',
       fbp: String(b.fbp || '').slice(0, 120) || undefined,
     }).catch((e) => console.error('[optin] meta', e));
+  }
+  // 11/11 (a buyer from Brazil paid and got no email): Resend's free plan sends 100 emails a day and the free blueprints
+  // were using all of them, so the PDFs of who PAID never left. The free email now stops at FREE_CAP a day (UTC), and
+  // the rest of the quota stays for the paid ones, the bookings and Nico's notices. Over the cap the form answers
+  // 'mail later' and the page goes on as when a mail fails: the free PDF opens on the next page (components/OptIn.astro).
+  if (hasStore()) {
+    try {
+      const day = `omnya:mail:free:${new Date().toISOString().slice(0, 10)}`;
+      const n = await redis('INCR', day);
+      if (n === 1) await redis('EXPIRE', day, 172800);
+      if (n > FREE_CAP) {
+        await redis('LPUSH', 'omnya:mail:owed', JSON.stringify({ at: Date.now(), name, email, free: b.free })).catch(() => {}); // to send when the quota is bigger
+        return json({ error: 'mail later' }, 503);
+      }
+    } catch (e) { console.error('[optin] cap', e); }
   }
   try {
     await sendMail({
