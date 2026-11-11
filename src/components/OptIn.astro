@@ -155,8 +155,12 @@ const next = after || `/${slug}/sent`;
       var eid = 'lead_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
       var ads = !!(window.omnyaTrack && window.omnyaTrack('Lead', { content_name: free }, eid));
       var fbp = (document.cookie.match(/(?:^|; )_fbp=([^;]+)/) || [])[1] || '';
-      var sent = fetch('/api/optin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: name, email: email, free: free, page: slug, company: form.elements.company.value, k: new URLSearchParams(location.search).get('k') || '', cv: 'v3', nl: form.elements.nl.checked, ads: ads, eid: eid, fbp: ads ? fbp : '' }) })
-        .then(function (r) { return r.ok; }).catch(function () { return false; });
+      var body = JSON.stringify({ name: name, email: email, free: free, page: slug, company: form.elements.company.value, k: new URLSearchParams(location.search).get('k') || '', cv: 'v3', nl: form.elements.nl.checked, ads: ads, eid: eid, fbp: ads ? fbp : '' });
+      var post = function () { return fetch('/api/optin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body }).then(function (r) { return r.ok; }).catch(function () { return false; }); };
+      // 11/11 evening (Nico): a failed send no longer throws people straight onto the free PDF (that skipped the whole
+      // funnel). One more try after a second and a half; if it still fails the funnel goes on all the same and the
+      // /sent page says the blueprint opens there (#nomail), the free PDF stays one tap away ("I'm good with the free one").
+      var sent = post().then(function (ok) { return ok || new Promise(function (r) { setTimeout(r, 1500); }).then(post); });
       // 11/11 Towers (AllSetOffer): "You're all set" at once, "Delivered" once the email went, then the offer opens
       var aso = oil.querySelector('[data-aso]');
       if (aso) {
@@ -166,7 +170,12 @@ const next = after || `/${slug}/sent`;
         oil.hidden = false; aso.classList.add('s1');
         var t0 = Date.now();
         sent.then(function (ok) {
-          if (!ok) { location.href = '/go/' + free; return; }
+          if (!ok) {
+            next = next + '#nomail';
+            oil.querySelectorAll('[data-oil-go]').forEach(function (a) { a.setAttribute('href', next); });
+            var hp = oil.querySelector('.aso-hi__p'); if (hp) hp.innerHTML = 'Your <b>free blueprint</b> is ready';
+            var hm = oil.querySelector('.aso-hm'); if (hm) hm.style.display = 'none';
+          }
           T(function () {
             aso.classList.add('sent');
             T(function () { aso.classList.add('s2', 'play'); }, 1100);
@@ -186,7 +195,7 @@ const next = after || `/${slug}/sent`;
       // "Sent" only once the server said the email went out; if it didn't, the PDF opens right away
       T(function () {
         sent.then(function (ok) {
-          if (!ok) { location.href = '/go/' + free; return; }
+          if (!ok) { next = next + '#nomail'; var gb = oil.querySelector('[data-oil-go]'); if (gb) gb.setAttribute('href', next); }
           st(2).classList.add('is-done');
           T(function () { st(2).classList.add('is-out'); }, 700);
           T(function () { st(3).classList.add('is-in'); }, 1000);
