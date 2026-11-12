@@ -139,6 +139,7 @@
   }
   @keyframes turn{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
 </style>
+<script src="/demo/loadguard.js"></script>
 </head>
 <body>
 
@@ -224,6 +225,7 @@ function tick() {
   if (want > shown) { shown = want; pctEl.textContent = shown; }
   if (loaded >= READY) {
     done = true; pctEl.textContent = 100;
+    window.OmnyaLoad && OmnyaLoad.done();
     setTimeout(() => {
       document.getElementById('loader').classList.add('out'); document.getElementById('veil').style.opacity = 0;
       document.getElementById('stage').classList.remove('loading'); document.documentElement.classList.remove('lock');
@@ -232,6 +234,7 @@ function tick() {
   }
 }
 scrollTo(0, 0);
+window.OmnyaLoad && OmnyaLoad.watch();   // 12/11: no progress for 25 s = a card that says to reload
 function next() {
   if (qi >= order.length) return;
   const i = order[qi++], im = new Image(); im.decoding = 'async';

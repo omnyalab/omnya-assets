@@ -145,6 +145,7 @@
   }
   @keyframes turn { 0%, 25% { transform: rotate(0); } 55%, 100% { transform: rotate(-90deg); } }
 </style>
+<script src="/demo/loadguard.js"></script>
 </head>
 <body class="loading">
 <div id="stage">
@@ -197,7 +198,8 @@ const VIEWS = [
 // reverse tour (for going back) loads while you look: until it is there, every move goes forward
 const got = [0, 0], len = [0, 0];
 const $pct = document.getElementById('pct');
-const tick = () => { if (len[0]) $pct.textContent = Math.min(99, Math.floor(got[0] / len[0] * 100)); };
+let shown = false;   // once the tour is on screen the number stays at 100
+const tick = () => { if (!shown && len[0]) $pct.textContent = Math.min(99, Math.floor(got[0] / len[0] * 100)); };
 async function load(el, src, k) {
   try {
     const res = await fetch(src);
@@ -210,17 +212,20 @@ async function load(el, src, k) {
       blob = new Blob(parts, { type: 'video/mp4' });
     }
     el.src = URL.createObjectURL(blob);
-  } catch (e) { el.src = src; }
-  await new Promise(r => { if (el.readyState >= 2) r(); else el.addEventListener('loadeddata', r, { once: true }); });
+  } catch (e) { el.src = src; }   // the download broke: let the browser stream it instead
+  // 12/11: wait until the video can really show itself (iPhone never said so here: the 99% that stayed)
+  await (window.OmnyaLoad ? OmnyaLoad.ready(el) : new Promise(r => { if (el.readyState >= 2) r(); else el.addEventListener('loadeddata', r, { once: true }); }));
 }
 function reveal() {
-  $pct.textContent = 100;
+  shown = true; $pct.textContent = 100;
+  window.OmnyaLoad && OmnyaLoad.done();
   setTimeout(() => {
     document.getElementById('loader').classList.add('out'); document.getElementById('veil').style.opacity = 0;
     document.body.classList.add('reveal'); document.body.classList.remove('loading');
     setTimeout(() => { document.body.classList.remove('reveal'); document.getElementById('loader').remove(); document.getElementById('veil').remove(); }, 1000);
   }, 350);
 }
+window.OmnyaLoad && OmnyaLoad.watch();   // no progress for 25 s = a card that says to reload
 let bwReady = false;
 load(fw, `assets/giro${SUF}.mp4`, 0).then(() => { reveal(); return load(bw, `assets/giro_rev${SUF}.mp4`, 1); }).then(() => { bwReady = true; });
 fw.addEventListener('loadeddata', () => { fw.currentTime = 0; }, { once: true });

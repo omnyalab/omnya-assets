@@ -160,6 +160,7 @@
   }
   @keyframes turn { 0%, 25% { transform: rotate(0); } 55%, 100% { transform: rotate(-90deg); } }
 </style>
+<script src="/demo/loadguard.js"></script>
 </head>
 <body class="loading">
 <div class="stage">
@@ -262,15 +263,19 @@ async function grab(src, onPct) {
   for (;;) { const { done, value } = await reader.read(); if (done) break; parts.push(value); got += value.length; onPct(got / len); }
   return new Blob(parts, { type: 'video/mp4' });
 }
+window.OmnyaLoad && OmnyaLoad.watch();   // no progress for 25 s = a card that says to reload
 (async () => {
   for (const id of ORDER) {
     const blob = await grab(CLIPS[id], id === 'fly' ? p => { $('pct').textContent = Math.min(99, Math.floor(p * 100)); } : null);
     const v = $('v-' + id);
     v.src = URL.createObjectURL(blob);
-    await new Promise(res => { v.addEventListener('loadeddata', res, { once: true }); v.load(); });
+    v.load();
+    // 12/11: really ready to show (iPhone may never say "loadeddata" for a video that is not playing)
+    await (window.OmnyaLoad ? OmnyaLoad.ready(v) : new Promise(res => v.addEventListener('loadeddata', res, { once: true })));
     ready++;
     if (id === 'fly') {
       $('pct').textContent = 100;
+      window.OmnyaLoad && OmnyaLoad.done();
       setTimeout(() => {
         $('loader').classList.add('out'); $('veil').style.opacity = 0;
         document.body.classList.add('reveal'); document.body.classList.remove('loading');
