@@ -14,6 +14,10 @@ const OWN = '999';
 const calls = [];
 const state = { follows: {}, commentUser: {}, refuseTemplate: false, refuseDm: new Set(), failPrivate: null, failSend: null, captionDown: false, sid: {}, probeFail: null, probeBlank: false, noRecipient: false, failReply: null, media: [], mediaFail: null };
 let mid = 0;
+// the A/B/C letter of the DM wordings (&t=a, b or c, 12/11/2026) off a link, so links compare as before
+const untag = (u) => (typeof u === 'string' ? u.replace(/&t=[abc]$/, '') : u);
+// a wording of direct as it went out: as written, without its {link} line (on the button), or with the link in place of {link}
+function isDirect(t, said) { return t.direct.texts.some((w) => said === w || said === w.replace(/\n?\{link\}\n?/, '\n').trim() || (w.includes('{link}') && said.startsWith(w.split('{link}')[0]) && said.endsWith(w.split('{link}')[1]) && /https:\/\/\S+&t=[abc]/.test(said))); }
 let simNow = () => Date.now(); // the bot's clock, set below: every fake call remembers the bot's time
 // posts by the id Meta gives in the comment event: caption and link, as Instagram would answer
 const posts = {
@@ -236,7 +240,7 @@ if (VERCEL_RUN) {
     const s = sent().filter((x) => x.method === 'POST');
     assert.equal(s.filter((x) => x.path === 'me/messages' && x.body.recipient.comment_id === 'v1').length, 1);
     // nothing was ever set: direct, the DM has the link on a button
-    assert.equal(s.find((x) => x.body?.recipient?.comment_id === 'v1').body.message.attachment.payload.buttons[0].url, 'https://www.omnyalab.com/the-towers-blueprint?ig=DfTOWERS11');
+    assert.equal(untag(s.find((x) => x.body?.recipient?.comment_id === 'v1').body.message.attachment.payload.buttons[0].url), 'https://www.omnyalab.com/the-towers-blueprint?ig=DfTOWERS11');
     assert.equal(s.filter((x) => x.path === 'v1/replies').length, 1);
     assert.equal(s.filter((x) => x.path === 'me/messages' && x.body.recipient.id === 'u9').length, 1);
     assert.equal((await ig.lineState()).waiting, 0);
@@ -248,7 +252,7 @@ if (VERCEL_RUN) {
 
 if (REDIS_RUN) {
   const pr = (list) => list.filter((x) => x.path === 'me/messages' && x.body.recipient.comment_id);
-  const urlOf = (c) => (msgText(c).match(/https:\/\/\S+/) || [])[0] || c.body?.message?.attachment?.payload?.buttons?.[0]?.url;
+  const urlOf = (c) => untag((msgText(c).match(/https:\/\/\S+/) || [])[0] || c.body?.message?.attachment?.payload?.buttons?.[0]?.url);
   let ahead = 0;
   ig.clock.now = () => Date.now() + ahead;
 
@@ -275,7 +279,7 @@ if (REDIS_RUN) {
     const t = sent().filter((x) => x.path === 'me/messages');
     assert.equal(t.filter((x) => x.body.recipient.comment_id === c3.id).length, 2);
     assert.equal(t.filter((x) => x.body.recipient.comment_id === c4.id).length, 1);
-    assert.match(t.at(-1).body.message.text, /\n\nhttps:\/\/www\.omnyalab\.com\/the-towers-blueprint\?ig=DfTOWERS11$/);
+    assert.match(t.at(-1).body.message.text, /\nhttps:\/\/www\.omnyalab\.com\/the-towers-blueprint\?ig=DfTOWERS11&t=[abc]\n/); // 12/11: the link in the first lines, with its A/B/C letter
     assert.equal((await (await leadsPage.GET(new Request('http://x/api/leads?key=k&action=mode&value=gate'))).json()).mode, 'gate');
     assert.equal(await ig.getMode(), 'gate');
     ahead += 2 * 3_600_000; // a clean hour for the steps below
@@ -462,15 +466,15 @@ if (REDIS_RUN) {
       // 11/11 (Nico): one DM wording for everyone, so only the public replies change from one to the next
     }
     assert.equal(new Set(replies).size, 12);
-    assert.equal(new Set(dms).size, 1);
+    assert.equal(new Set(dms.map((d) => d.replace(/https:\S+/, ''))).size, 3); // 12/11: the three wordings A, B, C in turn
     for (const r of replies) assert.ok(tw.publicReplies.includes(r));
-    for (const d of dms) assert.ok(tw.direct.texts.includes(d) && /follow @omnyalab so you catch the next one/.test(d));
+    for (const d of dms) assert.ok(isDirect(tw, d), d);
     // a city: its own lines in the public reply, the usual DM
     const c = comment('q20', 'dubai 🇦🇪', 'lazyreel');
     assert.deepEqual(await c.res, ['sent']);
     const s = sent();
     assert.ok(T.placeReplies.map((say) => say('Dubai')).includes(reply(s, c.id)));
-    assert.ok(tw.direct.texts.includes(msgText(pr(s)[0])));
+    assert.ok(isDirect(tw, msgText(pr(s)[0])));
     assert.equal(urlOf(pr(s)[0]), 'https://www.omnyalab.com/the-towers-blueprint?ig=DfTOWERS22');
     assert.equal((await lead('q20')).place, 'Dubai');
     const c2 = comment('q21', 'love it, greetings from Dubai', 'lazyreel');
@@ -719,7 +723,7 @@ await step('leads page: private, lists everyone', async () => {
 // ===================== 10/11/2026: the bot takes over from ManyChat =====================
 
 const privateReplies = (list) => list.filter((x) => x.path === 'me/messages' && x.body.recipient.comment_id);
-const linkOf = (c) => (msgText(c).match(/https:\/\/\S+/) || [])[0] || c.body?.message?.attachment?.payload?.buttons?.[0]?.url;
+const linkOf = (c) => untag((msgText(c).match(/https:\/\/\S+/) || [])[0] || c.body?.message?.attachment?.payload?.buttons?.[0]?.url);
 const get = async (mod, url, headers) => mod.GET(new Request(`http://x${url}`, { headers }));
 const TOWERS_PAGE = 'https://www.omnyalab.com/the-towers-blueprint';
 
@@ -1156,6 +1160,10 @@ await step('health check: token, webhook fields, last comment, the line, errors 
 await step('800 comments in one hour: 750 DMs, 50 wait in line and go out as the hour frees, nobody twice', async () => {
   ahead += 10 * 24 * 3_600_000; // a clean hour, far from the tests above
   sent();
+  // the real seconds the 800 comments take don't count: only the clock moved by hand (12/11/2026)
+  const realClock = ig.clock.now;
+  const frozen = Date.now();
+  ig.clock.now = () => frozen + ahead;
   const t0 = ig.clock.now();
   const base = ahead;
   const ids = [];
@@ -1216,6 +1224,9 @@ await step('800 comments in one hour: 750 DMs, 50 wait in line and go out as the
   const times = all.map((x) => x.at).sort((a, b) => a - b);
   for (let i = 750; i < times.length; i++) assert.ok(times[i] - times[i - 750] >= 3_600_000, `DM ${i} is the 751st within an hour`);
   assert.ok(times[0] >= t0);
+  const gap = ig.clock.now() - (Date.now() + ahead);
+  ahead += gap; // back on the real clock without going back in time
+  ig.clock.now = realClock;
 });
 
 // ===================== 10/11/2026 afternoon: "link diretto" =====================
@@ -1223,9 +1234,8 @@ await step('800 comments in one hour: 750 DMs, 50 wait in line and go out as the
 // role on the app. So by default the DM that answers the comment already has the link.
 
 // direct mode says the same thing in five wordings, taken in turn: any of them is the text of direct
-const isDirect = (t, said) => t.direct.texts.includes(said);
 const dmsFor = (list, cid) => list.filter((x) => x.path === 'me/messages' && x.body.recipient.comment_id === cid);
-const urlButton = (c) => c.body.message.attachment?.payload?.buttons?.[0];
+const urlButton = (c) => { const b = c.body.message.attachment?.payload?.buttons?.[0]; return b && b.url ? { ...b, url: untag(b.url) } : b; };
 // what went out for one comment: DMs and public replies (reminders of older tests may be due at the same time)
 const forComment = (list, cid) => list.filter((x) => x.method === 'POST' && (x.path === 'me/messages' || x.path === `${cid}/replies`));
 const flushDue = async () => { for (let i = 0; i < 80; i++) await ig.tick(); sent(); };
@@ -1261,8 +1271,10 @@ await step('direct: the comment gets ONE DM that already has the right link (TOW
     assert.equal(s[0].path, 'me/messages');
     assert.equal(s[0].body.recipient.comment_id, c.id);
     assert.ok(isDirect(t, msgText(s[0])), msgText(s[0]));
-    assert.match(msgText(s[0]), /follow @omnyalab/); // the follow is asked in words, it can't be checked
-    assert.deepEqual(s[0].body.message.attachment.payload.buttons, [{ type: 'web_url', title: 'Get the Blueprint', url: `${page}?ig=${code}` }], media);
+    const b = s[0].body.message.attachment.payload.buttons;
+    assert.equal(b.length, 1, media);
+    assert.deepEqual([b[0].type, b[0].title], ['web_url', 'Get the Blueprint'], media);
+    assert.match(b[0].url, new RegExp(`^${page.replace(/[.?]/g, '\\$&')}\\?ig=${code}&t=[abc]$`), media); // the A/B/C letter rides on the link
     assert.equal(s[1].path, `${c.id}/replies`);
     assert.ok(t.publicReplies.includes(s[1].query.message));
     // the follow is not a condition: the only question to Instagram about this person is the probe, after the DM
@@ -1319,7 +1331,7 @@ await step('direct: Instagram refuses the link button → the same text with the
   let d = dmsFor(s, c.id);
   assert.equal(d.length, 2); // the button, refused, then the text
   assert.equal(d[1].body.message.attachment, undefined);
-  assert.equal(d[1].body.message.text, `${msgText(d[0])}\n\n${url}`); // the same words as the refused button
+  assert.ok(isDirect(t, d[1].body.message.text) && d[1].body.message.text.includes(url), d[1].body.message.text); // the same wording as the refused button, the link in it
   assert.ok(isDirect(t, msgText(d[0])));
   assert.equal(s.filter((x) => x.path === `${c.id}/replies`).length, 1);
   assert.equal((await ig.lineState()).sentLastHour >= 2, true); // both calls took their place in the hour
@@ -1328,7 +1340,7 @@ await step('direct: Instagram refuses the link button → the same text with the
   assert.deepEqual(await c2.res, ['sent']);
   d = dmsFor(sent(), c2.id);
   assert.equal(d.length, 1);
-  assert.ok(t.direct.texts.some((w) => d[0].body.message.text === `${w}\n\n${url}`), d[0].body.message.text);
+  assert.ok(isDirect(t, d[0].body.message.text) && d[0].body.message.text.includes(url), d[0].body.message.text);
   assert.match((await (await get(hook, '/api/instagram?health=k')).json()).linkAs, /^text/);
   // City too
   const c3 = comment('d32', 'house', 'cityreel');
@@ -2014,12 +2026,12 @@ await step('ten or more public replies and five DMs for every page: short, one e
       assert.doesNotMatch(line, /\bAI\b|before it.?s built|free image|first image|isn.?t real|—/i, line);
       assert.doesNotMatch(line, /https?:|omnyalab\.com/, line); // never a link in public
     }
-    assert.equal(t.direct.texts.length, dest === 'city' || dest === 'fable' ? 5 : 1, dest);
+    assert.equal(t.direct.texts.length, dest === 'city' || dest === 'fable' ? 5 : 3, dest);
     assert.equal(new Set(t.direct.texts).size, t.direct.texts.length, dest);
     assert.equal(t.direct.texts[0], t.direct.text);
     for (const w of t.direct.texts) {
       // the follow is written in every wording, and nothing in it makes it a condition
-      assert.match(w, dest === 'city' ? /follow @omnyalab so you watch the city grow/ : /follow @omnyalab so you catch the next one/, w);
+      assert.match(w, dest === 'city' ? /follow @omnyalab so you watch the city grow/ : /follow @omnyalab so you catch the next one/i, w);
       assert.doesNotMatch(w, /first|before I|then I|once you|unless|comment DONE|tap Done/i, w);
       assert.ok(w.length < 640);
     }
@@ -2060,10 +2072,11 @@ await step('under the same reel: 40 comments, no public reply twice in a row, al
   noTwiceInARow(replies, 'public reply');
   for (const r of replies) assert.ok(tw.publicReplies.includes(r), r);
   assert.equal(new Set(replies).size, 12); // every wording came out
-  assert.equal(new Set(dms).size, 1); // one DM wording (Nico 11/11)
+  assert.equal(new Set(dms).size, 3); // the three wordings A, B, C in turn (Nico 12/11)
+  noTwiceInARow(dms, 'DM wording');
   for (const g of got) {
     assert.ok(isDirect(tw, g.said));
-    assert.deepEqual(g.dm.body.message.attachment.payload.buttons, [{ type: 'web_url', title: 'Get the Blueprint', url: 'https://www.omnyalab.com/the-towers-blueprint?ig=DfTOWERS22' }]); // the same button under every wording
+    assert.deepEqual(g.dm.body.message.attachment.payload.buttons.map((b) => ({ ...b, url: untag(b.url) })), [{ type: 'web_url', title: 'Get the Blueprint', url: 'https://www.omnyalab.com/the-towers-blueprint?ig=DfTOWERS22' }]); // the same button under every wording
   }
   // each reel keeps its own turn: another reel, and City with its own lines
   const red = await wave('rotred', 14, 'red', () => 'AI');
@@ -2114,7 +2127,7 @@ await step('the turn of the lines can never stop a comment: Redis not counting, 
   await tickPage.GET();
   const second = dmsFor(sent(), c.id).map(msgText);
   assert.equal(second.length, 1);
-  assert.ok(first.length >= 1 && first.every((w) => w.split('\n\n')[0] === second[0]), `${first.join(' / ')} → ${second[0]}`); // (the refused tries: the button, then the same words with the link in the text)
+  assert.ok(first.length >= 1 && first.every((w) => w.replace(/\n*https:\/\/\S+\n*/, '\n').trim() === second[0].replace(/\n*https:\/\/\S+\n*/, '\n').trim()), `${first.join(' / ')} → ${second[0]}`); // (the refused tries: the button, then the same words with the link in the text)
   await S.kv.del('fails');
   sent();
 });
@@ -2133,7 +2146,6 @@ await step('the follow is asked in the DM and never checked: who doesn’t follo
     const s = forComment(all, c.id);
     assert.equal(s.length, 2);
     assert.equal(urlButton(s[0]).url, `${TOWERS_PAGE}?ig=DfTOWERS11`); // the link is already there
-    assert.match(msgText(s[0]), /follow @omnyalab so you catch the next one/);
     assert.ok(isDirect(tw, msgText(s[0])));
     // nothing about this person is asked to Instagram before the DM goes out
     assert.ok(all.findIndex((x) => x.path === u) > all.findIndex((x) => x.path === 'me/messages'));
@@ -2204,7 +2216,7 @@ await step('"comment your city": a city or a country in the comment → the publ
     // the DM is the same as for the word: one of the five wordings, the button with the link of the reel
     assert.ok(isDirect(tw, g.said), g.said);
     assert.doesNotMatch(g.said, new RegExp(place, 'i'));
-    assert.deepEqual(g.dm.body.message.attachment.payload.buttons, [{ type: 'web_url', title: 'Get the Blueprint', url: `${TOWERS_PAGE}?ig=DfTOWERS11` }]);
+    assert.deepEqual(g.dm.body.message.attachment.payload.buttons.map((b) => ({ ...b, url: untag(b.url) })), [{ type: 'web_url', title: 'Get the Blueprint', url: `${TOWERS_PAGE}?ig=DfTOWERS11` }]);
     const l = await lead(g.u);
     assert.deepEqual([l.stage, l.kind, l.place], ['asked', 'towers', place]); // kept with the lead, for Nico
   }
@@ -2466,15 +2478,28 @@ await step('FABLE: the reel that says "Comment FABLE to get the link" goes to /f
 
   // the click: vercel.json sends /fable?ig=<code> to /api/instagram, which counts it and opens /fable?reel=<code>
   const { readFileSync } = await import('node:fs');
-  const rule = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8')).redirects[0];
+  const rules = JSON.parse(readFileSync(new URL('../vercel.json', import.meta.url), 'utf8')).redirects;
+  const rule = rules[1];
   assert.match('/fable', new RegExp(`^${rule.source.replace(/:(\w+)\(([^)]+)\)/g, '(?:$2)')}$`));
   assert.equal(rule.destination, '/api/instagram?go=:page&p=:post');
+  // the A/B/C letter (12/11/2026): the same pages, with &t= carried to the counter, and first so it wins
+  assert.equal(rules[0].source, rule.source);
+  assert.equal(rules[0].destination, '/api/instagram?go=:page&p=:post&t=:t');
+  assert.deepEqual(rules[0].has.map((x) => x.key), ['ig', 't']);
   for (const page of ['the-blueprint', 'the-tower-blueprint', 'the-tower-floors', '3d-to-film', 'the-build-blueprint', 'the-towers-blueprint']) assert.ok(rule.source.includes(page), page); // the pages that were there are still there
   const r = await get(hook, '/api/instagram?go=fable&p=DfFABLE0001', { 'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) Instagram 400.0' });
   assert.equal(r.status, 302);
   assert.equal(r.headers.get('location'), `${FABLE_PAGE}?reel=DfFABLE0001`);
   const row = (await ig.postStats()).find((x) => x.post === 'DfFABLE0001');
   assert.deepEqual([row.click, row.dest], [1, 'fable']);
+  // a click that carries the letter of its wording is counted for that wording too
+  const before = (await ig.textStats()).b?.click || 0;
+  const rb = await get(hook, '/api/instagram?go=the-towers-blueprint&p=DfTOWERS11&t=b', { 'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) Instagram 400.0' });
+  assert.equal(rb.status, 302);
+  const ts = await ig.textStats();
+  assert.equal(ts.b.click, before + 1);
+  assert.ok(ts['DfTOWERS11:b'].click >= 1 && ts.b.sent >= 1, JSON.stringify(ts));
+  assert.equal(typeof (await (await get(hook, '/api/instagram?health=k')).json()).textTest, 'object');
   assert.ok(row.c >= 15 && row.link >= 15);
   // by hand too: &action=post&dest=fable
   assert.equal((await leadsJson('&action=post&code=DfNEWFABLE1&dest=fable')).added.DfNEWFABLE1, 'fable');

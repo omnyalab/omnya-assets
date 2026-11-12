@@ -13,6 +13,23 @@
           "type": "query",
           "key": "ig",
           "value": "(?<post>[A-Za-z0-9_-]+)"
+        },
+        {
+          "type": "query",
+          "key": "t",
+          "value": "(?<t>[abc])"
+        }
+      ],
+      "destination": "/api/instagram?go=:page&p=:post&t=:t",
+      "permanent": false
+    },
+    {
+      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint|fable)",
+      "has": [
+        {
+          "type": "query",
+          "key": "ig",
+          "value": "(?<post>[A-Za-z0-9_-]+)"
         }
       ],
       "destination": "/api/instagram?go=:page&p=:post",

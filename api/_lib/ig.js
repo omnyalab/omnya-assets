@@ -574,7 +574,7 @@ const pathOf = (url) => new URL(url).pathname.replace(/\/+$/, '');
  * `go` is the page (the-towers-blueprint, 3d-to-film, city…), `post` the reel's code, `k` the City token.
  * Only our own pages can come out of here.
  */
-export async function click(go, post, k, count = true) {
+export async function click(go, post, k, count = true, letter = '') {
   const slug = String(go || '').replace(/^\/+|\/+$/g, '');
   const dest = T.KINDS.find((d) => d !== 'legacy' && (d === slug || pathOf(T.textsFor(d).url) === `/${slug}`));
   if (!dest) return `${SITE}/`;
@@ -584,6 +584,7 @@ export async function click(go, post, k, count = true) {
     } catch (e) {
       await noteError('click', e);
     }
+    if (/^[abc]$/.test(String(letter || ''))) await textCount(letter, post, 'click');
   }
   const url = `${SITE}${pathOf(T.textsFor(dest).url)}`;
   if (dest === 'city') return /^[A-Za-z0-9_-]{10,40}$/.test(k || '') ? `${url}?k=${k}` : url;
@@ -696,20 +697,59 @@ async function directDm(job, onSecond, words) {
   const p = job.p;
   const t = T.textsFor(p.dest);
   // the text of direct in one of its wordings, in turn (every one asks for the follow, none checks it)
-  const say = words || lineAt(t.direct.texts || [t.direct.text], await turnOf(job, 'd'), `d:${job.m}`);
-  const url = p.dest === 'city' ? await houseUrl(job.n, job.u, p.code) : track(t.url, p.code);
-  const inText = { text: `${say}\n\n${url}` };
-  if (await isPlain()) return send({ comment_id: job.c }, inText);
+  const list = t.direct.texts || [t.direct.text];
+  let say = words;
+  let letter = ''; // the A/B/C test (12/11/2026): wordings with {link} are a, b, c, and the link carries &t=<letter>
+  if (!say) {
+    const i = lineAt(list.map((_, n) => n), await turnOf(job, 'd'), `d:${job.m}`);
+    say = list[i];
+    if (say.includes('{link}') && i < 3) letter = 'abc'[i];
+  }
+  let url = p.dest === 'city' ? await houseUrl(job.n, job.u, p.code) : track(t.url, p.code);
+  if (letter && p.dest !== 'city') url += `&t=${letter}`;
+  const inText = { text: say.includes('{link}') ? say.replace('{link}', url) : `${say}\n\n${url}` };
+  const onButton = say.replace(/\n?\{link\}\n?/, '\n').trim();
+  const counted = async (r) => {
+    if (letter) await textCount(letter, p.code, 'sent');
+    return r;
+  };
+  if (await isPlain()) return counted(await send({ comment_id: job.c }, inText));
   try {
-    return await send({ comment_id: job.c }, { attachment: { type: 'template', payload: { template_type: 'button', text: say, buttons: [{ type: 'web_url', title: t.direct.button, url }] } } });
+    return counted(await send({ comment_id: job.c }, { attachment: { type: 'template', payload: { template_type: 'button', text: onButton, buttons: [{ type: 'web_url', title: t.direct.button, url }] } } }));
   } catch (e) {
     if (!refusedShape(e)) throw e;
     console.warn('[ig] link button refused in the answer to a comment, link in the text instead:', e.message);
     if (onSecond) await onSecond();
     const r = await send({ comment_id: job.c }, inText);
     await setPlain(); // the text went through: it was the button
-    return r;
+    return counted(r);
   }
+}
+
+/**
+ * The A/B/C test of the DM's wordings (12/11/2026): how many went out and how many were opened, per
+ * letter and per reel, in the hash 'tstats' (fields "a|sent", "a|click", "<reel>:a|sent"…). Never throws.
+ */
+async function textCount(letter, post, what) {
+  try {
+    await h.incr('tstats', `${letter}|${what}`);
+    await h.incr('tstats', `${cleanPost(post)}:${letter}|${what}`);
+  } catch (e) {
+    console.warn('[ig] the A/B/C count was not kept:', e.message);
+  }
+}
+
+/** The A/B/C test for Nico: sent, opened and the open rate per wording, all reels together and per reel. */
+export async function textStats() {
+  const all = await h.all('tstats').catch(() => ({}));
+  const rows = {};
+  for (const [field, n] of Object.entries(all || {})) {
+    const [who, what] = field.split('|');
+    const r = (rows[who] ||= { sent: 0, click: 0 });
+    if (what in r) r[what] += Number(n);
+  }
+  for (const r of Object.values(rows)) r.open = r.sent ? `${Math.round((r.click / r.sent) * 100)}%` : '';
+  return rows;
 }
 
 /** A tap on an old ManyChat button from someone we don't know: the pages to choose from. */
@@ -1417,6 +1457,7 @@ export async function health() {
     out.lastComment = last ? { at: new Date(last.at).toISOString(), minutesAgo: Math.round((now - last.at) / 60_000), from: last.from, text: last.text, post: last.media, did: last.did } : null;
     out.line = await lineState();
     out.errors = await errorState(5);
+    out.textTest = await textStats(); // the A/B/C test of the DM wordings (12/11/2026)
     out.followProbe = await probeState();
     out.map = await postMap();
   } catch (e) {

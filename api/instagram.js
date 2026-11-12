@@ -24,7 +24,7 @@ export async function GET(request) {
   }
   if (q.has('go')) {
     const person = !NOT_A_PERSON.test(request.headers.get('user-agent') || '');
-    const to = await click(q.get('go'), q.get('p'), q.get('k'), person).catch(() => 'https://www.omnyalab.com/');
+    const to = await click(q.get('go'), q.get('p'), q.get('k'), person, q.get('t')).catch(() => 'https://www.omnyalab.com/');
     return new Response(null, { status: 302, headers: { Location: to, 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
   }
   if (q.has('health')) {

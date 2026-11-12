@@ -26,11 +26,12 @@ const repliesFor = (name) => [
   `Check your DMs, ${name} is there 🙌🏻`,
   `Sent you a DM 👇🏻 enjoy ${name}`,
   'It’s in your inbox now 🙌🏻',
-  'sent, it’s waiting for you in your DMs 🫶🏻',
-  'just dropped it in your DMs 👀',
-  'on its way, check your DMs 🙌🏻',
+  // 12/11/2026: four of the twelve say where a DM from someone you don't follow lands (Requests or General)
+  'sent to your DMs 🫶🏻 or Requests if you can’t see it',
+  'Sent 🙌🏻 check your DMs, or Requests and General',
+  'on its way, check your DMs or Requests 🙌🏻',
   `${name} just landed in your DMs 👀`,
-  'you got it, check your DMs 👇🏻',
+  'you got it, check your DMs or General 👇🏻',
   'all yours, I just sent it in DM 🙌🏻',
 ];
 export const publicReplies = repliesFor('The Blueprint');
@@ -67,13 +68,16 @@ export const opener = {
  * that opens the page. Until Meta's App Review passes, the taps and messages of people without a role
  * on the app never reach us, so nothing can wait for a tap; the follow is asked in words.
  */
-const directFor = (name) => {
-  // 11/11 night (Nico, "vai con la 1"): one wording for every DM that answers a comment. Instagram only takes text
-  // there (no Advanced Access for the button), so the link goes on its own line right under these words. The follow
-  // is asked in words and never checked (Nico, 10/11/2026).
+const directFor = (name, what = 'project') => {
+  // 12/11/2026 (Nico, "sì mettili"): three wordings in turn, A, B and C, with the link in the FIRST lines (the preview
+  // of the notification shows it). {link} is where the link goes; the bot tags it with &t=a, b or c, so the clicks
+  // say which wording opens more. Instagram only takes text there (no Advanced Access for the button). The follow is
+  // asked in words in all three and never checked (Nico, 10/11/2026). Before: one wording, "As promised 🙌🏻 here's your free…".
   const s = name.replace(/^The /, '');
   const texts = [
-    `As promised 🙌🏻 here’s your free ${s}, it’s all in the link below 👇🏻 and don’t forget to follow @omnyalab so you catch the next one, we drop a new build every week 🔥`,
+    `Here’s your free ${s} 👇🏻\n{link}\nFollow @omnyalab so you catch the next one, we drop a new build every week 🙌🏻`,
+    `${s}, as promised 🙌🏻\n{link}\n(it’s free, your name and email and it’s yours) and follow @omnyalab so you catch the next one 🔥`,
+    `Got your comment 🙌🏻 the ${s} is here:\n{link}\nFollow @omnyalab so you catch the next one, and one thing: are you working on a ${what} right now, or just curious? 👀`,
   ];
   return { text: texts[0], texts, button: 'Get the Blueprint' };
 };
@@ -141,7 +145,7 @@ const tower = {
   publicReplies: repliesFor('The Tower Blueprint'),
   cantDm: 'We can’t send you the Tower Blueprint unless you send us a text, if you want it, just send us a text 🫶🏻',
   opener: { text: 'Hey 🙌🏻 The Tower Blueprint is ready, tap below and I’ll send it over 👇🏻', button: 'Get the Blueprint' },
-  direct: directFor('The Tower Blueprint'),
+  direct: directFor('The Tower Blueprint', 'tower'),
   comment: commentFor('The Tower Blueprint'),
   followFirst: { ...followFirst, text: followFirst.text.replace('The Blueprint', 'The Tower Blueprint') },
   blueprintFollower: `Here you go 👇🏻 ${towerBlueprint}`,
@@ -167,7 +171,7 @@ const funnel = ({ name, url, page, replies, opener: first, nudge }) => ({
   publicReplies: [...new Set([...(replies || []), ...repliesFor(replies ? 'the blueprint' : name)])],
   cantDm: `We can’t send you ${name.replace(/^The /, 'the ')} unless you send us a text, if you want it, just send us a text 🫶🏻`,
   opener: { text: first || `Hey 🙌🏻 ${name} is ready, tap below and I’ll send it over 👇🏻`, button: 'Get the Blueprint' },
-  direct: directFor(name),
+  direct: directFor(name, /tower/i.test(name) ? 'tower' : 'project'),
   comment: commentFor(name),
   followFirst: { ...followFirst, text: followFirst.text.replace('The Blueprint', name) },
   blueprintFollower: `Here you go 👇🏻 ${page}: ${url}`,
