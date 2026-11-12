@@ -17,7 +17,7 @@ const w = 'first';
 const badge = 'round';
 type Item = { p?: (typeof projects)[number]; i3?: 'house' | 'tower' | 'towers' };
 const items: Item[] = projects.map((p) => ({ p }));
-if (w === 'first') items.unshift({ i3: 'tower' }, { i3: 'house' }, { i3: 'towers' }); // 12/11: the three towers third, in the wide slot
+if (w === 'first') items.unshift({ i3: 'towers' }, { i3: 'house' }, { i3: 'tower' }); // 12/11 (Nico): the three towers first, the newest; SAMAR in the wide slot
 else { items.splice(2, 0, { i3: 'house' }); items.splice(6, 0, { i3: 'tower' }); }
 const sizes = ['(min-width: 900px) 58vw, calc(100vw - 32px)', '(min-width: 900px) 34vw, 84vw', '(min-width: 900px) 34vw, 84vw', '(min-width: 900px) 50vw, calc(100vw - 32px)'];
 ---
