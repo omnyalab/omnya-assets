@@ -2620,6 +2620,40 @@ await step('"Postato" (/api/leads?action=posted): the newest reel of the last 3 
   sent();
 });
 
+await step('Meta says, in Italian, that a comment cannot take a private reply: no retries, the public "send us a text" at once, no error counted', async () => {
+  ahead += 2 * 3_600_000;
+  sent();
+  for (const [user, said, sub] of [
+    ['it1', '(#100) Il commento non è valido per una risposta privata', 2534025],
+    ['it2', '(#100) Il proprietario del thread ha archiviato o eliminato questa conversazione oppure il thread non esiste.', 2534001],
+  ]) {
+    state.failPrivate = { message: said, type: 'IGApiException', code: 100, error_subcode: sub };
+    const c = comment(user, 'TOWERS', 'towersreel');
+    const logged = [];
+    const e = console.error;
+    console.error = (...a) => logged.push(a.join(' '));
+    let res;
+    try {
+      res = await c.res;
+    } finally {
+      console.error = e;
+      state.failPrivate = null;
+    }
+    assert.deepEqual(res, ['nodm'], user);
+    const mine = forComment(sent(), c.id);
+    // at most the link button and the text (2534025 is also Instagram's answer to the button), never a retry later
+    assert.ok(mine.filter((x) => x.path === 'me/messages').length <= 2, JSON.stringify(mine.map((x) => x.path)));
+    const pub = mine.filter((x) => x.path === `${c.id}/replies`);
+    assert.equal(pub.length, 1);
+    assert.equal(pub[0].query.message, T.textsFor('towers').cantDm);
+    assert.ok(!logged.some((l) => l.includes('[ig] ERROR private reply')), logged.join('\n'));
+  }
+  // nothing of theirs is left in line: a later round sends nothing for them
+  ahead += 30 * 60_000;
+  await ig.tick(ig.clock.now());
+  assert.equal(sent().filter((x) => x.path === 'me/messages').length, 0);
+});
+
 server.close();
 console.log(`\n${ok} prove passate`);
 const { execFileSync } = await import('node:child_process');

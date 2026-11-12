@@ -225,7 +225,10 @@ export function errorKind(e) {
   const { code, sub, status } = e || {};
   if (status === 429 || [4, 17, 32, 613, 80002, 80006].includes(code) || /rate limit|too many calls|request limit reached/i.test(m)) return 'rate';
   if (sub === 2534022 || /outside (of )?(the )?allowed window|comment (was|is) (deleted|invalid)|invalid for a private reply/i.test(m)) return 'gone';
-  if (code === 551 || [2534014, 1545041, 2018108, 2018028].includes(sub) || /cannot message|can.?t receive|isn.?t available|not available right now|user cannot be found|has blocked/i.test(m)) return 'user';
+  // 2534025: this comment can't take a private reply (Meta writes it in Italian too: "Il commento non è
+  // valido per una risposta privata"); 2534001: the thread is archived, deleted or doesn't exist. Trying
+  // again only burns the hour's calls: the public "send us a text" at once
+  if (code === 551 || [2534014, 1545041, 2018108, 2018028, 2534025, 2534001].includes(sub) || /cannot message|can.?t receive|isn.?t available|not available right now|user cannot be found|has blocked|non è valido per una risposta privata|ha archiviato o eliminato questa conversazione/i.test(m)) return 'user';
   return 'system';
 }
 
@@ -290,7 +293,8 @@ async function send(recipient, message) {
 const text = (id, t) => send({ id }, { text: t });
 
 /** Instagram refused the message as built (not the person, not the hour): worth one try in plain form. */
-const refusedShape = (e) => /template|button|attachment/i.test(e.message) || (errorKind(e) === 'system' && e.status === 400 && (!e.code || e.code === 100) && e.sub !== 2534037);
+// (2534025 is also what Instagram says to a link button in the answer to a comment: the text is tried once)
+const refusedShape = (e) => /template|button|attachment/i.test(e.message) || e.sub === 2534025 || (errorKind(e) === 'system' && e.status === 400 && (!e.code || e.code === 100) && e.sub !== 2534037);
 
 /** A message with one button; if Instagram refuses the button, a quick reply does the same job. */
 async function button(recipient, t, label, payload, onSecond) {
