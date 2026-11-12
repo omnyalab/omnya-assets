@@ -33,7 +33,12 @@
     '.ofs-x::after{content:"";position:absolute;inset:-4px;border-radius:50%}' +
     '.ofs-x svg{display:block;width:16px;height:16px}' +
     '.ofs-x:active{transform:scale(.92)}' +
-    'html.ofs-on .ofs-x{opacity:1;visibility:visible;transform:none;transition:opacity .35s ease,transform .35s ease}' +
+    'html.ofs-on .ofs-x{opacity:1;visibility:visible;transform:none;transition:opacity .35s ease,transform .15s ease}' +
+    'html.ofs-on .ofs-x:active{transform:scale(.9)}' +
+    // iPhone: the strip along the top edge belongs to Safari (a tap there brings its bars back), so the X and the
+    // row of buttons beside it sit a little lower while the demo is full screen
+    'html.ofs-iph.ofs-on .ofs-x,html.ofs-iph.ofs-on .bar{translate:0 16px}' +
+    '.bar{transition:translate .35s ease}' +
     '.ofs-h{position:fixed;inset:0;z-index:2147482999;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity .5s ease;' +
       'background:radial-gradient(ellipse 46% 42% at 50% 50%, rgba(0,0,0,.42), rgba(0,0,0,0) 100%)}' +
     '.ofs-h.on{opacity:1}' +
@@ -77,7 +82,7 @@
       var sync = function () { on(!!fsEl()); };
       document.addEventListener('fullscreenchange', sync);
       document.addEventListener('webkitfullscreenchange', sync);
-      x.addEventListener('click', function () {
+      tap(x, function () {
         left = true;
         (document.exitFullscreen || document.webkitExitFullscreen).call(document);
       });
@@ -86,6 +91,7 @@
 
     // iPhone
     if (!pageScrolls) root.classList.add('ofs-ios');
+    root.classList.add('ofs-iph');
     var probe = document.createElement('div');
     probe.className = 'ofs-p';
     document.body.appendChild(probe);
@@ -108,10 +114,15 @@
       clearTimeout(hintT); clearTimeout(hintOff);
       hint.classList.remove('on');
     };
+    var seen = false;
     var update = function () {
       // the bars are gone when the page is as tall as the screen allows
       var full = land() && innerHeight >= probe.offsetHeight - 2;
-      on(full);
+      if (full) seen = true;
+      // 12/11 (Nico: "the X is slow, I have to press it several times"): a tap near the top edge first brings
+      // Safari's bars back, and the X used to vanish with them, so the next tap hit nothing. Once the demo has
+      // been full screen the X stays while the phone is on its side, bars or not
+      on(full || (seen && land()));
       lock(full);
       if (full) { endHint(); return; }
       if (!land() || hintDone || hintT) return;
@@ -127,12 +138,25 @@
     if (window.visualViewport) visualViewport.addEventListener('resize', update);
     update();
     // on iPhone the X goes back to the page of the site the demo was opened from
-    x.addEventListener('click', function () {
+    tap(x, function () {
       var same = false;
       try { same = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) {}
       if (same && history.length > 1) history.back();
       else location.href = it ? '/it/work/' : '/work/';
     });
+  }
+  // the X answers the moment the finger lifts, without waiting for the click that follows; a tap counts once
+  function tap(el, fn) {
+    var last = 0;
+    var go = function (e) {
+      e.preventDefault(); e.stopPropagation();
+      var now = Date.now();
+      if (now - last < 700) return;
+      last = now; fn();
+    };
+    el.addEventListener('touchstart', function () {}, { passive: true }); // so :active shows the press on iPhone
+    el.addEventListener('touchend', go, { passive: false });
+    el.addEventListener('click', go);
   }
   if (document.body) start();
   else document.addEventListener('DOMContentLoaded', start);
