@@ -5,7 +5,7 @@ import Arrow from './Arrow.astro';
 import { t, langFromPath } from '../i18n';
 
 interface Props {
-  id: 'house' | 'tower';
+  id: 'house' | 'tower' | 'towers';
   slot: number;
   kind?: 'pcard' | 'wcard';
   shape?: string;
@@ -20,6 +20,7 @@ const it = I.items[id];
 const media = {
   house: { href: `${lang === 'it' ? '/it' : ''}/demo/hold-to-build/`, video: '/interactive/house.mp4', videoM: '/interactive/house-m.mp4', pic: '/interactive/house', cat: 'luxury' },
   tower: { href: `${lang === 'it' ? '/it' : ''}/demo/choose-your-floor/`, video: '/interactive/tower.mp4', videoM: '/interactive/tower-m.mp4', pic: '/interactive/tower', cat: 'real-estate' },
+  towers: { href: `${lang === 'it' ? '/it' : ''}/demo/choose-your-view/`, video: '/interactive/towers.mp4', videoM: '/interactive/towers-m.mp4', pic: '/interactive/towers', cat: 'real-estate' },
 }[id];
 ---
 

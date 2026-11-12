@@ -112,6 +112,9 @@
   .restart.on { display: inline-flex; animation: pillin .6s ease both; }
   @keyframes pillin { from { opacity: 0; transform: translateY(-6px); } }
   .bar .left { display: flex; gap: 10px; }
+  /* full screen on a phone (12/11): the X sits in the top left corner, the Back pills move to its right */
+  html.ofs-on .bar .left { margin-left: calc(var(--ofs-x) - 18px); }
+  html .ofs-x { top: 9px; }
 
   /* loading (L4, 9/11): a big number that counts to 100 over the tower, then rises and goes */
   .loader { position: fixed; left: clamp(20px, 4vw, 56px); bottom: clamp(20px, 5vh, 56px); z-index: 50; pointer-events: none; color: #fff; transition: transform .9s cubic-bezier(.6,0,.2,1), opacity .7s; }
@@ -371,5 +374,6 @@ $('restart').addEventListener('click', () => {
 </script>
 <!-- 10/11 (Nico): the label "Get this for your project" and, after 20 seconds, the pilot offer card (public/demo/cta.js) -->
 <script defer src="/demo/cta.js"></script>
+<script defer src="/demo/fullscreen.js"></script>
 </body>
 </html>

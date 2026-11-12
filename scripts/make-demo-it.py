@@ -71,6 +71,28 @@ TOWER = [
     ('Turn your phone<small>SAMAR is best seen in landscape</small>', 'Gira il telefono<small>SAMAR si guarda in orizzontale</small>'),
 ]
 
+VIEW = [
+    ('<html lang="en"', '<html lang="it"'),
+    ('Choose your view · Omnya Lab', 'Scegli la vista · Omnya Lab'),
+    ('Three towers in interactive 3D by Omnya Lab: pick a view and fly around them.',
+     'Tre torri in 3D interattivo di Omnya Lab: scegli una vista e voli attorno a loro.'),
+    ('https://www.omnyalab.com/demo/choose-your-view/"', 'https://www.omnyalab.com/it/demo/choose-your-view/"'),
+    ('/og/demo-choose-your-view.jpg', '/og/demo-scegli-la-vista.jpg'),
+    ('<div class="eyebrow">Three towers</div>', '<div class="eyebrow">Tre torri</div>'),
+    ('Choose<br> your <em>view</em>', 'Scegli<br> la <em>vista</em>'),
+    ('<b>Choose your view</b>', '<b>Scegli la vista</b>'),
+    ('Choose your view · loading', 'Scegli la vista · caricamento'),
+    ('Turn your phone<small>These towers are best seen in landscape</small>', 'Gira il telefono<small>Queste torri si guardano in orizzontale</small>'),
+    ('aria-label="Previous view"', 'aria-label="Vista prima"'),
+    ('aria-label="Next view"', 'aria-label="Vista dopo"'),
+    ("name: 'Front view'", "name: 'Vista frontale'"),
+    ("name: 'Side view'", "name: 'Vista laterale'"),
+    ("name: 'Back view'", "name: 'Vista da dietro'"),
+    ("name: 'Rooftop'", "name: 'Sul tetto'"),
+    ("name: 'Above the clouds'", "name: 'Sopra le nuvole'"),
+    ("name: 'Aerial view'", "name: 'Vista dall’alto'"),
+]
+
 
 def make(src, dst, base, pairs, extra=()):
     s = open(src, encoding='utf-8').read()
@@ -82,7 +104,7 @@ def make(src, dst, base, pairs, extra=()):
     s = re.sub(r'(<meta charset="utf-8">)', r'\1\n<base href="%s">' % base, s, count=1)
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     open(dst, 'w', encoding='utf-8').write(s)
-    left = [w for w in ('Watch it rise', 'Turn your phone', 'Choose<br>', 'Enter level', 'Back to the tower', 'Register interest', 'bedrooms') if w in s]
+    left = [w for w in ('Watch it rise', 'Turn your phone', 'Choose<br>', 'Choose your view', 'Front view', 'Enter level', 'Back to the tower', 'Register interest', 'bedrooms') if w in s]
     print(os.path.relpath(dst, ROOT), 'English left:', left or 'none')
 
 
@@ -90,3 +112,4 @@ make(P('demo/hold-to-build/index.html'), P('it/demo/hold-to-build/index.html'), 
 make(P('demo/choose-your-floor/index.html'), P('it/demo/choose-your-floor/index.html'), '/demo/choose-your-floor/', TOWER,
      [("location.replace('m/' + location.search)", "location.replace('/it/demo/choose-your-floor/m/' + location.search)")])
 make(P('demo/choose-your-floor/m/index.html'), P('it/demo/choose-your-floor/m/index.html'), '/demo/choose-your-floor/m/', TOWER)
+make(P('demo/choose-your-view/index.html'), P('it/demo/choose-your-view/index.html'), '/demo/choose-your-view/', VIEW)

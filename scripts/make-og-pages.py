@@ -28,6 +28,8 @@ PAGES = [
     ('demo-choose-your-floor', 'Choose your floor', P('demo/choose-your-floor/assets/fly-first.webp')),
     ('demo-guardala-salire', 'Guardala salire', P('demo/hold-to-build/d/0720.avif')),
     ('demo-scegli-il-piano', 'Scegli il piano', P('demo/choose-your-floor/assets/fly-first.webp')),
+    ('demo-choose-your-view', 'Choose your view', P('demo/choose-your-view/assets/poster.jpg')),
+    ('demo-scegli-la-vista', 'Scegli la vista', P('demo/choose-your-view/assets/poster.jpg')),
 ]
 
 

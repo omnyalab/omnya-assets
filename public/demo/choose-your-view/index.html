@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Choose your view · Omnya Lab</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Omnya Lab">
+<meta property="og:title" content="Choose your view · Omnya Lab">
+<meta property="og:description" content="Three towers in interactive 3D by Omnya Lab: pick a view and fly around them.">
+<meta property="og:url" content="https://www.omnyalab.com/demo/choose-your-view/">
+<meta property="og:image" content="https://www.omnyalab.com/og/demo-choose-your-view.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.omnyalab.com/og/demo-choose-your-view.jpg">
+<meta name="description" content="Three towers in interactive 3D by Omnya Lab: pick a view and fly around them.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" as="image" href="assets/poster.jpg" fetchpriority="high">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #000; color: #fff; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  #stage { position: fixed; inset: 0; overflow: hidden; background: #0b1118; }
+  @media (min-aspect-ratio: 16/9) { #stage { left: 50%; right: auto; width: calc(100vh * 16 / 9); transform: translateX(-50%); } }
+  video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #0b1118; opacity: 0; }
+  video.on { opacity: 1; }
+
+  /* vetro Apple, come SAMAR Choose your floor */
+  .glass { position: relative; isolation: isolate; background: rgba(255,255,255,.10);
+    -webkit-backdrop-filter: blur(28px) saturate(180%); backdrop-filter: blur(28px) saturate(180%);
+    box-shadow: inset 0 0 0 .5px rgba(255,255,255,.45), inset 0 1px 1px rgba(255,255,255,.35), 0 8px 30px rgba(0,0,0,.18); }
+  .glass::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1;
+    background: linear-gradient(180deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 42%); }
+
+  /* A2: pannello stretto sul bordo destro, anteprima grande con frecce, le altre viste in lista */
+  .panel { position: absolute; right: 18px; transform-origin: right center; top: 50%; transform: translateY(-50%); width: 296px; padding: 22px 14px 12px; border-radius: 28px; background: rgba(14,18,24,.40); z-index: 2; }
+  .panel > .eyebrow, .panel > h1 { padding-inline: 6px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: rgba(255,255,255,.62); }
+  .panel h1 { margin-top: 6px; font-size: 42px; font-weight: 700; letter-spacing: -.035em; line-height: .98; text-shadow: 0 2px 18px rgba(0,0,0,.35); }
+  .panel h1 em { font-style: normal; color: #fff; }
+
+  .big { position: relative; margin-top: 16px; border-radius: 16px; overflow: hidden; aspect-ratio: 16 / 9; box-shadow: 0 0 0 1px rgba(255,255,255,.35); background: #0b1118; }
+  .big img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .big .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 34px 12px 10px; display: flex; align-items: center; gap: 8px; pointer-events: none;
+    font-size: 15px; font-weight: 600; letter-spacing: -.01em; text-shadow: 0 1px 8px rgba(0,0,0,.5);
+    background: linear-gradient(0deg, rgba(0,0,0,.78) 0%, rgba(0,0,0,.45) 45%, rgba(0,0,0,0) 100%); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #0A84FF; flex: none; box-shadow: 0 0 0 3px rgba(10,132,255,.3), 0 0 12px #0A84FF; }
+  .flying .dot { animation: pulse .9s ease-in-out infinite alternate; }
+  @keyframes pulse { to { box-shadow: 0 0 0 6px rgba(10,132,255,.15), 0 0 18px #0A84FF; } }
+  .count { margin-left: auto; font-size: 12px; font-weight: 500; color: rgba(255,255,255,.7); font-variant-numeric: tabular-nums; }
+
+  /* frecce A4: chevron sottili senza cerchio, su un'ombra ai bordi che diventa blu */
+  .arr { position: absolute; top: 0; bottom: 0; width: 52px; display: grid; place-items: center; opacity: .85; transition: opacity .2s ease, background .25s ease;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 28%, #000 72%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0%, #000 28%, #000 72%, transparent 100%); }
+  .arr svg { width: 18px; height: 30px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 1px 6px rgba(0,0,0,.6)); transition: transform .2s ease; }
+  .arr.p { left: 0; background: linear-gradient(90deg, rgba(0,0,0,.28), rgba(0,0,0,0)); }
+  .arr.n { right: 0; background: linear-gradient(270deg, rgba(0,0,0,.28), rgba(0,0,0,0)); }
+  .arr:hover { opacity: 1; }
+  .arr.p:hover { background: linear-gradient(90deg, rgba(10,132,255,.55), rgba(10,132,255,0)); }
+  .arr.n:hover { background: linear-gradient(270deg, rgba(10,132,255,.55), rgba(10,132,255,0)); }
+  .arr:active svg { transform: scale(.88); }
+
+  /* le viste sotto, stile A3: fasce di foto intere col nome sopra e fade nero.
+     al passaggio la fascia si alza e la foto zooma piano; quella selezionata ha l'alone blu */
+  .list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .it { position: relative; display: block; height: 46px; border-radius: 11px; overflow: hidden; text-align: left;
+    font-size: 15px; font-weight: 600; letter-spacing: -.01em; box-shadow: 0 0 0 .5px rgba(255,255,255,.32);
+    transition: transform .45s cubic-bezier(.2,.8,.2,1), box-shadow .35s ease; }
+  .th { position: absolute; inset: 0; }
+  .th img { display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(1.03);
+    transition: transform 1.4s cubic-bezier(.2,.7,.2,1), filter .4s ease; }
+  .it .nm { position: absolute; inset: 0; display: flex; align-items: center; padding-left: 12px; text-shadow: 0 1px 8px rgba(0,0,0,.55);
+    background: linear-gradient(90deg, rgba(0,0,0,.72), rgba(0,0,0,.25) 60%, rgba(0,0,0,.05)); transition: background .4s ease, padding .45s cubic-bezier(.2,.8,.2,1); }
+  .it:hover, .it.hover, .it:focus-visible { outline: none; transform: translateX(-4px) scale(1.025); box-shadow: 0 0 0 .5px rgba(255,255,255,.6), 0 8px 24px rgba(0,0,0,.35); }
+  .it:hover .th img, .it.hover .th img, .it:focus-visible .th img { transform: scale(1.14); filter: brightness(1.1) saturate(1.1); }
+  .it:hover .nm, .it.hover .nm { padding-left: 16px; background: linear-gradient(90deg, rgba(0,0,0,.6), rgba(10,132,255,.12) 65%, rgba(10,132,255,0)); }
+  .it.on { box-shadow: 0 0 0 1.5px rgba(110,180,255,.95), 0 0 22px rgba(10,132,255,.55); }
+  .it.on .nm { background: linear-gradient(90deg, rgba(10,132,255,.72), rgba(10,132,255,.18) 70%, rgba(10,132,255,0)); }
+  .it.on .th img { filter: brightness(1.08) saturate(1.1); }
+  .it:active { transform: scale(.97); transition-duration: .12s; }
+  .flying .it { pointer-events: none; }
+
+  /* telefono: pannello in basso, le altre viste in una fila di miniature */
+  @media (max-width: 700px) {
+    .panel { left: 12px; right: 12px; width: auto; top: auto; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); transform: none; padding: 18px 12px 12px; border-radius: 26px; }
+    .eyebrow { display: none; }
+    .panel h1 { margin-top: 0; font-size: 28px; }
+    .panel h1 br { display: none; }
+    .big { margin-top: 12px; }
+    .list { flex-direction: row; gap: 6px; }
+    .it { flex: 1 1 0; height: auto; aspect-ratio: 16 / 9; border-radius: 8px; }
+    .it .nm { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .it, .arr, .th img { transition: none; animation: none; } .flying .dot { animation: none; } }
+  .clean .panel { display: none; }
+
+  /* site version (12/11): the WhatsApp label top right (cta.js), the big number while the tour loads */
+  .bar { position: fixed; top: 0; left: 0; right: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; padding: 24px 32px; pointer-events: none; }
+  .bar > * { pointer-events: auto; }
+  .register { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px 0 14px; border-radius: 999px; background: #0a84ff; color: #fff; font-size: 15px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; box-shadow: 0 6px 20px rgba(0,0,0,.22); transition: background .2s, transform .2s; }
+  .register:hover { background: #2a95ff; }
+  .register:active { transform: scale(.97); }
+  .ttl { display: none; }
+  .loader { position: fixed; left: clamp(20px, 4vw, 56px); bottom: clamp(20px, 5vh, 56px); z-index: 50; pointer-events: none; color: #fff; transition: transform .9s cubic-bezier(.6,0,.2,1), opacity .7s; }
+  .loader p { margin: 0 0 6px; font-size: 15px; letter-spacing: .01em; color: rgba(255,255,255,.8); }
+  .loader b { display: block; font-size: clamp(110px, 17vw, 240px); line-height: .82; font-weight: 500; letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
+  .loader b small { font-size: .32em; letter-spacing: -.02em; margin-left: 6px; vertical-align: .95em; color: #e07b4f; }
+  .loader.out { transform: translateY(-30px); opacity: 0; }
+  .veil { position: fixed; inset: 0; background: rgba(8,8,10,.38); z-index: 40; pointer-events: none; transition: opacity .9s; }
+  body.loading .bar, body.loading .panel { opacity: 0 !important; pointer-events: none !important; }
+  body.reveal .bar, body.reveal .panel { transition: opacity .8s; }
+
+  /* phone on its side (T2, Nico 12/11): the scene fills the screen, the title small top left,
+     the six views in one row of pictures at the bottom, the one you are on with the blue glow */
+  @media (max-height: 520px) and (orientation: landscape) {
+    #stage { left: 0 !important; right: 0 !important; width: auto !important; transform: none !important; }
+    .bar { align-items: flex-start; padding: 9px max(14px, env(safe-area-inset-right, 0px)) 34px max(14px, env(safe-area-inset-left, 0px)); background: linear-gradient(180deg, rgba(0,0,0,.34), rgba(0,0,0,0)); }
+    .register { height: 34px; padding: 0 14px 0 12px; font-size: 13px; }
+    .ttl { display: block; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.35), 0 1px 14px rgba(0,0,0,.45); transition: margin-left .35s ease; }
+    .ttl b { display: block; font-size: 22px; font-weight: 700; letter-spacing: -.03em; line-height: 1; }
+    .ttl small { display: block; margin-top: 5px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,.92); font-variant-numeric: tabular-nums; }
+    html.ofs-on .ttl { margin-left: 52px; }
+    html .ofs-x { top: 9px; }
+    .panel { top: auto !important; right: auto !important; left: 50%; bottom: max(12px, env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) !important;
+      width: min(600px, calc(100% - 2 * max(14px, env(safe-area-inset-left, 0px)))); padding: 7px; border-radius: 18px; transition: opacity .4s ease; }
+    .eyebrow, .panel h1, .big { display: none; }
+    .list { margin: 0; flex-direction: row; gap: 6px; }
+    .it { flex: 1 1 0; height: auto; aspect-ratio: 16 / 9; border-radius: 11px; }
+    .it .nm { display: none; }
+    .it:hover, .it.hover { transform: none; }
+    /* the offer card from cta.js sits along the bottom for a moment: the row steps aside until it is closed */
+    body:has(.oc.card) .panel { opacity: 0; pointer-events: none; }
+    .loader b { font-size: 96px; }
+  }
+  /* phone held upright: ask to turn it, like the tower */
+  .rotate { display: none; }
+  @media (orientation: portrait) and (max-width: 760px) {
+    .rotate { position: fixed; inset: 0; z-index: 45; display: grid; place-items: center; background: #0b1118; text-align: center; }
+    .rotate div { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+    .rotate i { display: block; width: 46px; height: 78px; margin: 0 auto 22px; border: 2px solid #fff; border-radius: 10px; animation: turn 2.2s ease-in-out infinite; }
+    .rotate small { display: block; margin-top: 6px; font-size: 14px; font-weight: 400; color: rgba(255,255,255,.62); }
+    .loader { z-index: 46; }
+  }
+  @keyframes turn { 0%, 25% { transform: rotate(0); } 55%, 100% { transform: rotate(-90deg); } }
+</style>
+</head>
+<body class="loading">
+<div id="stage">
+<video id="fw" class="on" muted playsinline preload="auto" poster="assets/poster.jpg"></video>
+<video id="bw" muted playsinline preload="auto"></video>
+
+<div class="panel glass" id="panel">
+  <div class="eyebrow">Three towers</div>
+  <h1>Choose<br> your <em>view</em></h1>
+  <div class="big"><img id="bigimg" alt="">
+    <button class="arr p" id="prev" aria-label="Previous view"><svg viewBox="0 0 12 20" aria-hidden="true"><path d="M9 2 1.5 10 9 18"/></svg></button>
+    <button class="arr n" id="nextv" aria-label="Next view"><svg viewBox="0 0 12 20" aria-hidden="true"><path d="M3 2 10.5 10 3 18"/></svg></button>
+    <div class="cap"><span class="dot"></span><span id="bignm"></span><span class="count" id="count"></span></div>
+  </div>
+  <div class="list" id="list"></div>
+</div>
+</div>
+
+<header class="bar">
+  <div class="ttl"><b>Choose your view</b><small id="ttlnm"></small></div>
+  <button class="register">Register interest</button>
+</header>
+
+<div class="rotate"><div><i></i>Turn your phone<small>These towers are best seen in landscape</small></div></div>
+<div class="veil" id="veil"></div>
+<div class="loader" id="loader" role="status" aria-live="polite"><p>Choose your view · loading</p><b><span id="pct">0</span><small>%</small></b></div>
+
+<script>
+// Il giro è un video solo (6 clip da 121 fotogrammi a 24 fps): ogni vista è la fine di una clip.
+// fw = il giro in avanti, bw = lo stesso giro al contrario (tempo bw = D - tempo fw).
+// Per andare a una vista si prende la strada più corta: avanti o indietro, passando dalla nebbia se serve.
+const Q = new URLSearchParams(location.search);
+const fw = document.getElementById('fw'), bw = document.getElementById('bw');
+// site version: 1080p on a computer (20 + 20 MB), 720p on a phone (10 + 10 MB)
+const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 700;
+const SUF = phone ? '_m' : '';
+const F = 121 / 24, D = 6 * F, EPS = 0.5 / 24;
+const AT = k => k * F - EPS;                               // l'ultimo fotogramma della clip k
+const VIEWS = [
+  { name: 'Front view', t: AT(1), img: 0 },
+  { name: 'Side view', t: AT(2), img: 1 },
+  { name: 'Back view', t: AT(3), img: 2 },
+  { name: 'Rooftop', t: AT(4), img: 3 },
+  { name: 'Above the clouds', t: AT(5), img: 4 },
+  { name: 'Aerial view', t: 0, img: 5, fog: true },      // la nebbia di partenza, vista da fuori
+];
+
+// video caricati in memoria: i salti al fotogramma funzionano con qualunque server
+// the number (L4, like the tower) counts the forward tour; it opens as soon as that one is in, and the
+// reverse tour (for going back) loads while you look: until it is there, every move goes forward
+const got = [0, 0], len = [0, 0];
+const $pct = document.getElementById('pct');
+const tick = () => { if (len[0]) $pct.textContent = Math.min(99, Math.floor(got[0] / len[0] * 100)); };
+async function load(el, src, k) {
+  try {
+    const res = await fetch(src);
+    len[k] = +res.headers.get('content-length') || 0;
+    let blob;
+    if (!len[k] || !res.body) blob = await res.blob();
+    else {
+      const rd = res.body.getReader(), parts = [];
+      for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); got[k] += value.length; tick(); }
+      blob = new Blob(parts, { type: 'video/mp4' });
+    }
+    el.src = URL.createObjectURL(blob);
+  } catch (e) { el.src = src; }
+  await new Promise(r => { if (el.readyState >= 2) r(); else el.addEventListener('loadeddata', r, { once: true }); });
+}
+function reveal() {
+  $pct.textContent = 100;
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('out'); document.getElementById('veil').style.opacity = 0;
+    document.body.classList.add('reveal'); document.body.classList.remove('loading');
+    setTimeout(() => { document.body.classList.remove('reveal'); document.getElementById('loader').remove(); document.getElementById('veil').remove(); }, 1000);
+  }, 350);
+}
+let bwReady = false;
+load(fw, `assets/giro${SUF}.mp4`, 0).then(() => { reveal(); return load(bw, `assets/giro_rev${SUF}.mp4`, 1); }).then(() => { bwReady = true; });
+fw.addEventListener('loadeddata', () => { fw.currentTime = 0; }, { once: true });
+
+// pannello: in grande la vista dove vai, sotto le altre cinque nell'ordine del giro
+const LOOP = [5, 0, 1, 2, 3, 4];                            // nebbia, Front, Side, Back, Rooftop, Above
+const list = document.getElementById('list'), bigimg = document.getElementById('bigimg');
+const bignm = document.getElementById('bignm'), count = document.getElementById('count'), ttlnm = document.getElementById('ttlnm');
+const cards = VIEWS.map((w, i) => {
+  const b = document.createElement('button'); b.className = 'it';
+  b.innerHTML = `<span class="th"><img src="assets/v${w.img}.jpg" alt=""></span><span class="nm">${w.name}</span>`;
+  b.onclick = () => go(i); return b;
+});
+VIEWS.forEach(w => { new Image().src = `assets/b${w.img}.jpg`; });
+list.replaceChildren(...LOOP.map(k => cards[k]));                // tutte e sei nell'ordine del giro
+function show(i) {
+  bigimg.src = `assets/b${VIEWS[i].img}.jpg`; bignm.textContent = VIEWS[i].name;
+  count.textContent = `${LOOP.indexOf(i) + 1}/6`;
+  ttlnm.textContent = `${VIEWS[i].name} · ${LOOP.indexOf(i) + 1}/6`;
+  cards.forEach((c, k) => c.classList.toggle('on', k === i));
+}
+show(5);
+document.getElementById('prev').onclick = () => next(-1);
+document.getElementById('nextv').onclick = () => next(1);
+
+// la card cresce con la scena (disegnata su 1440 di larghezza) e sta a meta tra la torre piu a destra e il bordo destro.
+// TX = dove finisce la torre piu a destra, in frazione della larghezza (0.70 nella nebbia, Front e Back; 0.74 nella Side). ?tx= per cambiarlo
+const stageEl = document.getElementById('stage'), panelEl = document.getElementById('panel');
+const TX = +(Q.get('tx') || 0.70);
+function layout() {
+  if (innerWidth <= 700 || innerHeight <= 520) { panelEl.style.right = panelEl.style.transform = ''; return; }
+  const W = stageEl.clientWidth, sc = W / 1440, P = 296 * sc;
+  panelEl.style.right = Math.max(18 * sc, (W * (1 - TX) - P) / 2).toFixed(1) + 'px';
+  panelEl.style.transform = `translateY(-50%) scale(${sc.toFixed(4)})`;
+}
+addEventListener('resize', layout); layout();
+
+let t = 0, here = 5, busy = false, timer = 0;               // t: dove sta il drone nel giro in avanti
+const click = new Audio('assets/click.mp3');
+const mod = x => ((x % D) + D) % D;
+
+function go(i) {
+  if (busy || i === here || document.body.classList.contains('loading')) return;
+  if (Q.get('sound') === '1') { click.currentTime = 0; click.play().catch(() => {}); }
+  show(i);                                                  // l'anteprima grande passa subito alla vista scelta
+  const tt = VIEWS[i].t;
+  const fwd = mod(tt - t), back = mod(t - tt);
+  let dir = (VIEWS[i].fog ? (t > D / 2 ? 1 : -1) : (fwd <= back ? 1 : -1));   // la nebbia: dal lato più vicino
+  if (!bwReady) dir = 1;
+  const dist = dir > 0 ? (VIEWS[i].fog ? D - t : fwd) : (VIEWS[i].fog ? t : back);
+  busy = true; curDir = dir; document.body.classList.add('flying');
+  fly(dir, dist, () => {
+    here = i; busy = false; document.body.classList.remove('flying');
+    if (queued) { const q = queued; queued = 0; next(q); }
+  });
+}
+
+// scroll e swipe: ogni gesto porta alla vista dopo (giù = avanti nel giro, su = indietro)
+let curDir = 1, queued = 0, lastWheel = 0, used = false, acc = 0;
+function next(d) {
+  if (busy) { if (d === curDir) queued = d; return; }       // un gesto in più durante il volo = prosegue alla vista dopo
+  const k = LOOP.indexOf(here);
+  go(LOOP[(k + d + LOOP.length) % LOOP.length]);
+}
+addEventListener('wheel', e => {
+  e.preventDefault();
+  const now = performance.now();
+  if (now - lastWheel > 220) { used = false; acc = 0; }    // gesto nuovo solo dopo una pausa (niente inerzia del trackpad)
+  lastWheel = now;
+  if (used) return;
+  acc += Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+  if (Math.abs(acc) > 30) { used = true; next(acc > 0 ? 1 : -1); }
+}, { passive: false });
+let ty = null;
+addEventListener('touchstart', e => { ty = e.touches[0].clientY; }, { passive: true });
+addEventListener('touchend', e => {
+  if (ty === null) return; const dy = ty - e.changedTouches[0].clientY; ty = null;
+  if (Math.abs(dy) > 40) next(dy > 0 ? 1 : -1);
+}, { passive: true });
+
+// vola per `dist` secondi nella direzione `dir` (1 avanti, -1 indietro) e si ferma preciso
+let flight = 0;
+function fly(dir, dist, done) {
+  const id = ++flight;                                      // ogni volo ha il suo numero: i giri vecchi si fermano da soli
+  const el = dir > 0 ? fw : bw, other = dir > 0 ? bw : fw;
+  const start = dir > 0 ? mod(t) : mod(D - t);
+  let left = dist, last = start;
+  const rate = dist > 6 ? Math.min(3, dist / 5) : 1;
+  const begin = () => {
+    el.classList.add('on'); other.classList.remove('on');
+    el.playbackRate = rate; el.play();
+    clearInterval(timer); timer = setInterval(step, 8);
+    if (el.requestVideoFrameCallback) el.requestVideoFrameCallback(function f() { if (busy && id === flight) { step(); el.requestVideoFrameCallback(f); } });
+  };
+  function step() {
+    if (!busy || id !== flight) return;
+    let now = el.currentTime;
+    if (now + 0.001 < last) { last = now; }                // ripartito da capo dopo la fine
+    left -= Math.max(0, now - last); last = now;
+    const atEnd = el.ended || now >= D - EPS;
+    if (atEnd && left > 0.04) {                            // passa dalla nebbia: si continua da capo
+      el.currentTime = 0; last = 0; el.play(); return;
+    }
+    if (left <= 0.02 || atEnd) {
+      el.pause(); clearInterval(timer);
+      const stopAt = Math.max(0, Math.min(D - EPS, now + left));
+      el.currentTime = stopAt;
+      t = dir > 0 ? stopAt : mod(D - stopAt);
+      if (t > D - 2 * EPS || t < 2 * EPS) t = 0;           // fine del giro = nebbia di partenza
+      // l'altro video si mette sullo stesso fotogramma, pronto per il prossimo volo
+      other.currentTime = dir > 0 ? mod(D - t) : t;
+      el.playbackRate = 1; done();
+    }
+  }
+  if (Math.abs(el.currentTime - start) > 0.02) { el.addEventListener('seeked', begin, { once: true }); el.currentTime = start; }
+  else begin();
+}
+
+// per le riprese: ?hover=N accende un riquadro, ?clean=1 senza pannello, tasti 1-6 = viste, h = pannello
+if (Q.get('clean') === '1') document.body.classList.add('clean');
+if (Q.get('hover') !== null) cards[+Q.get('hover')]?.classList.add('hover');
+addEventListener('keydown', e => {
+  if (e.key >= '1' && e.key <= '6') go(+e.key - 1);
+  if (e.key === 'h') document.body.classList.toggle('clean');
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') next(1);
+  if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') next(-1);
+});
+window.__go = go; window.__state = () => ({ t: +t.toFixed(3), here: VIEWS[here].name, busy, fw: +fw.currentTime.toFixed(3), bw: +bw.currentTime.toFixed(3), on: fw.classList.contains('on') ? 'fw' : 'bw' });
+</script>
+<script defer src="/demo/cta.js"></script>
+<script defer src="/demo/fullscreen.js"></script>
+</body>
+</html>

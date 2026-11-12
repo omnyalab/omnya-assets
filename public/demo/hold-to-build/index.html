@@ -43,6 +43,9 @@
   .brand i{display:block;width:1.5px;height:22px;background:rgba(255,255,255,.6)}
   .brand span{font-weight:600;font-size:25px;letter-spacing:-.025em;color:var(--gold)}
   .bar nav{display:flex;gap:10px;pointer-events:auto}
+  /* full screen on a phone (12/11): the X in the top left corner, the brand moves to its right */
+  html.ofs-on .bar .brand{margin-left:calc(var(--ofs-x) - clamp(20px,3vw,44px))}
+  html .ofs-x{top:14px}
   .pill{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;border-radius:980px;padding:9px 16px;
         border:1px solid var(--line);background:var(--glass);color:var(--white);backdrop-filter:blur(18px) saturate(1.4);
         -webkit-backdrop-filter:blur(18px) saturate(1.4);cursor:pointer;transition:transform .25s,background .25s}
@@ -307,5 +310,6 @@ function watch() { scrollTo(0, build.offsetTop); setTimeout(() => scrollToFrame(
 </script>
 <!-- 10/11 (Nico): the label "Get this for your project" and, after 20 seconds, the pilot offer card (public/demo/cta.js) -->
 <script defer src="/demo/cta.js"></script>
+<script defer src="/demo/fullscreen.js" data-scroll="page"></script>
 </body>
 </html>
