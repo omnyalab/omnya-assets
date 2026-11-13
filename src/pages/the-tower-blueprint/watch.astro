@@ -21,6 +21,10 @@ a{color:inherit;text-decoration:none}
 .wrap{max-width:1180px;margin:0 auto;padding:0 16px}
 .hb{background:linear-gradient(180deg,#ffffff 0%,#9fd2ff 38%,#1f8fff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hb2{background:linear-gradient(90deg,#8fd0ff,#1f8fff);-webkit-background-clip:text;background-clip:text;color:transparent}
+/* 13/11 (Nico): the gradient is cut to the text box and the italic leans out of it (the last letter was clipped):
+   a little room on the right and under, given back with a negative margin so nothing moves */
+.hb,.hb2{padding:0 .16em .08em 0;margin-right:-.16em}
+h1 u.hb2{padding:0 .05em 0 0;margin-right:-.05em}
 .tm{font-family:Poppins,sans-serif;font-weight:900;color:var(--red);font-variant-numeric:tabular-nums;text-shadow:0 0 10px #ff1f1f40}
 .bar{position:fixed;left:50%;top:10px;width:calc(100% - 20px);transform:translate(-50%,-160%);opacity:0;transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .3s;z-index:30;margin:0;max-width:900px;display:flex;align-items:center;gap:12px;padding:7px 7px 7px 16px;border-radius:999px;background:#15171ee8;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #ff1f1f66;box-shadow:0 20px 40px -20px #000}
 .bar.show{transform:translate(-50%,0);opacity:1}
@@ -250,6 +254,17 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 .p-all .hero2{overflow:visible}
 .fan{padding-bottom:10px}
 
+/* 13/11 (Nico): Everything = the three playbooks on top (the dearest), the four Full guides under; the card grows only on this choice */
+.hero2.fan{height:auto;padding-bottom:22px}
+.fan .bks2{height:auto;width:300px}
+.fan .pbr{position:relative;height:150px}
+.fan .bks .pbr .pb{position:absolute;top:10px;width:94px;border-radius:4px;filter:none;box-shadow:0 18px 26px -10px #000d,0 0 0 1px #ffffff1a}
+.fan .bks .pbr .pb:nth-child(1){left:34px;transform:rotate(-9deg)}
+.fan .bks .pbr .pb:nth-child(2){left:103px;top:0;transform:none;z-index:2}
+.fan .bks .pbr .pb:nth-child(3){left:172px;transform:rotate(9deg)}
+.fan .fbr{position:relative;height:210px;margin-top:-30px;z-index:3}
+@media (min-width:821px){.fan .bks2{width:380px}.fan .pbr{height:190px}.fan .bks .pbr .pb{width:118px}.fan .bks .pbr .pb:nth-child(1){left:44px}.fan .bks .pbr .pb:nth-child(2){left:131px}.fan .bks .pbr .pb:nth-child(3){left:218px}.fan .fbr{height:270px;margin-top:-36px}}
+
 .ec{min-height:0}
 .pml{margin-top:18px!important}
 .emw.have{display:none}
@@ -366,7 +381,7 @@ body.rv .hero .cbtn .px{display:inline}
           <div class="hero2"><div class="bk"><img src="/learn/tw_book.webp" alt="The Full Guide"><div class="stk" aria-hidden="true"><svg viewBox="0 0 100 100"><defs><radialGradient id="sg" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fff27a"/><stop offset=".55" stop-color="#ffd60a"/><stop offset="1" stop-color="#ffb000"/></radialGradient></defs><g class="spin"><polygon points="100.0,50.0 92.6,56.1 98.0,64.1 89.1,67.9 92.1,77.0 82.5,78.2 82.7,87.8 73.2,86.2 70.8,95.5 62.1,91.3 57.1,99.5 50.0,93.0 42.9,99.5 37.9,91.3 29.2,95.5 26.8,86.2 17.3,87.8 17.5,78.2 7.9,77.0 10.9,67.9 2.0,64.1 7.4,56.1 0.0,50.0 7.4,43.9 2.0,35.9 10.9,32.1 7.9,23.0 17.5,21.8 17.3,12.2 26.8,13.8 29.2,4.5 37.9,8.7 42.9,0.5 50.0,7.0 57.1,0.5 62.1,8.7 70.8,4.5 73.2,13.8 82.7,12.2 82.5,21.8 92.1,23.0 89.1,32.1 98.0,35.9 92.6,43.9" fill="url(#sg)"/></g><circle cx="50" cy="50" r="36" fill="none" stroke="#11111130" stroke-width="1" stroke-dasharray="2 3"/></svg><div><em>SAVE</em><b>-79%</b><small>ONLY HERE</small></div></div></div></div>
           <ul><li>Every prompt, word for word: photos, 3D and clips</li><li>The tower 3D code</li><li>The choose your floor page</li><li>How we hand it to a client</li><li>What to charge for it</li><li>Yours forever, PDF in your inbox</li></ul></div>
         <div class="pane p-all" data-p="all"><div class="t">Everything we <i class="hb2">teach</i></div><div class="pr"><s>€190</s><b>€59</b> · every guide we made</div>
-          <div class="hero2 fan"><div class="bks"><img src="/learn/3d_book.webp" alt=""><img src="/learn/bd_book_tight.webp" alt=""><img src="/learn/tt_book_tight.webp" alt=""><img src="/learn/tw_book.webp" alt=""></div><div class="stk fanstk" aria-hidden="true"><svg viewBox="0 0 100 100"><defs><radialGradient id="sg2" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fff27a"/><stop offset=".55" stop-color="#ffd60a"/><stop offset="1" stop-color="#ffb000"/></radialGradient></defs><g class="spin"><polygon points="100.0,50.0 92.6,56.1 98.0,64.1 89.1,67.9 92.1,77.0 82.5,78.2 82.7,87.8 73.2,86.2 70.8,95.5 62.1,91.3 57.1,99.5 50.0,93.0 42.9,99.5 37.9,91.3 29.2,95.5 26.8,86.2 17.3,87.8 17.5,78.2 7.9,77.0 10.9,67.9 2.0,64.1 7.4,56.1 0.0,50.0 7.4,43.9 2.0,35.9 10.9,32.1 7.9,23.0 17.5,21.8 17.3,12.2 26.8,13.8 29.2,4.5 37.9,8.7 42.9,0.5 50.0,7.0 57.1,0.5 62.1,8.7 70.8,4.5 73.2,13.8 82.7,12.2 82.5,21.8 92.1,23.0 89.1,32.1 98.0,35.9 92.6,43.9" fill="url(#sg2)"/></g><circle cx="50" cy="50" r="36" fill="none" stroke="#11111130" stroke-width="1" stroke-dasharray="2 3"/></svg><div><em>SAVE</em><b>-69%</b><small>ONLY HERE</small></div></div></div>
+          <div class="hero2 fan"><div class="bks bks2"><div class="pbr"><img class="pb" src="/learn/pk_pb01.webp" alt="Playbook 01"><img class="pb" src="/learn/pk_pb02.webp" alt="Playbook 02"><img class="pb" src="/learn/pk_pb03.webp" alt="Playbook 03"></div><div class="fbr"><img src="/learn/3d_book.webp" alt="The Full 3D Guide"><img src="/learn/bd_book_tight.webp" alt="The Full Build Guide"><img src="/learn/tt_book_tight.webp" alt="The Full Towers Guide"><img src="/learn/tw_book.webp" alt="The Full Tower Guide"></div></div><div class="stk fanstk" aria-hidden="true"><svg viewBox="0 0 100 100"><defs><radialGradient id="sg2" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fff27a"/><stop offset=".55" stop-color="#ffd60a"/><stop offset="1" stop-color="#ffb000"/></radialGradient></defs><g class="spin"><polygon points="100.0,50.0 92.6,56.1 98.0,64.1 89.1,67.9 92.1,77.0 82.5,78.2 82.7,87.8 73.2,86.2 70.8,95.5 62.1,91.3 57.1,99.5 50.0,93.0 42.9,99.5 37.9,91.3 29.2,95.5 26.8,86.2 17.3,87.8 17.5,78.2 7.9,77.0 10.9,67.9 2.0,64.1 7.4,56.1 0.0,50.0 7.4,43.9 2.0,35.9 10.9,32.1 7.9,23.0 17.5,21.8 17.3,12.2 26.8,13.8 29.2,4.5 37.9,8.7 42.9,0.5 50.0,7.0 57.1,0.5 62.1,8.7 70.8,4.5 73.2,13.8 82.7,12.2 82.5,21.8 92.1,23.0 89.1,32.1 98.0,35.9 92.6,43.9" fill="url(#sg2)"/></g><circle cx="50" cy="50" r="36" fill="none" stroke="#11111130" stroke-width="1" stroke-dasharray="2 3"/></svg><div><em>SAVE</em><b>-69%</b><small>ONLY HERE</small></div></div></div>
           <ul><li>The Full Towers Guide</li><li>The Full Tower Guide</li><li>The Full 3D Guide</li><li>The Full Build Guide</li><li>3 playbooks</li><li>Prompts and checklists</li></ul></div>
 
       </div>
