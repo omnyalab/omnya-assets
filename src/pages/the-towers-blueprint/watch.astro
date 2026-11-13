@@ -249,7 +249,8 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 .p-all .hero2{overflow:visible}
 .fan{padding-bottom:10px}
 
-.ec{margin-top:14px;min-height:0}
+.ec{margin-top:4px;min-height:0}
+.pml{margin-top:18px!important}
 .ec.load{min-height:250px;border-radius:12px;background:linear-gradient(90deg,#ffffff08,#ffffff14,#ffffff08);background-size:200% 100%;animation:shim 1.2s linear infinite}
 .pay[disabled]{opacity:.7;cursor:wait}
 .perr{margin:10px 0 0;min-height:0;text-align:center;font-size:14px;font-weight:600;color:#ff6b6b}
@@ -316,7 +317,7 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
         <label class="opt" data-o="scene"><img src="/learn/tt_scene_preview.webp" alt=""><span><b>Full Guide + 3D scene</b><small>The guide and our scene file</small></span><span class="pp"><strong>€17.99</strong></span></label>
         <label class="opt" data-o="all"><img src="/learn/pk_pb01.webp" alt=""><span><b>Everything we teach</b><small>4 Full guides + 3 playbooks</small></span><span class="pp"><strong>€59</strong><s>€190</s></span><span class="off">-69%</span></label>
         <div class="sp"><span class="lab">Your email</span><input class="in" type="email" placeholder="you@example.com" aria-label="Your email" data-em autocomplete="email">
-        <div class="ec" data-ec></div></div>
+        <span class="lab pml">Choose how you want to pay</span><div class="ec" data-ec></div></div>
         <button class="pay" type="button" data-pay>Pay €5.99 · Get the Full Guide</button>
         <p class="perr" data-perr role="alert"></p>
         <p class="secure">🔒 Secure checkout by Stripe</p></div>
@@ -393,7 +394,7 @@ document.querySelector('[data-pay]').addEventListener('click', payLink)
 function loadStripe() { return window.Stripe ? Promise.resolve() : new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'https://js.stripe.com/endive/stripe.js'; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc) }) }
 // 13/11 (Nico): the Stripe fields inside OUR checkout, black and blue like the board, our own Pay button
 const LOOK = { theme: 'night', variables: { colorPrimary: '#0a84ff', colorBackground: '#0b1224', colorText: '#ffffff', colorTextSecondary: '#a1a1aa', colorTextPlaceholder: '#6b7385', colorDanger: '#ff6b6b', fontFamily: 'Inter, system-ui, sans-serif', fontSizeBase: '16px', borderRadius: '10px', spacingUnit: '4px' },
-  rules: { '.Input': { border: '1px solid #2b3550', boxShadow: '0 1px 1px #0006' }, '.Input:focus': { border: '1px solid #0a84ff', boxShadow: '0 0 0 3px #0a84ff40' }, '.Label': { color: '#e6ebf5', fontWeight: '500', fontSize: '14px' }, '.Tab': { border: '1px solid #2b3550', backgroundColor: '#0b1224', boxShadow: 'none' }, '.Tab--selected': { border: '1px solid #0a84ff', boxShadow: '0 0 0 1px #0a84ff' }, '.Tab:hover': { color: '#ffffff' } } }
+  rules: { '.Input': { border: '1px solid #2b3550', boxShadow: '0 1px 1px #0006' }, '.Input:focus': { border: '1px solid #0a84ff', boxShadow: '0 0 0 3px #0a84ff40' }, '.Label': { color: '#e6ebf5', fontWeight: '500', fontSize: '14px' }, '.Tab': { border: '1px solid #2b3550', backgroundColor: '#0b1224', boxShadow: 'none' }, '.Tab--selected': { border: '1px solid #0a84ff', boxShadow: '0 0 0 1px #0a84ff' }, '.Tab:hover': { color: '#ffffff' }, '.AccordionItem': { border: '1px solid #2b3550', backgroundColor: '#0b1224', boxShadow: 'none' }, '.AccordionItem--selected': { border: '1px solid #0a84ff' }, '.RadioIcon': { width: '20px' }, '.RadioIconOuter--checked': { stroke: '#0a84ff' }, '.RadioIconInner': { fill: '#0a84ff' } } }
 const payBtn = document.querySelector('[data-pay]'), perr = document.querySelector('[data-perr]')
 let actions = null, pel = null
 payBtn.removeEventListener('click', payLink)
@@ -421,7 +422,7 @@ async function mount() {
     let co = st.initCheckoutElementsSdk({ clientSecret: d.cs, elementsOptions: { appearance: LOOK, fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap' }] } })
     if (co && co.then) co = await co
     const res = await co.loadActions(); if (res.type !== 'success') throw new Error('no actions')
-    pel = co.createPaymentElement({ layout: 'tabs' }); ecBox.className = 'ec'; pel.mount(ecBox)
+    pel = co.createPaymentElement({ layout: { type: 'accordion', radios: 'always', spacedAccordionItems: false, defaultCollapsed: true, visibleAccordionItemsCount: 0, paymentMethodLogoPosition: 'end' } }); ecBox.className = 'ec'; pel.mount(ecBox)
     actions = res.actions; right.classList.add('live')
   } catch (e) { console.warn('[checkout]', e); ecBox.className = 'ec'; right.classList.remove('live'); actions = null }
   busy = false; if (again) { again = false; mount() }
