@@ -224,7 +224,7 @@ const next = after || `/${slug}/sent`;
         try { localStorage.setItem(PEND, JSON.stringify({ u: box.dataset.watch, t: Date.now(), name: name, email: email })); } catch (e) {}
         watchGo(name, email, sent);
         // safety net: if the animation or the Instagram sheet held things up, go anyway
-        T(function () { location.href = box.dataset.watch; }, 4500);
+        T(function () { location.href = box.dataset.watch; }, 2000);
         return;
       }
       // 11/11 Towers (AllSetOffer): "You're all set" at once, "Delivered" once the email went, then the offer opens
