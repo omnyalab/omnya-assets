@@ -3,7 +3,7 @@
 // blueprint") the person is NOT in the newsletter (api/_lib/newsletter.js). The emails are never sold.
 // GET ?key=IG_ADMIN_KEY → everyone as CSV; &list=newsletter → only who accepted the newsletter and didn't leave.
 // Meta (8/11): if the visitor accepted cookies, a server Lead with the same event_id as the browser one.
-import { sendMail } from './_lib/mail.js';
+import { sendFreeMail as sendMail, hasM365 } from './_lib/mail.js';
 import { host } from './_lib/config.js';
 import { redis, hasStore } from './_lib/store.js';
 import { CONSENT_TEXTS, OFF_KEY, unsubUrl } from './_lib/newsletter.js';
@@ -20,7 +20,7 @@ const FREE = {
   free: { name: 'The Blueprint', file: '/learn/free/omnya-lab-blueprint.pdf' },
 };
 const KEY = 'omnya:optin';
-const FREE_CAP = Number(process.env.FREE_MAIL_CAP || 65); // free blueprint emails a day; with Resend Pro set FREE_MAIL_CAP on Vercel to 1500
+const FREE_CAP = hasM365() ? Number(process.env.FREE_MAIL_CAP || 5000) : Number(process.env.FREE_MAIL_CAP || 65); // free blueprint emails a day; with Resend Pro set FREE_MAIL_CAP on Vercel to 1500
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'Content-Type': 'application/json' } });
 
@@ -93,7 +93,7 @@ export async function POST(request) {
   }
   // 13/11 night (Nico: "they must always arrive"): the people held back by the old daily cap get their email now,
   // a few at a time after each new send, oldest first, once each (omnya:mail:owed:sent), within the day's cap
-  if (hasStore()) waitUntil(drainOwed(3).catch((e) => console.error('[optin] owed', e))); // after the answer: the visitor never waits
+  if (hasStore()) waitUntil(drainOwed(hasM365() ? 10 : 3).catch((e) => console.error('[optin] owed', e))); // after the answer: the visitor never waits
   return json({ ok: true });
 }
 

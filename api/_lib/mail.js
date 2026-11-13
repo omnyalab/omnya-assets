@@ -147,5 +147,25 @@ export async function sendBooking(b) {
   }
 }
 
-/** Any other email (the Instagram bot uses it to tell Nico about leads). */
-export const sendMail = (m) => transport.sendMail({ from: FROM, ...m });
+// 13/11 night (Nico: "the emails must ALWAYS go, free"): omnyalab.com mail is Microsoft 365 (GoDaddy), which sends up to
+// 10,000 emails a day from info@omnyalab.com at no cost. With M365_PASS on Vercel the free blueprints go from there,
+// and any email that Resend refuses (its free plan stops at 100 a day) goes from there too.
+const M365_USER = process.env.M365_USER || 'info@omnyalab.com';
+const m365 = process.env.M365_PASS
+  ? nodemailer.createTransport({ host: 'smtp.office365.com', port: 587, secure: false, requireTLS: true, auth: { user: M365_USER, pass: process.env.M365_PASS } })
+  : null;
+export const hasM365 = () => !!m365;
+const viaM365 = (m) => m365.sendMail({ ...m, from: `Omnya Lab <${M365_USER}>` });
+
+/** Any other email (the Instagram bot uses it to tell Nico about leads). Resend first, Microsoft 365 if Resend says no. */
+export async function sendMail(m) {
+  try { return await transport.sendMail({ from: FROM, ...m }); }
+  catch (e) { if (!m365) throw e; console.error('[mail] resend failed, via m365:', e.message); return viaM365(m); }
+}
+
+/** The free blueprints: Microsoft 365 first (no daily cap that matters), Resend if 365 fails. */
+export async function sendFreeMail(m) {
+  if (!m365) return transport.sendMail({ from: FROM, ...m });
+  try { return await viaM365(m); }
+  catch (e) { console.error('[mail] m365 failed, via resend:', e.message); return transport.sendMail({ from: FROM, ...m }); }
+}
