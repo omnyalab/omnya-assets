@@ -38,7 +38,7 @@ export async function POST(request) {
       line_items: p.items.map((price) => ({ price, quantity: 1 })),
       return_url: `${SITE}/learn/thanks/${p.back}?session_id={CHECKOUT_SESSION_ID}`,
       // 13/11 (Nico): "like Stripe": only the card (logos turning in the number), and the cardholder's name
-      ...(body.card ? { allowed_payment_method_types: ['card'], name_collection: { individual: { enabled: true, optional: false } } } : {}),
+      ...(body.card ? { allowed_payment_method_types: ['card'], name_collection: { individual: { enabled: true, optional: true } } } : {}),
       metadata: { from: 'watch-funnel' },
     });
     return json({ cs: session.client_secret, pk });

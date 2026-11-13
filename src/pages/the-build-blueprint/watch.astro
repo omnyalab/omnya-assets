@@ -400,10 +400,10 @@ body.rv .hero .cbtn .px{display:inline}
       <div class="right"><div class="tm" data-t3>00:14:59</div><h3>YOURS FOREVER</h3><p class="one"><b data-pr>€5.99</b> one-time · instant PDF · no subscription</p>
         <label class="opt on" data-o="full"><img src="/learn/bd_book_tight.webp" alt=""><span><b>The Full Guide</b><small>Every prompt, word for word</small></span><span class="pp"><strong>€5.99</strong><s>€29</s></span><span class="off">-79%</span></label>
         <label class="opt" data-o="all"><img src="/learn/pk_pb01.webp" alt=""><span><b>Everything we teach</b><small>4 Full guides + 3 playbooks</small></span><span class="pp"><strong>€59</strong><s>€238</s></span><span class="off">-75%</span></label>
-        <div class="sp"><div class="emw" data-emw><span class="lab">Your email</span><input class="in" type="email" placeholder="you@example.com" aria-label="Your email" data-em autocomplete="email"></div>
+        <div class="sp"><div class="emw" data-emw><span class="lab">Email · the guide arrives here</span><input class="in" type="email" placeholder="you@example.com" aria-label="Your email" data-em autocomplete="email" required></div>
         <span class="lab pml">Payment method</span>
         <div class="cpanel"><div class="chead"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/></svg>Card</div>
-          <div class="cbody"><div class="ecw"><div class="ec" data-ec></div><div class="cbr" data-cbr aria-hidden="true"><span class="b-mc"><svg viewBox="0 0 31 19"><circle cx="12.6" cy="9.5" r="5.6" fill="#eb001b"/><circle cx="18.4" cy="9.5" r="5.6" fill="#f79e1b"/><path d="M15.5 4.8a5.6 5.6 0 0 1 0 9.4a5.6 5.6 0 0 1 0-9.4z" fill="#ff5f00"/></svg></span><span class="b-visa">VISA</span><span class="b-amex">AMEX</span><span class="b-rot"><i class="b-disc">DISC<em></em>VER</i><i class="b-jcb"><b>J</b><b>C</b><b>B</b></i><i class="b-up">UnionPay</i><i class="b-din"><em></em></i></span></div></div><span class="lab cl">Cardholder name</span><input class="in" type="text" placeholder="Full name on card" aria-label="Cardholder name" data-cn autocomplete="cc-name"></div></div></div>
+          <div class="cbody"><div class="ecw"><div class="ec" data-ec></div><div class="cbr" data-cbr aria-hidden="true"><span class="b-mc"><svg viewBox="0 0 31 19"><circle cx="12.6" cy="9.5" r="5.6" fill="#eb001b"/><circle cx="18.4" cy="9.5" r="5.6" fill="#f79e1b"/><path d="M15.5 4.8a5.6 5.6 0 0 1 0 9.4a5.6 5.6 0 0 1 0-9.4z" fill="#ff5f00"/></svg></span><span class="b-visa">VISA</span><span class="b-amex">AMEX</span><span class="b-rot"><i class="b-disc">DISC<em></em>VER</i><i class="b-jcb"><b>J</b><b>C</b><b>B</b></i><i class="b-up">UnionPay</i><i class="b-din"><em></em></i></span></div></div><span class="lab cl">Cardholder name <small style="color:#8b93a5;font-weight:500">(optional)</small></span><input class="in" type="text" placeholder="Full name on card" aria-label="Cardholder name" data-cn autocomplete="cc-name"></div></div></div>
         <button class="pay" type="button" data-pay>Pay €5.99 · Get the Full Guide</button>
         <p class="perr" data-perr role="alert"></p>
         <p class="pwr">Powered by <b>stripe</b><i></i><a href="https://stripe.com/legal/end-users" target="_blank" rel="noopener">Terms</a><a href="https://stripe.com/privacy" target="_blank" rel="noopener">Privacy</a></p></div>
@@ -473,7 +473,7 @@ dots.forEach((d, i) => d.addEventListener('click', () => { if (innerWidth < 820)
 const LINK = {'full': 'https://buy.stripe.com/5kQ3cuacR3bW2dwgGV8so0D', 'all': 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C'}, PID = {'full': 'full-build', 'scene': 'full-towers-scene', 'all': 'everything'}
 let who = {}; try { who = JSON.parse(sessionStorage.getItem('omnya-watch') || '{}') } catch (e) {}
 const em = document.querySelector('[data-em]'), cn = document.querySelector('[data-cn]')
-if (who.email) { em.value = who.email; document.querySelector('[data-emw]').classList.add('have') }
+if (who.email) em.value = who.email // 13/11 night (Nico): the email always shows and is required, filled in from the free blueprint
 let cur = 'full', ec = null, busy = false
 const ecBox = document.querySelector('[data-ec]'), right = document.querySelector('.right')
 function payLink() { const e = em.value.trim(); location.href = LINK[cur] + (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e) ? '?prefilled_email=' + encodeURIComponent(e) : '') }
@@ -492,9 +492,9 @@ payBtn.addEventListener('click', async () => {
   payBtn.disabled = true
   try {
     const n = cn.value.trim()
-    if (n.length < 2) { payBtn.disabled = false; perr.textContent = 'Write the name on your card'; cn.focus(); return }
     const u = await actions.updateEmail(e); if (u && u.type === 'error') throw u.error
-    const nm = await actions.updateIndividualName(n); if (nm && nm.type === 'error') throw nm.error
+    // the cardholder name is optional (Nico, 13/11 night)
+    if (n) { const nm = await actions.updateIndividualName(n); if (nm && nm.type === 'error') throw nm.error }
     const r = await actions.confirm(); if (r && r.type === 'error') throw r.error
   } catch (x) { perr.textContent = (x && x.message) || 'Payment did not go through, try again' }
   payBtn.disabled = false
