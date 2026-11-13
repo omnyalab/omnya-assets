@@ -37,6 +37,7 @@ export const WORDS = [
   { word: 'BUILD', dest: 'build' },
   { word: 'HOUSE', dest: 'city' },
   { word: 'FABLE', dest: 'fable' },
+  { word: 'COOK', dest: 'towers' }, // "Let him cook", the three towers in the fog (13/11, Nico: COOK did not answer)
 ];
 
 // words that follow "comment" in a caption without being the keyword
