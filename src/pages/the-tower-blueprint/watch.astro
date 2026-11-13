@@ -491,10 +491,10 @@ async function mount() {
   } catch (e) { console.warn('[checkout]', e); ecBox.className = 'ec'; right.classList.remove('live'); actions = null }
   busy = false; if (again) { again = false; mount() }
 }
-// 13/11 (Nico): when the video has been watched to the end (muted pass or with sound), the price and the clock appear
+// 13/11 (Nico): the price and the clock appear at 33.5 s, when the video says the price (muted pass or with sound)
 { let rv = false; const reveal = () => { if (rv) return; rv = true; document.body.classList.add('rv') }
   document.querySelectorAll('a[href="#offer"]').forEach(x => x.addEventListener('click', e => { if (!rv) { e.preventDefault(); reveal(); requestAnimationFrame(() => document.querySelector('#offer').scrollIntoView({ behavior: 'smooth' })) } }))
-  vv.addEventListener('timeupdate', () => { if (vv.duration && vv.currentTime > vv.duration - 0.6) reveal() }); vv.addEventListener('ended', reveal)
+  vv.addEventListener('timeupdate', () => { if (vv.currentTime >= 33.5) reveal() }); vv.addEventListener('ended', reveal)
   setInterval(() => { const m = document.querySelector('[data-m]'), s2 = document.querySelector('[data-s]'), t = document.querySelector('.rvt'); if (m && s2 && t) t.textContent = m.textContent + ':' + s2.textContent }, 500) }
 document.querySelectorAll('.opt').forEach(o => o.addEventListener('click', () => { cur = o.dataset.o; if (right.classList.contains('live') || ecBox.classList.contains('load') || busy) mount() }))
 const offerIo = new IntersectionObserver(([e]) => { if (e.isIntersecting) { offerIo.disconnect(); mount() } }, { rootMargin: '600px 0px' })

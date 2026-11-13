@@ -4,6 +4,7 @@
 // the Full Tower Blueprint ("How to build a tower that sells with AI") right under it, then the 3D/photo pairs,
 // the five steps, who it is for, questions and the last call. Montserrat, Apple blue and black.
 // On phones the opening is built like the free cover. The Full one is €5.99, written in the page (10/11: the launch price and its switch are gone).
+// 13/11 (Nico): no `landing` any more: whoever comes back from the DM sees the card and the new flow to the video, like Towers and Build.
 // The Italian page was removed on 8/11 (Nico): /it/the-tower-blueprint and /it/tower redirect here. No site header here (Nico, 5/11).
 import Base from '../layouts/Base.astro';
 import { goHref } from '../lib/learn';
@@ -15,7 +16,7 @@ import OptIn from '../components/OptIn.astro';
 
 <Base page="learn" header={false} title="How to build a tower that sells with AI" description="Steal our tower method: the free blueprint in five steps, and the Full Tower Blueprint with every prompt, word for word.">
 <div class="x3">
-<OptIn slug="the-tower-blueprint" free="free-tower" word="Tower" noClose landing allset watch="/the-tower-blueprint/watch" proof="From the reel with 143,479 views" cover="/learn/tw_cover_free.webp" hero="/learn/tw_hero.webp" heroMobile="/learn/tw_hero_mobile.webp" />
+<OptIn slug="the-tower-blueprint" free="free-tower" word="Tower" noClose allset watch="/the-tower-blueprint/watch" proof="From the reel with 143,479 views" cover="/learn/tw_cover_free.webp" hero="/learn/tw_hero.webp" heroMobile="/learn/tw_hero_mobile.webp" />
 <section class="x3-hero" id="top">
   <picture class="x3-hero__bg"><source media="(max-width:899px)" srcset="/learn/tw_hero_mobile.webp"><img src="/learn/tw_hero.webp" width="2400" height="1339" fetchpriority="high" alt="SAMAR, the tower at sunset over the marina"></picture>
   <div class="x3-in">
