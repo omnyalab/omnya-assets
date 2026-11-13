@@ -276,6 +276,8 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 .fan .fbr{margin-top:6px!important}
 @media (min-width:821px){.fan .fbr{margin-top:4px!important}}
 @media (min-width:821px){.fan .bks .pbr .pb:nth-child(1),.fan .bks .pbr .pb:nth-child(3){width:104px;top:38px}.fan .bks .pbr .pb:nth-child(1){left:46px}.fan .bks .pbr .pb:nth-child(3){left:230px}.fan .bks .pbr .pb:nth-child(2){width:142px;left:119px;top:-12px}}
+.fbl{margin:-8px auto 18px;max-width:520px;text-align:center;font:500 13.5px/1.45 Inter;color:#8b93a5}.fbl a{color:#fff;font-weight:700}
+.fbl.big{margin:0 auto 22px}.fbl.big span{display:block;margin-bottom:10px;color:#c9d2e3;font-size:14px}.fbl.big a{display:inline-flex;align-items:center;gap:8px;padding:13px 20px;border-radius:999px;background:linear-gradient(90deg,#14d95b,#3dff86);color:#05210f;font:800 15px Inter;text-decoration:none;box-shadow:0 12px 30px -10px #30d158bb}
 
 .ec{min-height:0}
 .pml{margin-top:18px!important}
@@ -352,6 +354,7 @@ body.rv .hero .cbtn .px{display:inline}
     <p class="csub">Then the Full Guide goes back to €29</p>
     <span class="free"><i>✓</i><span>Your <b>FREE</b> blueprint just landed in your inbox</span></span>
     <div class="steps"><span class="ok"><em>✓</em>Free blueprint</span><hr class="ok"><span class="now"><em>2</em>Watch the video</span><hr><span><em>3</em>Full guide</span></div>
+    <p class="fbl" data-fbl hidden><span data-fbt>Sent to your inbox. Not there? Check spam, or</span> <a href="/learn/free/omnya-lab-3d-to-film-blueprint.pdf" target="_blank" rel="noopener" data-fba>open your free blueprint here</a></p>
     <h1>Step 2: see how the free blueprint becomes a <u class="hb2">€1,990</u> client</h1>
     <p class="watch"><i></i><span>Watch this before you open your <b class="fw">free</b> guide</span></p>
     <div class="vsl" data-vsl><video src="/learn/watch/vsl.mp4?v=5" poster="/learn/watch/vsl_poster.jpg" autoplay muted loop playsinline></video>
@@ -473,7 +476,10 @@ dots.forEach((d, i) => d.addEventListener('click', () => { if (innerWidth < 820)
 const LINK = {'full': 'https://buy.stripe.com/28EcN4dp34g0bO6fCR8so0A', 'all': 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C'}, PID = {'full': 'full-3d', 'scene': 'full-towers-scene', 'all': 'everything'}
 let who = {}; try { who = JSON.parse(sessionStorage.getItem('omnya-watch') || '{}') } catch (e) {}
 const em = document.querySelector('[data-em]'), cn = document.querySelector('[data-cn]')
-if (who.email) em.value = who.email // 13/11 night (Nico): the email always shows and is required, filled in from the free blueprint
+if (who.email) em.value = who.email
+{ const fb = document.querySelector('[data-fbl]'); if (fb && (who.email || who.nomail)) { fb.hidden = false
+  if (who.nomail) { fb.classList.add('big'); document.querySelector('[data-fbt]').textContent = 'Your free blueprint is ready, open it now'; document.querySelector('[data-fba]').textContent = 'Open the free blueprint ↓' }
+  else document.querySelector('[data-fbt]').textContent = 'Sent to ' + who.email + '. Not there? Check spam, or' } } // 13/11 night (Nico): the email always shows and is required, filled in from the free blueprint
 let cur = 'full', ec = null, busy = false
 const ecBox = document.querySelector('[data-ec]'), right = document.querySelector('.right')
 function payLink() { const e = em.value.trim(); location.href = LINK[cur] + (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e) ? '?prefilled_email=' + encodeURIComponent(e) : '') }

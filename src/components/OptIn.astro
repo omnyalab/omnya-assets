@@ -112,7 +112,7 @@ const next = after || `/${slug}/sent`;
     var pending = function () { try { var d = JSON.parse(localStorage.getItem(PEND) || 'null'); return d && d.u === box.dataset.watch && Date.now() - d.t < 15 * 60e3 ? d : null; } catch (e) { return null; } };
     var resume = function () {
       var d = pending(); if (!d) return false;
-      try { sessionStorage.setItem('omnya-watch', JSON.stringify({ name: d.name, email: d.email })); } catch (e) {}
+      try { sessionStorage.setItem('omnya-watch', JSON.stringify({ name: d.name, email: d.email, nomail: !!d.nomail })); } catch (e) {}
       box.style.visibility = 'hidden'; document.documentElement.style.background = '#05070a';
       location.replace(d.u); return true;
     };
@@ -183,6 +183,7 @@ const next = after || `/${slug}/sent`;
       requestAnimationFrame(tick);
       var fly = function () {
         try { sessionStorage.setItem('omnya-watch', JSON.stringify({ name: name, email: email, nomail: !ok })); sessionStorage.setItem('omnya-enter', '1'); } catch (e) {}
+        try { localStorage.setItem(PEND, JSON.stringify({ u: box.dataset.watch, t: Date.now(), name: name, email: email, nomail: !ok })); } catch (e) {}
         btn.classList.add('oiw-ok'); btn.textContent = ok ? '✓ Sent to your inbox' : '✓ Your blueprint is ready';
         // the cover becomes the green check, the check goes up where step 1 waits on the video page
         var r = bk.getBoundingClientRect();
