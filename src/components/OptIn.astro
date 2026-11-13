@@ -109,15 +109,13 @@ const next = after || `/${slug}/sent`;
     var locked = box.classList.contains('oi--nox');
     // 9/11 (Nico, Build page): no site loading screen between the form and the offer, only a clean green fade
     var green = box.classList.contains('oi--c1') || box.classList.contains('oi--fade');
-    // 13/11 (Nico): to the video page always with a slow fade (soft), on every funnel, even without `fade`
-    var go = function (url, soft) {
+    var go = function (url) {
       // a place on this same page (the City page, "#full"): the card and the loading screen go away
       if (url.charAt(0) === '#') { oil.hidden = true; box.hidden = true; var el = document.querySelector(url); if (el) el.scrollIntoView(); return; }
-      if (!green && !soft) { location.href = url; return; }
+      if (!green) { location.href = url; return; }
       var f = document.createElement('div'); f.className = 'oi-fade' + (box.classList.contains('oi--c1') ? '' : ' oi-fade--blue'); document.body.appendChild(f);
-      if (soft) f.style.transition = 'opacity .8s cubic-bezier(.4,0,.2,1)';
-      requestAnimationFrame(function () { requestAnimationFrame(function () { f.classList.add('on'); }); });
-      setTimeout(function () { location.href = url; }, soft ? 860 : 520);
+      requestAnimationFrame(function () { f.classList.add('on'); });
+      setTimeout(function () { location.href = url; }, 520);
     };
     var goBtn = document.querySelector('[data-oil-go]');
     if (goBtn) goBtn.addEventListener('click', function (e) { var h = goBtn.getAttribute('href'); if (!green && h.charAt(0) !== '#') return; e.preventDefault(); go(h); });
@@ -182,7 +180,7 @@ const next = after || `/${slug}/sent`;
           T(function () {
             aso.classList.add('sent');
             // 13/11: the face video page takes over after the green receipt; the email stays in this tab only (sessionStorage), for the checkout
-            if (box.dataset.watch) { try { sessionStorage.setItem('omnya-watch', JSON.stringify({ name: name, email: email })); } catch (e) {} T(function () { go(box.dataset.watch, true); }, 3000); return; }
+            if (box.dataset.watch) { try { sessionStorage.setItem('omnya-watch', JSON.stringify({ name: name, email: email })); } catch (e) {} T(function () { location.href = box.dataset.watch; }, 3000); return; }
             // 11/11 night (Nico, A1): about 4 s of the envelope, then 3 s of "Your FREE blueprint arrived", then the offer
             T(function () { aso.classList.add('s2', 'play'); }, 3000);
             T(function () { aso.classList.add('s3'); }, 4000);

@@ -249,15 +249,13 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 .p-all .hero2{overflow:visible}
 .fan{padding-bottom:10px}
 
-.ec{min-height:0;margin-top:14px;border-radius:14px;overflow:hidden}
-.ec.on{min-height:420px;background:#fff;padding:6px 0}
-.ec.on ~ .pay,.right.live .sp{display:none}
-.ec.load{min-height:120px;background:linear-gradient(90deg,#ffffff0a,#ffffff16,#ffffff0a);background-size:200% 100%;animation:shim 1.2s linear infinite}
+.ec{margin-top:14px;min-height:0}
+.ec.load{min-height:250px;border-radius:12px;background:linear-gradient(90deg,#ffffff08,#ffffff14,#ffffff08);background-size:200% 100%;animation:shim 1.2s linear infinite}
+.pay[disabled]{opacity:.7;cursor:wait}
+.perr{margin:10px 0 0;min-height:0;text-align:center;font-size:14px;font-weight:600;color:#ff6b6b}
+.perr:empty{display:none}
 @keyframes shim{to{background-position:-200% 0}}
-.pgin{position:fixed;inset:0;z-index:999;pointer-events:none;background:radial-gradient(120% 90% at 50% 35%,#163266 0%,#0b1630 45%,#05070a 100%);animation:pgin .9s cubic-bezier(.4,0,.2,1) .12s forwards}
-@keyframes pgin{to{opacity:0;visibility:hidden}}
 </style></head><body>
-<div class="pgin" aria-hidden="true"></div>
 
 <div class="bar"><img src="/learn/watch/logo.svg" alt="Omnya Lab"><span class="lbl">Closes forever in</span><span class="tm"><span data-h>00</span><small>h</small><span data-m>14</span><small>m</small><span data-s>59</span><small>s</small></span><a class="go cbtn" href="#offer">Get the full guide<i class="dot"></i><span class="px">€5.99</span></a></div>
 
@@ -313,9 +311,10 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
       <div class="right"><div class="tm" data-t3>00:14:59</div><h3>YOURS FOREVER</h3><p class="one"><b data-pr>€5.99</b> one-time · instant PDF · no subscription</p>
         <label class="opt on" data-o="full"><img src="/learn/tw_book.webp" alt=""><span><b>The Full Guide</b><small>Every prompt, word for word</small></span><span class="pp"><strong>€5.99</strong><s>€29</s></span><span class="off">-79%</span></label>
         <label class="opt" data-o="all"><img src="/learn/pk_pb01.webp" alt=""><span><b>Everything we teach</b><small>4 Full guides + 3 playbooks</small></span><span class="pp"><strong>€59</strong><s>€190</s></span><span class="off">-69%</span></label>
-        <div class="sp"><span class="lab">Your email</span><input class="in" type="email" placeholder="you@example.com" aria-label="Your email" data-em autocomplete="email"></div>
-        <div class="ec" data-ec></div>
+        <div class="sp"><span class="lab">Your email</span><input class="in" type="email" placeholder="you@example.com" aria-label="Your email" data-em autocomplete="email">
+        <div class="ec" data-ec></div></div>
         <button class="pay" type="button" data-pay>Pay €5.99 · Get the Full Guide</button>
+        <p class="perr" data-perr role="alert"></p>
         <p class="secure">🔒 Secure checkout by Stripe</p></div>
     </div>
   </section>
@@ -388,21 +387,42 @@ const ecBox = document.querySelector('[data-ec]'), right = document.querySelecto
 function payLink() { const e = em.value.trim(); location.href = LINK[cur] + (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e) ? '?prefilled_email=' + encodeURIComponent(e) : '') }
 document.querySelector('[data-pay]').addEventListener('click', payLink)
 function loadStripe() { return window.Stripe ? Promise.resolve() : new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'https://js.stripe.com/v3/'; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc) }) }
-async function mount() {
-  if (busy) return; busy = true
+// 13/11 (Nico): the Stripe fields inside OUR checkout, black and blue like the board, our own Pay button
+const LOOK = { theme: 'night', variables: { colorPrimary: '#0a84ff', colorBackground: '#0b1224', colorText: '#ffffff', colorTextSecondary: '#a1a1aa', colorTextPlaceholder: '#6b7385', colorDanger: '#ff6b6b', fontFamily: 'Inter, system-ui, sans-serif', fontSizeBase: '16px', borderRadius: '10px', spacingUnit: '4px' },
+  rules: { '.Input': { border: '1px solid #2b3550', boxShadow: '0 1px 1px #0006' }, '.Input:focus': { border: '1px solid #0a84ff', boxShadow: '0 0 0 3px #0a84ff40' }, '.Label': { color: '#e6ebf5', fontWeight: '500', fontSize: '14px' }, '.Tab': { border: '1px solid #2b3550', backgroundColor: '#0b1224', boxShadow: 'none' }, '.Tab--selected': { border: '1px solid #0a84ff', boxShadow: '0 0 0 1px #0a84ff' }, '.Tab:hover': { color: '#ffffff' } } }
+const payBtn = document.querySelector('[data-pay]'), perr = document.querySelector('[data-perr]')
+let actions = null, pel = null
+payBtn.removeEventListener('click', payLink)
+payBtn.addEventListener('click', async () => {
+  if (!actions) return payLink()
+  const e = em.value.trim(); perr.textContent = ''
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)) { perr.textContent = 'Write your email so we can send you the guide'; em.focus(); return }
+  payBtn.disabled = true
   try {
-    if (ec) { ec.destroy(); ec = null }
-    ecBox.className = 'ec load'
-    const r = await fetch('/api/embed-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ p: PID[cur], email: em.value.trim() || who.email || '' }) })
+    const u = await actions.updateEmail(e); if (u && u.type === 'error') throw u.error
+    const r = await actions.confirm(); if (r && r.type === 'error') throw r.error
+  } catch (x) { perr.textContent = (x && x.message) || 'Payment did not go through, try again' }
+  payBtn.disabled = false
+})
+let again = false
+async function mount() {
+  if (busy) { again = true; return } busy = true
+  try {
+    if (pel) { try { pel.destroy() } catch (e) {} pel = null }
+    actions = null; ecBox.className = 'ec load'
+    const r = await fetch('/api/embed-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ p: PID[cur] }) })
     if (!r.ok) throw new Error('no session')
     const d = await r.json(); await loadStripe()
     const st = window.Stripe(d.pk)
-    ec = await st.initEmbeddedCheckout({ fetchClientSecret: async () => d.cs })
-    ecBox.className = 'ec on'; ec.mount(ecBox); right.classList.add('live')
-  } catch (e) { ecBox.className = 'ec'; right.classList.remove('live') }
-  busy = false
+    let co = st.initCheckoutElementsSdk({ clientSecret: d.cs, elementsOptions: { appearance: LOOK, fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap' }] } })
+    if (co && co.then) co = await co
+    const res = await co.loadActions(); if (res.type !== 'success') throw new Error('no actions')
+    pel = co.createPaymentElement({ layout: 'tabs' }); ecBox.className = 'ec'; pel.mount(ecBox)
+    actions = res.actions; right.classList.add('live')
+  } catch (e) { console.warn('[checkout]', e); ecBox.className = 'ec'; right.classList.remove('live'); actions = null }
+  busy = false; if (again) { again = false; mount() }
 }
-document.querySelectorAll('.opt').forEach(o => o.addEventListener('click', () => { cur = o.dataset.o; if (right.classList.contains('live') || ecBox.classList.contains('load')) mount() }))
+document.querySelectorAll('.opt').forEach(o => o.addEventListener('click', () => { cur = o.dataset.o; if (right.classList.contains('live') || ecBox.classList.contains('load') || busy) mount() }))
 const offerIo = new IntersectionObserver(([e]) => { if (e.isIntersecting) { offerIo.disconnect(); mount() } }, { rootMargin: '600px 0px' })
 offerIo.observe(document.querySelector('#offer'))
 </script>

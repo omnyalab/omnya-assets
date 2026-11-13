@@ -1,4 +1,4 @@
-// POST /api/embed-checkout {p, email} — the real Stripe Checkout inside our funnel page (13/11, Nico: "the same
+// POST /api/embed-checkout {p} — the real Stripe Checkout inside our funnel page (13/11, Nico: "the same
 // Stripe checkout, with our mask on top"). It opens a Checkout Session in embedded mode with the very same prices
 // as the product's payment link, so the webhook, the PDFs and the thanks page
 // work exactly as with the links: same products, same names, return to /learn/thanks/<id>?session_id=….
@@ -28,14 +28,13 @@ export async function POST(request) {
   try { body = await request.json(); } catch (e) {}
   const p = P[body.p];
   if (!p) return json({ error: 'unknown product' }, 400);
-  const email = String(body.email || '').trim();
   try {
     const session = await stripe.checkout.sessions.create({
-      ui_mode: 'embedded_page',
+      // 13/11 (Nico): "elements" = Stripe's card fields inside OUR checkout (black and blue), not Stripe's white page
+      ui_mode: 'elements',
       mode: 'payment',
       line_items: p.items.map((price) => ({ price, quantity: 1 })),
       return_url: `${SITE}/learn/thanks/${p.back}?session_id={CHECKOUT_SESSION_ID}`,
-      ...(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) ? { customer_email: email } : {}),
       metadata: { from: 'watch-funnel' },
     });
     return json({ cs: session.client_secret, pk });
