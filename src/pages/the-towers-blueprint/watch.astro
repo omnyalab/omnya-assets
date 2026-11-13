@@ -9,6 +9,7 @@
 <meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script is:inline>try{if(sessionStorage.getItem("omnya-enter")){document.documentElement.classList.add("enter");sessionStorage.removeItem("omnya-enter")}}catch(e){}</script>
 <style is:global>
 /* The page after the free guide on the structure of ultimateeditors.com, in Omnya's bright blue, built phone first
    (the reels traffic lands here). Button variants by URL: ?btn=b1 blue · b2 blue + price · b3 yellow · b4 yellow + price.
@@ -285,6 +286,35 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 .perr{margin:10px 0 0;min-height:0;text-align:center;font-size:14px;font-weight:600;color:#ff6b6b}
 .perr:empty{display:none}
 @keyframes shim{to{background-position:-200% 0}}
+
+/* 13/11 D + T3 (Nico) */
+.hero .ctop,.hero .csub,.hero .free,.hero .watch{display:none!important}
+.steps{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 auto 22px;max-width:520px;font:700 12px Inter;color:#8b93a5}
+.steps span{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.steps em{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;font-style:normal;font-size:11px;background:#ffffff14;color:#c9d2e3}
+.steps .ok{color:#9ff0b6}.steps .ok em{background:#30d158;color:#fff}
+.steps .now{color:#fff}.steps .now em{background:#0a84ff;color:#fff;box-shadow:0 0 0 4px #0a84ff33}
+.steps hr{flex:1;min-width:10px;max-width:40px;height:2px;border:0;margin:0;background:#ffffff22}.steps hr.ok{background:#30d158}
+@media (max-width:620px){.steps{font-size:11px;gap:4px}}
+.hero .vsl{margin-top:40px!important}
+.big{padding-top:22px!important}
+/* the price and the clock only after the video: before, the button and the bar talk about the guide, not the money */
+.rvl{display:none;align-items:center;justify-content:center;gap:10px;margin:14px 0 0;font:600 15px Inter;color:#c9d2e3}
+.rvl s{color:#8b93a5}.rvl b{color:#fff}.rvl .rvt{color:#ff4d4d;font-variant-numeric:tabular-nums}
+.rvs{display:inline-grid;place-items:center;height:26px;padding:0 9px;border-radius:999px;background:#ffd60a;color:#111;font:900 13px Poppins;transform:rotate(-4deg)}
+body.rv .rvl{display:flex;animation:rvIn .6s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes rvIn{from{opacity:0;transform:translateY(14px) scale(.96)}}
+body:not(.rv) .bar .tm,body:not(.rv) .bar .lbl{display:none}
+body:not(.rv) #offer{display:none}
+body.rv #offer{animation:rvIn .6s cubic-bezier(.2,.8,.2,1) both}
+body.rv .hero .cbtn .px{display:inline}
+/* arriving from the opt-in card */
+.enter .steps>*,.enter .hero h1,.enter .hero .vsl,.enter .hero .cta,.enter .big{animation:enIn .6s cubic-bezier(.2,.8,.2,1) both}
+.enter .steps>.ok{animation:none}
+.enter .steps>hr.ok{animation-delay:0s}.enter .steps>.now{animation-delay:.08s}.enter .steps>hr:not(.ok){animation-delay:.14s}.enter .steps>span:last-child{animation-delay:.2s}
+.enter .hero h1{animation-delay:.05s}.enter .hero .vsl{animation-delay:.15s}.enter .hero .cta{animation-delay:.26s}.enter .big{animation-delay:.34s}
+@keyframes enIn{from{opacity:0;transform:translateY(34px) scale(.94);filter:blur(10px)}}
+@media (prefers-reduced-motion:reduce){.enter *{animation:none!important}}
 </style></head><body>
 
 <div class="bar"><img src="/learn/watch/logo.svg" alt="Omnya Lab"><span class="lbl">Closes forever in</span><span class="tm"><span data-h>00</span><small>h</small><span data-m>14</span><small>m</small><span data-s>59</span><small>s</small></span><a class="go cbtn" href="#offer">Get the full guide<i class="dot"></i><span class="px">€5.99</span></a></div>
@@ -294,16 +324,18 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
     <div class="ctop tm" data-t2>00<i>:</i>14<i>:</i>59</div>
     <p class="csub">Then the Full Guide goes back to €29</p>
     <span class="free"><i>✓</i><span>Your <b>FREE</b> blueprint just landed in your inbox</span></span>
-    <h1>Build the <span class="hb2">Interactive 3D</span> clients pay <u class="hb2">€1,990</u> for, with every prompt word for word</h1>
+    <div class="steps"><span class="ok"><em>✓</em>Free blueprint</span><hr class="ok"><span class="now"><em>2</em>Watch the video</span><hr><span><em>3</em>Full guide</span></div>
+    <h1>Step 2: see how the free blueprint becomes a <u class="hb2">$1,990</u> client</h1>
     <p class="watch"><i></i><span>Watch this before you open your <b class="fw">free</b> guide</span></p>
     <div class="vsl" data-vsl><video src="/learn/watch/vsl.mp4?v=5" poster="/learn/watch/vsl_poster.jpg" autoplay muted loop playsinline></video>
       <div class="big-play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.4-6.5a1 1 0 0 0 0-1.7L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg></div><div class="ctl" data-ctl><button type="button" class="pp" data-pp aria-label="Pause"><svg viewBox="0 0 24 24" class="i-pause"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg><svg viewBox="0 0 24 24" class="i-play"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.4-6.5a1 1 0 0 0 0-1.7L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg></button><span class="tt" data-tt>0:00</span><div class="sk" data-sk><i data-fill></i><b data-knob></b></div><span class="tt" data-dur>0:45</span><button type="button" class="mu" data-mu aria-label="Sound"><svg viewBox="0 0 24 24"><path d="M3 9.5h4L12 5v14l-5-4.5H3z" fill="currentColor"/><path class="w" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="x" d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><button type="button" class="fs" data-fs aria-label="Full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
       <div class="unm" data-unm><svg viewBox="0 0 24 24" fill="#fff"><path d="M3 9.5h4L12 5v14l-5-4.5H3z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Your video is playing<br>Tap to unmute</div></div>
     <div class="cta"><a class="cbtn" href="#offer">Get the full guide<i class="dot"></i><span class="px">€5.99</span></a></div>
+    <p class="rvl"><span class="rvs">-79%</span><span><s>€29</s> <b>€5.99</b> · only on this page · <b class="rvt" data-tl>14:59</b></span></p>
   </section>
 
   <section class="big">
-    <p>This reel got</p><strong class="hb">180K+</strong><span class="sub hb2">views in a day</span>
+    <p>How we got</p><strong class="hb">+1M</strong><span class="sub hb2">views in a few days, and how you can too</span>
     <div class="viral"><video src="/learn/watch/r_viral.mp4" poster="/learn/watch/p_viral.jpg" muted loop playsinline autoplay></video><div class="cap"><b>Claude just cooked every 3D artist</b><span>Built with the Full Guide</span></div></div>
     <div class="stats">
       <div class="stat"><b class="hb" data-count="500" data-suf="K+">500K+</b><span>views in 10 days</span></div>
@@ -463,6 +495,11 @@ async function mount() {
   } catch (e) { console.warn('[checkout]', e); ecBox.className = 'ec'; right.classList.remove('live'); actions = null }
   busy = false; if (again) { again = false; mount() }
 }
+// 13/11 (Nico): when the video has been watched to the end (muted pass or with sound), the price and the clock appear
+{ let rv = false; const reveal = () => { if (rv) return; rv = true; document.body.classList.add('rv') }
+  document.querySelectorAll('a[href="#offer"]').forEach(x => x.addEventListener('click', e => { if (!rv) { e.preventDefault(); reveal(); requestAnimationFrame(() => document.querySelector('#offer').scrollIntoView({ behavior: 'smooth' })) } }))
+  vv.addEventListener('timeupdate', () => { if (vv.duration && vv.currentTime > vv.duration - 0.6) reveal() }); vv.addEventListener('ended', reveal)
+  setInterval(() => { const m = document.querySelector('[data-m]'), s2 = document.querySelector('[data-s]'), t = document.querySelector('.rvt'); if (m && s2 && t) t.textContent = m.textContent + ':' + s2.textContent }, 500) }
 document.querySelectorAll('.opt').forEach(o => o.addEventListener('click', () => { cur = o.dataset.o; if (right.classList.contains('live') || ecBox.classList.contains('load') || busy) mount() }))
 const offerIo = new IntersectionObserver(([e]) => { if (e.isIntersecting) { offerIo.disconnect(); mount() } }, { rootMargin: '600px 0px' })
 offerIo.observe(document.querySelector('#offer'))

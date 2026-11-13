@@ -138,3 +138,14 @@ html.ocb-on .oidim.oi--inline{padding-bottom:0}
 @media (width<=899px){
  .oidim.oi--inline{padding-top:138px}
 }
+/* 13/11 (Nico, T3 + L1/L2): the send on the funnels with the video page. The button fills with green and counts, then
+   the card zooms past the camera into the video page; .oiw-bg is the dark of that page, already under the card */
+.oiw-btn{position:relative;overflow:hidden}
+.oiw-fill{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,#1fb655,#3ee37a);transform-origin:left;transform:scaleX(0)}
+.oiw-lab{position:relative}.oiw-lab b{font-variant-numeric:tabular-nums}
+.oiw-btn.oiw-ok{background:linear-gradient(180deg,#3ee37a,#22b856)!important;box-shadow:0 14px 30px -10px #30d158aa}
+.oiw-btn:disabled{opacity:1;cursor:default}
+.oiw-bg{position:fixed;inset:0;z-index:39;pointer-events:none;opacity:0;background:radial-gradient(900px 560px at 50% -12%,#0a84ff3a,#0000 70%),#0d0e12}
+.oiw-bg--g{background:radial-gradient(900px 560px at 50% -12%,#22d35e3a,#0000 70%),#0d0e12}
+.oiw-chip{position:fixed;z-index:60;display:flex;align-items:center;gap:6px;padding:0;color:#9ff0b6;font:700 11px Inter,system-ui,sans-serif;white-space:nowrap;pointer-events:none;opacity:0}
+.oiw-chip em{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#30d158;color:#fff;font-style:normal;font-size:11px}
