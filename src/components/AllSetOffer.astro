@@ -334,6 +334,10 @@ const ck = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 12.4l3.9 3
 .aso--mail .aso-hi,.aso--mail .aso-rev{display:none}
 .aso--mail .aso__in{justify-content:center}
 .mx{position:relative;width:100%;max-width:380px;margin:0 auto;min-height:340px;display:grid;place-items:center}
+/* 13/11 (Nico): the card never stands still, it floats in depth with a slight tilt while it types, sends and lands */
+.aso--mail.s1 .mx,.aso--mail.sent .mx{animation:mxFloat 6s ease-in-out infinite;will-change:transform}
+@keyframes mxFloat{0%,100%{transform:perspective(900px) rotateX(4deg) rotateY(-5deg) translateZ(0)}25%{transform:perspective(900px) rotateX(-2deg) rotateY(3deg) translateZ(18px)}50%{transform:perspective(900px) rotateX(-4deg) rotateY(6deg) translateZ(6px) translateY(-6px)}75%{transform:perspective(900px) rotateX(2deg) rotateY(-2deg) translateZ(-12px)}}
+@media (prefers-reduced-motion:reduce){.aso--mail .mx{animation:none}}
 .mx-card{width:100%;border-radius:22px;background:linear-gradient(160deg,#ffffff24,#ffffff0d);border:1px solid #ffffff38;backdrop-filter:blur(26px) saturate(1.5);-webkit-backdrop-filter:blur(26px) saturate(1.5);box-shadow:0 30px 60px -24px #000c,inset 0 1px 0 #ffffff40;color:#fff;overflow:hidden;opacity:0;transform:translateY(26px) scale(.96)}
 .mx-bar{display:flex;align-items:center;gap:7px;padding:12px 14px;border-bottom:1px solid #ffffff1f}
 .mx-bar i{width:11px;height:11px;border-radius:50%;background:#ff5f57}.mx-bar i+i{background:#febc2e}.mx-bar i+i+i{background:#28c840}

@@ -20,7 +20,7 @@ a{color:inherit;text-decoration:none}
 .wrap{max-width:1180px;margin:0 auto;padding:0 16px}
 .hb{background:linear-gradient(180deg,#ffffff 0%,#9fd2ff 38%,#1f8fff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hb2{background:linear-gradient(90deg,#8fd0ff,#1f8fff);-webkit-background-clip:text;background-clip:text;color:transparent}
-.tm{font-family:Poppins,sans-serif;font-weight:900;color:var(--red);font-variant-numeric:tabular-nums;text-shadow:0 0 24px #ff1f1fcc,0 0 3px #ff1f1f}
+.tm{font-family:Poppins,sans-serif;font-weight:900;color:var(--red);font-variant-numeric:tabular-nums;text-shadow:0 0 10px #ff1f1f40}
 .bar{position:fixed;left:50%;top:10px;width:calc(100% - 20px);transform:translate(-50%,-160%);opacity:0;transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .3s;z-index:30;margin:0;max-width:900px;display:flex;align-items:center;gap:12px;padding:7px 7px 7px 16px;border-radius:999px;background:#15171ee8;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #ff1f1f66;box-shadow:0 20px 40px -20px #000}
 .bar.show{transform:translate(-50%,0);opacity:1}
 .bar img{height:17px}
@@ -40,7 +40,7 @@ body.yellow .go.cbtn{box-shadow:0 0 24px -4px #ffd60a}
 .hero::before{content:"";position:absolute;left:50%;top:-90px;width:900px;height:560px;margin-left:-450px;background:radial-gradient(closest-side,#0a84ff3a,#0000);pointer-events:none}
 .ctop{font-size:clamp(40px,6vw,56px);letter-spacing:.02em;line-height:1}
 .ctop i{font-style:normal;color:#ff7a7a;margin:0 4px}
-.csub{margin:8px 0 0;font-size:14px;color:#d1d1d6}.csub b{color:var(--red)}
+.csub{margin:8px 0 0;font-size:min(14.5px,3.7vw);font-weight:700;color:var(--red);white-space:nowrap}
 .free{display:inline-flex;align-items:center;gap:10px;margin-top:22px;padding:10px 18px 10px 10px;border-radius:999px;background:#30d15826;border:1.5px solid #30d158aa;font:700 15px Inter;color:#c6f7d4;box-shadow:0 0 30px -8px #30d158aa}
 .free b{color:#fff}
 .free i{width:24px;height:24px;font-size:14px;border-radius:50%;background:var(--yes);display:grid;place-items:center;font-style:normal;color:#04210f;font-size:12px;font-weight:900}
@@ -254,14 +254,17 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 .ec.on ~ .pay,.right.live .sp{display:none}
 .ec.load{min-height:120px;background:linear-gradient(90deg,#ffffff0a,#ffffff16,#ffffff0a);background-size:200% 100%;animation:shim 1.2s linear infinite}
 @keyframes shim{to{background-position:-200% 0}}
+.pgin{position:fixed;inset:0;z-index:999;pointer-events:none;background:radial-gradient(120% 90% at 50% 35%,#163266 0%,#0b1630 45%,#05070a 100%);animation:pgin .9s cubic-bezier(.4,0,.2,1) .12s forwards}
+@keyframes pgin{to{opacity:0;visibility:hidden}}
 </style></head><body>
+<div class="pgin" aria-hidden="true"></div>
 
 <div class="bar"><img src="/learn/watch/logo.svg" alt="Omnya Lab"><span class="lbl">Closes forever in</span><span class="tm"><span data-h>00</span><small>h</small><span data-m>14</span><small>m</small><span data-s>59</span><small>s</small></span><a class="go cbtn" href="#offer">Get the full guide<i class="dot"></i><span class="px">€5.99</span></a></div>
 
 <main class="wrap">
   <section class="hero">
     <div class="ctop tm" data-t2>00<i>:</i>14<i>:</i>59</div>
-    <p class="csub">minutes until this page closes, <b>then the Full Guide goes back to €29</b></p>
+    <p class="csub">Then the Full Guide goes back to €29</p>
     <span class="free"><i>✓</i><span>Your <b>FREE</b> blueprint just landed in your inbox</span></span>
     <h1>Build the <span class="hb2">interactive tower</span> clients pay <u class="hb2">€1,990</u> for, with every prompt word for word</h1>
     <p class="watch"><i></i><span>Watch this before you open your <b class="fw">free</b> guide</span></p>
