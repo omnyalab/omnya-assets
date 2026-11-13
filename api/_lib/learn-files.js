@@ -36,9 +36,10 @@ export function linkOk(file, exp, sig) {
   return a.length === b.length && timingSafeEqual(a, b);
 }
 
-const WHITE_TO_REAL = pdf('From 3D to real photo', 'playbook-01-from-3d-to-real-photo.pdf', ['Dal 3D alla foto vera', 'it/playbook-01-dal-3d-alla-foto-vera.pdf']);
-const REEL = pdf('The reel they comment on', 'playbook-02-the-reel-they-comment-on.pdf', ['Il reel che fa commentare', 'it/playbook-02-il-reel-che-fa-commentare.pdf']);
-const BEFORE_IT_EXISTS = pdf('Sell it before it exists', 'playbook-03-sell-it-before-it-exists.pdf', ['Vendilo prima che esista', 'it/playbook-03-vendilo-prima-che-esista.pdf']);
+// 13/11 (Nico): new titles and covers for the three playbooks. 02 is a new PDF (English only, so Italian buyers get it marked (EN)).
+const WHITE_TO_REAL = pdf('From a 3D to a photo clients pay for', 'playbook-01-from-a-3d-to-a-photo-clients-pay-for.pdf', ['Dal 3D a una foto che i clienti pagano', 'it/playbook-01-dal-3d-a-una-foto-che-i-clienti-pagano.pdf']);
+const REEL = pdf('How to go viral in days, not years', 'playbook-02-how-to-go-viral-in-days-not-years.pdf');
+const BEFORE_IT_EXISTS = pdf('The launch kit that sells a tower', 'playbook-03-the-launch-kit-that-sells-a-tower.pdf', ['Il kit di lancio che vende una torre', 'it/playbook-03-il-kit-di-lancio-che-vende-una-torre.pdf']);
 const PROMPTS = pdf('The full prompt files', 'bundle-the-full-prompt-files.pdf', ['I file di prompt completi', 'it/pacchetto-i-file-di-prompt-completi.pdf']);
 const CHECKLIST = pdf('The checklist before every delivery', 'bundle-the-checklist-before-every-delivery.pdf', ['Il controllo prima di ogni consegna', 'it/pacchetto-il-controllo-prima-di-ogni-consegna.pdf']);
 const FULL_TOWER = pdf('How to build a tower that sells with AI', 'full-tower-blueprint.pdf');
@@ -54,8 +55,20 @@ const FULL_TOWERS = pdf('How to build three towers you choose the view of', 'ful
 const SCENE = { name: 'The Towers Scene File', file: 'en/the-towers-scene.zip', kind: 'zip' };
 
 const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, SCENE];
+// 13/11: the playbooks got new names. The one-year links already in buyers' emails still carry the old file names, so
+// the old names stay valid and point to the new files (who bought the old playbook 02 now gets the new one).
+const OLD = {
+  'en/playbook-01-from-3d-to-real-photo.pdf': 'en/playbook-01-from-a-3d-to-a-photo-clients-pay-for.pdf',
+  'it/playbook-01-dal-3d-alla-foto-vera.pdf': 'it/playbook-01-dal-3d-a-una-foto-che-i-clienti-pagano.pdf',
+  'en/playbook-02-the-reel-they-comment-on.pdf': 'en/playbook-02-how-to-go-viral-in-days-not-years.pdf',
+  'it/playbook-02-il-reel-che-fa-commentare.pdf': 'en/playbook-02-how-to-go-viral-in-days-not-years.pdf',
+  'en/playbook-03-sell-it-before-it-exists.pdf': 'en/playbook-03-the-launch-kit-that-sells-a-tower.pdf',
+  'it/playbook-03-vendilo-prima-che-esista.pdf': 'it/playbook-03-il-kit-di-lancio-che-vende-una-torre.pdf',
+};
+/** The file on disk for a signed name: itself, or the new file an old name now points to. */
+export const diskName = (file) => OLD[file] || file;
 /** Every file path api/file.js may serve, and nothing else. */
-const ALL = new Set(EVERY.flatMap((f) => (f.it ? [f.file, f.it[1]] : [f.file])));
+const ALL = new Set([...EVERY.flatMap((f) => (f.it ? [f.file, f.it[1]] : [f.file])), ...Object.keys(OLD)]);
 export const allFiles = () => EVERY.flatMap((f) => [{ name: f.name, file: f.file }, ...(f.it ? [{ name: f.it[0], file: f.it[1] }] : [])]);
 
 // "Everything we teach" (7/11, €39 after a free blueprint): the three Full blueprints and the three playbooks with the extras
@@ -86,6 +99,9 @@ const RULES = [
   // "towers scene" in its name, so it still reaches its own rule and its own PDF.
   // towers? so a product typed "The Tower Scene File" by mistake on Stripe still gets the zip and never the Full Tower PDF
   [/towers?\s*scene/i, [SCENE]],
+  // 13/11: playbook 03 is now "The launch kit that sells a tower": it must be caught BEFORE /tower/ below, or the buyer
+  // of the playbook would get the Full Tower guide. The pack and the other-two offers are matched above or have no "tower".
+  [/launch kit that sells a tower/i, [BEFORE_IT_EXISTS]],
   // "build blueprint", never /build/ alone: the Build lesson is a product too
   [/full build blueprint/i, [FULL_BUILD]],
   // "full towers blueprint" before /tower/: the Full Tower Blueprint (one tower) is another product (9/11)
@@ -98,9 +114,9 @@ const RULES = [
   [/other two playbooks \(after playbook 01\)/i, [REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST]],
   [/other two playbooks \(after playbook 03\)/i, [WHITE_TO_REAL, REEL, PROMPTS, CHECKLIST]],
   [/other two playbooks \(after playbook 02/i, [WHITE_TO_REAL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST]],
-  [/playbook\s*01|3d to real photo/i, [WHITE_TO_REAL]],
-  [/playbook\s*02|reel they comment/i, [REEL]],
-  [/playbook\s*03|sell it before it exists/i, [BEFORE_IT_EXISTS]],
+  [/playbook\s*01|3d to real photo|3d to a photo/i, [WHITE_TO_REAL]],
+  [/playbook\s*02|reel they comment|go viral/i, [REEL]],
+  [/playbook\s*03|sell it before it exists|launch kit/i, [BEFORE_IT_EXISTS]],
 ];
 
 /** names = every line item's product name on one Checkout Session. Returns the files to deliver, deduped,

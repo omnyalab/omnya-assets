@@ -56,17 +56,20 @@ export const everythingApology = '';
 
 export const products: { id: ProductId; checkout: string }[] = [
   { id: 'white-to-real', checkout: 'https://buy.stripe.com/aFaeVcbgVdQA2dwaix8so0s' },
-  { id: 'reel', checkout: 'https://buy.stripe.com/3cI28q84J5k47xQ3U98so0t' },
+  // 13/11 (Nico): playbook 02 "How to go viral in days, not years" at €97 (the €49 link was https://buy.stripe.com/3cI28q84J5k47xQ3U98so0t)
+  { id: 'reel', checkout: 'https://buy.stripe.com/dRm3cu84J13O6tM1M18so0I' },
   { id: 'before-it-exists', checkout: 'https://buy.stripe.com/6oUaEWdp3eUEcSabmB8so0u' },
-  { id: 'bundle', checkout: 'https://buy.stripe.com/14A8wO5WB6o82dwfCR8so03' },
+  // 13/11: all three at €119 (the €79 link was https://buy.stripe.com/14A8wO5WB6o82dwfCR8so03)
+  { id: 'bundle', checkout: 'https://buy.stripe.com/9B67sK1Gl4g005oaix8so0J' },
   { id: 'session', checkout: 'https://buy.stripe.com/7sY14m2KpfYI19s2Q58so04' },
   { id: 'build', checkout: 'https://buy.stripe.com/00w5kCacR27SbO6bmB8so05' },
   { id: 'community', checkout: '' },
   { id: 'session-reader', checkout: 'https://buy.stripe.com/00w7sKet74g03hA62h8so06' },
   { id: 'rest-30', checkout: 'https://buy.stripe.com/9B66oGbgVaEo9FYgGV8so07' },
   { id: 'rest-50', checkout: 'https://buy.stripe.com/bJedR870F9Ak5pI0HX8so08' },
-  { id: 'rest-02', checkout: 'https://buy.stripe.com/fZu9ASdp3eUE6tM62h8so0v' },
-  { id: 'rest-03', checkout: 'https://buy.stripe.com/6oUfZget7aEoaK29et8so0w' },
+  // 13/11: the other two for the difference to €119: after 02 €22, after 03 €80 (before: €30 https://buy.stripe.com/fZu9ASdp3eUE6tM62h8so0v, €40 https://buy.stripe.com/6oUfZget7aEoaK29et8so0w)
+  { id: 'rest-02', checkout: 'https://buy.stripe.com/aFa8wOet7eUE5pIgGV8so0K' },
+  { id: 'rest-03', checkout: 'https://buy.stripe.com/4gM4gyacR8wgg4m3U98so0L' },
   // €59 from 9/11 (Nico: "only here"); the €39 link was https://buy.stripe.com/9B68wOgBf13O6tMbmB8so0r
   { id: 'everything', checkout: 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C' },
   // empty until the switch above is on: /go/everything-upgrade then opens WhatsApp, and no page links to it
@@ -103,8 +106,9 @@ export const products: { id: ProductId; checkout: string }[] = [
 // it never had a link) and dealOn were removed with the scripts that swapped the price in the page. Every Full guide is
 // €5.99, written in its page, and /go/<id> opens the one link of the product above.
 
-/** Playbook prices from 7/11 (one by one €167, all three €79). Used for the "Are you sure?" box and the funnels. */
-export const prices = { 'white-to-real': 79, reel: 49, 'before-it-exists': 39, bundle: 79, everything: 59, 'everything-upgrade': 53 } as const;
+/** Playbook prices from 13/11 (Nico): 02 "How to go viral in days, not years" is the dearest at €97, one by one €215, all three €119
+    (before: 01 €79, 02 €49, 03 €39, all three €79). The pack stays €59, worth €238 one by one (4 Full at €5.99 + the three playbooks). */
+export const prices = { 'white-to-real': 79, reel: 97, 'before-it-exists': 39, bundle: 119, everything: 59, 'everything-upgrade': 53 } as const;
 
 /**
  * After each purchase the checkout returns to /learn/thanks/<product>. That page makes one

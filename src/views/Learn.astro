@@ -62,8 +62,10 @@ const pic = (v: string, kind: 'white' | 'real') => ({
   mobile: `/learn/${set}_${v}_${kind}_mobile.webp`,
 });
 const go = (id: ProductId) => goHref(id, lang, w?.word);
+// the three playbooks bought one by one (13/11: €79 + €97 + €39 = €215)
+const oneByOne = prices['white-to-real'] + prices.reel + prices['before-it-exists'];
 const eur = (n: number) => (lang === 'it' ? `${n} €` : `€${n}`);
-// what the pack costs on top of this playbook (7/11 prices: 01 €79 = the pack, 02 €49, 03 €39)
+// what the three cost on top of this playbook (13/11: all three €119, 01 €79, 02 €97, 03 €39)
 const diff = (id: string) => prices.bundle - (prices[id as keyof typeof prices] ?? prices.bundle);
 const buyData = (b: { id: string; a: string; b: string; price: string }) => ({
   'data-buy': '',
@@ -76,6 +78,8 @@ const buyData = (b: { id: string; a: string; b: string; price: string }) => ({
   'data-bundle-price': L.bundleB,
   'data-cover': `/studio/book_${b.id}_${lang}_mobile.webp`,
 });
+// 13/11 (Nico): the shelf shows the same finished covers as the funnels and the studio page, in the page's language
+const book = (id: string) => ({ mobile: `/studio/book_${id}_${lang}_mobile.webp`, srcset: `/studio/book_${id}_${lang}_mobile.webp 540w, /studio/book_${id}_${lang}.webp 900w` });
 const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mobile.webp', '/learn/dev_dusk_mobile.webp'];
 ---
 
@@ -187,11 +191,11 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
     }
     <!-- The bundle first (7/11): the three books fanned out, the real price struck -->
     <div class:list={['lbundle', { 'lbundle--first': !tower }]} data-fade>
-      <a class="lfan" href={go('bundle')} aria-label={`${L.buy}: ${L.bundleTitleA} ${L.bundleTitleB}, ${eur(79)}`}>
+      <a class="lfan" href={go('bundle')} aria-label={`${L.buy}: ${L.bundleTitleA} ${L.bundleTitleB}, ${eur(prices.bundle)}`}>
         {
           L.books.map((b, i) => (
             <span class={`lfan__book lfan__book--${i + 1}`}>
-              <BookCover real={covers[b.id].real} white={covers[b.id].white} label={`${L.playbook} ${b.n}`} a={b.a} b={b.b} c1={covers[b.id].c1} c2={covers[b.id].c2} sizes="(min-width: 900px) 18vw, 40vw" />
+              <BookCover cover={book(b.id)} real={covers[b.id].real} white={covers[b.id].white} label={`${L.playbook} ${b.n}`} a={b.a} b={b.b} c1={covers[b.id].c1} c2={covers[b.id].c2} sizes="(min-width: 900px) 18vw, 40vw" />
             </span>
           ))
         }
@@ -199,8 +203,8 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
       <div class="lbundle__copy">
         <p class="t-small lbundle__label">{L.best}</p>
         <p class="t-h2 lbundle__title">{L.bundleTitleA} <span class="mute">{L.bundleTitleB}</span></p>
-        <p class="lbundle__price"><span class="lbundle__now">{eur(79)}</span><s class="lbundle__was">{eur(167)}</s></p>
-        <p class="lbundle__save">{L.thanks.save} {eur(88)}</p>
+        <p class="lbundle__price"><span class="lbundle__now">{eur(prices.bundle)}</span><s class="lbundle__was">{eur(oneByOne)}</s></p>
+        <p class="lbundle__save">{L.thanks.save} {eur(oneByOne - prices.bundle)}</p>
         <p class="lbundle__text">{L.bundleText}</p>
         <a class="btn btn--fill lbundle__cta" href={go('bundle')}>{L.bundleCta} <Arrow /></a>
         {!tower && <a class="lbundle__down" href="#one">{L.oneDown}</a>}
@@ -218,7 +222,7 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
         books.map((b) => (
           <li class="lbook" data-fade>
             <a class="lcover" href={go(b.id as ProductId)} aria-label={`${L.buy}: ${b.a} ${b.b}, ${b.price}`} {...buyData(b)}>
-              <BookCover real={covers[b.id].real} white={covers[b.id].white} label={`${L.playbook} ${b.n}`} a={b.a} b={b.b} c1={covers[b.id].c1} c2={covers[b.id].c2} />
+              <BookCover cover={book(b.id)} real={covers[b.id].real} white={covers[b.id].white} label={`${L.playbook} ${b.n}`} a={b.a} b={b.b} c1={covers[b.id].c1} c2={covers[b.id].c2} />
             </a>
             <div class="lbook__meta">
               <p class="t-small lbook__for">{b.for}</p>
@@ -295,7 +299,7 @@ const commImgs = ['/learn/cresta_living_real_mobile.webp', '/learn/dev_lobby_mob
         {
           L.books.map((b, i) => (
             <span class={`lfan__book lfan__book--${i + 1}`}>
-              <BookCover real={covers[b.id].real} white={covers[b.id].white} label={`${L.playbook} ${b.n}`} a={b.a} b={b.b} c1={covers[b.id].c1} c2={covers[b.id].c2} sizes="120px" />
+              <BookCover cover={book(b.id)} real={covers[b.id].real} white={covers[b.id].white} label={`${L.playbook} ${b.n}`} a={b.a} b={b.b} c1={covers[b.id].c1} c2={covers[b.id].c2} sizes="120px" />
             </span>
           ))
         }

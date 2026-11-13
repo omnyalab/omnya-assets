@@ -9,6 +9,8 @@ interface Pic {
   pos?: string;
 }
 interface Props {
+  /** 13/11: the finished cover (title and grade already in the picture, the same file as the funnels). When set, nothing is drawn on top. */
+  cover?: Pic;
   real: Pic;
   white?: Pic;
   label: string;
@@ -19,9 +21,14 @@ interface Props {
   sizes?: string;
   class?: string;
 }
-const { real, white, label, a, b, c1, c2, sizes = '(min-width: 900px) 30vw, 78vw', class: cls } = Astro.props;
+const { cover, real, white, label, a, b, c1, c2, sizes = '(min-width: 900px) 30vw, 78vw', class: cls } = Astro.props;
 ---
 
+{cover ? (
+<span class:list={['bk', cls]} aria-hidden="true">
+  <img class="bk__img" data-src={cover.mobile} data-srcset={cover.srcset} sizes={sizes} alt="" decoding="async" style="filter: none" />
+</span>
+) : (
 <span class:list={['bk', { 'bk--fade': white }, cls]} style={`--c1: ${c1}; --c2: ${c2}`} aria-hidden="true">
   {white && <img class="bk__img" data-src={white.mobile} data-srcset={white.srcset} sizes={sizes} alt="" decoding="async" style={white.pos ? `object-position: ${white.pos}` : undefined} />}
   <img class="bk__img bk__real" data-src={real.mobile} data-srcset={real.srcset} sizes={sizes} alt="" decoding="async" style={real.pos ? `object-position: ${real.pos}` : undefined} />
@@ -29,3 +36,4 @@ const { real, white, label, a, b, c1, c2, sizes = '(min-width: 900px) 30vw, 78vw
   <span class="bk__top"><span>omnya <span>lab</span></span><span>{label}</span></span>
   <span class="bk__t">{a}<span>{b}</span></span>
 </span>
+)}

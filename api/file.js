@@ -12,7 +12,7 @@ import { stat } from 'node:fs/promises';
 import { Readable } from 'node:stream';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { linkOk } from './_lib/learn-files.js';
+import { linkOk, diskName } from './_lib/learn-files.js';
 
 // two places to look: the project root (Vercel runs functions from it) and next to this file's folder
 const ROOTS = [join(process.cwd(), 'private', 'learn'), fileURLToPath(new URL('../private/learn', import.meta.url))];
@@ -33,8 +33,10 @@ export async function GET(request) {
   const file = q.get('f') || '';
   if (!linkOk(file, q.get('e'), q.get('s'))) return closed();
   // file is one of the known names (linkOk), never a path from outside
+  // an old playbook name from a link sent before 13/11 opens the new file (learn-files.js, OLD)
+  const real = diskName(file);
   let path = '';
-  for (const root of ROOTS) if (!path && (await stat(join(root, file)).catch(() => null))) path = join(root, file);
+  for (const root of ROOTS) if (!path && (await stat(join(root, real)).catch(() => null))) path = join(root, real);
   if (!path) {
     console.error('[file] missing in the bundle', file);
     return closed(404);
@@ -43,7 +45,7 @@ export async function GET(request) {
   return new Response(Readable.toWeb(createReadStream(path)), {
     headers: {
       'Content-Type': zip ? 'application/zip' : 'application/pdf',
-      'Content-Disposition': `${zip ? 'attachment' : 'inline'}; filename="${file.split('/').pop()}"`,
+      'Content-Disposition': `${zip ? 'attachment' : 'inline'}; filename="${real.split('/').pop()}"`,
       'Cache-Control': 'private, no-store',
       'X-Robots-Tag': 'noindex, nofollow',
     },
