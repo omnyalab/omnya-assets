@@ -267,6 +267,16 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 .fan .fbr{position:relative;height:210px;margin-top:-30px;z-index:3}
 @media (min-width:821px){.fan .bks2{width:380px}.fan .pbr{height:190px}.fan .bks .pbr .pb{width:118px}.fan .bks .pbr .pb:nth-child(1){left:44px}.fan .bks .pbr .pb:nth-child(2){left:131px}.fan .bks .pbr .pb:nth-child(3){left:218px}.fan .fbr{height:270px;margin-top:-36px}}
 
+/* 13/11 (Nico): the viral playbook is the one on top: bigger, higher, in front; the other two smaller and lower behind it */
+.fan .bks .pbr .pb:nth-child(1),.fan .bks .pbr .pb:nth-child(3){width:84px;top:30px;transform-origin:50% 100%}
+.fan .bks .pbr .pb:nth-child(1){left:36px;transform:rotate(-8deg)}
+.fan .bks .pbr .pb:nth-child(3){left:180px;transform:rotate(8deg)}
+.fan .bks .pbr .pb:nth-child(2){width:114px;left:93px;top:-10px;box-shadow:0 24px 34px -10px #000e,0 0 0 1px #ffffff2a,0 0 40px -8px #ffb35a55}
+/* the Full row starts under the viral cover, its titles stay readable */
+.fan .fbr{margin-top:6px!important}
+@media (min-width:821px){.fan .fbr{margin-top:4px!important}}
+@media (min-width:821px){.fan .bks .pbr .pb:nth-child(1),.fan .bks .pbr .pb:nth-child(3){width:104px;top:38px}.fan .bks .pbr .pb:nth-child(1){left:46px}.fan .bks .pbr .pb:nth-child(3){left:230px}.fan .bks .pbr .pb:nth-child(2){width:142px;left:119px;top:-12px}}
+
 .ec{min-height:0}
 .pml{margin-top:18px!important}
 .emw.have{display:none}

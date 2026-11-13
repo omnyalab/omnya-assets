@@ -151,8 +151,8 @@ export function fallback(id: ProductId, lang: Lang, name: string, word?: string)
   const msg =
     id === 'community'
       ? lang === 'it'
-        ? `Ciao Nico, mettimi in lista per la community Before It Exists${from}.`
-        : `Hi Nico, put me on the list for the Before It Exists community${from}.`
+        ? `Ciao Nico, mettimi in lista per la community The 3D Future${from}.`
+        : `Hi Nico, put me on the list for The 3D Future community${from}.`
       : id === 'session' || id === 'build'
         ? lang === 'it'
           ? `Ciao Nico, vorrei prenotare la lezione ${name}${from}.`
