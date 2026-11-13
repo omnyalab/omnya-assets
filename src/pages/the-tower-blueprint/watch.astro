@@ -386,7 +386,7 @@ let cur = 'full', ec = null, busy = false
 const ecBox = document.querySelector('[data-ec]'), right = document.querySelector('.right')
 function payLink() { const e = em.value.trim(); location.href = LINK[cur] + (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e) ? '?prefilled_email=' + encodeURIComponent(e) : '') }
 document.querySelector('[data-pay]').addEventListener('click', payLink)
-function loadStripe() { return window.Stripe ? Promise.resolve() : new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'https://js.stripe.com/v3/'; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc) }) }
+function loadStripe() { return window.Stripe ? Promise.resolve() : new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'https://js.stripe.com/endive/stripe.js'; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc) }) }
 // 13/11 (Nico): the Stripe fields inside OUR checkout, black and blue like the board, our own Pay button
 const LOOK = { theme: 'night', variables: { colorPrimary: '#0a84ff', colorBackground: '#0b1224', colorText: '#ffffff', colorTextSecondary: '#a1a1aa', colorTextPlaceholder: '#6b7385', colorDanger: '#ff6b6b', fontFamily: 'Inter, system-ui, sans-serif', fontSizeBase: '16px', borderRadius: '10px', spacingUnit: '4px' },
   rules: { '.Input': { border: '1px solid #2b3550', boxShadow: '0 1px 1px #0006' }, '.Input:focus': { border: '1px solid #0a84ff', boxShadow: '0 0 0 3px #0a84ff40' }, '.Label': { color: '#e6ebf5', fontWeight: '500', fontSize: '14px' }, '.Tab': { border: '1px solid #2b3550', backgroundColor: '#0b1224', boxShadow: 'none' }, '.Tab--selected': { border: '1px solid #0a84ff', boxShadow: '0 0 0 1px #0a84ff' }, '.Tab:hover': { color: '#ffffff' } } }
