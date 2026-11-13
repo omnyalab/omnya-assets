@@ -18,6 +18,8 @@ const P = {
   'full-towers-scene': { items: ['price_1UZz2fATIF7pxfqfRyPDkrrS', 'price_1UaAr6ATIF7pxfqfbRzsrio6'], back: 'full-towers' }, // 7sY3cu2KpbIsaK2duJ8so0H · 5,99 + scene 12
   'full-build': { items: ['price_1UZs1KATIF7pxfqfhu30zYy6'], back: 'full-build' }, // 5kQ3cuacR3bW2dwgGV8so0D · 5,99
   'full-tower': { items: ['price_1UZTEcATIF7pxfqfwl2Vl0eu'], back: 'full-tower' }, // cNi9AS1GlfYI5pI4Yd8so0z · 5,99
+  'full-3d': { items: ['price_1UZTNRATIF7pxfqfL1MLpQtJ'], back: 'full-3d' }, // 28EcN4dp34g0bO6fCR8so0A · 5,99 (13/11)
+  'full-city': { items: ['price_1UZTeWATIF7pxfqfeOIS3Qit'], back: 'full-city' }, // bJecN4gBfcMwf0icqF8so0B · 5,99 (13/11)
   everything: { items: ['price_1UZlPGATIF7pxfqf9vf0kJhG'], back: 'everything' }, // 5kQcN4bgVbIs6tMeyN8so0C · 59
 };
 
