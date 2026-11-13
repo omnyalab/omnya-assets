@@ -8,6 +8,7 @@ import { host } from './_lib/config.js';
 import { redis, hasStore } from './_lib/store.js';
 import { CONSENT_TEXTS, OFF_KEY, unsubUrl } from './_lib/newsletter.js';
 import { metaEvent } from './_lib/meta.js';
+import { waitUntil } from '@vercel/functions';
 
 const SITE = 'https://www.omnyalab.com';
 const FREE = {
@@ -90,7 +91,36 @@ export async function POST(request) {
     console.error('[optin] mail', e);
     return json({ error: 'mail failed' }, 502);
   }
+  // 13/11 night (Nico: "they must always arrive"): the people held back by the old daily cap get their email now,
+  // a few at a time after each new send, oldest first, once each (omnya:mail:owed:sent), within the day's cap
+  if (hasStore()) waitUntil(drainOwed(3).catch((e) => console.error('[optin] owed', e))); // after the answer: the visitor never waits
   return json({ ok: true });
+}
+
+async function drainOwed(max) {
+  const day = `omnya:mail:free:${new Date().toISOString().slice(0, 10)}`;
+  for (let i = 0; i < max; i++) {
+    if (Number(await redis('GET', day)) >= FREE_CAP) return;
+    const raw = await redis('RPOP', 'omnya:mail:owed');
+    if (!raw) return;
+    let o; try { o = JSON.parse(raw); } catch { continue; }
+    const f = FREE[o.free], email = String(o.email || '').toLowerCase();
+    if (!f || !email) continue;
+    if (Number(await redis('SADD', 'omnya:mail:owed:sent', `${email}|${o.free}`)) !== 1) continue; // already sent
+    await redis('INCR', day);
+    try {
+      await sendMail({
+        to: `${o.name} <${email}>`, replyTo: host.email, subject: `Your ${f.name.replace(/^The /, '')}`,
+        html: mailHtml(o.name, f, unsubUrl(email)),
+        headers: { 'List-Unsubscribe': `<${unsubUrl(email)}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },
+        text: `Here it is, ${o.name}.\n\n${f.name}: ${SITE}${f.file}\n\nNico · Omnya Lab`,
+      });
+    } catch (e) {
+      await redis('SREM', 'omnya:mail:owed:sent', `${email}|${o.free}`).catch(() => {});
+      await redis('RPUSH', 'omnya:mail:owed', raw).catch(() => {});
+      return;
+    }
+  }
 }
 
 export async function GET(request) {
