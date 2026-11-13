@@ -249,9 +249,38 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 .p-all .hero2{overflow:visible}
 .fan{padding-bottom:10px}
 
-.ec{margin-top:4px;min-height:0}
+.ec{min-height:0}
 .pml{margin-top:18px!important}
-.ec.load{min-height:250px;border-radius:12px;background:linear-gradient(90deg,#ffffff08,#ffffff14,#ffffff08);background-size:200% 100%;animation:shim 1.2s linear infinite}
+.emw.have{display:none}
+.cpanel{margin-top:6px;border:1px solid #24402e;border-radius:14px;background:#08130c;overflow:hidden}
+.chead{display:flex;align-items:center;gap:10px;padding:14px 16px;font:600 15px Inter;color:#fff;border-bottom:1px solid #24402e}
+.cbody{padding:12px 12px 14px}
+/* 13/11 (Nico): the four card logos in the card number like Stripe's, the fourth one changes; they go when he types */
+.ecw{position:relative}
+.cbr{position:absolute;right:13px;top:37.5px;display:flex;gap:4px;pointer-events:none;transition:opacity .2s}
+.ec.load ~ .cbr,.cbr.off{opacity:0}
+.cbr>span{position:relative;width:31px;height:19px;border-radius:3px;overflow:hidden;display:grid;place-items:center;font-family:Inter,Arial,sans-serif;font-weight:800;color:#fff}
+.cbr svg{width:31px;height:19px;display:block}
+.b-mc{background:#1d1d1f}
+.b-visa{background:#1434cb;font-size:8.5px;font-style:italic;letter-spacing:.02em}
+.b-amex{background:#1f72cd;font-size:7.5px;letter-spacing:.03em}
+.b-rot{background:#fff}
+.b-rot i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-style:normal;opacity:0;animation:brot 8s infinite}
+.b-rot i:nth-child(2){animation-delay:2s}.b-rot i:nth-child(3){animation-delay:4s}.b-rot i:nth-child(4){animation-delay:6s}
+@keyframes brot{0%,22%{opacity:1}25%,97%{opacity:0}100%{opacity:1}}
+.b-disc{font-size:5.2px;color:#231f20;letter-spacing:-.01em}.b-disc em{width:5px;height:5px;border-radius:50%;background:#f58220;margin:0 .3px}
+.b-jcb{gap:1px}.b-jcb b{width:7px;height:13px;border-radius:2px;font-size:6px;line-height:13px;text-align:center;color:#fff}.b-jcb b:nth-child(1){background:#0b4ea2}.b-jcb b:nth-child(2){background:#e60012}.b-jcb b:nth-child(3){background:#009944}
+.b-up{font-size:5.4px;color:#fff;background:linear-gradient(100deg,#e21836 0 34%,#00447c 34% 67%,#007b84 67%)}
+.b-din{background:#fff}.b-din em{width:12px;height:12px;border-radius:50%;border:2.4px solid #0079be;box-sizing:border-box}
+
+.cbody .lab.cl{margin:14px 0 6px}
+.cbody .in{height:46px;border-radius:10px;border:1px solid #24402e;background:#0a160e;font:500 16px Inter;color:#fff;padding:0 13px;width:100%}
+.pwr{display:flex;align-items:center;justify-content:center;gap:12px;margin:14px 0 0;font:500 13px Inter;color:#8b93a5}
+.pwr b{font:800 15px/1 Inter;letter-spacing:-.03em;color:#c9d2e3;margin-left:-6px}
+.pwr i{width:1px;height:16px;background:#3a4257}
+.pwr a{color:#8b93a5;text-decoration:none}
+
+.ec.load{min-height:200px;border-radius:12px;background:linear-gradient(90deg,#ffffff08,#ffffff14,#ffffff08);background-size:200% 100%;animation:shim 1.2s linear infinite}
 .pay[disabled]{opacity:.7;cursor:wait}
 .perr{margin:10px 0 0;min-height:0;text-align:center;font-size:14px;font-weight:600;color:#ff6b6b}
 .perr:empty{display:none}
@@ -267,7 +296,7 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
     <span class="free"><i>✓</i><span>Your <b>FREE</b> blueprint just landed in your inbox</span></span>
     <h1>Build the <span class="hb2">house that builds itself</span> clients pay <u class="hb2">€1,990</u> for, with every prompt word for word</h1>
     <p class="watch"><i></i><span>Watch this before you open your <b class="fw">free</b> guide</span></p>
-    <div class="vsl" data-vsl><video src="/learn/watch/vsl.mp4?v=3" poster="/learn/watch/vsl_poster.jpg" autoplay muted loop playsinline></video>
+    <div class="vsl" data-vsl><video src="/learn/watch/vsl.mp4?v=4" poster="/learn/watch/vsl_poster.jpg" autoplay muted loop playsinline></video>
       <div class="big-play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.4-6.5a1 1 0 0 0 0-1.7L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg></div><div class="ctl" data-ctl><button type="button" class="pp" data-pp aria-label="Pause"><svg viewBox="0 0 24 24" class="i-pause"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg><svg viewBox="0 0 24 24" class="i-play"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.4-6.5a1 1 0 0 0 0-1.7L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg></button><span class="tt" data-tt>0:00</span><div class="sk" data-sk><i data-fill></i><b data-knob></b></div><span class="tt" data-dur>0:45</span><button type="button" class="mu" data-mu aria-label="Sound"><svg viewBox="0 0 24 24"><path d="M3 9.5h4L12 5v14l-5-4.5H3z" fill="currentColor"/><path class="w" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="x" d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><button type="button" class="fs" data-fs aria-label="Full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
       <div class="unm" data-unm><svg viewBox="0 0 24 24" fill="#fff"><path d="M3 9.5h4L12 5v14l-5-4.5H3z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Your video is playing<br>Tap to unmute</div></div>
     <div class="cta"><a class="cbtn" href="#offer">Get the full guide<i class="dot"></i><span class="px">€5.99</span></a></div>
@@ -312,15 +341,17 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
       <div class="right"><div class="tm" data-t3>00:14:59</div><h3>YOURS FOREVER</h3><p class="one"><b data-pr>€5.99</b> one-time · instant PDF · no subscription</p>
         <label class="opt on" data-o="full"><img src="/learn/bd_book_tight.webp" alt=""><span><b>The Full Guide</b><small>Every prompt, word for word</small></span><span class="pp"><strong>€5.99</strong><s>€29</s></span><span class="off">-79%</span></label>
         <label class="opt" data-o="all"><img src="/learn/pk_pb01.webp" alt=""><span><b>Everything we teach</b><small>4 Full guides + 3 playbooks</small></span><span class="pp"><strong>€59</strong><s>€190</s></span><span class="off">-69%</span></label>
-        <div class="sp"><span class="lab">Your email</span><input class="in" type="email" placeholder="you@example.com" aria-label="Your email" data-em autocomplete="email">
-        <span class="lab pml">Choose how you want to pay</span><div class="ec" data-ec></div></div>
+        <div class="sp"><div class="emw" data-emw><span class="lab">Your email</span><input class="in" type="email" placeholder="you@example.com" aria-label="Your email" data-em autocomplete="email"></div>
+        <span class="lab pml">Payment method</span>
+        <div class="cpanel"><div class="chead"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/></svg>Card</div>
+          <div class="cbody"><div class="ecw"><div class="ec" data-ec></div><div class="cbr" data-cbr aria-hidden="true"><span class="b-mc"><svg viewBox="0 0 31 19"><circle cx="12.6" cy="9.5" r="5.6" fill="#eb001b"/><circle cx="18.4" cy="9.5" r="5.6" fill="#f79e1b"/><path d="M15.5 4.8a5.6 5.6 0 0 1 0 9.4a5.6 5.6 0 0 1 0-9.4z" fill="#ff5f00"/></svg></span><span class="b-visa">VISA</span><span class="b-amex">AMEX</span><span class="b-rot"><i class="b-disc">DISC<em></em>VER</i><i class="b-jcb"><b>J</b><b>C</b><b>B</b></i><i class="b-up">UnionPay</i><i class="b-din"><em></em></i></span></div></div><span class="lab cl">Cardholder name</span><input class="in" type="text" placeholder="Full name on card" aria-label="Cardholder name" data-cn autocomplete="cc-name"></div></div></div>
         <button class="pay" type="button" data-pay>Pay €5.99 · Get the Full Guide</button>
         <p class="perr" data-perr role="alert"></p>
-        <p class="secure">🔒 Secure checkout by Stripe</p></div>
+        <p class="pwr">Powered by <b>stripe</b><i></i><a href="https://stripe.com/legal/end-users" target="_blank" rel="noopener">Terms</a><a href="https://stripe.com/privacy" target="_blank" rel="noopener">Privacy</a></p></div>
     </div>
   </section>
 </main>
-<footer class="foot"><div class="wm"><span class="w1">Omnya Lab</span><span class="w2" aria-hidden="true">Omnya Lab</span></div><p>© 2026 Omnya Lab. All rights reserved.</p></footer>
+<footer class="foot"><p>© 2026 Omnya Lab. All rights reserved.</p></footer>
 
 <script is:inline>
 const q = new URLSearchParams(location.search), v = q.get('btn') || 'b1'
@@ -382,25 +413,29 @@ dots.forEach((d, i) => d.addEventListener('click', () => { if (innerWidth < 820)
 // the site: who just left their email (OptIn keeps it for this tab only), the real Stripe Checkout, the link as a fallback
 const LINK = {'full': 'https://buy.stripe.com/5kQ3cuacR3bW2dwgGV8so0D', 'all': 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C'}, PID = {'full': 'full-build', 'scene': 'full-towers-scene', 'all': 'everything'}
 let who = {}; try { who = JSON.parse(sessionStorage.getItem('omnya-watch') || '{}') } catch (e) {}
-const em = document.querySelector('[data-em]'); if (who.email) em.value = who.email
+const em = document.querySelector('[data-em]'), cn = document.querySelector('[data-cn]')
+if (who.email) { em.value = who.email; document.querySelector('[data-emw]').classList.add('have') }
 let cur = 'full', ec = null, busy = false
 const ecBox = document.querySelector('[data-ec]'), right = document.querySelector('.right')
 function payLink() { const e = em.value.trim(); location.href = LINK[cur] + (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e) ? '?prefilled_email=' + encodeURIComponent(e) : '') }
 document.querySelector('[data-pay]').addEventListener('click', payLink)
 function loadStripe() { return window.Stripe ? Promise.resolve() : new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'https://js.stripe.com/endive/stripe.js'; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc) }) }
 // 13/11 (Nico): the Stripe fields inside OUR checkout, black and blue like the board, our own Pay button
-const LOOK = { theme: 'night', variables: { colorPrimary: '#22d35e', colorBackground: '#0a160e', colorText: '#ffffff', colorTextSecondary: '#a1a1aa', colorTextPlaceholder: '#6b7385', colorDanger: '#ff6b6b', fontFamily: 'Inter, system-ui, sans-serif', fontSizeBase: '16px', borderRadius: '10px', spacingUnit: '4px' },
-  rules: { '.Input': { border: '1px solid #24402e', boxShadow: '0 1px 1px #0006' }, '.Input:focus': { border: '1px solid #22d35e', boxShadow: '0 0 0 3px #22d35e40' }, '.Label': { color: '#e6ebf5', fontWeight: '500', fontSize: '14px' }, '.Tab': { border: '1px solid #24402e', backgroundColor: '#0a160e', boxShadow: 'none' }, '.Tab--selected': { border: '1px solid #22d35e', boxShadow: '0 0 0 1px #22d35e' }, '.Tab:hover': { color: '#ffffff' }, '.AccordionItem': { border: '1px solid #24402e', backgroundColor: '#0a160e', boxShadow: 'none' }, '.AccordionItem--selected': { border: '1px solid #22d35e' }, '.RadioIcon': { width: '20px' }, '.RadioIconOuter--checked': { stroke: '#22d35e' }, '.RadioIconInner': { fill: '#22d35e' } } }
+const LOOK = { theme: 'night', inputs: 'condensed', labels: 'above', variables: { colorPrimary: '#22d35e', colorBackground: '#0a160e', colorText: '#ffffff', colorTextSecondary: '#c9d2e3', colorTextPlaceholder: '#6b7385', colorDanger: '#ff6b6b', fontFamily: 'Inter, system-ui, sans-serif', fontSizeBase: '16px', borderRadius: '10px', spacingUnit: '4px' },
+  rules: { '.Input': { border: '1px solid #24402e', boxShadow: 'none' }, '.Input:focus': { border: '1px solid #22d35e', boxShadow: '0 0 0 3px #22d35e40' }, '.Label': { color: '#e6ebf5', fontWeight: '500', fontSize: '14px' } } }
 const payBtn = document.querySelector('[data-pay]'), perr = document.querySelector('[data-perr]')
 let actions = null, pel = null
 payBtn.removeEventListener('click', payLink)
 payBtn.addEventListener('click', async () => {
   if (!actions) return payLink()
   const e = em.value.trim(); perr.textContent = ''
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)) { perr.textContent = 'Write your email so we can send you the guide'; em.focus(); return }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)) { document.querySelector('[data-emw]').classList.remove('have'); perr.textContent = 'Write your email so we can send you the guide'; em.focus(); return }
   payBtn.disabled = true
   try {
+    const n = cn.value.trim()
+    if (n.length < 2) { payBtn.disabled = false; perr.textContent = 'Write the name on your card'; cn.focus(); return }
     const u = await actions.updateEmail(e); if (u && u.type === 'error') throw u.error
+    const nm = await actions.updateIndividualName(n); if (nm && nm.type === 'error') throw nm.error
     const r = await actions.confirm(); if (r && r.type === 'error') throw r.error
   } catch (x) { perr.textContent = (x && x.message) || 'Payment did not go through, try again' }
   payBtn.disabled = false
@@ -411,14 +446,15 @@ async function mount() {
   try {
     if (pel) { try { pel.destroy() } catch (e) {} pel = null }
     actions = null; ecBox.className = 'ec load'
-    const r = await fetch('/api/embed-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ p: PID[cur] }) })
+    const r = await fetch('/api/embed-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ p: PID[cur], card: true }) })
     if (!r.ok) throw new Error('no session')
     const d = await r.json(); await loadStripe()
     const st = window.Stripe(d.pk)
     let co = st.initCheckoutElementsSdk({ clientSecret: d.cs, elementsOptions: { appearance: LOOK, fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap' }] } })
     if (co && co.then) co = await co
     const res = await co.loadActions(); if (res.type !== 'success') throw new Error('no actions')
-    pel = co.createPaymentElement({ layout: { type: 'accordion', radios: 'always', spacedAccordionItems: false, defaultCollapsed: true, visibleAccordionItemsCount: 0, paymentMethodLogoPosition: 'end' } }); ecBox.className = 'ec'; pel.mount(ecBox)
+    pel = co.createPaymentElement({ layout: 'tabs', wallets: { link: 'never' } })
+    const cbr = document.querySelector('[data-cbr]'); pel.on('change', ev => cbr.classList.toggle('off', !ev.empty)); ecBox.className = 'ec'; pel.mount(ecBox)
     actions = res.actions; right.classList.add('live')
   } catch (e) { console.warn('[checkout]', e); ecBox.className = 'ec'; right.classList.remove('live'); actions = null }
   busy = false; if (again) { again = false; mount() }
