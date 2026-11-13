@@ -166,6 +166,7 @@ export async function sendMail(m) {
 /** The free blueprints: Microsoft 365 first (no daily cap that matters), Resend if 365 fails. */
 export async function sendFreeMail(m) {
   if (!m365) return transport.sendMail({ from: FROM, ...m });
+  // if 365 says no, the free one does NOT fall back on Resend: Resend's 100 a day stay for who paid (the page opens the PDF)
   try { return await viaM365(m); }
-  catch (e) { console.error('[mail] m365 failed, via resend:', e.message); return transport.sendMail({ from: FROM, ...m }); }
+  catch (e) { console.error('[mail] m365 failed:', e.message); throw e; }
 }
