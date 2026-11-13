@@ -21,8 +21,11 @@ interface Props {
   next: string; // the old /sent page (no longer linked from here, kept for the pages that pass it)
   hero: string; // the blurred photo behind
   kind?: 'towers' | 'build' | 'tower';
+  mail?: boolean; // 13/11 (Nico, S5): the glass Apple Mail compose that writes itself and sends, then the watch page
 }
-const { hero, kind = 'towers' } = Astro.props;
+const { hero, kind = 'towers', mail = false } = Astro.props;
+const MAILS = { towers: ['FREE Towers Blueprint', 'omnya-lab-towers-blueprint.pdf'], build: ['FREE Build Blueprint', 'omnya-lab-build-blueprint.pdf'], tower: ['FREE Tower Blueprint', 'omnya-lab-tower-blueprint.pdf'] };
+const [subj, pdfName] = MAILS[kind];
 const isBuild = kind === 'build';
 const K = {
   towers: { book: '/learn/tt_book_tight.webp', alt: 'The Full Towers Blueprint', free: '/learn/tt_cover_book.webp', full: '/go/full-towers', scene: '/go/full-towers-scene' },
@@ -38,10 +41,23 @@ const burst = Array.from({ length: 44 }, (_, i) => {
 const ck = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 12.4l3.9 3.9 7.7-8.1"/></svg>';
 ---
 
-<div class={`aso${isBuild ? ' aso--c1' : ''}`} data-aso style={`--aso-hero:url(${hero})`}>
+<div class={`aso${isBuild ? ' aso--c1' : ''}${mail ? ' aso--mail' : ''}`} data-aso style={`--aso-hero:url(${hero})`}>
   <div class="aso__bg" aria-hidden="true"></div>
   <div class="aso__sc">
     <div class="aso__in">
+      {mail && (
+        <div class="mx" aria-live="polite">
+          <div class="mx-card">
+            <div class="mx-bar"><i></i><i></i><i></i><span>New Message</span></div>
+            <div class="mx-f mx-f1"><span>To</span><b><em data-aso-em></em></b></div>
+            <div class="mx-f mx-f2"><span>Subject</span><b><em><u>FREE</u>{subj.replace('FREE', '')}</em></b></div>
+            <div class="mx-att"><img src={freeSrc} alt="" /><span><b>{pdfName}</b><small>PDF · 5 steps</small></span><i class="mx-clip" set:html={'<svg viewBox="0 0 24 24"><path d="M16.5 6.5l-7.8 7.8a2 2 0 0 0 2.8 2.8l8.5-8.5a4 4 0 0 0-5.7-5.7L5.4 11.8a6 6 0 0 0 8.5 8.5l6.4-6.4"/></svg>'} /></div>
+            <div class="mx-foot"><span class="mx-from">From Omnya Lab</span><span class="mx-send">Send <i set:html={'<svg viewBox="0 0 24 24"><path d="M3 11.5l18-8-7.5 18-2.5-7.5z"/></svg>'} /></span></div>
+          </div>
+          <div class="mx-trail"></div>
+          <div class="mx-done"><span class="mx-ck" set:html={ck} /><p>Sent to your inbox</p><small data-aso-em></small></div>
+        </div>
+      )}
       <div class="aso-hi v vA">
         <div class="vA-st" aria-hidden="true"><div class="vA-in">
           <div class="vA-env"><div class="vA-back"></div><img class="vA-pdf" src={freeSrc} alt="" /><div class="vA-flap"></div><div class="vA-front"></div><div class="vA-flap2"></div></div>
@@ -312,4 +328,59 @@ const ck = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.2 12.4l3.9 3
   .po3 .aso-cta{margin-top:0}
   .po-tile b{font-size:15px}.po-tile small{font-size:12px}
 }
+
+/* 13/11 (Nico, S5): the glass Apple Mail compose. Typed while the email goes (s1), Send pressed when it went (sent),
+   the card flies off, "Sent to your inbox"; OptIn then fades to the watch page. Only with `mail`. */
+.aso--mail .aso-hi,.aso--mail .aso-rev{display:none}
+.aso--mail .aso__in{justify-content:center}
+.mx{position:relative;width:100%;max-width:380px;margin:0 auto;min-height:340px;display:grid;place-items:center}
+.mx-card{width:100%;border-radius:22px;background:linear-gradient(160deg,#ffffff24,#ffffff0d);border:1px solid #ffffff38;backdrop-filter:blur(26px) saturate(1.5);-webkit-backdrop-filter:blur(26px) saturate(1.5);box-shadow:0 30px 60px -24px #000c,inset 0 1px 0 #ffffff40;color:#fff;overflow:hidden;opacity:0;transform:translateY(26px) scale(.96)}
+.mx-bar{display:flex;align-items:center;gap:7px;padding:12px 14px;border-bottom:1px solid #ffffff1f}
+.mx-bar i{width:11px;height:11px;border-radius:50%;background:#ff5f57}.mx-bar i+i{background:#febc2e}.mx-bar i+i+i{background:#28c840}
+.mx-bar span{margin-left:8px;font-weight:700;font-size:13px;color:#ffffffcc}
+.mx-f{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #ffffff17;font-size:14px}
+.mx-f>span{flex:none;width:58px;color:#ffffff8c;font-weight:600}
+.mx-f b{display:block;min-width:0;overflow:hidden;white-space:nowrap;font-weight:700}
+.mx-f em{display:inline-block;font-style:normal;clip-path:inset(0 100% 0 0)}
+.mx-f u{text-decoration:none;color:#ffd60a}
+.mx-att{display:grid;grid-template-columns:40px 1fr 22px;gap:12px;align-items:center;margin:14px 16px 6px;padding:10px;border-radius:14px;background:#ffffff14;border:1px solid #ffffff22;opacity:0;transform:translateY(10px) scale(.96)}
+.mx-att img{width:40px;border-radius:3px;box-shadow:0 6px 12px #0008;aspect-ratio:600/825;object-fit:cover;object-position:top}
+.mx-att b{display:block;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mx-att small{display:block;font-size:11px;color:#ffffff99;margin-top:2px}
+.mx-clip svg{width:20px;fill:none;stroke:#ffffffb0;stroke-width:2;stroke-linecap:round}
+.mx-foot{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 16px}
+.mx-from{font-size:12px;color:#ffffff80;font-weight:600}
+.mx-send{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:linear-gradient(180deg,rgb(var(--ac)),var(--cta2));font-weight:800;font-size:14px;box-shadow:0 10px 24px -8px rgb(var(--ac) / .9)}
+.mx-send svg{width:15px;fill:#fff}
+.mx-trail{position:absolute;left:50%;top:50%;width:3px;height:0;background:linear-gradient(0deg,#fff0,rgb(var(--ac)));transform-origin:bottom;opacity:0}
+.mx-done{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;opacity:0;pointer-events:none}
+.mx-ck{width:84px;height:84px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#5ff08a,#30d158 55%,#1fa84a);display:grid;place-items:center;box-shadow:0 16px 40px -8px #30d158bb,0 0 0 10px #30d15822;transform:scale(0)}
+.mx-ck svg{width:40px;fill:none;stroke:#fff;stroke-width:3.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:30;stroke-dashoffset:30}
+.mx-done p{margin:4px 0 0;font-weight:900;font-size:30px;line-height:1;text-transform:uppercase;letter-spacing:-.01em}
+.mx-done small{font-weight:700;font-size:13px;color:#9ff0b6}
+/* s1: the card rises, the fields type themselves, the PDF attaches, Send glows */
+.aso--mail.s1 .mx-card{animation:mxIn .6s cubic-bezier(.2,.9,.25,1) .05s forwards}
+.aso--mail.s1 .mx-f1 em{animation:mxType .9s steps(26,end) .55s forwards}
+.aso--mail.s1 .mx-f2 em{animation:mxType .8s steps(22,end) 1.5s forwards}
+.aso--mail.s1 .mx-att{animation:mxPop .5s cubic-bezier(.3,1.5,.5,1) 2.4s forwards}
+.aso--mail.s1 .mx-send{animation:mxGlow 1.2s ease-in-out 3s infinite}
+@keyframes mxIn{to{opacity:1;transform:none}}
+@keyframes mxType{to{clip-path:inset(0 0 0 0)}}
+@keyframes mxPop{to{opacity:1;transform:none}}
+@keyframes mxGlow{50%{box-shadow:0 0 0 7px rgb(var(--ac) / .25),0 10px 30px -6px rgb(var(--ac))}}
+/* sent: Send pressed, the card folds up and flies off, the trail, the check */
+.aso--mail.sent .mx-card{opacity:1;transform:none;animation:mxFly .75s cubic-bezier(.6,0,.35,1) .22s forwards}
+.aso--mail.sent .mx-f em{clip-path:inset(0 0 0 0);animation:none}
+.aso--mail.sent .mx-att{opacity:1;transform:none;animation:none}
+.aso--mail.sent .mx-send{animation:mxPress .22s ease-out forwards}
+.aso--mail.sent .mx-trail{animation:mxTrail .8s ease-out .45s forwards}
+.aso--mail.sent .mx-done{opacity:1;transition:opacity .4s .8s}
+.aso--mail.sent .mx-ck{animation:vpop .55s cubic-bezier(.3,1.6,.5,1) .9s forwards}
+.aso--mail.sent .mx-ck svg{animation:mxDraw .45s ease-out 1.25s forwards}
+.aso--mail.sent .mx-done p,.aso--mail.sent .mx-done small{animation:aso-up .5s cubic-bezier(.2,.8,.2,1) 1.15s both}
+@keyframes mxPress{50%{transform:scale(.9)}100%{transform:scale(1)}}
+@keyframes mxFly{0%{transform:none}25%{transform:translateY(8px) scale(.98)}100%{transform:translate(110px,-420px) scale(.34) rotate(-12deg);opacity:0;filter:blur(2px)}}
+@keyframes mxTrail{0%{opacity:0;height:0;transform:translate(20px,-40px) rotate(28deg)}30%{opacity:.9}100%{opacity:0;height:260px;transform:translate(70px,-260px) rotate(28deg)}}
+@keyframes mxDraw{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.aso--mail .mx-card{opacity:1;transform:none}.aso--mail .mx-f em{clip-path:none}.aso--mail .mx-att{opacity:1;transform:none}}
 </style>

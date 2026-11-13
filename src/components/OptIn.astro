@@ -67,7 +67,7 @@ const next = after || `/${slug}/sent`;
      with `allset` (Towers, 11/11) "You're all set" and the Full offer instead -->
 {allset ? (
 <div class="oil oil--as" hidden data-oil data-as>
-  <AllSetOffer next={next} hero={heroMobile} kind={slug === 'the-build-blueprint' ? 'build' : slug === 'the-tower-blueprint' ? 'tower' : 'towers'} />
+  <AllSetOffer next={next} hero={heroMobile} mail={!!watch} kind={slug === 'the-build-blueprint' ? 'build' : slug === 'the-tower-blueprint' ? 'tower' : 'towers'} />
 </div>
 ) : (
 <div class="oil" hidden data-oil>
@@ -180,7 +180,7 @@ const next = after || `/${slug}/sent`;
           T(function () {
             aso.classList.add('sent');
             // 13/11: the face video page takes over after the green receipt; the email stays in this tab only (sessionStorage), for the checkout
-            if (box.dataset.watch) { try { sessionStorage.setItem('omnya-watch', JSON.stringify({ name: name, email: email })); } catch (e) {} T(function () { go(box.dataset.watch); }, 2600); return; }
+            if (box.dataset.watch) { try { sessionStorage.setItem('omnya-watch', JSON.stringify({ name: name, email: email })); } catch (e) {} T(function () { go(box.dataset.watch); }, 3200); return; }
             // 11/11 night (Nico, A1): about 4 s of the envelope, then 3 s of "Your FREE blueprint arrived", then the offer
             T(function () { aso.classList.add('s2', 'play'); }, 3000);
             T(function () { aso.classList.add('s3'); }, 4000);
