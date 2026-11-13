@@ -105,6 +105,19 @@ const next = after || `/${slug}/sent`;
     var done = function () { try { return localStorage.getItem(FLAG) === '1'; } catch (e) { return false; } };
     var form = box.querySelector('[data-oi-form]'), err = box.querySelector('[data-oi-err]');
     if (box.hasAttribute('data-landing') && done()) box.hidden = true;
+    // 13/11 night (Nico: on his parents' phones the Instagram browser shows its "save your info" sheet after the send, the
+    // page comes back to the empty card and never reaches the video). Whoever sent the form in the last 15 minutes and
+    // lands on this page again (reload, back, the sheet) goes straight to the video page, the card never shows.
+    var PEND = 'omnya-pend';
+    var pending = function () { try { var d = JSON.parse(localStorage.getItem(PEND) || 'null'); return d && d.u === box.dataset.watch && Date.now() - d.t < 15 * 60e3 ? d : null; } catch (e) { return null; } };
+    var resume = function () {
+      var d = pending(); if (!d) return false;
+      try { sessionStorage.setItem('omnya-watch', JSON.stringify({ name: d.name, email: d.email })); } catch (e) {}
+      box.style.visibility = 'hidden'; document.documentElement.style.background = '#05070a';
+      location.replace(d.u); return true;
+    };
+    if (box.dataset.watch && resume()) return;
+    window.addEventListener('pageshow', function (e) { if (e.persisted && box.dataset.watch) resume(); });
     var open = function (e) { e.preventDefault(); box.hidden = false; fit(); setTimeout(function () { form.name.focus(); }, 50); };
     var locked = box.classList.contains('oi--nox');
     // 9/11 (Nico, Build page): no site loading screen between the form and the offer, only a clean green fade
@@ -207,7 +220,13 @@ const next = after || `/${slug}/sent`;
       // 13/11 (Nico, T3 + L1/L2): the funnels with the video page don't show the mail card any more. The button fills with
       // green and counts to 100% while the email goes (it reaches 100 only once the send answered), turns "Sent", the
       // cover becomes the green check of step 1, the card zooms past the camera and the video page arrives from behind it.
-      if (box.dataset.watch) { watchGo(name, email, sent); return; }
+      if (box.dataset.watch) {
+        try { localStorage.setItem(PEND, JSON.stringify({ u: box.dataset.watch, t: Date.now(), name: name, email: email })); } catch (e) {}
+        watchGo(name, email, sent);
+        // safety net: if the animation or the Instagram sheet held things up, go anyway
+        T(function () { location.href = box.dataset.watch; }, 4500);
+        return;
+      }
       // 11/11 Towers (AllSetOffer): "You're all set" at once, "Delivered" once the email went, then the offer opens
       var aso = oil.querySelector('[data-aso]');
       if (aso) {
