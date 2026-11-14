@@ -24,17 +24,20 @@ const FREE_CAP = hasM365() ? Number(process.env.FREE_MAIL_CAP || 5000) : Number(
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'Content-Type': 'application/json' } });
 
-function mailHtml(name, f, unsub) {
-  return `<!doctype html><html><body style="margin:0;padding:0;background:#05070a" bgcolor="#05070a">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#05070a" style="background:#05070a"><tr><td align="center" bgcolor="#05070a" style="background:#05070a">
-<div style="max-width:520px;margin:0 auto;padding:40px 24px;text-align:left;background:#05070a;font:16px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#ffffff">
-<p style="margin:0 0 28px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#2997ff;font-weight:700">Omnya Lab</p>
-<h1 style="margin:0 0 18px;font-size:28px;line-height:1.1;letter-spacing:-.02em;color:#ffffff">Here it is, ${esc(name)}.</h1>
-<p style="margin:0 0 26px;color:#c7cad1">${esc(f.name)}, the method in five steps. Open it next to your screen and follow it step by step.</p>
-<p style="margin:0 0 30px"><a href="${SITE}${f.file}" style="display:inline-block;background:#2997ff;color:#fff;text-decoration:none;padding:14px 24px;border-radius:999px;font-weight:700">Download ${esc(f.name)}</a></p>
-<p style="margin:0 0 30px;color:#c7cad1;font-size:14px">The photos and clips in our guides are made on Higgsfield, and right now new users get unlimited generations inside Claude with Higgsfield MCP: <a href="https://higgsfield.ai?fpr=omnya-5b7f71" style="color:#2997ff">higgsfield.ai</a> (affiliate link, it costs you nothing more)</p>
-<p style="margin:0;color:#8b9099;font-size:13px">You get this because you asked for it on omnyalab.com. No spam, ever. <a href="${unsub}" style="color:#8b9099">Unsubscribe</a> in one click.</p>
-</div></td></tr></table></body></html>`;
+// Written like a personal note from Nico (no button, no design, one link) so Gmail files it in Primary, not Promotions.
+// Unsubscribe stays in the List-Unsubscribe header, which Gmail shows next to the sender.
+const firstName = (n) => String(n || '').trim().split(/\s+/)[0] || 'there';
+function mailText(name, f) {
+  return `Hi ${firstName(name)},\n\nhere's ${f.name} you asked for, the method in five steps, so open it next to your screen and follow it step by step:\n\n${SITE}${f.file}\n\nNico`;
+}
+function mailHtml(name, f) {
+  const url = `${SITE}${f.file}`;
+  return `<!doctype html><html><body><div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#222">
+<p>Hi ${esc(firstName(name))},</p>
+<p>here's ${esc(f.name)} you asked for, the method in five steps, so open it next to your screen and follow it step by step:</p>
+<p><a href="${url}">${url}</a></p>
+<p>Nico</p>
+</div></body></html>`;
 }
 
 export async function POST(request) {
@@ -84,9 +87,9 @@ export async function POST(request) {
       to: `${name} <${email}>`,
       replyTo: host.email,
       subject: `Your ${f.name.replace(/^The /, '')}`, // "Your Tower Blueprint", not "Your The Tower Blueprint"
-      html: mailHtml(name, f, unsubUrl(email)),
+      fromName: 'Nico', html: mailHtml(name, f),
       headers: { 'List-Unsubscribe': `<${unsubUrl(email)}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },
-      text: `Here it is, ${name}.\n\n${f.name}: ${SITE}${f.file}\n\nYou get this because you asked for it on omnyalab.com. No spam, ever. Unsubscribe in one click: ${unsubUrl(email)}\n\nNico · Omnya Lab`,
+      text: mailText(name, f),
     });
   } catch (e) {
     console.error('[optin] mail', e);
@@ -112,9 +115,9 @@ async function drainOwed(max) {
     try {
       await sendMail({
         to: `${o.name} <${email}>`, replyTo: host.email, subject: `Your ${f.name.replace(/^The /, '')}`,
-        html: mailHtml(o.name, f, unsubUrl(email)),
+        fromName: 'Nico', html: mailHtml(o.name, f),
         headers: { 'List-Unsubscribe': `<${unsubUrl(email)}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },
-        text: `Here it is, ${o.name}.\n\n${f.name}: ${SITE}${f.file}\n\nNico · Omnya Lab`,
+        text: mailText(o.name, f),
       });
     } catch (e) {
       await redis('SREM', 'omnya:mail:owed:sent', `${email}|${o.free}`).catch(() => {});

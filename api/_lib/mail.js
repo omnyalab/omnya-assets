@@ -155,7 +155,7 @@ const m365 = process.env.M365_PASS
   ? nodemailer.createTransport({ host: 'smtp.office365.com', port: 587, secure: false, requireTLS: true, auth: { user: M365_USER, pass: process.env.M365_PASS } })
   : null;
 export const hasM365 = () => !!m365;
-const viaM365 = (m) => m365.sendMail({ ...m, from: `Omnya Lab <${M365_USER}>` });
+const viaM365 = ({ fromName, ...m }) => m365.sendMail({ ...m, from: `${fromName || 'Omnya Lab'} <${M365_USER}>` });
 
 /** Any other email (the Instagram bot uses it to tell Nico about leads). Resend first, Microsoft 365 if Resend says no. */
 export async function sendMail(m) {
@@ -165,7 +165,7 @@ export async function sendMail(m) {
 
 /** The free blueprints: Microsoft 365 first (no daily cap that matters), Resend if 365 fails. */
 export async function sendFreeMail(m) {
-  if (!m365) return transport.sendMail({ from: FROM, ...m });
+  if (!m365) { const { fromName, ...r } = m; return transport.sendMail({ from: FROM, ...r }); }
   // if 365 says no, the free one does NOT fall back on Resend: Resend's 100 a day stay for who paid (the page opens the PDF)
   try { return await viaM365(m); }
   catch (e) { console.error('[mail] m365 failed:', e.message); throw e; }
