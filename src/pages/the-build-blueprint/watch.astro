@@ -5,6 +5,7 @@
 ---
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://js.stripe.com"><link rel="preconnect" href="https://api.stripe.com"><link rel="preconnect" href="https://m.stripe.network">
 <title>Watch this before you open your free guide · Omnya Lab</title>
 <meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.svg">
@@ -517,9 +518,10 @@ async function mount() {
   try {
     if (pel) { try { pel.destroy() } catch (e) {} pel = null }
     actions = null; ecBox.className = 'ec load'
-    const r = await fetch('/api/embed-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ p: PID[cur], card: true }) })
+    // 14/11 (Nico: the card was slow): the session and stripe.js are fetched together, not one after the other
+    const [r] = await Promise.all([fetch('/api/embed-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ p: PID[cur], card: true }) }), loadStripe()])
     if (!r.ok) throw new Error('no session')
-    const d = await r.json(); await loadStripe()
+    const d = await r.json()
     const st = window.Stripe(d.pk)
     let co = st.initCheckoutElementsSdk({ clientSecret: d.cs, elementsOptions: { appearance: LOOK, fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap' }] } })
     if (co && co.then) co = await co
@@ -540,7 +542,13 @@ async function mount() {
   vv.addEventListener('timeupdate', () => { if (vv.currentTime >= 33.5) reveal() }); vv.addEventListener('ended', reveal)
   setInterval(() => { const m = document.querySelector('[data-m]'), s2 = document.querySelector('[data-s]'), t = document.querySelector('.rvt'); if (m && s2 && t) t.textContent = m.textContent + ':' + s2.textContent }, 500) }
 document.querySelectorAll('.opt').forEach(o => o.addEventListener('click', () => { setTimeout(() => { const g = document.querySelector('[data-gnp]'), pr = document.querySelector('[data-pr]'); if (g && pr) g.textContent = pr.textContent }, 0); cur = o.dataset.o; if (right.classList.contains('live') || ecBox.classList.contains('load') || busy) mount() }))
-const offerIo = new IntersectionObserver(([e]) => { if (e.isIntersecting) { offerIo.disconnect(); mount() } }, { rootMargin: '600px 0px' })
+// 14/11 (Nico): the card is ready before people scroll down. It mounts a moment after the page has loaded
+// (the video starts first), or at once if they reach the offer earlier; whichever comes first, only once
+let mounted0 = false; const mount0 = () => { if (mounted0) return; mounted0 = true; offerIo.disconnect(); mount() }
+const offerIo = new IntersectionObserver(([e]) => { if (e.isIntersecting) mount0() }, { rootMargin: '600px 0px' })
 offerIo.observe(document.querySelector('#offer'))
+const early = () => setTimeout(mount0, 600)
+if (document.readyState === 'complete') early(); else addEventListener('load', early, { once: true })
+loadStripe().catch(() => {})
 </script>
 </body></html>
