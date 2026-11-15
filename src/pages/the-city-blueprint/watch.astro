@@ -10,7 +10,16 @@
 <meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script is:inline>try{if(sessionStorage.getItem("omnya-enter")){document.documentElement.classList.add("enter");sessionStorage.removeItem("omnya-enter")}}catch(e){}</script>
+<script is:inline>try{var oe=sessionStorage.getItem("omnya-enter"),h=document.documentElement;if(oe){h.classList.add("enter");sessionStorage.removeItem("omnya-enter");var L=JSON.parse(sessionStorage.getItem("omnya-land")||"null");sessionStorage.removeItem("omnya-land");if(oe==="d"&&L){h.classList.add("land");h.style.setProperty("--lx",L.x+"px");h.style.setProperty("--ly",L.y+"px");h.style.setProperty("--ls",L.s+"px")}}}catch(e){}</script>
+<style is:inline>/* 15/11 (Nico, board D): coming from the card, the dark veil and the green check of the "sent" screen are still here, then the check flies onto step 1 */
+html.land body::after{content:"";position:fixed;inset:0;z-index:200;background:#0d0e12;pointer-events:none}
+html.land.fly body::after{animation:lveil .6s ease .18s both}
+@keyframes lveil{to{opacity:0}}
+html.land body::before{content:"";position:fixed;left:0;top:0;z-index:201;width:var(--ls);height:var(--ls);border-radius:50%;background:#30d158 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5.5 12.5l4.2 4.2 8.8-9.4' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/52% no-repeat;box-shadow:0 0 0 8px #30d15822;transform-origin:0 0;transform:translate(var(--lx),var(--ly));pointer-events:none}
+html.land.fly body::before{animation:lfly .75s cubic-bezier(.65,0,.3,1) .12s both}
+@keyframes lfly{to{transform:translate(var(--tx),var(--ty)) scale(var(--tk));box-shadow:0 0 0 0 #30d15800}}
+html.land .steps>.ok em{visibility:hidden}
+</style>
 <style is:global>
 /* The page after the free guide on the structure of ultimateeditors.com, in Omnya's bright blue, built phone first
    (the reels traffic lands here). Button variants by URL: ?btn=b1 blue · b2 blue + price · b3 yellow · b4 yellow + price.
@@ -551,4 +560,5 @@ const early = () => setTimeout(mount0, 600)
 if (document.readyState === 'complete') early(); else addEventListener('load', early, { once: true })
 loadStripe().catch(() => {})
 </script>
+<script is:inline>(function(){var h=document.documentElement;if(!h.classList.contains("land"))return;var em=document.querySelector(".steps .ok em");var end=function(){h.classList.remove("land","fly")};if(!em){end();return}var r=em.getBoundingClientRect(),s=parseFloat(getComputedStyle(h).getPropertyValue("--ls"))||84;h.style.setProperty("--tx",r.left+"px");h.style.setProperty("--ty",r.top+"px");h.style.setProperty("--tk",r.width/s);h.classList.add("fly");document.body.addEventListener("animationend",function(e){if(e.animationName==="lfly")end()});setTimeout(end,4000)})();</script>
 </body></html>

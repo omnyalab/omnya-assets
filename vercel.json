@@ -286,6 +286,11 @@
       "permanent": true
     },
     {
+      "source": "/the-towers-blueprint/sent",
+      "destination": "/the-towers-blueprint/watch",
+      "permanent": false
+    },
+    {
       "source": "/cresta",
       "destination": "/casa-cresta-blueprint",
       "permanent": true

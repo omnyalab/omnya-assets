@@ -117,6 +117,11 @@ const next = after || `/${slug}/sent`;
       location.replace(d.u); return true;
     };
     if (box.dataset.watch && resume()) return;
+    // 15/11 (Nico): "Get the Full Blueprint" at the end of every free PDF (…#full) goes straight to the video page with the
+    // offer, never to the card again: they already left name and email, the checkout asks for the email if this tab has none
+    if (box.dataset.watch && location.hash === '#full') { box.style.visibility = 'hidden'; document.documentElement.style.background = '#05070a'; location.replace(box.dataset.watch); return; }
+    // the words of the "sent" screen are in Poppins like the video page: the same stylesheet, so the video page finds it ready
+    if (box.dataset.watch) { var pfl = document.createElement('link'); pfl.rel = 'stylesheet'; pfl.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap'; document.head.appendChild(pfl); }
     window.addEventListener('pageshow', function (e) { if (e.persisted && box.dataset.watch) resume(); });
     var open = function (e) { e.preventDefault(); box.hidden = false; fit(); setTimeout(function () { form.name.focus(); }, 50); };
     var locked = box.classList.contains('oi--nox');
@@ -169,37 +174,41 @@ const next = after || `/${slug}/sent`;
       btn.innerHTML = '<i class="oiw-fill"></i><span class="oiw-lab">Sending your blueprint <b>0%</b></span>';
       var fill = btn.querySelector('.oiw-fill'), pc = btn.querySelector('.oiw-lab b');
       var t0 = performance.now(), ok = null, p = 0;
-      sent.then(function (r) { ok = !!r; });
+      sent.then(function (r) { if (ok === null) ok = !!r; });
+      // 15/11 (Nico): the email from Microsoft 365 often answers after 2 s and the old 2 s push to the video cut the
+      // button at 90%. Now: 90% in 0.8 s, then it creeps on towards 99% while the email is going; the moment it answers
+      // it runs to 100%. After 6 s with no answer it goes on all the same as "ready" (the video page opens the PDF there).
+      T(function () { if (ok === null) ok = false; }, 6000);
       var ease = function (x) { return 1 - Math.pow(1 - x, 2); };
       var tick = function (now) {
         var el = (now - t0) / 1000;
-        // up to 90% in 0.8 s whatever happens, the last 10% only once the email answered (at least 0.9 s in all)
-        // once the email answered the count runs on to 100 at 0.9 s (later if the answer was late, smoothly)
-        var target = ok === null ? 0.9 * ease(Math.min(1, el / 0.8)) : ease(Math.min(1, el / 0.9));
+        var target = ok === null ? (el < 0.8 ? 0.9 * ease(el / 0.8) : 0.9 + 0.09 * (1 - Math.exp(-(el - 0.8) / 2.2))) : ease(Math.min(1, el / 0.9));
         p = Math.max(p, p + (target - p) * 0.35); if (ok !== null && el >= 0.9 && p > 0.985) p = 1;
         fill.style.transform = 'scaleX(' + p + ')'; pc.textContent = Math.round(p * 100) + '%';
         if (p < 1) requestAnimationFrame(tick); else fly();
       };
       requestAnimationFrame(tick);
+      // 15/11 (Nico, board D): at 100% a dark veil over the card with the green check and "Your free blueprint was sent,
+      // check your email, even in Spam or Promotions"; then the words go, the veil turns into the dark of the video page,
+      // and there the same check flies up onto "✓ Free blueprint" of the steps bar (watch pages, html.land)
       var fly = function () {
-        try { sessionStorage.setItem('omnya-watch', JSON.stringify({ name: name, email: email, nomail: !ok })); sessionStorage.setItem('omnya-enter', '1'); } catch (e) {}
-        try { localStorage.setItem(PEND, JSON.stringify({ u: box.dataset.watch, t: Date.now(), name: name, email: email, nomail: !ok })); } catch (e) {}
-        btn.classList.add('oiw-ok'); btn.textContent = ok ? '✓ Sent to your inbox' : '✓ Your blueprint is ready';
-        // the cover becomes the green check, the check goes up where step 1 waits on the video page
-        var r = bk.getBoundingClientRect();
-        var chip = document.createElement('div'); chip.className = 'oiw-chip'; chip.innerHTML = '<em>✓</em>Free blueprint';
-        chip.style.left = (innerWidth / 2 - 70) + 'px'; chip.style.top = (r.top + 20) + 'px';
-        document.body.appendChild(chip);
-        var bg = document.createElement('div'); bg.className = 'oiw-bg' + (green ? ' oiw-bg--g' : ''); document.body.appendChild(bg);
+        var good = ok === true;
+        try { sessionStorage.setItem('omnya-watch', JSON.stringify({ name: name, email: email, nomail: !good })); sessionStorage.setItem('omnya-enter', 'd'); } catch (e) {}
+        try { localStorage.setItem(PEND, JSON.stringify({ u: box.dataset.watch, t: Date.now(), name: name, email: email, nomail: !good })); } catch (e) {}
+        btn.classList.add('oiw-ok'); btn.textContent = good ? '✓ Sent' : '✓ Ready';
+        var ov = document.createElement('div'); ov.className = 'oid';
+        ov.innerHTML = '<div class="oid-in"><span class="oid-ck"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 12.5l4.2 4.2 8.8-9.4"/></svg></span><p class="oid-t"></p><p class="oid-s"></p><p class="oid-s2"></p></div>';
+        ov.querySelector('.oid-t').innerHTML = good ? 'Your free blueprint<br>was sent' : 'Your free blueprint<br>is ready';
+        ov.querySelector('.oid-s').textContent = good ? 'Check your email' : 'It opens on the next page';
+        if (good) ov.querySelector('.oid-s2').textContent = 'Even in Spam or Promotions'; else ov.querySelector('.oid-s2').remove();
+        document.body.appendChild(ov);
+        T(function () { ov.classList.add('on'); }, 250);
         T(function () {
-          bk.animate([{ transform: 'none', opacity: 1 }, { transform: 'translateY(-30px) scale(.35)', opacity: 0 }], { duration: 350, easing: 'cubic-bezier(.6,0,.8,.4)', fill: 'forwards' });
-          chip.animate([{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'none' }], { duration: 260, delay: 250, easing: 'cubic-bezier(.3,1.6,.5,1)', fill: 'forwards' });
-          // push forward: the card passes the camera, the dark of the video page is already under it
-          box.animate([{ transform: 'none', filter: 'blur(0)', opacity: 1 }, { transform: 'scale(1.28)', filter: 'blur(14px)', opacity: 0 }], { duration: 450, delay: 420, easing: 'cubic-bezier(.55,0,.85,.35)', fill: 'forwards' });
-          bg.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 420, fill: 'forwards' });
-          chip.animate([{ left: chip.style.left, top: chip.style.top }, { left: '16px', top: '27px' }], { duration: 520, delay: 640, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'forwards' });
-          T(function () { location.href = url; }, 720);
-        }, 200);
+          var r = ov.querySelector('.oid-ck').getBoundingClientRect();
+          try { sessionStorage.setItem('omnya-land', JSON.stringify({ x: r.left, y: r.top, s: r.width })); } catch (e) {}
+          ov.classList.add('go');
+          T(function () { location.href = url; }, 400);
+        }, 250 + 2100);
       };
     };
     form.addEventListener('submit', function (e) {
@@ -224,8 +233,8 @@ const next = after || `/${slug}/sent`;
       if (box.dataset.watch) {
         try { localStorage.setItem(PEND, JSON.stringify({ u: box.dataset.watch, t: Date.now(), name: name, email: email })); } catch (e) {}
         watchGo(name, email, sent);
-        // safety net: if the animation or the Instagram sheet held things up, go anyway
-        T(function () { location.href = box.dataset.watch; }, 2000);
+        // safety net: if the animation or the Instagram sheet held things up, go anyway (15/11: 2 s cut the send at 90%)
+        T(function () { location.href = box.dataset.watch; }, 11000);
         return;
       }
       // 11/11 Towers (AllSetOffer): "You're all set" at once, "Delivered" once the email went, then the offer opens

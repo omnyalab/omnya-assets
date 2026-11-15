@@ -145,7 +145,30 @@ html.ocb-on .oidim.oi--inline{padding-bottom:0}
 .oiw-lab{position:relative;text-shadow:0 1px 2px #0005}.oiw-lab b{font-variant-numeric:tabular-nums}
 .oiw-btn.oiw-ok{background:linear-gradient(180deg,#3dff86,#14d95b)!important;box-shadow:0 0 0 4px #2bff7a33,0 14px 34px -8px #22e66bcc}
 .oif .oiw-btn[disabled]{opacity:1;cursor:default} /* the old dimming of disabled buttons made the green dull */
+/* 15/11 (Nico): on the green Build card a green fill does not show, there it fills blue */
+.oi--c1 .oiw-fill{background:linear-gradient(90deg,#0a6cff,#3aa0ff)}
+.oi--c1 .oiw-btn.oiw-ok{background:linear-gradient(180deg,#3aa0ff,#0a6cff)!important;box-shadow:0 0 0 4px #2d99fe33,0 14px 34px -8px #0a84ffcc}
 .oiw-bg{position:fixed;inset:0;z-index:39;pointer-events:none;opacity:0;background:radial-gradient(900px 560px at 50% -12%,#0a84ff3a,#0000 70%),#0d0e12}
 .oiw-bg--g{background:radial-gradient(900px 560px at 50% -12%,#22d35e3a,#0000 70%),#0d0e12}
 .oiw-chip{position:fixed;z-index:60;display:flex;align-items:center;gap:6px;padding:0;color:#9ff0b6;font:700 11px Inter,system-ui,sans-serif;white-space:nowrap;pointer-events:none;opacity:0}
 .oiw-chip em{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#30d158;color:#fff;font-style:normal;font-size:11px}
+
+/* 15/11 (Nico, board D): at 100% the "sent" screen over the card, then the veil becomes the dark of the video page,
+   where the same check flies onto step 1 (watch pages, html.land) */
+.oid{position:fixed;inset:0;z-index:95;display:grid;place-items:center;padding:24px;text-align:center;background-color:#070a10c4;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);opacity:0;pointer-events:none;transition:opacity .5s cubic-bezier(.22,.8,.2,1),background-color .35s}
+.oid.on{opacity:1}
+.oid-in{display:flex;flex-direction:column;align-items:center;transform:translateY(-4%)}
+.oid-ck{display:grid;place-items:center;width:84px;height:84px;border-radius:50%;background:#30d158;box-shadow:0 0 0 8px #30d15822,0 18px 40px -10px #22c55e99;transform:scale(.5);opacity:0;transition:transform .55s cubic-bezier(.3,1.5,.5,1) .05s,opacity .3s .05s}
+.oid.on .oid-ck{transform:none;opacity:1}
+.oid-ck svg{width:52%;height:52%}
+.oid-ck path{fill:none;stroke:#fff;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:30;stroke-dashoffset:30;transition:stroke-dashoffset .45s .3s}
+.oid.on .oid-ck path{stroke-dashoffset:0}
+.oid-t,.oid-s,.oid-s2{margin:0;font-family:Poppins,Montserrat,-apple-system,system-ui,sans-serif;opacity:0;transform:translateY(14px);transition:opacity .5s .2s,transform .6s .2s cubic-bezier(.22,.8,.2,1)}
+.oid-t{margin-top:26px;font-size:36px;font-weight:800;line-height:1.04;letter-spacing:-.03em;color:#fff}
+.oid-s{margin-top:14px;font-size:17px;font-weight:600;color:#e4ecf7;transition-delay:.32s}
+.oid-s2{margin-top:4px;font-size:14.5px;font-weight:500;color:#9fb0c8;transition-delay:.42s}
+.oid.on .oid-t,.oid.on .oid-s,.oid.on .oid-s2{opacity:1;transform:none}
+.oid.go{background-color:#0d0e12}
+.oid.go .oid-t,.oid.go .oid-s,.oid.go .oid-s2{opacity:0;transform:translateY(-10px);transition:opacity .3s,transform .4s}
+@media (min-width:768px){.oid-ck{width:112px;height:112px}.oid-t{margin-top:34px;font-size:64px}.oid-s{margin-top:18px;font-size:21px}.oid-s2{font-size:17px}}
+@media (prefers-reduced-motion:reduce){.oid,.oid *{transition-duration:.01s!important;transition-delay:0s!important}}
