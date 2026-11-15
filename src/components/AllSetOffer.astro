@@ -20,15 +20,16 @@
 interface Props {
   next: string; // the old /sent page (no longer linked from here, kept for the pages that pass it)
   hero: string; // the blurred photo behind
-  kind?: 'towers' | 'build' | 'tower';
+  kind?: 'towers' | 'build' | 'tower' | 'stadium';
   mail?: boolean; // 13/11 (Nico, S5): the glass Apple Mail compose that writes itself and sends, then the watch page
 }
 const { hero, kind = 'towers', mail = false } = Astro.props;
-const MAILS = { towers: ['FREE Towers Blueprint', 'omnya-lab-towers-blueprint.pdf'], build: ['FREE Build Blueprint', 'omnya-lab-build-blueprint.pdf'], tower: ['FREE Tower Blueprint', 'omnya-lab-tower-blueprint.pdf'] };
+const MAILS = { stadium: ['FREE Stadium Blueprint', 'omnya-lab-stadium-blueprint.pdf'], towers: ['FREE Towers Blueprint', 'omnya-lab-towers-blueprint.pdf'], build: ['FREE Build Blueprint', 'omnya-lab-build-blueprint.pdf'], tower: ['FREE Tower Blueprint', 'omnya-lab-tower-blueprint.pdf'] };
 const [subj, pdfName] = MAILS[kind];
 const isBuild = kind === 'build';
 const K = {
   towers: { book: '/learn/tt_book_tight.webp', alt: 'The Full Towers Blueprint', free: '/learn/tt_cover_book.webp', full: '/go/full-towers', scene: '/go/full-towers-scene' },
+  stadium: { book: '/learn/sd_book_tight.webp', alt: 'The Full Stadium Blueprint', free: '/learn/sd_cover_book.webp', full: '/go/full-stadium', scene: '' },
   build: { book: '/learn/bd_book_tight.webp', alt: 'The Full Build Blueprint', free: '/learn/bd_cover_book.webp', full: '/go/full-build', scene: '' },
   tower: { book: '/learn/tw_book.webp', alt: 'The Full Tower Blueprint', free: '/learn/tw_cover_free.webp', full: '/go/full-tower', scene: '' },
 }[kind];

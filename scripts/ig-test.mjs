@@ -2305,7 +2305,7 @@ await step('a word registered from /api/leads?action=word, without a deploy: its
     assert.equal(r.status, 400, bad);
     const j = await r.json();
     assert.ok(j.error, bad);
-    assert.match(j.dests, /blueprint, tower, floors, film, build, towers, city, fable/);
+    assert.match(j.dests, /blueprint, tower, floors, film, build, towers, stadium, city, fable/);
   }
   for (const fixed of ['TOWERS', 'towers', 'BUILD', 'HOUSE', 'FABLE']) {
     const r = await get(leadsPage, `/api/leads?key=k&action=word&word=${fixed}&dest=film`);
@@ -2313,7 +2313,7 @@ await step('a word registered from /api/leads?action=word, without a deploy: its
     assert.match((await r.json()).error, /fixed word/);
   }
   assert.deepEqual((await leadsJson('&format=json')).map.words, P.WORDS); // nothing was registered
-  assert.deepEqual(P.WORDS.map((w) => `${w.word}:${w.dest}`), ['TOWERS:towers', 'BUILD:build', 'HOUSE:city', 'FABLE:fable']);
+  assert.deepEqual(P.WORDS.map((w) => `${w.word}:${w.dest}`), ['TOWERS:towers', 'BUILD:build', 'HOUSE:city', 'FABLE:fable', 'TICKET:stadium', 'SEAT:stadium', 'STADIUM:stadium', 'COOK:towers']);
 
   // registered: written small, kept in capitals
   const r = await leadsJson('&action=word&word=villa&dest=film');

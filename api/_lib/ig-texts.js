@@ -8,6 +8,7 @@ export const TOWER_FLOORS = 'https://omnyalab.com/the-tower-floors';
 export const FILM = 'https://www.omnyalab.com/3d-to-film';
 export const BUILD = 'https://www.omnyalab.com/the-build-blueprint';
 export const TOWERS = 'https://www.omnyalab.com/the-towers-blueprint';
+export const STADIUM = 'https://www.omnyalab.com/the-stadium-blueprint';
 export const CITY = 'https://www.omnyalab.com/city';
 export const FABLE = 'https://www.omnyalab.com/fable';
 export const BOOK_CALL = 'https://omnyalab.com/book/call';
@@ -201,6 +202,13 @@ const towers = funnel({
   page: 'The Towers Blueprint is free on this page, and right after it there’s the full method behind the three towers where you choose the view',
 });
 
+// 15/11: the stadium where you pick your own seat (word TICKET, also SEAT and STADIUM)
+const stadium = funnel({
+  name: 'The Stadium Blueprint',
+  url: STADIUM,
+  page: 'The Stadium Blueprint is free on this page, and right after it there’s the full method behind the stadium where you pick your own seat',
+});
+
 /** Omnya City (word HOUSE): the messages of the ManyChat flow; the link is personal and is made at the moment (api/_lib/city.js). */
 const city = {
   url: CITY,
@@ -317,9 +325,9 @@ export const oldButtons = {
 };
 
 const base = { url: BLUEPRINT, ask: true, publicReplies, placeReplies, cantDm, opener, direct, comment, followFirst, stillNotFollowing, blueprintFollower, blueprintNewFollower, answerProject, answerCurious, nudgeFollow, nudgeQuestion };
-const kinds = { tower: { ...tower, url: TOWER_BLUEPRINT }, floors: { ...floors, url: TOWER_FLOORS }, film, build, towers, city, fable, legacy };
+const kinds = { tower: { ...tower, url: TOWER_BLUEPRINT }, floors: { ...floors, url: TOWER_FLOORS }, film, build, towers, stadium, city, fable, legacy };
 
-/** Every destination the bot knows: 'blueprint', 'tower', 'floors', 'film', 'build', 'towers', 'city', 'fable' ('legacy' is only for old buttons). */
+/** Every destination the bot knows: 'blueprint', 'tower', 'floors', 'film', 'build', 'towers', 'stadium', 'city', 'fable' ('legacy' is only for old buttons). */
 export const KINDS = ['blueprint', ...Object.keys(kinds)];
 
 /** The texts for a destination; anything unknown gets the normal Blueprint. */

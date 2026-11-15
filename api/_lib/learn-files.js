@@ -47,6 +47,8 @@ const FULL_3D = pdf('How to make a 3D that sells with AI', 'full-3d-blueprint.pd
 const FULL_CITY = pdf('How to build a 3D city that goes viral with AI', 'full-city-blueprint.pdf');
 const FULL_BUILD = pdf('How to build a house that builds itself', 'full-build-blueprint.pdf');
 const FULL_TOWERS = pdf('How to build three towers you choose the view of', 'full-towers-blueprint.pdf');
+// 15/11: the stadium where you pick your own seat (word TICKET); not in the pack (yet)
+const FULL_STADIUM = pdf('How to build a stadium where you pick your own seat', 'full-stadium-blueprint.pdf');
 // 10/11 (Nico): "The Towers Scene File" (€12), the one file that is not a PDF. It is sold in the same Stripe cart as the
 // Full Towers Blueprint (a recommended product of that payment link): the base three.js scene of the three towers as a
 // zip that opens in the browser, with the panel for views, light, height, fog and video recording. It is the base 3D
@@ -54,7 +56,7 @@ const FULL_TOWERS = pdf('How to build three towers you choose the view of', 'ful
 // after the payment and api/file.js tell it from the PDFs.
 const SCENE = { name: 'The Towers Scene File', file: 'en/the-towers-scene.zip', kind: 'zip' };
 
-const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, SCENE];
+const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, SCENE];
 // 13/11: the playbooks got new names. The one-year links already in buyers' emails still carry the old file names, so
 // the old names stay valid and point to the new files (who bought the old playbook 02 now gets the new one).
 const OLD = {
@@ -83,7 +85,7 @@ export const isPack = (name) => /everything we teach/i.test(String(name || ''));
     alone is not a guide. */
 export const oneFullGuide = (files) => {
   const pdfs = files.filter((f) => !f.kind);
-  return pdfs.length === 1 && [FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS].some((g) => g.file === pdfs[0].en);
+  return pdfs.length === 1 && [FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM].some((g) => g.file === pdfs[0].en);
 };
 
 /** One Stripe product name → the files it should deliver. Checked in order, first match wins. */
@@ -94,6 +96,8 @@ const RULES = [
   [/everything we teach\s*[·•\-–—:]?\s*upgrade/i, PACK],
   [/everything we teach\s*[·•\-–—:]?\s*thank you price/i, PACK],
   [/everything we teach/i, PACK],
+  // 15/11: the Full Stadium Blueprint, before every generic rule (its name has no "tower" or "city", but keep it first)
+  [/full stadium blueprint/i, [FULL_STADIUM]],
   // 10/11: "The Towers Scene File" BEFORE every rule with "tower" in it. It delivers the zip and nothing else: without
   // this line /tower/ below would send the Full Tower PDF to who bought the scene. "The Full Towers Blueprint" has no
   // "towers scene" in its name, so it still reaches its own rule and its own PDF.

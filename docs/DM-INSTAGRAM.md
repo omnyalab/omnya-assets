@@ -43,3 +43,9 @@ Here you go 👇🏻 The Build Blueprint is free on this page, and right under i
 Reel delle tre torri nella nebbia dove scegli la vista (Front, Side, Back, Rooftop, Above the clouds), parola TOWERS. Pagina: https://www.omnyalab.com/the-towers-blueprint (corto: omnyalab.com/towers), copia esatta del funnel Build in blu: solo la card della mail (nome, mail, consenso newsletter), poi su /the-towers-blueprint/sent il Full Towers a 5,99 € (29 € barrato) ed Everything we teach a 59 € (164 € barrato). Solo in inglese. Un solo DM col link della pagina, mai il PDF allegato. Prima il follow, poi il link.
 
 Here you go 👇🏻 The Towers Blueprint is free on this page, and right after it there's the full method behind the three towers where you choose the view: https://www.omnyalab.com/the-towers-blueprint
+
+## Reel dello stadio, "Choose your seat" (dom 15/11)
+
+Reel dello stadio dove scegli tribuna, blocco e posto, e il biglietto ti mostra la vista dal posto, parola TICKET (anche SEAT, STADIUM o solo 🎟️: sotto il reel il bot risponde a ogni commento). Pagina: https://www.omnyalab.com/the-stadium-blueprint (corti: omnyalab.com/ticket e omnyalab.com/stadium), copia del funnel Towers in blu: card della mail, poi /the-stadium-blueprint/watch col video, il Full Stadium a 5,99 € (29 € barrato) ed Everything we teach a 59 €. Solo in inglese. Un solo DM col link della pagina, mai il PDF allegato.
+
+Here you go 👇🏻 The Stadium Blueprint is free on this page, and right after it there's the full method behind the stadium where you pick your own seat: https://www.omnyalab.com/the-stadium-blueprint

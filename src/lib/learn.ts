@@ -35,7 +35,10 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'free-towers'
   | 'full-towers'
   // the Full Towers Blueprint and The Towers Scene File in one payment (10/11, ready but off: its link is empty below)
-  | 'full-towers-scene';
+  | 'full-towers-scene'
+  // the free and the paid stadium PDFs, on /the-stadium-blueprint (15/11, "Choose your seat" stadium reel, word TICKET)
+  | 'free-stadium'
+  | 'full-stadium';
 
 /**
  * Step 2 (10/11, Nico): after a Full guide (€5.99) the page /learn/thanks/full-* offers "Everything we teach" for the
@@ -99,6 +102,9 @@ export const products: { id: ProductId; checkout: string }[] = [
   // paste the link here and the card becomes a tick, with the button "Get both · €17.99" going to /go/full-towers-scene.
   // link created 10/11 with Nico's ok: plink_1UaEexATIF7pxfqfL5Ft6FcB, the two products, €17.99
   { id: 'full-towers-scene', checkout: 'https://buy.stripe.com/7sY3cu2KpbIsaK2duJ8so0H' },
+  { id: 'free-stadium', checkout: '/learn/free/omnya-lab-stadium-blueprint.pdf' },
+  // the Full Stadium Blueprint at €5.99 (€29 struck), Stripe link created 15/11, plink_1Uc7IkATIF7pxfqfvItPpbJQ, prod_VdO4h1RXKJKsew (Nico: "crea tutto"; product "The Full Stadium Blueprint", back to /learn/thanks/full-stadium)
+  { id: 'full-stadium', checkout: 'https://buy.stripe.com/28EaEW3Ot7scdWeeyN8so0M' },
 ];
 
 // 10/11 (site check 2 and 21): the launch prices are gone from the code. fullTowerDeal, full3dDeal and fullCityDeal (the Full
@@ -133,6 +139,7 @@ export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: Pr
   'full-city': { kind: 'pdf', oto: 'community' },
   'full-build': { kind: 'pdf', oto: 'community' },
   'full-towers': { kind: 'pdf', oto: 'community' },
+  'full-stadium': { kind: 'pdf', oto: 'community' },
 };
 
 /** The words used in the reels ("Comment 3D"). Each one has its own page, /learn/<word>, and leads with one playbook. */
