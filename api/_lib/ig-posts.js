@@ -28,6 +28,8 @@ export const POSTS = [
   { code: 'DfPzJmMtf2B', dest: 'film', note: 'Claude "COOKED", 2/11' },
   { code: 'Dfh1ppmtT8t', dest: 'build', note: 'Hold to build, 9/11' },
   { code: 'DfXg47dtoyz', dest: 'city', note: 'Omnya City Ep.1, 5/11' },
+  { code: 'DfxbG1xRTco', dest: 'stadium', note: 'stadium TICKET, 15/11 (fixed here on 16/11: the Redis map was down)' },
+  { code: 'DfxXUAbRIhh', dest: 'stadium', note: 'stadium TICKET, 15/11' },
   // the TOWERS reel of 11/11 needs no line as long as its caption says Comment "TOWERS";
   // to pin it anyway: { code: 'PUT-THE-CODE-HERE', dest: 'towers', note: 'Choose your view, 11/11' },
 ];
