@@ -95,6 +95,7 @@ const en = {
       house: { name: 'Watch it rise', text: 'Scroll, and the house goes up from the drawing.', alt: 'A wooden house in the woods going up, from the frame to the finished house' },
       tower: { name: 'Choose your floor', text: 'Fly in, pick a floor and see its view.', alt: 'The SAMAR tower in Dubai Marina, the camera flying in to a terrace' },
       towers: { name: 'Choose your view', text: 'Pick a view and fly around the three towers.', alt: 'Three towers rising out of the fog by the sea, the camera flying around them' },
+      stadium: { name: 'Choose your seat', text: 'Pick a stand, a block and your seat, and fly there.', alt: 'A stadium in a green park seen from above, one stand lit up in orange, the camera flying down to the seats' },
     },
   },
   home: {
@@ -739,6 +740,7 @@ const it: Dict = {
       house: { name: 'Guardala salire', text: 'Scorri e la casa sale dal disegno.', alt: 'Una casa di legno nel bosco che sale, dalla struttura alla casa finita' },
       tower: { name: 'Scegli il piano', text: 'Voli dentro, scegli un piano e vedi la sua vista.', alt: 'La torre SAMAR a Dubai Marina, la camera che vola fino a una terrazza' },
       towers: { name: 'Scegli la vista', text: 'Scegli una vista e voli attorno alle tre torri.', alt: 'Tre torri che escono dalla nebbia sul mare, la camera che vola intorno' },
+      stadium: { name: 'Scegli il posto', text: 'Scegli tribuna, blocco e posto, e ci arrivi in volo.', alt: 'Uno stadio in un parco verde visto dall’alto, una tribuna accesa in arancio, la camera che scende fino ai posti' },
     },
   },
   home: {

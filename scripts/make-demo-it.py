@@ -93,6 +93,57 @@ VIEW = [
     ("name: 'Aerial view'", "name: 'Vista dall’alto'"),
 ]
 
+# 16/11 the stadium (Choose your seat): page built from the real version, words here
+SEAT = [
+    ('<html lang="en"', '<html lang="it"'),
+    ('<title>Choose your seat · Omnya Lab</title>', '<title>Scegli il posto · Omnya Lab</title>'),
+    ('content="Choose your seat · Omnya Lab"', 'content="Scegli il posto · Omnya Lab"'),
+    ('A stadium in interactive 3D by Omnya Lab: pick a stand, a block and your seat, and the camera flies you there.',
+     'Uno stadio in 3D interattivo di Omnya Lab: scegli tribuna, blocco e posto, e la camera ti porta lì in volo.'),
+    ('https://www.omnyalab.com/demo/choose-your-seat/"', 'https://www.omnyalab.com/it/demo/choose-your-seat/"'),
+    ('/og/demo-choose-your-seat.jpg', '/og/demo-scegli-il-posto.jpg'),
+    ('Choose your seat · loading', 'Scegli il posto · caricamento'),
+    ('Turn your phone<small>This stadium is best seen in landscape</small>', 'Gira il telefono<small>Questo stadio si guarda in orizzontale</small>'),
+    ("6:'North Stand',2:'South Stand',0:'East Stand',4:'West Stand',7:'North-East Corner',1:'South-East Corner',3:'South-West Corner',5:'North-West Corner'",
+     "6:'Tribuna Nord',2:'Tribuna Sud',0:'Tribuna Est',4:'Tribuna Ovest',7:'Curva Nord-Est',1:'Curva Sud-Est',3:'Curva Sud-Ovest',5:'Curva Nord-Ovest'"),
+    ("0:['Lower tier',1450],1:['Middle tier',1250],2:['Upper tier',850]", "0:['Anello basso',1450],1:['Anello medio',1250],2:['Anello alto',850]"),
+    ("n<=0?['Sold out','no']:n<=20?[n+' left','few']:[n+' left','ok']", "n<=0?['Esaurito','no']:n<=20?['Ultimi '+n,'few']:[n+' liberi','ok']"),
+    ("{k:'From',b:ZN[z]", "{k:'Da',b:ZN[z]"),
+    ("b:'Block '+b.n", "b:'Blocco '+b.n"),
+    ("{k:'Block '+PICKED.block,b:'Row '+s.r+' · Seat '+s.s", "{k:'Blocco '+PICKED.block,b:'Fila '+s.r+' · Posto '+s.s"),
+    ("{k:'Row '+s.r+' · Seat '+s.s,b:'Taken'", "{k:'Fila '+s.r+' · Posto '+s.s,b:'Occupato'"),
+    ("av:['Sold out','no'],sold:true}:{k:'Skybox 12 · Front row',b:'Seat '+k,p:'3,750',av:['Leather armchair','ok']}",
+     "av:['Esaurito','no'],sold:true}:{k:'Skybox 12 · Prima fila',b:'Posto '+k,p:'3,750',av:['Poltrona in pelle','ok']}"),
+    ('<div class="chip"><i></i>Your view</div>', '<div class="chip"><i></i>La tua vista</div>'),
+    ('<div class="chip"><i></i>Your view from the box</div>', '<div class="chip"><i></i>La tua vista dal box</div>'),
+    ('>Keep my seat</button>', '>Tengo il mio posto</button>'),
+    ('>Upgrade · +2,500 AED</button>', '>Passa al VIP · +2,500 AED</button>'),
+    ('data-a="up">Upgrade</button>', 'data-a="up">Passa al VIP</button>'),
+    ('>Choose your VIP seat →</button>', '>Scegli il posto VIP →</button>'),
+    ('<span class="k">Not satisfied?</span>', '<span class="k">Non ti convince?</span>'),
+    ('>Another view →</button>', '>Un’altra vista →</button>'),
+    ('<span class="k">Row</span>', '<span class="k">Fila</span>'),
+    ('<span class="k">Seat</span>', '<span class="k">Posto</span>'),
+    ('<span class="k">Seats</span>', '<span class="k">Posti</span>'),
+    ('<span class="k">Gate</span>', '<span class="k">Ingresso</span>'),
+    ('<span class="k">Entry</span>', '<span class="k">Accesso</span>'),
+    ('<b>Block ${p.block}</b>', '<b>Blocco ${p.block}</b>'),
+    ('Booked · see you at gate ', 'Prenotato · ci vediamo all’ingresso '),
+    ("'Booked · see you at the VIP lift'", "'Prenotato · ci vediamo all’ascensore VIP'"),
+    ("pill('Choose another seat',restart)", "pill('Scegli un altro posto',restart)"),
+    ('data-b="ok">Confirm ticket</button>', 'data-b="ok">Conferma il biglietto</button>'),
+    ('data-b="again">Choose another seat</button>', 'data-b="again">Scegli un altro posto</button>'),
+    (".textContent='Confirm ticket'", ".textContent='Conferma il biglietto'"),
+    ("b.textContent='Confirmed ✓'", "b.textContent='Confermato ✓'"),
+    ("b:'Another view',p:'3,750',av:['VIP · Level 2','ok']", "b:'Un’altra vista',p:'3,750',av:['VIP · Livello 2','ok']"),
+    ("'Move over the stadium and click a stand',2:'Now pick a block',3:'Pick a free seat',5:'Pick your VIP armchair'",
+     "'Passa sullo stadio e scegli una tribuna',2:'Ora scegli un blocco',3:'Scegli un posto libero',5:'Scegli la tua poltrona VIP'"),
+    ("'Tap a stand to see the price',2:'Tap a block',3:'Tap a free seat',5:'Tap your VIP armchair'",
+     "'Tocca una tribuna per vedere il prezzo',2:'Tocca un blocco',3:'Tocca un posto libero',5:'Tocca la tua poltrona VIP'"),
+    ("'Tap it again to fly in',2:'Tap it again to go in',3:'Tap it again to take the seat',5:'Tap it again to sit there'",
+     "'Tocca di nuovo per volare lì',2:'Tocca di nuovo per entrare',3:'Tocca di nuovo per prendere il posto',5:'Tocca di nuovo per sederti'"),
+]
+
 
 def make(src, dst, base, pairs, extra=()):
     s = open(src, encoding='utf-8').read()
@@ -113,3 +164,4 @@ make(P('demo/choose-your-floor/index.html'), P('it/demo/choose-your-floor/index.
      [("location.replace('m/' + location.search)", "location.replace('/it/demo/choose-your-floor/m/' + location.search)")])
 make(P('demo/choose-your-floor/m/index.html'), P('it/demo/choose-your-floor/m/index.html'), '/demo/choose-your-floor/m/', TOWER)
 make(P('demo/choose-your-view/index.html'), P('it/demo/choose-your-view/index.html'), '/demo/choose-your-view/', VIEW)
+make(P('demo/choose-your-seat/index.html'), P('it/demo/choose-your-seat/index.html'), '/demo/choose-your-seat/', SEAT)

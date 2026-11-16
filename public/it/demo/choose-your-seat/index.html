@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<base href="/demo/choose-your-seat/">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Scegli il posto · Omnya Lab</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Omnya Lab">
+<meta property="og:title" content="Scegli il posto · Omnya Lab">
+<meta property="og:description" content="Uno stadio in 3D interattivo di Omnya Lab: scegli tribuna, blocco e posto, e la camera ti porta lì in volo.">
+<meta property="og:url" content="https://www.omnyalab.com/it/demo/choose-your-seat/">
+<meta property="og:image" content="https://www.omnyalab.com/og/demo-scegli-il-posto.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.omnyalab.com/og/demo-scegli-il-posto.jpg">
+<meta name="description" content="Uno stadio in 3D interattivo di Omnya Lab: scegli tribuna, blocco e posto, e la camera ti porta lì in volo.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" as="image" href="assets/s1.jpg" fetchpriority="high">
+<script src="/demo/loadguard.js"></script>
+<style>
+/* Stadio, versione vera: foto e clip Kling, arancio sotto il mouse, biglietti. Tutte le misure del palco in cqw */
+:root{
+  --or:#ff7a12; --ink:#121317; --paper:#fbfaf7; --gold:#d8b27a; --ok:#21a35b; --few:#e07a00; --no:#d23b3b;
+  --disp:-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;
+  --body:-apple-system,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
+}
+html,body{margin:0;height:100%;background:#000;overflow:hidden;cursor:default}
+*{cursor:default!important;box-sizing:border-box}
+#app{position:fixed;inset:0;overflow:hidden}
+#app>.stage{position:absolute;left:50%;top:50%;translate:-50% -50%}
+.stage{position:relative;flex:none;width:max(100vw,177.78vh);aspect-ratio:16/9;container-type:inline-size;overflow:hidden;background:#000;font-family:var(--body);color:var(--ink);user-select:none}
+#cv,#vd{position:absolute;inset:0;width:100%;height:100%;display:block}
+#vd{opacity:0}
+#vd.on{opacity:1}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.42);backdrop-filter:blur(.3cqw);-webkit-backdrop-filter:blur(.3cqw);opacity:0;transition:opacity .6s;pointer-events:none}
+.dim.on{opacity:1}
+.k{font-size:1.05cqw;letter-spacing:.12em;text-transform:uppercase;color:#8a8f99;font-weight:600;display:block}
+
+/* biglietto piccolo */
+.tk{position:absolute;left:50%;top:50%;opacity:0;transform:translate(-50%,-100%) translateY(1.2cqw) rotate(-2deg);transition:opacity .22s, transform .5s cubic-bezier(.2,1.4,.35,1);display:flex;filter:drop-shadow(0 1cqw 2cqw rgba(0,0,0,.35));white-space:nowrap;pointer-events:none;z-index:5}
+.tk.on{opacity:1;transform:translate(-50%,-100%) rotate(0)}
+.tk .a,.tk .s{background:var(--paper);padding:1cqw 1.4cqw;display:grid;align-content:center}
+.tk .a{border-radius:1.1cqw 0 0 1.1cqw;grid-auto-flow:column;gap:1.1cqw;align-items:center}
+.tk .s{border-left:.18cqw dashed #c9ccd3;border-radius:0 1.1cqw 1.1cqw 0;justify-items:center;min-width:7.6cqw}
+.tk b{font-family:var(--disp);font-size:2.4cqw;line-height:1.05;letter-spacing:-.01em;display:block}
+.tk .s b{font-size:2.1cqw;color:var(--or)}
+.tk.sold .s b{color:#9aa0aa}
+.tk .av{font-size:1.25cqw;font-weight:700;margin-top:.25cqw;display:flex;align-items:center;gap:.5cqw}
+.tk .av:before{content:"";width:.75cqw;height:.75cqw;border-radius:50%;background:currentColor}
+.av.ok{color:var(--ok)}.av.few{color:var(--few)}.av.no{color:var(--no)}
+.tk .th{width:0;height:5cqw;border-radius:.7cqw;object-fit:cover;transition:width .4s cubic-bezier(.2,1.2,.3,1)}
+.tk.wv .th{width:8.8cqw}
+
+/* biglietto grande */
+.big{position:absolute;left:50%;top:50%;perspective:140cqw;opacity:0;transform:translate(-50%,-44%) rotate(-3deg) scale(.92);transition:opacity .35s, transform .8s cubic-bezier(.2,1.25,.3,1);z-index:6;pointer-events:none}
+.big.on{opacity:1;transform:translate(-50%,-50%);pointer-events:auto}
+.big,.acts{scale:var(--fit,1)}
+.fin{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 1s cubic-bezier(.55,0,.2,1.12)}
+.big.turn .fin{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:1.8cqw;overflow:hidden;box-shadow:0 2.4cqw 6cqw rgba(0,0,0,.5)}
+.face.f2{transform:rotateY(180deg)}
+.big:not(.turn) .f2,.big.turn .f1{pointer-events:none}
+.btn{border-radius:999px;padding:.8cqw 1.8cqw;font-weight:700;font-size:1.5cqw;background:var(--or);color:#fff;transition:transform .12s, filter .15s;white-space:nowrap;display:inline-block;border:0;font-family:var(--body)}
+.btn:hover{filter:brightness(1.08)}
+.btn:active{transform:scale(.94)}
+.btn.ghost{background:transparent;color:inherit;opacity:.65;padding:.8cqw .8cqw}
+.btns{display:flex;align-items:center;gap:.6cqw}
+.ns{display:grid;gap:.45cqw;justify-items:start}
+.f2 .ns .k{color:var(--gold)}
+.bars{display:flex;gap:.2cqw;height:3cqw;align-items:stretch}
+.bars i{display:block;background:currentColor;width:.2cqw}
+.bars i:nth-child(3n){width:.45cqw}.bars i:nth-child(5n){width:.1cqw}.bars i:nth-child(7n){width:.32cqw}
+.chip{position:absolute;left:1.2cqw;top:1.2cqw;display:flex;align-items:center;gap:.6cqw;background:rgba(10,10,12,.55);backdrop-filter:blur(1cqw);-webkit-backdrop-filter:blur(1cqw);color:#fff;border-radius:999px;padding:.5cqw 1.1cqw;font-size:1.25cqw;font-weight:600;z-index:2}
+.chip i{width:.8cqw;height:.8cqw;border-radius:50%;background:var(--or);box-shadow:0 0 .9cqw var(--or)}
+.view{position:relative;overflow:hidden}
+.view img{width:100%;height:100%;object-fit:cover;display:block}
+.fld{display:grid;gap:.1cqw}
+.fld b{font-family:var(--disp);font-size:3.2cqw;line-height:1;letter-spacing:-.02em}
+.row3{display:flex;gap:2.4cqw}
+
+/* B1 wallet */
+.B1 .big{width:30cqw;height:48cqw}
+.B1 .face{background:var(--paper);display:grid;grid-template-rows:auto 21cqw auto 1fr}
+.B1 .hd{display:flex;justify-content:space-between;align-items:center;padding:1.4cqw 1.8cqw}
+.B1 .hd b{font-family:var(--disp);font-size:1.7cqw}
+.B1 .hd span{font-size:1.4cqw;color:var(--or);font-weight:700}
+.B1 .bd{padding:1.4cqw 1.8cqw;display:grid;gap:1.1cqw}
+.B1 .ft{border-top:.18cqw dashed #cfd2d8;padding:1.2cqw 1.8cqw;display:flex;justify-content:space-between;align-items:center}
+.B1 .f2{background:linear-gradient(160deg,#1a1a1e,#2b2520);color:#f3e7d6}
+.B1 .f2 .hd span,.B1 .f2 .k{color:var(--gold)}
+.B1 .f2 .btn{background:#f3e7d6;color:#17171b}
+/* B2 classico */
+.B2 .big{width:62cqw;height:25cqw}
+.B2 .face{background:var(--paper);display:grid;grid-template-columns:27cqw 1fr 12cqw}
+.B2 .mid{padding:1.8cqw 2cqw;display:grid;align-content:space-between}
+.B2 .btn:not(.ghost){font-size:1.42cqw;padding:.8cqw 1.45cqw}
+.B2 .btns{flex-direction:column;align-items:flex-start;gap:.1cqw}
+.B2 .btns .ghost{padding:.4cqw 0 0 .4cqw;font-size:1.35cqw}
+.B2 .face{grid-template-columns:27cqw minmax(0,1fr) 12cqw!important}
+.B2 .mid .t b{font-family:var(--disp);font-size:2.3cqw;display:block;margin-top:.2cqw}
+.B2 .stub{border-left:.2cqw dashed #cfd2d8;display:grid;align-content:space-between;justify-items:center;padding:1.8cqw 1cqw}
+.B2 .stub .bars{transform:rotate(90deg);width:8cqw;height:4cqw;margin:2cqw 0}
+.B2 .stub b{font-family:var(--disp);font-size:2.4cqw;color:var(--or)}
+.B2 .f2{background:linear-gradient(135deg,#17171b,#2b2520);color:#f3e7d6}
+.B2 .f2 .k{color:var(--gold)}.B2 .f2 .stub b{color:var(--gold)}
+.B2 .f2 .btn{background:#f3e7d6;color:#17171b}
+/* B3 foto */
+.B3 .big{width:60cqw;height:28cqw}
+.B3 .face{display:grid;grid-template-columns:1fr 13cqw;background:var(--paper)}
+.B3 .view::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(0,0,0,.72))}
+.B3 .ov{position:absolute;left:2cqw;right:2cqw;bottom:1.8cqw;z-index:2;color:#fff;display:flex;justify-content:space-between;align-items:end}
+.B3 .ov .k{color:rgba(255,255,255,.72)}
+.B3 .ov .fld b{font-size:3.4cqw}
+.B3 .stub{border-left:.2cqw dashed #cfd2d8;display:grid;align-content:space-between;justify-items:center;padding:1.8cqw 1cqw;text-align:center}
+.B3 .stub b{font-family:var(--disp);font-size:2.4cqw;color:var(--or);display:block}
+.B3 .stub .bars{transform:rotate(90deg);width:7cqw;height:4cqw;margin:1.4cqw 0}
+.B3 .f2 .stub{background:#1b1a1d;color:#f3e7d6}
+.B3 .f2 .stub b,.B3 .f2 .stub .k{color:var(--gold)}
+.B3 .ov .btn.ghost{color:#fff}
+
+/* pillola in basso */
+.pill{position:absolute;left:50%;bottom:calc(4cqw + var(--cy,0cqw));transform:translate(-50%,2cqw);opacity:0;transition:opacity .3s, transform .5s cubic-bezier(.2,1.3,.35,1);background:var(--paper);color:var(--ink);border-radius:999px;padding:1cqw 2.2cqw;font-weight:700;font-size:1.7cqw;box-shadow:0 1cqw 3cqw rgba(0,0,0,.35);pointer-events:none;border:0;font-family:var(--body);z-index:7}
+.pill.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.pill:active{transform:translate(-50%,0) scale(.95)}
+.stamp{position:absolute;right:3cqw;top:2cqw;transform:rotate(-12deg) scale(1.6);opacity:0;border:.35cqw solid var(--ok);color:var(--ok);border-radius:1cqw;padding:.4cqw 1.2cqw;font-family:var(--disp);font-weight:800;font-size:2.4cqw;letter-spacing:.06em;transition:opacity .2s, transform .35s cubic-bezier(.2,1.6,.4,1);z-index:3;background:rgba(255,255,255,.85)}
+.stamp.on{opacity:1;transform:rotate(-12deg) scale(1)}
+
+#load{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font:600 1.6cqw var(--body);background:#000;z-index:20;transition:opacity .5s}
+#load.off{opacity:0;pointer-events:none}
+#load span{opacity:.6}
+/* sito (16/11): numero grande come le altre demo, poi la foto dall'alto */
+#load{background:#000 url(assets/s1.jpg) center/cover no-repeat}
+#load::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.55)}
+.loader{position:fixed;left:clamp(20px,4vw,56px);bottom:clamp(20px,5vh,56px);z-index:50;pointer-events:none;color:#fff;font-family:var(--body);transition:transform .9s cubic-bezier(.6,0,.2,1),opacity .7s}
+.loader p{margin:0 0 6px;font-size:15px;letter-spacing:.01em;color:rgba(255,255,255,.8)}
+.loader b{display:block;font-size:clamp(110px,17vw,240px);line-height:.82;font-weight:500;letter-spacing:-.06em;font-variant-numeric:tabular-nums}
+.loader b small{font-size:.32em;letter-spacing:-.02em;margin-left:6px;vertical-align:.95em;color:var(--or)}
+.loader.out{transform:translateY(-30px);opacity:0}
+.hint{position:absolute;left:50%;bottom:calc(3.2cqw + var(--cy,0cqw));transform:translate(-50%,1cqw);opacity:0;transition:opacity .4s,transform .6s cubic-bezier(.2,1.3,.35,1);z-index:7;pointer-events:none;padding:1cqw 2cqw;border-radius:999px;color:#fff;font:600 max(13px,1.35cqw) var(--body);letter-spacing:-.01em;white-space:nowrap;background:rgba(14,18,24,.42);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.45),0 8px 30px rgba(0,0,0,.25)}
+.hint.on{opacity:1;transform:translate(-50%,0)}
+.wait{position:absolute;left:50%;top:50%;width:3.4cqw;height:3.4cqw;margin:-1.7cqw 0 0 -1.7cqw;border-radius:50%;border:.35cqw solid rgba(255,255,255,.25);border-top-color:#fff;opacity:0;transition:opacity .3s;z-index:8;pointer-events:none;animation:spin 1s linear infinite}
+.wait.on{opacity:1}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rotate{display:none}
+@media (orientation:portrait) and (max-width:760px){
+  .rotate{position:fixed;inset:0;z-index:45;display:grid;place-items:center;background:#0b1118;text-align:center;color:#fff;font-family:var(--body)}
+  .rotate div{font-size:17px;font-weight:600;letter-spacing:-.01em}
+  .rotate i{display:block;width:46px;height:78px;margin:0 auto 22px;border:2px solid #fff;border-radius:10px;animation:turn 2.2s ease-in-out infinite}
+  .rotate small{display:block;margin-top:6px;font-size:14px;font-weight:400;color:rgba(255,255,255,.62)}
+  .loader{z-index:46}
+}
+@keyframes turn{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
+/* giro automatico (?auto=1): cursore disegnato, il vero è nascosto */
+.auto,.auto *{cursor:none!important}
+#cur{position:absolute;left:0;top:0;width:1.75cqw;z-index:30;pointer-events:none;opacity:0;transition:opacity .35s;transform-origin:8% 6%;filter:drop-shadow(0 .12cqw .25cqw rgba(0,0,0,.45))}
+#cur.on{opacity:1}
+#cur svg{display:block;width:100%;height:auto;transition:transform .12s}
+#cur.prs svg{transform:scale(.84)}
+.btn.hov{filter:brightness(1.08)}
+.btn.prs{transform:scale(.94)}
+.pill.hov{filter:brightness(.97)}
+/* scelta sull'altra vista: confermi o scegli un altro posto */
+.acts{position:absolute;left:50%;bottom:calc(4cqw + var(--cy,0cqw));transform:translate(-50%,2cqw);opacity:0;transition:opacity .3s, transform .5s cubic-bezier(.2,1.3,.35,1);display:flex;gap:1cqw;z-index:7;pointer-events:none}
+.acts.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.acts button{border:0;border-radius:999px;padding:1cqw 2.2cqw;font:700 1.7cqw var(--body);box-shadow:0 1cqw 3cqw rgba(0,0,0,.35);transition:transform .12s, filter .15s;white-space:nowrap}
+.acts .ok{background:var(--or);color:#fff}
+.acts .again{background:var(--paper);color:var(--ink)}
+.acts button:hover,.acts button.hov{filter:brightness(1.06)}
+.acts button:active,.acts button.prs{transform:scale(.94)}
+</style>
+</head>
+<body>
+<div id="app"><div class="stage" id="st">
+  <canvas id="cv" width="1920" height="1080"></canvas>
+  <video id="vd" muted playsinline preload="auto"></video>
+  <div class="dim" id="dim"></div>
+  <div class="tk" id="tk"><div class="a"><img class="th" src="assets/v_seat.jpg" alt=""><div><span class="k" id="t1"></span><b id="t2"></b><div class="av" id="t4"></div></div></div><div class="s"><span class="k" id="t5">AED</span><b id="t3"></b></div></div>
+  <div class="big" id="big"><div class="fin" id="fin"></div></div>
+  <button class="pill" id="pill"></button>
+  <div class="acts" id="acts"><button class="ok" data-b="ok">Conferma il biglietto</button><button class="again" data-b="again">Scegli un altro posto</button></div>
+  <div id="cur"><svg viewBox="0 0 20 30"><path d="M1.5 1.5 L1.5 23.5 L6.6 18.6 L10 27 L13.6 25.5 L10.3 17.4 L17.3 17.4 Z" fill="#000" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+  <div id="load"></div>
+  <div class="hint" id="hint"></div>
+  <div class="wait" id="wait"></div>
+</div></div>
+<div class="rotate"><div><i></i>Gira il telefono<small>Questo stadio si guarda in orizzontale</small></div></div>
+<div class="loader" id="loader" role="status" aria-live="polite"><p>Scegli il posto · caricamento</p><b><span id="pct">0</span><small>%</small></b></div>
+
+<script>
+// ---------- dati ----------
+const Q=new URLSearchParams(location.search);
+const AUTO=Q.get('auto')==='1';
+const VAR=(Q.get('t')||'B2').toUpperCase();          // biglietto: B1 wallet, B2 classico, B3 foto
+document.getElementById('st').classList.add(VAR);
+const ZN={6:'Tribuna Nord',2:'Tribuna Sud',0:'Tribuna Est',4:'Tribuna Ovest',7:'Curva Nord-Est',1:'Curva Sud-Est',3:'Curva Sud-Ovest',5:'Curva Nord-Ovest'};
+const ZP={6:1250,2:1250,0:650,4:650,7:850,1:850,3:850,5:850};
+const ZL={6:48,2:212,0:340,4:0,7:96,1:130,3:75,5:12};
+const ZGATE={6:'N3',2:'S1',0:'E2',4:'W2',7:'NE',1:'SE',3:'SW',5:'NW'};
+const TIER={0:['Anello basso',1450],1:['Anello medio',1250],2:['Anello alto',850]};
+const CHOSEN_ZONE=6, CHOSEN_BLOCK=232;
+const fmt=n=>n.toLocaleString('en-US');
+const avail=n=>n<=0?['Esaurito','no']:n<=20?['Ultimi '+n,'few']:[n+' liberi','ok'];
+const blockLeft=n=>n===CHOSEN_BLOCK?48:(n%11===3?0:((n*37)%140)+6);
+const seatFree=(i,pick)=>pick||((i*73+11)%9===0);
+const BAR='<div class="bars">'+'<i></i>'.repeat(30)+'</div>';
+
+// ---------- caricamento ----------
+const $=id=>document.getElementById(id);
+const cv=$('cv'),cx=cv.getContext('2d',{willReadFrequently:true}),vd=$('vd');
+function img(src,n=0){return new Promise((ok,ko)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>n<4?setTimeout(()=>img(src,n+1).then(ok,ko),300*(n+1)):ko(new Error('assets/'+src));i.src='assets/'+src+(n?'?r='+n:'')})}
+function pixels(i){const c=document.createElement('canvas');c.width=1920;c.height=1080;const x=c.getContext('2d');x.drawImage(i,0,0);return x.getImageData(0,0,1920,1080).data}
+async function blob(src){for(let n=0;;n++){try{const r=await fetch('assets/'+src);if(!r.ok)throw new Error(r.status);return URL.createObjectURL(await r.blob())}catch(e){if(n>=4)throw new Error('assets/'+src);await new Promise(t=>setTimeout(t,300*(n+1)))}}}
+const L={},V={};let META;
+const PHONE=matchMedia('(pointer: coarse)').matches;   // dito: il primo tocco accende, il secondo entra
+const SMALL=PHONE&&Math.min(screen.width,screen.height)<820;   // telefono: clip 720p
+const clipFile=n=>n+(SMALL?'_m':'')+'.mp4';
+const PV={};const getV=n=>PV[n]||(PV[n]=blob(clipFile(n)).then(u=>V[n]=u));
+let DONE=0,TOTAL=1;const tickLoad=p=>p.then(r=>{DONE++;$('pct').textContent=Math.min(99,Math.round(DONE/TOTAL*100));return r});
+async function loadRest(){for(const v of ['C2_or','C2','C3_or','C4','C5_or_1','C5_or_2','C5_or_3','C5_or_4','C5_or_5','C5_or_6','C5_or_7','C5_or_8','C6','C7','C3','C5'])try{await getV(v)}catch(e){}}
+async function loadAll(){
+  TOTAL=5*5+4+2;
+  META=await (await fetch('assets/meta.json')).json();
+  const names=['s1','s2','s3','s4','s5'];
+  await Promise.all(names.map(async n=>{
+    const [b,o,g,id,alf]=await Promise.all([n+'.jpg',n+'_or.jpg',n+'_gr.jpg',n+'_id.png',n+'_al.png'].map(f=>tickLoad(img(f))));
+    const P={base:pixels(b),or:pixels(o),gr:pixels(g)};
+    // la mappa dei pezzi: R+G = numero (PNG senza alfa), _al = quanto colore
+    const c=document.createElement('canvas');c.width=1920;c.height=1080;const x=c.getContext('2d');x.drawImage(id,0,0);
+    const d=x.getImageData(0,0,1920,1080).data;const da=pixels(alf);const N=d.length/4;const ids=new Uint16Array(N),al=new Uint8Array(N);
+    const lists={};
+    for(let p=0;p<N;p++){const v=d[p*4]+d[p*4+1]*256;ids[p]=v;al[p]=da[p*4];if(v&&da[p*4]>0)(lists[v]=lists[v]||[]).push(p)}
+    for(const k in lists)lists[k]=Int32Array.from(lists[k]);
+
+    P.ids=ids;P.al=al;P.lists=lists;L[n]=P;
+  }));
+  L.s3.pk=pixels(await tickLoad(img('s3_pk.jpg')));
+  const bk=pixels(await tickLoad(img('s3_block.png')));L.s3.block=new Uint8Array(bk.length/4);for(let p=0;p<L.s3.block.length;p++)L.s3.block[p]=bk[p*4];
+  L.s3.blockList=Int32Array.from([...L.s3.block.keys()].filter(p=>L.s3.block[p]>0));
+  await Promise.all([tickLoad(getV('C1_or')),tickLoad(getV('C1')),tickLoad(img('v_seat.jpg')),tickLoad(img('v_vip.jpg'))]);
+}
+
+// ---------- disegno: foto + arancio/grigio sui pezzi ----------
+let cur='s1',W={},G={},BW=0,raf=0;   // W: peso arancio per pezzo, G: peso grigio, BW: arancio su tutto il blocco
+const out=cx.createImageData(1920,1080);
+function draw(){
+  const P=L[cur],o=out.data;o.set(P.base);
+  const blend=(list,src,a0)=>{for(let q=0;q<list.length;q++){const p=list[q],a=P.al[p]*a0/255,i=p*4;o[i]+= (src[i]-o[i])*a;o[i+1]+=(src[i+1]-o[i+1])*a;o[i+2]+=(src[i+2]-o[i+2])*a}};
+  if(cur==='s3'&&BW>0){const b=P.block,l=P.blockList;for(let q=0;q<l.length;q++){const p=l[q],a=b[p]/255*BW*.92,i=p*4;o[i]+=(P.or[i]-o[i])*a;o[i+1]+=(P.or[i+1]-o[i+1])*a;o[i+2]+=(P.or[i+2]-o[i+2])*a}}
+  for(const k in G)if(G[k]>0.001&&P.lists[k])blend(P.lists[k],P.gr,G[k]*.96);
+  for(const k in W)if(W[k]>0.001&&P.lists[k]){const pk=cur==='s3'&&SEATS[k-1]&&SEATS[k-1].pick;blend(P.lists[k],pk?P.pk:(SOLD(k)?P.gr:P.or),W[k]*(pk?1:.92))}
+  cx.putImageData(out,0,0);
+}
+let TW={},TG={},TBW=0;
+function animate(){
+  let moving=false;
+  const step=(obj,tgt,sp)=>{for(const k of new Set([...Object.keys(obj),...Object.keys(tgt)])){const a=obj[k]||0,b=tgt[k]||0;const n=a+(b-a)*sp;if(Math.abs(n-b)<.01){obj[k]=b}else{obj[k]=n;moving=true}}};
+  step(W,TW,.28);step(G,TG,.2);
+  const nb=BW+(TBW-BW)*.15;if(Math.abs(nb-TBW)<.01)BW=TBW;else{BW=nb;moving=true}
+  draw();raf=moving?requestAnimationFrame(animate):0;
+}
+const kick=()=>{if(!raf)raf=requestAnimationFrame(animate)};
+
+// ---------- stato ----------
+let STEP=0,busy=false,hover=0,PICKED={},VIPSEAT=0;
+let SEATS=[];
+const SOLD=k=>{if(cur==='s4')return k>8;if(cur==='s1')return ZL[k-1]===0;if(cur==='s2'){const b=META.blocks[k-1];return b&&blockLeft(b.n)===0}if(cur==='s3'){const s=SEATS[k-1];return s&&!s.free}return false};
+function showStill(n){cur=n;W={};TW={};G={};TG={};BW=0;TBW=0;draw();vd.classList.remove('on')}
+function tk(x,y,o){const t=$('tk');$('t1').textContent=o.k;$('t2').textContent=o.b;$('t3').textContent=o.p;$('t5').textContent=o.pk||'AED';
+  const a=$('t4');a.textContent=o.av?o.av[0]:'';a.className='av '+(o.av?o.av[1]:'');a.style.display=o.av?'':'none';
+  t.classList.toggle('sold',!!o.sold);t.classList.toggle('wv',!!o.view);
+  // il biglietto resta sempre nella parte che si vede (con lo schermo 21:9 sopra e sotto c'è taglio)
+  const k=1920/st.offsetWidth,w=t.offsetWidth*k,h=t.offsetHeight*k,m=18;let top=y-21.6;
+  top=Math.min(Math.max(top,CROP.y+m+h),1080-CROP.y-m);x=Math.min(Math.max(x,CROP.x+m+w/2),1920-CROP.x-m-w/2);
+  t.style.left=x/19.2+'%';t.style.top=top/10.8+'%';t.classList.add('on')}
+const CROP={x:0,y:0};
+function crop(){const s=document.getElementById('st'),r=s.getBoundingClientRect();CROP.y=Math.max(0,(r.height-innerHeight)/2)/r.width*1920;CROP.x=Math.max(0,(r.width-innerWidth)/2)/r.width*1920;s.style.setProperty('--fit',Math.min(1,innerWidth/r.width/.98));s.style.setProperty('--cy',CROP.y/19.2+'cqw')}
+addEventListener('resize',crop);crop();
+const tkOff=()=>$('tk').classList.remove('on');
+function play(name,then){busy=true;tkOff();hint(0);hover=0;const w=$('wait');if(!V[name])w.classList.add('on');
+  getV(name).then(u=>{w.classList.remove('on');vd.src=u;vd.currentTime=0;
+  const go=()=>{vd.classList.add('on');const p=vd.play();if(p&&p.catch)p.catch(()=>{})};vd.oncanplay=()=>{vd.oncanplay=null;go()};
+  vd.onended=()=>{busy=false;then()}}).catch(()=>{w.classList.remove('on');window.OmnyaLoad&&OmnyaLoad.fail()})}
+
+// ---------- puntamento ----------
+const st=$('st');
+function pos(e){const r=st.getBoundingClientRect();return [(e.clientX-r.left)/r.width*1920,(e.clientY-r.top)/r.height*1080]}
+function idAt(x,y,rad){const P=L[cur];if(!P)return 0;const xi=Math.round(x),yi=Math.round(y);
+  if(xi<0||yi<0||xi>=1920||yi>=1080)return 0;let v=P.ids[yi*1920+xi];if(v||!rad)return v;
+  let best=0,bd=1e9;for(let dy=-rad;dy<=rad;dy+=3)for(let dx=-rad;dx<=rad;dx+=3){const X=xi+dx,Y=yi+dy;if(X<0||Y<0||X>=1920||Y>=1080)continue;const w=P.ids[Y*1920+X];if(w&&dx*dx+dy*dy<bd){bd=dx*dx+dy*dy;best=w}}return best}
+function onMove(e){
+  if(busy||(AUTO&&e.isTrusted))return;const [x,y]=pos(e);
+  if(STEP===1){const k=idAt(x,y,10);if(k!==hover){hover=k;TW={};if(k)TW[k]=1;kick();
+      if(k){const z=k-1,c=META.zones[z],dx=c[0]-960,dy=c[1]-540,dl=Math.hypot(dx,dy)||1;  // il biglietto sta fuori dalla tribuna, verso l'esterno
+        tk(c[0]+dx/dl*150,c[1]+dy/dl*150+(dy>40?150:0),{k:'Da',b:ZN[z],p:fmt(ZP[z]),av:avail(ZL[z]),sold:ZL[z]===0})}else tkOff()}}
+  else if(STEP===2){const k=idAt(x,y,8);if(k!==hover){hover=k;TW={};if(k)TW[k]=1;kick();
+      if(k){const b=META.blocks[k-1],l=blockLeft(b.n);tk(b.c[0],b.c[1]-80,{k:TIER[b.t][0],b:'Blocco '+b.n,p:fmt(TIER[b.t][1]),av:avail(l),sold:l===0})}else tkOff()}}
+  else if(STEP===3){const k=idAt(x,y,14);if(k!==hover){hover=k;TW={};if(k&&SEATS[k-1].free)TW[k]=1;kick();
+      if(k){const s=SEATS[k-1];tk(s.c[0],s.c[1]-12,s.free?{k:'Blocco '+PICKED.block,b:'Fila '+s.r+' · Posto '+s.s,p:fmt(PICKED.price),view:true}:{k:'Fila '+s.r+' · Posto '+s.s,b:'Occupato',p:'—',pk:'',sold:true})}else tkOff()}}
+  else if(STEP===5){const k=idAt(x,y,8);if(k!==hover){hover=k;TW={};if(k)TW[k]=1;kick();   // sulle tribune VIP scegli già la poltrona del box 12
+      if(k){const c=META.chairs4[k-1],sold=k>8;tk(c[0],c[1]-8,sold?{k:'VIP · Level 2',b:'Skybox '+(k===9?11:13),p:'3,750',av:['Esaurito','no'],sold:true}:{k:'Skybox 12 · Prima fila',b:'Posto '+k,p:'3,750',av:['Poltrona in pelle','ok']})}else tkOff()}}
+}
+function onClick(e){
+  if(busy||(AUTO&&e.isTrusted))return;const [x,y]=pos(e);
+  if(STEP===1&&hover){const z=hover-1;if(ZL[z]===0){shake();return}
+    PICKED={zone:z,stand:ZN[z],gate:ZGATE[z]};STEP=-1;play(z===CHOSEN_ZONE?'C1_or':'C1',()=>enter2())}
+  else if(STEP===2&&hover){const b=META.blocks[hover-1];if(blockLeft(b.n)===0){shake();return}
+    Object.assign(PICKED,{block:b.n,tier:TIER[b.t][0],price:TIER[b.t][1]});STEP=-1;play(b.n===CHOSEN_BLOCK?'C2_or':'C2',()=>enter3())}
+  else if(STEP===3&&hover){const s=SEATS[hover-1];if(!s.free){shake();return}
+    Object.assign(PICKED,{row:s.r,seat:s.s});STEP=-1;play('C3_or',()=>enter4())}
+  else if(STEP===5&&hover){if(hover>8){shake();return}VIPSEAT=hover;STEP=-1;play('C5_or_'+hover,()=>enter6())}
+}
+function shake(){const t=$('tk');t.animate([{transform:'translate(-50%,-100%) translateX(0)'},{transform:'translate(-50%,-100%) translateX(-.8cqw)'},{transform:'translate(-50%,-100%) translateX(.8cqw)'},{transform:'translate(-50%,-100%) translateX(0)'}],{duration:280})}
+let TOUCH=false;
+st.addEventListener('pointerdown',e=>{TOUCH=e.pointerType!=='mouse'},true);
+st.addEventListener('pointermove',e=>{if(e.pointerType==='mouse')TOUCH=false});
+st.addEventListener('mousemove',e=>{if(!TOUCH){onMove(e);if(hover)hint(0)}});
+st.addEventListener('click',e=>{
+  if(TOUCH&&!busy&&[1,2,3,5].includes(STEP)){const prev=hover;onMove(e);if(!hover||hover!==prev){if(hover)hint(TXT.again[STEP]);return}}
+  onClick(e)});
+const TXT={first:{1:'Passa sullo stadio e scegli una tribuna',2:'Ora scegli un blocco',3:'Scegli un posto libero',5:'Scegli la tua poltrona VIP'},
+  tap:{1:'Tocca una tribuna per vedere il prezzo',2:'Tocca un blocco',3:'Tocca un posto libero',5:'Tocca la tua poltrona VIP'},
+  again:{1:'Tocca di nuovo per volare lì',2:'Tocca di nuovo per entrare',3:'Tocca di nuovo per prendere il posto',5:'Tocca di nuovo per sederti'}};
+function hint(t){const el=$('hint');if(t){el.textContent=t;el.classList.add('on')}else el.classList.remove('on')}
+function hintStep(){if(!AUTO&&!Q.get('rec'))hint((PHONE?TXT.tap:TXT.first)[STEP])}
+addEventListener('keydown',e=>{if(!AUTO&&(e.key==='r'||e.key==='R'))restart()});
+
+// ---------- passi ----------
+function enter1(){STEP=1;hover=0;showStill('s1');hintStep()}
+function enter2(){STEP=2;hover=0;showStill('s2');hintStep()}
+function enter3(){showStill('s3');STEP=3;hover=0;hintStep();
+  SEATS=META.seats.map((s,i)=>({...s,free:seatFree(i,s.pick)}));
+  // il blocco si accende, poi i posti presi diventano grigi a onda dal centro
+  TBW=1;kick();const cxm=SEATS.reduce((a,s)=>a+s.c[0],0)/SEATS.length,cym=SEATS.reduce((a,s)=>a+s.c[1],0)/SEATS.length;
+  setTimeout(()=>{TBW=0;SEATS.forEach((s,i)=>{if(!s.free){const d=Math.hypot(s.c[0]-cxm,s.c[1]-cym);setTimeout(()=>{TG[i+1]=1;kick()},d*.9)}});kick()},500)}
+function face1(){const p=PICKED,v='<img src="assets/v_seat.jpg" alt="">',c='<div class="chip"><i></i>La tua vista</div>',keep='<button class="btn ghost" data-a="keep">Tengo il mio posto</button>';
+  if(VAR==='B1')return `<div class="face f1"><div class="hd"><b>${p.stand}</b><span>${fmt(p.price)} AED</span></div><div class="view">${v}${c}</div><div class="bd"><div class="row3"><div class="fld"><span class="k">Block</span><b>${p.block}</b></div><div class="fld"><span class="k">Fila</span><b>${p.row}</b></div><div class="fld"><span class="k">Posto</span><b>${p.seat}</b></div></div><div class="row3"><div class="fld"><span class="k">Ingresso</span><b style="font-size:2cqw">${p.gate}</b></div><div class="fld"><span class="k">Tier</span><b style="font-size:2cqw">${p.tier.split(' ')[0]}</b></div></div></div><div class="ft">${BAR}<div class="btns">${keep}<button class="btn" data-a="up">Passa al VIP</button></div></div></div>`;
+  if(VAR==='B3')return `<div class="face f1"><div class="view">${v}${c}<div class="ov"><div class="row3"><div class="fld"><span class="k">${p.stand}</span><b>Blocco ${p.block}</b></div><div class="fld"><span class="k">Fila</span><b>${p.row}</b></div><div class="fld"><span class="k">Posto</span><b>${p.seat}</b></div></div><div class="btns">${keep}<button class="btn" data-a="up">Passa al VIP</button></div></div></div><div class="stub"><span class="k">Gate ${p.gate}</span>${BAR}<div><span class="k">AED</span><b>${fmt(p.price)}</b></div></div></div>`;
+  return `<div class="face f1"><div class="view">${v}${c}</div><div class="mid"><div class="t"><span class="k">${p.stand} · ${p.tier}</span><b>Blocco ${p.block}</b></div><div class="row3"><div class="fld"><span class="k">Fila</span><b>${p.row}</b></div><div class="fld"><span class="k">Posto</span><b>${p.seat}</b></div><div class="fld"><span class="k">Ingresso</span><b>${p.gate}</b></div></div><div class="btns"><button class="btn" data-a="up">Passa al VIP · +2,500 AED</button>${keep}</div></div><div class="stub"><span class="k">AED</span>${BAR}<b>${fmt(p.price)}</b></div><div class="stamp" id="stamp">BOOKED</div></div>`}
+function face2(seat){const v='<img src="assets/v_vip.jpg" alt="">',c='<div class="chip"><i></i>La tua vista dal box</div>';
+  const b=seat?'<div class="ns"><span class="k">Non ti convince?</span><button class="btn" data-a="view">Un’altra vista →</button></div>':'<button class="btn" data-a="go">Scegli il posto VIP →</button>';
+  const f2=seat?`<div class="fld"><span class="k">Posto</span><b>${seat}</b></div>`:`<div class="fld"><span class="k">Posti</span><b>8</b></div>`;
+  if(VAR==='B1')return `<div class="face f2"><div class="hd"><b>VIP Skybox 12</b><span>3,750 AED</span></div><div class="view">${v}${c}</div><div class="bd"><div class="row3"><div class="fld"><span class="k">Box</span><b>12</b></div>${f2}<div class="fld"><span class="k">Level</span><b>2</b></div></div><div class="row3"><div class="fld"><span class="k">Accesso</span><b style="font-size:2cqw">VIP lift</b></div><div class="fld"><span class="k">Upgrade</span><b style="font-size:2cqw">+2,500</b></div></div></div><div class="ft">${BAR}${b}</div></div>`;
+  if(VAR==='B3')return `<div class="face f2"><div class="view">${v}${c}<div class="ov"><div class="row3"><div class="fld"><span class="k">VIP · Level 2</span><b>Skybox 12</b></div>${f2}</div>${b}</div></div><div class="stub"><span class="k">VIP lift</span>${BAR}<div><span class="k">AED</span><b>3,750</b></div></div></div>`;
+  return `<div class="face f2"><div class="view">${v}${c}</div><div class="mid"><div class="t"><span class="k">VIP · Level 2</span><b>Skybox 12</b></div><div class="row3">${f2}<div class="fld"><span class="k">Accesso</span><b>VIP</b></div></div><div>${b}</div></div><div class="stub"><span class="k">AED</span>${BAR}<b>3,750</b></div></div>`}
+function enter4(){STEP=4;$('fin').innerHTML=face1()+face2();$('big').classList.remove('turn');$('dim').classList.add('on');setTimeout(()=>$('big').classList.add('on'),250)}
+$('big').addEventListener('click',e=>{if(AUTO&&e.isTrusted)return;const a=e.target.closest('[data-a]');if(!a||busy)return;e.stopPropagation();
+  if(a.dataset.a==='up'){$('big').classList.add('turn');busy=true;setTimeout(()=>{busy=false},1050)}   // si gira sul VIP e resta lì finché non clicchi
+  if(a.dataset.a==='go'){$('big').classList.remove('on');$('dim').classList.remove('on');busy=true;setTimeout(()=>{busy=false;STEP=-1;play('C4',()=>enter5())},350)}
+  if(a.dataset.a==='keep'){const s=$('stamp')||document.createElement('div');a.parentElement.innerHTML='<span class="k" style="color:var(--ok)">Prenotato · ci vediamo all’ingresso '+PICKED.gate+'</span>';if($('stamp'))$('stamp').classList.add('on');pill('Scegli un altro posto',restart)}
+  if(a.dataset.a==='view'){$('big').classList.remove('on');$('dim').classList.remove('on');busy=true;setTimeout(()=>{busy=false;STEP=-1;play('C6',()=>enter7())},400)}});
+function enter5(){showStill('s4');STEP=5;hover=0;hintStep()}
+function enter6(){cur='s5';W={[VIPSEAT]:1};TW={[VIPSEAT]:1};G={};TG={};BW=0;TBW=0;draw();vd.classList.remove('on');STEP=6;hover=0;   // la poltrona resta arancio, arriva il biglietto VIP
+  $('fin').innerHTML=face1()+face2(VIPSEAT);$('big').classList.add('turn');$('dim').classList.add('on');setTimeout(()=>{$('big').classList.add('on');STEP=8},350)}
+function enter7(){STEP=7;tk(960,330,{k:'From Skybox 12 · Seat '+VIPSEAT,b:'Un’altra vista',p:'3,750',av:['VIP · Livello 2','ok']});$('acts').classList.add('on')}
+// Confirm ticket: prenotato. Choose another seat: si torna su in aria (C7) e si sceglie di nuovo
+$('acts').addEventListener('click',e=>{if(AUTO&&e.isTrusted)return;const b=e.target.closest('[data-b]');if(!b||busy||STEP!==7)return;e.stopPropagation();
+  if(b.dataset.b==='ok'){$('t4').textContent='Prenotato · ci vediamo all’ascensore VIP';$('t4').className='av ok';b.textContent='Confermato ✓';return}
+  $('acts').classList.remove('on');if(V.C7){tkOff();STEP=-1;play('C7',()=>{$('acts').querySelector('.ok').textContent='Conferma il biglietto';enter1()})}else restart()});
+function pill(t,fn){const p=$('pill');p.textContent=t;p.onclick=e=>{if(AUTO&&e.isTrusted)return;e.stopPropagation();p.classList.remove('on');fn()};p.classList.add('on')}
+function restart(){$('pill').classList.remove('on');$('acts').classList.remove('on');$('acts').querySelector('.ok').textContent='Conferma il biglietto';$('big').classList.remove('on','turn');$('dim').classList.remove('on');tkOff();vd.pause();busy=false;PICKED={};VIPSEAT=0;enter1()}
+
+// ---------- giro automatico: spazio, frecce, invio o clic e parte da solo ----------
+const CUR={x:1560,y:960,run:0};
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const until=async f=>{while(!f())await sleep(40)};
+function curPut(){const c=$('cur');c.style.transform=`translate(${CUR.x/19.2}cqw,${CUR.y/19.2}cqw)`}
+function toClient(x,y){const r=st.getBoundingClientRect();return {clientX:r.left+x/1920*r.width,clientY:r.top+y/1080*r.height}}
+function feel(){onMove(toClient(CUR.x,CUR.y));const c=toClient(CUR.x,CUR.y),el=document.elementFromPoint(c.clientX,c.clientY);
+  document.querySelectorAll('.hov').forEach(b=>{if(!b.contains(el))b.classList.remove('hov')});const b=el&&el.closest('.btn,.pill,.acts button');if(b)b.classList.add('hov')}
+const tick=cb=>{let d=0;requestAnimationFrame(()=>{if(!d){d=1;cb(performance.now())}});setTimeout(()=>{if(!d){d=1;cb(performance.now())}},50)};  // se i frame si fermano va avanti col timer
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+function glide(x,y,ms,bend=.12){const run=CUR.run,x0=CUR.x,y0=CUR.y,dx=x-x0,dy=y-y0,t0=performance.now();
+  ms=ms||Math.min(700,Math.max(280,Math.hypot(dx,dy)*.7));
+  return new Promise(ok=>{const f=now=>{if(run!==CUR.run)return ok();const t=Math.min(1,(now-t0)/ms),e=ease(t),a=Math.sin(Math.PI*e)*bend;  // curva leggera come una mano vera
+    CUR.x=x0+dx*e-dy*a;CUR.y=y0+dy*e+dx*a;curPut();feel();t<1?tick(f):ok()};tick(f)})}
+// punto sicuro dentro un pezzo: il pixel del pezzo più vicino al suo centro
+function ptOf(k,c){const l=L[cur].lists[k];if(!l)return c;let sx=0,sy=0,n=0;for(let q=0;q<l.length;q+=7){sx+=l[q]%1920;sy+=(l[q]/1920|0);n++}
+  const mx=c?c[0]:sx/n,my=c?c[1]:sy/n;let best=l[0],bd=1e18;for(let q=0;q<l.length;q+=3){const X=l[q]%1920,Y=l[q]/1920|0,d=(X-mx)**2+(Y-my)**2;if(d<bd){bd=d;best=l[q]}}return [best%1920,best/1920|0]}
+function elPt(el){const r=el.getBoundingClientRect(),R=st.getBoundingClientRect();return [((r.left+r.width*.55)-R.left)/R.width*1920,((r.top+r.height*.58)-R.top)/R.height*1080]}
+async function press(el){const c=$('cur');c.classList.add('prs');if(el)el.classList.add('prs');await sleep(130);c.classList.remove('prs');if(el)el.classList.remove('prs');
+  if(el)el.click();else onClick(toClient(CUR.x,CUR.y))}
+const showCur=on=>$('cur').classList.toggle('on',on);
+async function tour(){const run=++CUR.run,live=()=>run===CUR.run;
+  restart();CUR.x=1420;CUR.y=600;curPut();await sleep(60);showCur(true);await sleep(80);
+  // 1. il giro sulle tribune dall'alto, finisce sulla North Stand
+  {const [x,y]=ptOf(7,META.zones[6]);await glide(x,y,380,-.1);if(!live())return;await sleep(260)}   // subito dentro: dritto sulla North Stand
+  await press();showCur(false);await until(()=>STEP===2&&!busy);if(!live())return;showCur(true);await sleep(120);
+  // 2. i blocchi: qualcuno vicino, uno esaurito, poi il 232
+  const B=META.blocks,i232=B.findIndex(b=>b.n===CHOSEN_BLOCK),b0=B[i232].c,near=B.map((b,i)=>({b,i,d:Math.hypot(b.c[0]-b0[0],b.c[1]-b0[1])})).filter(o=>o.i!==i232&&o.d<520).sort((a,b)=>a.d-b.d);
+  const sold=near.find(o=>blockLeft(o.b.n)===0),others=near.filter(o=>o!==sold);const path=[others[others.length-1],sold||others[3],others[1]].filter(Boolean);
+  for(const o of path){const [x,y]=ptOf(o.i+1,o.b.c);await glide(x,y);if(!live())return;await sleep(o===sold?420:230)}
+  {const [x,y]=ptOf(i232+1,b0);await glide(x,y,420);await sleep(450)}
+  await press();showCur(false);await until(()=>STEP===3&&!busy);if(!live())return;await sleep(1000);showCur(true);await sleep(100);
+  // 3. i posti: uno preso, uno libero, poi il nostro
+  const ip=SEATS.findIndex(s=>s.pick),p0=SEATS[ip].c,ns=SEATS.map((s,i)=>({s,i,d:Math.hypot(s.c[0]-p0[0],s.c[1]-p0[1])})).filter(o=>o.i!==ip).sort((a,b)=>a.d-b.d);
+  const tak=ns.find(o=>!o.s.free&&o.d>60&&o.d<260),fre=ns.find(o=>o.s.free&&o.d>110&&o.d<300&&(!tak||Math.hypot(o.s.c[0]-tak.s.c[0],o.s.c[1]-tak.s.c[1])>90));
+  for(const o of [fre,tak].filter(Boolean)){const [x,y]=ptOf(o.i+1,o.s.c);await glide(x,y,400);if(!live())return;await sleep(380)}
+  {const [x,y]=ptOf(ip+1,p0);await glide(x,y,400);await sleep(550)}
+  await press();showCur(false);await until(()=>STEP===4&&!busy);if(!live())return;await sleep(850);showCur(true);
+  // 4. il biglietto: Upgrade, si gira, poi Choose your VIP seat
+  let el=$('fin').querySelector('.f1 [data-a=up]');await glide(...elPt(el),520);await sleep(320);if(!live())return;await press(el);
+  await sleep(1450);el=$('fin').querySelector('.f2 [data-a=go]');await glide(...elPt(el),480);await sleep(300);if(!live())return;await press(el);
+  showCur(false);await until(()=>STEP===5&&!busy);if(!live())return;showCur(true);await sleep(120);
+  // 5. tribune VIP: un box esaurito, qualche poltrona, poi la 5
+  for(const [k,ms,hold] of [[9,480,380],[2,420,180],[3,230,140],[7,450,220],[5,380,520]]){const [x,y]=ptOf(k,META.chairs4[k-1]);await glide(x,y,ms);if(!live())return;await sleep(hold)}
+  VIPSEAT=0;await press();showCur(false);await until(()=>STEP===8);if(!live())return;await sleep(850);showCur(true);
+  // 6. biglietto VIP: Not satisfied? Another view
+  el=$('fin').querySelector('.f2 [data-a=view]');await glide(...elPt(el),520);await sleep(420);if(!live())return;await press(el);
+  showCur(false);await until(()=>STEP===7);if(!live())return;await sleep(250);showCur(true);
+  // 7. altra vista: passa su Confirm ticket, poi Choose another seat
+  el=$('acts').querySelector('.ok');await glide(...elPt(el),520);await sleep(450);if(!live())return;
+  el=$('acts').querySelector('.again');await glide(...elPt(el),360);await sleep(380);if(!live())return;await press(el);
+  if(!V.C7)return;
+  // 8. di nuovo in aria: scorre di qua e di là, su e giù sulle tribune
+  showCur(false);await until(()=>STEP===1&&!busy);if(!live())return;[CUR.x,CUR.y]=ptOf(7,META.zones[6]);curPut();feel();showCur(true);await sleep(400);
+  for(const [z,ms,hold] of [[7,330,220],[0,330,260],[4,620,380],[3,330,200],[2,330,260],[1,330,200],[5,700,300],[6,330,260],[0,520,240],[2,420,500]]){const [x,y]=ptOf(z+1,META.zones[z]);await glide(x,y,ms,-.18);if(!live())return;await sleep(hold)}
+}
+if(AUTO){st.classList.add('auto');curPut();
+  const go=e=>{if(e.type==='keydown'&&![' ','Enter','ArrowLeft','ArrowRight','ArrowDown','ArrowUp'].includes(e.key)){if(e.key==='r'||e.key==='R'){CUR.run++;CUR.going=false;showCur(false);restart()}return}
+    e.preventDefault();if(!META||CUR.going)return;CUR.going=true;tour().finally(()=>{CUR.going=false})};
+  addEventListener('keydown',go);addEventListener('mousedown',e=>{if(e.button===0)go(e)})}
+
+// ---------- ?rec=1: tempo a passi per registrare il video (un fotogramma alla volta, niente scatti) ----------
+if(Q.get('rec')){
+  document.getElementById('load').style.display='none';   // nel video niente scritta di caricamento
+  let T=0,seq=0;const tm=new Map(),rafs=[],A=new Map(),rST=window.setTimeout.bind(window);
+  const seek=t=>Math.abs(vd.currentTime-t)<1e-4?Promise.resolve():new Promise(r=>{const done=()=>{vd.onseeked=null;r()};vd.onseeked=done;rST(done,3000);vd.currentTime=t});
+  window.setTimeout=(f,ms=0)=>{const id=++seq;tm.set(id,{t:T+Math.max(0,ms),f});return id};window.clearTimeout=id=>tm.delete(id);
+  window.requestAnimationFrame=f=>{rafs.push(f);return rafs.length};performance.now=()=>T;
+  const P=HTMLMediaElement.prototype;let vs=null,ended=false;
+  P.play=function(){vs=T;ended=false;return Promise.resolve()};
+  function css(){document.body.offsetWidth;for(const a of document.getAnimations()){if(!A.has(a)){A.set(a,T);a.pause()}const t=T-A.get(a);try{a.currentTime=t}catch(e){}}}
+  window.__step=async ms=>{T+=ms;
+    for(let n=0;n<50;n++){const due=[...tm].filter(([,o])=>o.t<=T).sort((a,b)=>a[1].t-b[1].t);if(!due.length)break;for(const [id,o] of due){if(tm.delete(id))o.f()}await Promise.resolve();await new Promise(r=>queueMicrotask(r))}
+    const fs=rafs.splice(0);for(const f of fs)f(T);
+    if(vs!==null&&!ended&&vd.duration){const t=(T-vs)/1000;
+      if(t>=vd.duration-1/48){ended=true;vs=null;await seek(vd.duration-0.02);const f=vd.onended;if(f)f()}
+      else await seek(t+0.002)}
+    css();return T};
+}
+
+window.OmnyaLoad&&OmnyaLoad.watch();
+loadAll().then(()=>{$('pct').textContent=100;window.OmnyaLoad&&OmnyaLoad.done();setTimeout(()=>{$('loader').classList.add('out');enter1();$('load').classList.add('off')},250);setTimeout(loadRest,600);
+  if(AUTO&&Q.get('go'))setTimeout(()=>dispatchEvent(new KeyboardEvent('keydown',{key:' '})),900);   // ?go=1 parte da solo (per registrare il video)
+  if(Q.get('demo')==='ticket'){PICKED={zone:6,stand:'North Stand',gate:'N3',block:232,tier:'Middle tier',price:1250,row:10,seat:8};  // solo per controllo: salta al biglietto
+    showStill('s3');enter4()}
+  if(Q.get('demo')==='vip'){PICKED={zone:6,stand:'North Stand',gate:'N3',block:232,tier:'Middle tier',price:1250,row:10,seat:8};$('fin').innerHTML=face1()+face2();enter5()}}).catch(e=>{window.OmnyaLoad&&OmnyaLoad.fail()});
+</script>
+<script defer src="/demo/cta.js"></script>
+<script defer src="/demo/mark.js"></script>
+<script defer src="/demo/fullscreen.js"></script>
+</body>
+</html>
