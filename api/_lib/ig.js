@@ -227,7 +227,9 @@ export function errorKind(e) {
   const m = String(e?.message || '');
   const { code, sub, status } = e || {};
   if (status === 429 || [4, 17, 32, 613, 80002, 80006].includes(code) || /rate limit|too many calls|request limit reached/i.test(m)) return 'rate';
-  if (sub === 2534022 || /outside (of )?(the )?allowed window|comment (was|is) (deleted|invalid)|invalid for a private reply/i.test(m)) return 'gone';
+  // 16/11: 1893060 "Invalid parameter" came on replies inside other people's threads: that one comment can't take a DM,
+  // so it is skipped instead of pausing the whole line
+  if (sub === 2534022 || sub === 1893060 || /outside (of )?(the )?allowed window|comment (was|is) (deleted|invalid)|invalid for a private reply/i.test(m)) return 'gone';
   // 2534025: this comment can't take a private reply (Meta writes it in Italian too: "Il commento non è
   // valido per una risposta privata"); 2534001: the thread is archived, deleted or doesn't exist. Trying
   // again only burns the hour's calls: the public "send us a text" at once
