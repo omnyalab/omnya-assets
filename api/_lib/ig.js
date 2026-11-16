@@ -955,6 +955,7 @@ async function deliver(job, ctx) {
       if (r.recipient_id) uid = r.recipient_id;
       if (ONLY.size) await kv.set(`tester:${uid}`, 1, 7 * 86_400);
       job.dm = 'sent';
+      await kv.del('refused'); // Instagram takes new conversations again
       job.flow = flow;
       job.linked = flow === 'direct' || job.sent === 'link'; // the link went out with this DM
       // the commenter's messaging id, kept for the follow check of their next comment; and the follow probe,
@@ -972,6 +973,21 @@ async function deliver(job, ctx) {
         ctx.probing = false;
       }
     } catch (e) {
+      // 16/11 (stadium reel viral): after ~170 new conversations an hour Instagram answered 2534001 ("the thread doesn't
+      // exist") to EVERY new commenter, which looked like closed DMs, and the bot gave them all up. Now 4 of those in
+      // 15 minutes mean Instagram is slowing us down: the line waits 15 minutes and the comment is tried again later
+      // (up to 8 times, wider each time), so everyone still gets the DM when Instagram lets us through.
+      if (e.sub === 2534001) {
+        const n = await kv.incr('refused', 3600); // kept an hour, wiped by the first DM that goes through
+        if (n >= 4 && (job.tries || 0) < 8) {
+          job.tries = (job.tries || 0) + 1;
+          console.warn(`[ig] Instagram refuses new conversations (${n} in 15 min): waiting, @${job.n} tried again later`);
+          await kv.set('hold', { until: now + 15 * 60_000, mins: 15, why: 'Instagram is refusing new conversations, waiting' }, 3600);
+          await again(job, now + 15 * 60_000 * job.tries);
+          ctx.stop = true;
+          return 'hold';
+        }
+      }
       const kind = errorKind(e);
       if (kind === 'user') console.warn('[ig] private reply refused for this person:', e.message);
       else await noteError('private reply', e, `comment ${cid} @${job.n}`);
