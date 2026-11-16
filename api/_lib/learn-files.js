@@ -54,9 +54,18 @@ const FULL_STADIUM = pdf('How to build a stadium where you pick your own seat', 
 // zip that opens in the browser, with the panel for views, light, height, fog and video recording. It is the base 3D
 // scene, not the photorealistic film of the reel, and every text about it says so. kind 'zip' is how the email, the page
 // after the payment and api/file.js tell it from the PDFs.
-const SCENE = { name: 'The Towers Scene File', file: 'en/the-towers-scene.zip', kind: 'zip' };
+const SCENE = {
+  name: 'The Towers Scene File', file: 'en/the-towers-scene.zip', kind: 'zip',
+  note: 'is the base 3D scene of the three towers, a zip to unzip and open in your browser on a computer (the file is index.html), where you change the views, the light, the height of the towers and the fog and record a video, and it is the 3D scene behind the reel, not the photorealistic film you see in it.',
+};
+// 16/11 (Nico): the Stadium Builder skill, a zip for Claude: sold with the Full Stadium Blueprint at €9.99, and inside
+// Everything we teach. note = the line under the buttons, in the email and on the page after the payment.
+const SKILL = {
+  name: 'The Stadium Builder skill', file: 'en/stadium-builder-skill.zip', kind: 'zip',
+  note: 'is a skill for Claude: on claude.ai open Settings, Capabilities, Skills and upload the zip, or unzip it into ~/.claude/skills for Claude Code, then ask "build me a stadium for…". It needs Claude Pro or Claude Code, and the README inside has every step.',
+};
 
-const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, SCENE];
+const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, SCENE, SKILL];
 // 13/11: the playbooks got new names. The one-year links already in buyers' emails still carry the old file names, so
 // the old names stay valid and point to the new files (who bought the old playbook 02 now gets the new one).
 const OLD = {
@@ -75,7 +84,9 @@ export const allFiles = () => EVERY.flatMap((f) => [{ name: f.name, file: f.file
 
 // "Everything we teach" (7/11, €39 after a free blueprint): the three Full blueprints and the three playbooks with the extras
 // 9/11 (Nico): the Full Build Blueprint took the place of the Full City one in the pack, then the Full Towers one joined it
-const PACK = [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST];
+// 16/11 (Nico): every Full guide is in it now (City and Stadium joined), and the Stadium Builder skill; the Black Friday
+// product "Black Friday · Everything we teach" (€39) is matched by the /everything we teach/ rule and delivers the same
+const PACK = [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_CITY, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, SKILL];
 /** True for every Stripe product that is the pack, whatever its price: "Everything we teach" (€59),
     "Everything we teach · upgrade" (€53 after a Full guide) and "Everything we teach · thank you price" (€29, sent by hand). */
 export const isPack = (name) => /everything we teach/i.test(String(name || ''));
@@ -97,6 +108,8 @@ const RULES = [
   [/everything we teach\s*[·•\-–—:]?\s*thank you price/i, PACK],
   [/everything we teach/i, PACK],
   // 15/11: the Full Stadium Blueprint, before every generic rule (its name has no "tower" or "city", but keep it first)
+  // 16/11: "Stadium Builder Skill + The Full Stadium Blueprint" (€9.99) BEFORE the plain stadium rule, which would match it too
+  [/stadium builder skill/i, [FULL_STADIUM, SKILL]],
   [/full stadium blueprint/i, [FULL_STADIUM]],
   // 10/11: "The Towers Scene File" BEFORE every rule with "tower" in it. It delivers the zip and nothing else: without
   // this line /tower/ below would send the Full Tower PDF to who bought the scene. "The Full Towers Blueprint" has no
@@ -134,7 +147,7 @@ export function filesForProduct(names, { ttl = MAIL_TTL, lang = 'en' } = {}) {
     const rule = RULES.find(([re]) => re.test(n));
     if (rule) for (const f of rule[1]) if (!files.some((x) => x.en === f.file)) {
       const [name, file] = lang === 'it' && f.it ? f.it : [lang === 'it' && !f.kind ? `${f.name} (EN)` : f.name, f.file];
-      files.push({ name, file, en: f.file, href: signedHref(file, ttl), ...(f.kind ? { kind: f.kind } : {}) });
+      files.push({ name, file, en: f.file, href: signedHref(file, ttl), ...(f.kind ? { kind: f.kind } : {}), ...(f.note ? { note: f.note } : {}) });
     }
   }
   // the PDFs first and the scene file after them, whatever the order of the lines in the cart

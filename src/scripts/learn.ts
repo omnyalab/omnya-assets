@@ -149,7 +149,7 @@ function paidFiles() {
   text.textContent = text.dataset.checking!;
   fetch(`/api/files?session_id=${encodeURIComponent(id)}&lang=${box.dataset.dl}`)
     .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-    .then((j: { files?: { name: string; href: string; kind?: string }[]; pack?: boolean; email?: string }) => {
+    .then((j: { files?: { name: string; href: string; kind?: string; note?: string }[]; pack?: boolean; email?: string }) => {
       const files = (j.files || []).filter((f) => f.href.startsWith('/api/file?'));
       if (!files.length) return closed();
       // step 2 (10/11): the upgrade to the pack shows only now, with the payment confirmed, and not to who paid for the pack
@@ -173,10 +173,13 @@ function paidFiles() {
         btns.after(sent);
       }
       // the line that says what the scene file is: added here, under the buttons, only for who has the scene
-      if (scene && text.dataset.sceneNote) {
+      // 16/11: each zip says what it is with its own line (the Stadium Builder skill, the Towers scene)
+      for (const z of files.filter((f) => f.kind === 'zip').reverse()) {
+        const line = z.note ? `${z.name} ${z.note}` : text.dataset.sceneNote;
+        if (!line) continue;
         const note = document.createElement('p');
         note.className = 'oto-dl__note';
-        note.textContent = text.dataset.sceneNote;
+        note.textContent = line;
         btns.after(note);
       }
     })

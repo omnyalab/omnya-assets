@@ -499,7 +499,7 @@ const en = {
       },
       paidPdf: 'Paid. Your PDF is ready, download it here.',
       // 10/11: The Towers Scene File (€12, added in the cart of the Full Towers Blueprint) — the base 3D scene, never called the film of the reel
-      paidScene: 'Paid. Your PDF and the 3D scene are ready, download them here.',
+      paidScene: 'Paid. Your files are ready, download them here.',
       paidSceneOnly: 'Paid. Your 3D scene is ready, download it here.',
       sceneNote: 'The Towers Scene File is a zip: unzip it and open index.html in your browser on a computer, and keep in mind that it is the base 3D scene behind the reel, not the photorealistic film you see in it.',
       sentNote: 'Download it now: we also send a copy to {email}, and if it doesn’t arrive (look in spam and promotions too) or that address is wrong, write to info@omnyalab.com and we send everything again.',
@@ -1141,7 +1141,7 @@ const it: Dict = {
         'everything-upgrade': { strike: '59 €', save: '5,99 €', items: ['Le quattro guide Full: Tower, 3D, Build e Towers', 'I tre playbook', 'I file di prompt completi e il controllo che facciamo prima di ogni consegna'] },
       },
       paidPdf: 'Pagato. Il tuo PDF è pronto, scaricalo qui.',
-      paidScene: 'Pagato. Il tuo PDF e la scena 3D sono pronti, scaricali qui.',
+      paidScene: 'Pagato. I tuoi file sono pronti, scaricali qui.',
       paidSceneOnly: 'Pagato. La tua scena 3D è pronta, scaricala qui.',
       sceneNote: 'The Towers Scene File è uno zip: estrailo e apri index.html nel browser da computer, e tieni presente che è la scena 3D di base dietro al reel, non il film fotorealistico che vedi lì.',
       sentNote: 'Scaricalo adesso: mandiamo una copia anche a {email}, e se non arriva (guarda anche nello spam e nelle promozioni) o l’indirizzo è sbagliato scrivi a info@omnyalab.com e ti rimandiamo tutto.',

@@ -22,6 +22,10 @@ const P = {
   'full-city': { items: ['price_1UZTeWATIF7pxfqfeOIS3Qit'], back: 'full-city' }, // bJecN4gBfcMwf0icqF8so0B · 5,99 (13/11)
   'full-stadium': { items: ['price_1Uc7IMATIF7pxfqfXY17WvAy'], back: 'full-stadium' }, // https://buy.stripe.com/28EaEW3Ot7scdWeeyN8so0M · 5,99 (15/11)
   everything: { items: ['price_1UZlPGATIF7pxfqf9vf0kJhG'], back: 'everything' }, // 5kQcN4bgVbIs6tMeyN8so0C · 59
+  // 16/11 (Nico): the Full Stadium Blueprint + the Stadium Builder skill, €9.99 (prod_VdaamfuFvksbaw), back to the stadium thanks page
+  'skill-stadium': { items: ['price_1UcJOtATIF7pxfqfVgfJrHi2'], back: 'full-stadium' },
+  // 16/11 (Nico): Black Friday, Everything we teach for €39 until Friday 27 November (prod_Vdaact6ADqm1W3), same delivery as the pack
+  'black-friday': { items: ['price_1UcJPLATIF7pxfqf6pLZSXoy'], back: 'everything', until: Date.parse('2026-11-27T23:59:59+01:00') },
 };
 
 export async function POST(request) {
@@ -31,6 +35,7 @@ export async function POST(request) {
   try { body = await request.json(); } catch (e) {}
   const p = P[body.p];
   if (!p) return json({ error: 'unknown product' }, 400);
+  if (p.until && Date.now() > p.until) return json({ error: 'offer ended' }, 410);
   try {
     const session = await stripe.checkout.sessions.create({
       // 13/11 (Nico): "elements" = Stripe's card fields inside OUR checkout (black and blue), not Stripe's white page

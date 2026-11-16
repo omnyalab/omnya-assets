@@ -30,19 +30,17 @@ const upgradeFor = (productNames, files) => !!everythingUpgrade && oneFullGuide(
 // recommended product of that payment link, €12), its zip comes under the PDF with one line that says what it is: the
 // base 3D scene that runs in the browser, not the photorealistic film of the reel. Without the scene in the cart the
 // email is exactly as before, in the HTML and in the text part.
-const SCENE_LINE = [
-  'The Towers Scene File',
-  ' is the base 3D scene of the three towers, a zip to unzip and open in your browser on a computer (the file is index.html), where you change the views, the light, the height of the towers and the fog and record a video, and it is the 3D scene behind the reel, not the photorealistic film you see in it.',
-];
-const split = (files) => ({ pdfs: files.filter((f) => !f.kind), scene: files.find((f) => f.kind === 'zip') });
+// 16/11: every zip (the Towers scene, the Stadium Builder skill) carries its own line (note, api/_lib/learn-files.js)
+const split = (files) => ({ pdfs: files.filter((f) => !f.kind), zips: files.filter((f) => f.kind === 'zip') });
 const subjectFor = (files) => {
-  const { pdfs, scene } = split(files);
-  if (!pdfs.length) return 'Your Towers Scene File';
-  return (pdfs.length > 1 ? 'Your Omnya Lab playbooks' : `Your ${pdfs[0].name}`) + (scene ? ' and the 3D scene' : '');
+  const { pdfs, zips } = split(files);
+  if (!pdfs.length) return `Your ${zips[0]?.name.replace(/^The /, '') || 'files'}`;
+  if (pdfs.length > 1) return 'Your Omnya Lab files';
+  return `Your ${pdfs[0].name}` + (zips.length ? ` and ${zips.map((z) => z.name.replace(/^The /, 'the ')).join(' and ')}` : '');
 };
 
 function filesEmail(name, files, upgrade = false) {
-  const { scene } = split(files); // files come with the PDFs first and the scene after them (filesForProduct)
+  const { zips } = split(files); // files come with the PDFs first and the zips after them (filesForProduct)
   const btn = (f) =>
     `<a href="https://www.omnyalab.com${f.href.replace(/&/g, '&amp;')}" style="display:inline-block;background:#b8613c;color:#fff;text-decoration:none;padding:12px 20px;border-radius:999px;margin:4px 8px 4px 0">${f.kind === 'zip' ? `${f.name} · zip` : f.name}</a>`;
   return `<!doctype html><html><body style="margin:0;background:#edeae4;font:16px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;color:#111">
@@ -50,8 +48,8 @@ function filesEmail(name, files, upgrade = false) {
 <p style="margin:0 0 28px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#6b6761">Omnya Lab</p>
 <h1 style="margin:0 0 20px;font-size:28px;line-height:1.1;letter-spacing:-.03em;font-weight:600">Thanks, ${name}.</h1>
 <p style="margin:0 0 14px">Here ${files.length > 1 ? 'are your files' : 'is your file'}, straight to your inbox — so you always have ${files.length > 1 ? 'them' : 'it'}, whatever the site is doing.</p>
-<p style="margin:28px 0${scene ? ' 14px' : ''}">${files.map(btn).join('')}</p>${scene ? `
-<p style="margin:0 0 28px;font-size:15px;color:#3a3936"><b>${SCENE_LINE[0]}</b>${SCENE_LINE[1]}</p>` : ''}${upgrade ? `
+<p style="margin:28px 0${zips.length ? ' 14px' : ''}">${files.map(btn).join('')}</p>${zips.filter((z) => z.note).map((z) => `
+<p style="margin:0 0 28px;font-size:15px;color:#3a3936"><b>${z.name}</b> ${z.note}</p>`).join('')}${upgrade ? `
 <p style="margin:0;padding-top:22px;border-top:1px solid #d6d1c8;font-size:15px;color:#3a3936">${UPGRADE_LINE[0]}<b>${UPGRADE_LINE[1]}</b>${UPGRADE_LINE[2]}<a href="${UPGRADE_URL}" style="color:#b8613c;font-weight:600">you can upgrade here</a>.</p>` : ''}
 </div></body></html>`;
 }
@@ -165,7 +163,7 @@ export async function POST(request) {
     }
 
     const upgrade = upgradeFor(productNames, files);
-    const { pdfs, scene } = split(files);
+    const { pdfs, zips } = split(files);
     await sendMail({
       to: `${name} <${email}>`,
       bcc: host.email,
@@ -178,7 +176,7 @@ export async function POST(request) {
         `Thanks for your order. Here ${files.length > 1 ? 'are your files' : 'is your file'}:`,
         '',
         ...pdfs.map((f) => `${f.name}: https://www.omnyalab.com${f.href}`),
-        ...(scene ? [...(pdfs.length ? [''] : []), `${scene.name} (zip): https://www.omnyalab.com${scene.href}`, SCENE_LINE.join('')] : []),
+        ...zips.flatMap((z, i) => [...(pdfs.length || i ? [''] : []), `${z.name} (zip): https://www.omnyalab.com${z.href}`, ...(z.note ? [`${z.name} ${z.note}`] : [])]),
         '',
         ...(upgrade ? [`${UPGRADE_LINE.join('')}you can upgrade here: ${UPGRADE_URL}`, ''] : []),
         'Nico · Omnya Lab',
