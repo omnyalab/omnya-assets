@@ -216,14 +216,14 @@ const stadium = {
   // comment, while other reels still work). A link in a comment can't be tapped (Nico), so the replies send people to
   // the link in our bio, which goes to omnyalab.com/ticket.
   publicReplies: [
-    'Check your DMs 🎟️ and if it’s not there, the link is in our bio',
-    'Sent 🎟️ check your DMs, not there? the link is in our bio',
-    'It’s in your DMs 🎟️ if you don’t see it, tap the link in our bio',
-    'Check the DM 🎟️ and if it didn’t arrive, the link is in our bio',
-    'Just sent it 🎟️ check your DMs, or grab it from the link in our bio',
-    'Done 🎟️ it’s in your DMs, and the link in our bio works too',
+    'Follow us and check your DMs 🎟️ not there? the link is in our bio',
+    'Sent 🎟️ follow @omnyalab so it reaches you, or tap the link in our bio',
+    'Follow us and check the DM 🎟️ or grab it from the link in our bio',
+    'It’s in your DMs 🎟️ follow us so it arrives, the link in our bio works too',
+    'Follow @omnyalab and check your DMs 🎟️ or use the link in our bio',
+    'Done 🎟️ follow us to get the DM, or tap the link in our bio',
   ],
-  cantDm: 'Your DMs are closed to accounts you don’t follow 🙏🏻 the free guide is on the link in our bio 🎟️',
+  cantDm: 'Follow @omnyalab and we’ll send it in DM 🎟️ or tap the link in our bio',
 };
 
 /** Omnya City (word HOUSE): the messages of the ManyChat flow; the link is personal and is made at the moment (api/_lib/city.js). */
