@@ -840,7 +840,7 @@ export async function mutedDests() {
   return mutedC.v;
 }
 export async function setMuted(list) {
-  const v = [...new Set(list.filter(isDest))];
+  const v = [...new Set(list.map((x) => (isDest(x) ? x : cleanCode(x))).filter(Boolean))]; // destinations or reel codes
   if (v.length) await kv.set('muted', v, 400 * 86_400);
   else await kv.del('muted');
   mutedC = { at: Date.now(), v };
@@ -852,7 +852,7 @@ async function accept(job, info) {
   const post = resolvePost({ id: job.m, code: info.code, words: info.words, tower: info.tower }, await extraPosts(), await extraWords());
   // 16/11 (Nico): destinations handed to another tool (InstantDM on the stadium reels): the bot stays quiet there,
   // no DM and no public reply, so nobody gets two. /api/leads?key=…&action=mute&value=stadium (empty value = none)
-  if (post && (await mutedDests()).includes(post.dest)) return 'muted';
+  { const mu = await mutedDests(); if ((post && mu.includes(post.dest)) || (info.code && mu.includes(info.code))) return 'muted'; } // a destination or one reel's code
   const known = await knownWords(); // the fixed words and the registered ones
   // posts in the map answer any comment (unless "every comment" was switched off from /api/leads: then
   // only their word); the others only the word their caption asks for
