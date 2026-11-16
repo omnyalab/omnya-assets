@@ -443,8 +443,11 @@ html.bf .bfw{display:block}
 .bcd .bx i{margin-top:3px;font:700 9.5px Inter;font-style:normal;letter-spacing:.12em;color:#a99e78}
 .bcd .bx .sc b{color:#ffd60a}
 .opt-all .ck{background:#ffd60a;color:#111}
-html.bf .opt-all{border-color:#ffd60a88}
-html.bf .opt-all.on{box-shadow:0 0 0 2px #ffd60a,0 0 34px -10px #ffd60a}
+/* Nico 16/11 15:45: the Everything row stays hidden while the Black Friday runs, the card at the top is enough;
+   "Get everything" still picks it behind the scenes, so Pay says €59 */
+html.bf .opt[data-o="all"]{display:none}
+/* the "1M views" title must not peek under the first screen: it starts well below the video */
+.big.c1{padding-top:230px!important}
 .reels2 .rsub{margin:8px 0 0;color:#a1a1aa;font-size:14px}
 .reels2 .reel{width:250px;opacity:1;transform:none;cursor:pointer}
 .reels2 .reel.on{border-color:#ffffff1f;box-shadow:none}
