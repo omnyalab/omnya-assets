@@ -213,18 +213,17 @@ const stadium = {
   // Instagram refuses our DM; "send us a text" made them write TICKET in the DMs, which the bot can't read. Now they are
   // sent to the link in our bio, and whoever gets the DM is told it may sit in Requests or Hidden requests.
   // 16/11 09:40: Instagram stopped taking private replies on the two stadium reels (code 100 sub 2534001 for every
-  // comment, while other reels still work), so the link goes in the public reply itself: omnyalab.com/ticket.
+  // comment, while other reels still work). A link in a comment can't be tapped (Nico), so the replies send people to
+  // the link in our bio, which goes to omnyalab.com/ticket.
   publicReplies: [
-    'Here it is 🎟️ omnyalab.com/ticket',
-    'Your free guide 🎟️ omnyalab.com/ticket',
-    'Grab it here 🎟️ omnyalab.com/ticket',
-    'It’s all here 🎟️ omnyalab.com/ticket',
-    'Sent 🎟️ and if your DMs are empty: omnyalab.com/ticket',
-    'Here you go 🎟️ omnyalab.com/ticket (also in our bio)',
-    'Free guide right here 🎟️ omnyalab.com/ticket',
-    'Go get it 🎟️ omnyalab.com/ticket',
+    'The free guide is on the link in our bio 🎟️',
+    'Tap the link in our bio, the guide is there 🎟️',
+    'It’s on the link in our bio 🎟️ go grab it',
+    'Link in bio 🎟️ the free guide is waiting',
+    'Sent 🎟️ and it’s also on the link in our bio',
+    'Your guide is one tap away: link in our bio 🎟️',
   ],
-  cantDm: 'Here it is 🎟️ omnyalab.com/ticket (your DMs are closed to accounts you don’t follow)',
+  cantDm: 'Your DMs are closed to accounts you don’t follow 🙏🏻 the free guide is on the link in our bio 🎟️',
 };
 
 /** Omnya City (word HOUSE): the messages of the ManyChat flow; the link is personal and is made at the moment (api/_lib/city.js). */
