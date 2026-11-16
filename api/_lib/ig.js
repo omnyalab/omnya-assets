@@ -98,7 +98,10 @@ export async function isOff() {
 }
 export async function setOff(v) {
   if (v) await kv.set('off', 1, 400 * 86_400);
-  else await kv.del('off');
+  else {
+    await kv.del('off');
+    await kv.del('hold'); // switching on also lifts a pause of the line
+  }
   off = { at: Date.now(), v: !!v };
   console.log(v ? '[ig] the bot was switched OFF from /api/leads' : '[ig] the bot was switched ON from /api/leads');
   return off.v;
@@ -981,11 +984,19 @@ async function deliver(job, ctx) {
         const n = await kv.incr('refused', 3600); // kept an hour, wiped by the first DM that goes through
         if (n >= 4 && (job.tries || 0) < 8) {
           job.tries = (job.tries || 0) + 1;
-          console.warn(`[ig] Instagram refuses new conversations (${n} in 15 min): waiting, @${job.n} tried again later`);
-          await kv.set('hold', { until: now + 15 * 60_000, mins: 15, why: 'Instagram is refusing new conversations, waiting' }, 3600);
+          console.warn(`[ig] Instagram refuses new conversations (${n} in the hour): public reply now, DM to @${job.n} tried again later`);
+          // the public reply goes now (Nico: they must see an answer at once), only the DM waits
+          if (!job.pub) {
+            try {
+              await replyComment(cid, lineAt(t.publicReplies, await turnOf(job, 'p'), `p:${job.m}`));
+            } catch (e2) {
+              await noteReplyError(e2, job, false);
+            }
+            job.pub = true;
+          }
+          await z.rem('sent', cid); // no DM went out: its place of the hour is free again
           await again(job, now + 15 * 60_000 * job.tries);
-          ctx.stop = true;
-          return 'hold';
+          return 'later';
         }
       }
       const kind = errorKind(e);
