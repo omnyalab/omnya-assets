@@ -20,10 +20,10 @@ const P = {
   'full-tower': { items: ['price_1UZTEcATIF7pxfqfwl2Vl0eu'], back: 'full-tower' }, // cNi9AS1GlfYI5pI4Yd8so0z · 5,99
   'full-3d': { items: ['price_1UZTNRATIF7pxfqfL1MLpQtJ'], back: 'full-3d' }, // 28EcN4dp34g0bO6fCR8so0A · 5,99 (13/11)
   'full-city': { items: ['price_1UZTeWATIF7pxfqfeOIS3Qit'], back: 'full-city' }, // bJecN4gBfcMwf0icqF8so0B · 5,99 (13/11)
-  'full-stadium': { items: ['price_1Uc7IMATIF7pxfqfXY17WvAy'], back: 'full-stadium', save: true }, // https://buy.stripe.com/28EaEW3Ot7scdWeeyN8so0M · 5,99 (15/11)
+  'full-stadium': { items: ['price_1Uc7IMATIF7pxfqfXY17WvAy'], back: 'full-stadium' }, // https://buy.stripe.com/28EaEW3Ot7scdWeeyN8so0M · 5,99 (15/11)
   everything: { items: ['price_1UZlPGATIF7pxfqf9vf0kJhG'], back: 'everything' }, // 5kQcN4bgVbIs6tMeyN8so0C · 59
   // 16/11 (Nico): the Full Stadium Blueprint + the Stadium Builder skill, €9.99 (prod_VdaamfuFvksbaw), back to the stadium thanks page
-  'skill-stadium': { items: ['price_1UcJOtATIF7pxfqfVgfJrHi2'], back: 'full-stadium', save: true },
+  'skill-stadium': { items: ['price_1UcJOtATIF7pxfqfVgfJrHi2'], back: 'full-stadium' },
   // 16/11 (Nico): Black Friday, Everything we teach for €39 until Friday 27 November (prod_Vdaact6ADqm1W3), same delivery as the pack
   'black-friday': { items: ['price_1UcJPLATIF7pxfqf6pLZSXoy'], back: 'everything', until: Date.parse('2026-11-27T23:59:59+01:00') },
 };
