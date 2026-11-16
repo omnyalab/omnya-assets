@@ -41,6 +41,8 @@ function mailHtml(name, f) {
 </div></body></html>`;
 }
 
+const NO_MAIL = new Set(['free-stadium']);
+
 export async function POST(request) {
   let b;
   try { b = await request.json(); } catch { return json({ error: 'bad request' }, 400); }
@@ -68,6 +70,9 @@ export async function POST(request) {
       fbp: String(b.fbp || '').slice(0, 120) || undefined,
     }).catch((e) => console.error('[optin] meta', e));
   }
+  // 16/11 (Nico): the stadium funnel sends no email any more. The free PDF is on the next page as step 1 with its own
+  // download, so the contact is kept (above) and info@ does not send thousands of the same email a day.
+  if (NO_MAIL.has(b.free)) return json({ ok: true, mail: false });
   // 11/11 (a buyer from Brazil paid and got no email): Resend's free plan sends 100 emails a day and the free blueprints
   // were using all of them, so the PDFs of who PAID never left. The free email now stops at FREE_CAP a day (UTC), and
   // the rest of the quota stays for the paid ones, the bookings and Nico's notices. Over the cap the form answers
