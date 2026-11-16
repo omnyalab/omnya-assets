@@ -203,11 +203,25 @@ const towers = funnel({
 });
 
 // 15/11: the stadium where you pick your own seat (word TICKET, also SEAT and STADIUM)
-const stadium = funnel({
-  name: 'The Stadium Blueprint',
-  url: STADIUM,
-  page: 'The Stadium Blueprint is free on this page, and right after it there’s the full method behind the stadium where you pick your own seat',
-});
+const stadium = {
+  ...funnel({
+    name: 'The Stadium Blueprint',
+    url: STADIUM,
+    page: 'The Stadium Blueprint is free on this page, and right after it there’s the full method behind the stadium where you pick your own seat',
+  }),
+  // 16/11 (viral stadium reel): almost half of the people who comment only take messages from accounts they follow, so
+  // Instagram refuses our DM; "send us a text" made them write TICKET in the DMs, which the bot can't read. Now they are
+  // sent to the link in our bio, and whoever gets the DM is told it may sit in Requests or Hidden requests.
+  publicReplies: [
+    'Sent 🎟️ check your DMs, and if it’s not there look in Requests and Hidden requests',
+    'Just sent it 🎟️ not in your DMs? open Message requests, then Hidden requests',
+    'It’s in your DMs 🎟️ if you don’t see it, check Requests (also the hidden ones)',
+    'Done 🎟️ check your DMs, or Requests and Hidden requests',
+    'Sent it over 🎟️ look in your Requests too, sometimes it hides there',
+    'On its way 🎟️ check DMs, Requests and Hidden requests',
+  ],
+  cantDm: 'Your DMs are closed to accounts you don’t follow 🙏🏻 the free guide is on the link in our bio 🎟️',
+};
 
 /** Omnya City (word HOUSE): the messages of the ManyChat flow; the link is personal and is made at the moment (api/_lib/city.js). */
 const city = {
