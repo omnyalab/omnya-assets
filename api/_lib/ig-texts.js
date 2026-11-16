@@ -216,12 +216,12 @@ const stadium = {
   // comment, while other reels still work). A link in a comment can't be tapped (Nico), so the replies send people to
   // the link in our bio, which goes to omnyalab.com/ticket.
   publicReplies: [
-    'The free guide is on the link in our bio 🎟️',
-    'Tap the link in our bio, the guide is there 🎟️',
-    'It’s on the link in our bio 🎟️ go grab it',
-    'Link in bio 🎟️ the free guide is waiting',
-    'Sent 🎟️ and it’s also on the link in our bio',
-    'Your guide is one tap away: link in our bio 🎟️',
+    'Check your DMs 🎟️ and if it’s not there, the link is in our bio',
+    'Sent 🎟️ check your DMs, not there? the link is in our bio',
+    'It’s in your DMs 🎟️ if you don’t see it, tap the link in our bio',
+    'Check the DM 🎟️ and if it didn’t arrive, the link is in our bio',
+    'Just sent it 🎟️ check your DMs, or grab it from the link in our bio',
+    'Done 🎟️ it’s in your DMs, and the link in our bio works too',
   ],
   cantDm: 'Your DMs are closed to accounts you don’t follow 🙏🏻 the free guide is on the link in our bio 🎟️',
 };
