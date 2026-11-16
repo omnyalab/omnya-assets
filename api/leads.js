@@ -78,6 +78,14 @@ export async function GET(request) {
     }
   }
 
+  // 16/11: who did NOT get the DM (stage nodm), newest first, for the DMs sent by hand: ?action=nodm&kind=stadium
+  if (q.get('action') === 'nodm') {
+    const kind = q.get('kind') || '';
+    const rows = (await listLeads(5000)).filter((l) => l.stage === 'nodm' && (!kind || l.kind === kind) && l.username);
+    rows.sort((a, b) => (b.commentAt || b.at || 0) - (a.commentAt || a.at || 0));
+    return new Response(JSON.stringify({ n: rows.length, users: rows.map((l) => ({ u: l.username, at: l.commentAt || l.at, post: l.post })) }), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+  }
+
   if (q.get('action') === 'off' || q.get('action') === 'on') {
     const nowOff = await setOff(q.get('action') === 'off');
     return new Response(JSON.stringify({ ok: true, bot: nowOff ? 'off' : 'on' }), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
