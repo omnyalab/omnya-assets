@@ -834,9 +834,25 @@ const wordsOf = (post, known = WORDS) => {
   return w.length ? w : DEFAULT_WORDS;
 };
 
+let mutedC = { at: 0, v: [] };
+export async function mutedDests() {
+  if (Date.now() - mutedC.at > 15_000) mutedC = { at: Date.now(), v: (await kv.get('muted')) || [] };
+  return mutedC.v;
+}
+export async function setMuted(list) {
+  const v = [...new Set(list.filter(isDest))];
+  if (v.length) await kv.set('muted', v, 400 * 86_400);
+  else await kv.del('muted');
+  mutedC = { at: Date.now(), v };
+  return v;
+}
+
 /** Whether this comment gets a DM: fills job.p with the post's destination, or says why not. */
 async function accept(job, info) {
   const post = resolvePost({ id: job.m, code: info.code, words: info.words, tower: info.tower }, await extraPosts(), await extraWords());
+  // 16/11 (Nico): destinations handed to another tool (InstantDM on the stadium reels): the bot stays quiet there,
+  // no DM and no public reply, so nobody gets two. /api/leads?key=…&action=mute&value=stadium (empty value = none)
+  if (post && (await mutedDests()).includes(post.dest)) return 'muted';
   const known = await knownWords(); // the fixed words and the registered ones
   // posts in the map answer any comment (unless "every comment" was switched off from /api/leads: then
   // only their word); the others only the word their caption asks for

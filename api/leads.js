@@ -25,7 +25,7 @@
 //   10 minutes (&fresh=1 asks now). When Meta refuses: { media: [], error }.
 // &action=off stops the bot at once, without a deploy (it answers nobody and keeps nothing), &action=on starts it again.
 // &format=json gives the numbers alone.
-import { listLeads, api, page, lineState, errorState, postStats, postMap, setPost, setWord, posted, setOff, isOff, getMode, setMode, MODES, probeState, gateFor, setGateFor, anyComment, setAnyComment, recentMedia } from './_lib/ig.js';
+import { listLeads, api, page, lineState, errorState, postStats, postMap, setPost, setWord, posted, setOff, isOff, getMode, setMode, MODES, probeState, gateFor, setGateFor, anyComment, setAnyComment, recentMedia, mutedDests, setMuted } from './_lib/ig.js';
 import { DESTS } from './_lib/ig-posts.js';
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -76,6 +76,12 @@ export async function GET(request) {
     } catch (e) {
       return new Response(JSON.stringify({ error: e.message }), { status: 502, headers: { 'Content-Type': 'application/json' } });
     }
+  }
+
+  // 16/11: destinations the bot leaves to another tool: ?action=mute&value=stadium (comma list; empty = none)
+  if (q.get('action') === 'mute') {
+    const v = q.has('value') ? await setMuted(String(q.get('value') || '').split(',').map((x) => x.trim()).filter(Boolean)) : await mutedDests();
+    return new Response(JSON.stringify({ ok: true, muted: v }), { headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
   }
 
   // 16/11: who did NOT get the DM (stage nodm), newest first, for the DMs sent by hand: ?action=nodm&kind=stadium
