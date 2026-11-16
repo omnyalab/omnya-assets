@@ -198,9 +198,13 @@ const next = after || `/${slug}/sent`;
         btn.classList.add('oiw-ok'); btn.textContent = good ? '✓ Sent' : '✓ Ready';
         var ov = document.createElement('div'); ov.className = 'oid';
         ov.innerHTML = '<div class="oid-in"><span class="oid-ck"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 12.5l4.2 4.2 8.8-9.4"/></svg></span><p class="oid-t"></p><p class="oid-s"></p><p class="oid-s2"></p></div>';
-        ov.querySelector('.oid-t').innerHTML = good ? 'Your free blueprint<br>was sent' : 'Your free blueprint<br>is ready';
-        ov.querySelector('.oid-s').textContent = good ? 'Check your email' : 'It opens on the next page';
-        if (good) ov.querySelector('.oid-s2').textContent = 'Even in Spam or Promotions'; else ov.querySelector('.oid-s2').remove();
+        // 16/11 (Nico, board O1): no more "check your email", the free guide waits on the next page as step 1
+        // (the email still goes in the background, so we keep the contact and they have it in the inbox too)
+        var first = String(name || '').trim().split(/\s+/)[0] || '';
+        first = first ? first.charAt(0).toUpperCase() + first.slice(1) : '';
+        ov.querySelector('.oid-t').textContent = first ? 'You’re in, ' + first : 'You’re in';
+        ov.querySelector('.oid-s').textContent = 'Your free blueprint is on the next page';
+        ov.querySelector('.oid-s2').remove();
         document.body.appendChild(ov);
         T(function () { ov.classList.add('on'); }, 250);
         T(function () {

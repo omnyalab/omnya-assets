@@ -165,7 +165,7 @@ html.ocb-on .oidim.oi--inline{padding-bottom:0}
 .oid.on .oid-ck path{stroke-dashoffset:0}
 .oid-t,.oid-s,.oid-s2{margin:0;font-family:Poppins,Montserrat,-apple-system,system-ui,sans-serif;opacity:0;transform:translateY(14px);transition:opacity .5s .2s,transform .6s .2s cubic-bezier(.22,.8,.2,1)}
 .oid-t{margin-top:26px;font-size:36px;font-weight:800;line-height:1.04;letter-spacing:-.03em;color:#fff}
-.oid-s{margin-top:14px;font-size:17px;font-weight:600;color:#e4ecf7;transition-delay:.32s}
+.oid-s{margin-top:14px;font-size:17px;font-weight:600;color:#e4ecf7;transition-delay:.32s;text-wrap:balance}
 .oid-s2{margin-top:4px;font-size:14.5px;font-weight:500;color:#9fb0c8;transition-delay:.42s}
 .oid.on .oid-t,.oid.on .oid-s,.oid.on .oid-s2{opacity:1;transform:none}
 .oid.go{background-color:#0d0e12}

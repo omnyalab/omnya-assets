@@ -358,6 +358,19 @@ body.rv .hero .cbtn .px{display:inline}
 .enter .hero h1{animation-delay:.05s}.enter .hero .vsl{animation-delay:.15s}.enter .hero .cta{animation-delay:.26s}.enter .big{animation-delay:.34s}
 @keyframes enIn{from{opacity:0;transform:translateY(34px) scale(.94);filter:blur(10px)}}
 @media (prefers-reduced-motion:reduce){.enter *{animation:none!important}}
+/* 16/11 (Nico, board B1): the free guide sits on the page as step 1, small and low, with its own download, so nobody waits for the email (it still goes, in the background) */
+.fg{display:flex;align-items:center;gap:14px;width:100%;max-width:520px;margin:0 auto 18px;padding:10px 12px 10px 10px;box-sizing:border-box;border-radius:16px;background:linear-gradient(180deg,#30d1581f,#30d1580a);border:1.5px solid #30d15899;color:#fff;text-decoration:none;text-align:left;box-shadow:0 16px 40px -20px #30d158cc;-webkit-tap-highlight-color:transparent}
+.fg img{flex:none;width:44px;height:60px;object-fit:cover;border-radius:4px;box-shadow:3px 3px 0 #0007,0 0 0 1px #ffffff1a}
+.fgt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.fgt small{font:800 10.5px Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#7ee89a}
+.fgt b{font:800 17px/1.15 Poppins,sans-serif;letter-spacing:-.01em}
+.fgt span{font:500 12.5px Inter,sans-serif;color:#a1a1aa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fgd{flex:none;display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 16px;border-radius:999px;background:linear-gradient(90deg,#14d95b,#3dff86);color:#05210f;font:800 13.5px Inter,sans-serif;box-shadow:0 10px 24px -10px #30d158}
+.fgd svg{width:15px;height:15px}
+.fg:hover .fgd,.fg:focus-visible .fgd{filter:brightness(1.08)}
+.fg:focus-visible{outline:2px solid #3dff86;outline-offset:3px}
+@media (max-width:620px){.fg{gap:10px;padding:8px 9px 8px 8px;margin-bottom:14px}.fg img{width:36px;height:49px}.fgt{gap:2px}.fgt small{font-size:9.5px}.fgt b{font-size:14px;letter-spacing:-.02em;white-space:nowrap}.fgt span{font-size:11px}.fgd{height:34px;padding:0 11px;gap:5px;font-size:12px}.fgd svg{width:13px;height:13px}}
+@media (max-width:360px){.fgt b{white-space:normal}}
 </style></head><body>
 
 <div class="bar"><img src="/learn/watch/logo.svg" alt="Omnya Lab"><span class="lbl">Closes forever in</span><span class="tm"><span data-h>00</span><small>h</small><span data-m>14</span><small>m</small><span data-s>59</span><small>s</small></span><a class="go cbtn" href="#offer">Get the full guide<i class="dot"></i><span class="px">€5.99</span></a></div>
@@ -368,7 +381,7 @@ body.rv .hero .cbtn .px{display:inline}
     <p class="csub">Then the Full Guide goes back to €29</p>
     <span class="free"><i>✓</i><span>Your <b>FREE</b> blueprint just landed in your inbox</span></span>
     <div class="steps"><span class="ok"><em>✓</em>Free blueprint</span><hr class="ok"><span class="now"><em>2</em>Watch the video</span><hr><span><em>3</em>Full guide</span></div>
-    <p class="fbl" data-fbl hidden><span data-fbt>Sent to your inbox. Not there? Check spam, or</span> <a href="/learn/free/omnya-lab-tower-blueprint.pdf" target="_blank" rel="noopener" data-fba>open your free blueprint here</a></p>
+    <a class="fg" href="/learn/free/omnya-lab-tower-blueprint.pdf" download="omnya-lab-tower-blueprint.pdf" target="_blank" rel="noopener" data-fg><img src="/learn/tw_cover_free.webp" alt="" width="44" height="60"><span class="fgt"><small>Step 1</small><b>Your free guide is ready</b><span>The Tower Blueprint · PDF</span></span><span class="fgd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg>Download</span></a>
     <h1>Step 2: see how the free blueprint becomes a <u class="hb2">€1,990</u> client</h1>
     <p class="watch"><i></i><span>Watch this before you open your <b class="fw">free</b> guide</span></p>
     <div class="vsl" data-vsl><video src="/learn/watch/vsl.mp4?v=5" poster="/learn/watch/vsl_poster.jpg" autoplay muted loop playsinline></video>
@@ -493,9 +506,6 @@ const LINK = {'full': 'https://buy.stripe.com/cNi9AS1GlfYI5pI4Yd8so0z', 'all': '
 let who = {}; try { who = JSON.parse(sessionStorage.getItem('omnya-watch') || '{}') } catch (e) {}
 const em = document.querySelector('[data-em]'), cn = document.querySelector('[data-cn]')
 if (who.email) em.value = who.email
-{ const fb = document.querySelector('[data-fbl]'); if (fb && (who.email || who.nomail)) { fb.hidden = false
-  if (who.nomail) { fb.classList.add('big'); document.querySelector('[data-fbt]').textContent = 'Your free blueprint is ready, open it now'; document.querySelector('[data-fba]').textContent = 'Open the free blueprint ↓' }
-  else document.querySelector('[data-fbt]').textContent = 'Sent to ' + who.email + '. Not there? Check spam, or' } } // 13/11 night (Nico): the email always shows and is required, filled in from the free blueprint
 let cur = 'full', ec = null, busy = false
 const ecBox = document.querySelector('[data-ec]'), right = document.querySelector('.right')
 function payLink() { const e = em.value.trim(); location.href = LINK[cur] + (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e) ? '?prefilled_email=' + encodeURIComponent(e) : '') }
