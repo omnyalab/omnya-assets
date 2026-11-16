@@ -24,6 +24,9 @@ const P = {
   everything: { items: ['price_1UZlPGATIF7pxfqf9vf0kJhG'], back: 'everything' }, // 5kQcN4bgVbIs6tMeyN8so0C · 59
   // 16/11 (Nico): the Full Stadium Blueprint + the Stadium Builder skill, €9.99 (prod_VdaamfuFvksbaw), back to the stadium thanks page
   'skill-stadium': { items: ['price_1UcJOtATIF7pxfqfVgfJrHi2'], back: 'full-stadium', save: true },
+  // 16/11 (Nico, GTA reels): the Full Miami Blueprint €5.99 and Miami Builder Skill + Full €9.99, card kept for the one-tap offer (prod_Vdm0H9ykCVnpbg, prod_Vdm1I3xPuTwCIh, created 16/11 19:16)
+  'full-miami': { items: ['price_1UcUSRATIF7pxfqfNQ4U48bG'], back: 'full-miami', save: true },
+  'skill-miami': { items: ['price_1UcUT0ATIF7pxfqfur9NIkHm'], back: 'full-miami', save: true },
   // 16/11 (Nico): Black Friday, Everything we teach for €39 until Friday 27 November (prod_Vdaact6ADqm1W3), same delivery as the pack
   'black-friday': { items: ['price_1UcJPLATIF7pxfqf6pLZSXoy'], back: 'everything', until: Date.parse('2026-11-27T23:59:59+01:00') },
 };

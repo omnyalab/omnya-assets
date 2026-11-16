@@ -35,6 +35,8 @@ const posts = {
   newreel: { caption: 'Three towers, pick your view 👀', permalink: 'https://www.instagram.com/reel/DfNEWREEL01/' },
   fablereel: { caption: 'Unlimited generations in Claude 👇🏻\n\nComment FABLE to get the link', permalink: 'https://www.instagram.com/reel/DfFABLE0001/' },
   villareel: { caption: 'HOW TO USE THIS COMBO 👇🏻\n\nLike and comment "VILLA" and I’ll send it', permalink: 'https://www.instagram.com/reel/DfVILLA0001/' },
+  // 16/11: the GTA 6 reel of 17/11, its real caption
+  gtareel: { caption: 'Comment "GTA" and I\u2019ll send you the free guide so you can recreate it too (it\u2019s free) 👀\n\nHow we built Vice City for $2 with Claude Code 🤯👇🏻', permalink: 'https://www.instagram.com/reel/DfGTA000001/' },
   pizzareel: { caption: 'Comment “PIZZA” and I’ll send you the link', permalink: 'https://www.instagram.com/reel/DfPIZZA0001/' },
 };
 const server = http.createServer(async (req, res) => {
@@ -280,6 +282,16 @@ if (REDIS_RUN) {
     assert.equal(t.filter((x) => x.body.recipient.comment_id === c3.id).length, 2);
     assert.equal(t.filter((x) => x.body.recipient.comment_id === c4.id).length, 1);
     assert.match(t.at(-1).body.message.text, /\nhttps:\/\/www\.omnyalab\.com\/the-towers-blueprint\?ig=DfTOWERS11&t=[abc]\n/); // 12/11: the link in the first lines, with its A/B/C letter
+    // 16/11: a GTA comment under the GTA 6 reel gets the Miami page in the DM and a Miami public reply
+    sent();
+    const g = comment('r5', 'GTA', 'gtareel');
+    assert.deepEqual(await g.res, ['sent']);
+    const gs = sent().filter((x) => x.method === 'POST');
+    assert.equal(urlOf(pr(gs)[0]), 'https://www.omnyalab.com/the-miami-blueprint?ig=DfGTA000001');
+    assert.ok(T.textsFor('miami').publicReplies.includes(gs.find((x) => x.path.endsWith('/replies')).query.message));
+    const g2 = comment('r6', 'vice city 🔥', 'gtareel');
+    assert.deepEqual(await g2.res, ['sent']);
+    assert.equal(urlOf(pr(sent().filter((x) => x.method === 'POST'))[0]), 'https://www.omnyalab.com/the-miami-blueprint?ig=DfGTA000001');
     assert.equal((await (await leadsPage.GET(new Request('http://x/api/leads?key=k&action=mode&value=gate'))).json()).mode, 'gate');
     assert.equal(await ig.getMode(), 'gate');
     ahead += 2 * 3_600_000; // a clean hour for the steps below
@@ -2305,7 +2317,7 @@ await step('a word registered from /api/leads?action=word, without a deploy: its
     assert.equal(r.status, 400, bad);
     const j = await r.json();
     assert.ok(j.error, bad);
-    assert.match(j.dests, /blueprint, tower, floors, film, build, towers, stadium, city, fable/);
+    assert.match(j.dests, /blueprint, tower, floors, film, build, towers, stadium, miami, city, fable/);
   }
   for (const fixed of ['TOWERS', 'towers', 'BUILD', 'HOUSE', 'FABLE']) {
     const r = await get(leadsPage, `/api/leads?key=k&action=word&word=${fixed}&dest=film`);
@@ -2313,7 +2325,7 @@ await step('a word registered from /api/leads?action=word, without a deploy: its
     assert.match((await r.json()).error, /fixed word/);
   }
   assert.deepEqual((await leadsJson('&format=json')).map.words, P.WORDS); // nothing was registered
-  assert.deepEqual(P.WORDS.map((w) => `${w.word}:${w.dest}`), ['TOWERS:towers', 'BUILD:build', 'HOUSE:city', 'FABLE:fable', 'TICKET:stadium', 'SEAT:stadium', 'STADIUM:stadium', 'COOK:towers']);
+  assert.deepEqual(P.WORDS.map((w) => `${w.word}:${w.dest}`), ['TOWERS:towers', 'BUILD:build', 'HOUSE:city', 'FABLE:fable', 'TICKET:stadium', 'SEAT:stadium', 'STADIUM:stadium', 'GTA:miami', 'MIAMI:miami', 'VICE:miami', 'COOK:towers']);
 
   // registered: written small, kept in capitals
   const r = await leadsJson('&action=word&word=villa&dest=film');

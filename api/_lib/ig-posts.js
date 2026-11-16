@@ -6,6 +6,7 @@
 //   floors    → /the-tower-floors                  film   → /3d-to-film
 //   build     → /the-build-blueprint               towers → /the-towers-blueprint
 //   stadium   → /the-stadium-blueprint (word TICKET, 15/11)
+//   miami     → /the-miami-blueprint (word GTA, 16/11)
 //   city      → Omnya City, the personal one-time link (word HOUSE)
 //   fable     → /fable, the Higgsfield offer and the free Tower Blueprint under it (word FABLE)
 //
@@ -44,6 +45,10 @@ export const WORDS = [
   { word: 'TICKET', dest: 'stadium' },
   { word: 'SEAT', dest: 'stadium' },
   { word: 'STADIUM', dest: 'stadium' },
+  // the GTA 6 reels of 17/11, Miami built from the real map: Comment "GTA"; MIAMI and VICE too
+  { word: 'GTA', dest: 'miami' },
+  { word: 'MIAMI', dest: 'miami' },
+  { word: 'VICE', dest: 'miami' },
   { word: 'COOK', dest: 'towers' }, // "Let him cook", the three towers in the fog (13/11, Nico: COOK did not answer)
 ];
 

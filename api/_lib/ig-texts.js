@@ -9,6 +9,7 @@ export const FILM = 'https://www.omnyalab.com/3d-to-film';
 export const BUILD = 'https://www.omnyalab.com/the-build-blueprint';
 export const TOWERS = 'https://www.omnyalab.com/the-towers-blueprint';
 export const STADIUM = 'https://www.omnyalab.com/the-stadium-blueprint';
+export const MIAMI = 'https://www.omnyalab.com/the-miami-blueprint';
 export const CITY = 'https://www.omnyalab.com/city';
 export const FABLE = 'https://www.omnyalab.com/fable';
 export const BOOK_CALL = 'https://omnyalab.com/book/call';
@@ -226,6 +227,25 @@ const stadium = {
   cantDm: 'Follow @omnyalab and we’ll send it in DM 🎟️ or tap the link in our bio',
 };
 
+// 16/11: Miami built from the real map, the GTA 6 reels of 17/11 (word GTA, also MIAMI and VICE). Same answers as the
+// stadium: who only takes DMs from accounts they follow is sent to the DM requests or to the link in our bio.
+const miami = {
+  ...funnel({
+    name: 'The Miami Blueprint',
+    url: MIAMI,
+    page: 'The Miami Blueprint is free on this page, and right after it there’s the full method behind the Miami we built from the real map',
+  }),
+  publicReplies: [
+    'Sent 🌴 check your DMs, even Requests',
+    'It’s in your DMs 🌴 follow @omnyalab so it reaches you',
+    'Done 🌴 check your DMs (or Requests)',
+    'Sent you the guide 🌴 follow us so the DM arrives',
+    'Check your DMs 🌴 not there? the link is in our bio',
+    'Just sent it 🌴 look in Requests too',
+  ],
+  cantDm: 'Follow @omnyalab and we’ll send it in DM 🌴 or tap the link in our bio',
+};
+
 /** Omnya City (word HOUSE): the messages of the ManyChat flow; the link is personal and is made at the moment (api/_lib/city.js). */
 const city = {
   url: CITY,
@@ -342,9 +362,9 @@ export const oldButtons = {
 };
 
 const base = { url: BLUEPRINT, ask: true, publicReplies, placeReplies, cantDm, opener, direct, comment, followFirst, stillNotFollowing, blueprintFollower, blueprintNewFollower, answerProject, answerCurious, nudgeFollow, nudgeQuestion };
-const kinds = { tower: { ...tower, url: TOWER_BLUEPRINT }, floors: { ...floors, url: TOWER_FLOORS }, film, build, towers, stadium, city, fable, legacy };
+const kinds = { tower: { ...tower, url: TOWER_BLUEPRINT }, floors: { ...floors, url: TOWER_FLOORS }, film, build, towers, stadium, miami, city, fable, legacy };
 
-/** Every destination the bot knows: 'blueprint', 'tower', 'floors', 'film', 'build', 'towers', 'stadium', 'city', 'fable' ('legacy' is only for old buttons). */
+/** Every destination the bot knows: 'blueprint', 'tower', 'floors', 'film', 'build', 'towers', 'stadium', 'miami', 'city', 'fable' ('legacy' is only for old buttons). */
 export const KINDS = ['blueprint', ...Object.keys(kinds)];
 
 /** The texts for a destination; anything unknown gets the normal Blueprint. */

@@ -49,3 +49,9 @@ Here you go 👇🏻 The Towers Blueprint is free on this page, and right after 
 Reel dello stadio dove scegli tribuna, blocco e posto, e il biglietto ti mostra la vista dal posto, parola TICKET (anche SEAT, STADIUM o solo 🎟️: sotto il reel il bot risponde a ogni commento). Pagina: https://www.omnyalab.com/the-stadium-blueprint (corti: omnyalab.com/ticket e omnyalab.com/stadium), copia del funnel Towers in blu: card della mail, poi /the-stadium-blueprint/watch col video, il Full Stadium a 5,99 € (29 € barrato) ed Everything we teach a 59 €. Solo in inglese. Un solo DM col link della pagina, mai il PDF allegato.
 
 Here you go 👇🏻 The Stadium Blueprint is free on this page, and right after it there's the full method behind the stadium where you pick your own seat: https://www.omnyalab.com/the-stadium-blueprint
+
+## Reel GTA 6, "Build Miami" (mar 17/11)
+
+Due reel (normale e trial) dove Claude Code costruisce Miami dalla mappa vera, parola GTA (anche MIAMI e VICE: sotto il reel il bot risponde a ogni commento). Pagina: https://www.omnyalab.com/the-miami-blueprint (corti: omnyalab.com/gta, /miami e /vice), copia esatta del funnel dello stadio nei colori della notte di Miami: card nome + mail (niente mail, il PDF gratis si scarica nella pagina dopo), poi /the-miami-blueprint/watch col video, Full Guide + Claude Skill a 9,99 €, Full Miami a 5,99 € (29 € barrato) e il Black Friday. Solo in inglese. Un solo DM col link della pagina, mai il PDF allegato. Il link in bio il 17/11 va messo su omnyalab.com/gta.
+
+Here you go 👇🏻 The Miami Blueprint is free on this page, and right after it there's the full method behind the Miami we built from the real map: https://www.omnyalab.com/the-miami-blueprint

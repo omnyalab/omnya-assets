@@ -20,17 +20,20 @@ const json = (o, status = 200) => new Response(JSON.stringify(o), { status, head
 
 // the product names are the ones learn-files.js already knows: the skill rule gives the Full Stadium + the skill zip,
 // "Everything we teach · upgrade" gives the whole pack
+// 16/11: the Miami funnel has the same two offers, with the Miami Builder skill (its rule gives the Full Miami + its zip)
 const OFFERS = {
   skill: { amount: 399, name: 'Stadium Builder skill · upgrade', back: 'full-stadium' },
   all: { amount: 4599, name: 'Everything we teach · upgrade', back: 'everything' },
 };
+const MIAMI_SKILL = { amount: 399, name: 'Miami Builder skill · upgrade', back: 'full-miami' };
 const HOURS = 48;
 
 export async function POST(request) {
   if (!stripe) return json({ error: 'not configured' }, 503);
   let body = {};
   try { body = await request.json(); } catch (e) {}
-  const id = String(body.session_id || ''), o = OFFERS[body.offer];
+  const id = String(body.session_id || '');
+  let o = OFFERS[body.offer];
   if (!o || !/^cs_(live|test)_[A-Za-z0-9]{8,200}$/.test(id)) return json({ error: 'bad request' }, 400);
   let session;
   try {
@@ -41,9 +44,11 @@ export async function POST(request) {
   if (session.status !== 'complete' || session.payment_status !== 'paid') return json({ error: 'not paid' }, 402);
   if (session.created * 1000 < Date.now() - HOURS * 3600e3) return json({ error: 'too old' }, 410);
   const names = (session.line_items?.data || []).map((it) => it.price?.product?.name || it.description || '');
-  const stadium = names.some((n) => /stadium/i.test(n)), skill = names.some((n) => /skill/i.test(n)), pack = names.some(isPack);
+  const stadium = names.some((n) => /stadium/i.test(n)), miami = names.some((n) => /miami/i.test(n)), skill = names.some((n) => /skill/i.test(n)), pack = names.some(isPack);
   // T1 only after the Full alone, T2 after the guide + skill (or the Full), never after the pack
-  if (!stadium || pack || (body.offer === 'skill' && skill)) return json({ error: 'not for this payment' }, 409);
+  if ((!stadium && !miami) || pack || (body.offer === 'skill' && skill)) return json({ error: 'not for this payment' }, 409);
+  if (miami && !stadium && body.offer === 'skill') o = MIAMI_SKILL;
+  const from = miami && !stadium ? 'full-miami' : 'full-stadium';
   const email = fixEmail(session.customer_details?.email) || '';
   const name = (session.customer_details?.name || '').trim().split(/\s+/)[0] || 'there';
   const pi = session.payment_intent;
@@ -79,7 +84,7 @@ export async function POST(request) {
       line_items: [{ quantity: 1, price_data: { currency: 'eur', unit_amount: o.amount, product_data: { name: o.name } } }],
       ...(email ? { customer_email: email } : {}),
       success_url: `${SITE}/learn/thanks/${o.back}?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${SITE}/learn/thanks/full-stadium?session_id=${id}`,
+      cancel_url: `${SITE}/learn/thanks/${from}?session_id=${id}`,
       metadata: { from: 'thanks-upsell', offer: body.offer, after: id },
     });
     return json({ url: page.url });

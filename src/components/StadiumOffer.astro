@@ -6,6 +6,9 @@
 // "skill" or "all" from what was bought (never after the pack). The button asks api/upsell.js to charge the same card
 // once; if that card cannot be charged again, it opens a Stripe page for the same price.
 const L = '/learn/';
+// 16/11: the same offer on /learn/thanks/full-miami, with the Miami Builder skill; the stadium text is unchanged
+const { kind = 'stadium' } = Astro.props as { kind?: 'stadium' | 'miami' };
+const mi = kind === 'miami';
 ---
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&display=swap" />
@@ -17,7 +20,7 @@ const L = '/learn/';
     <span class="so__tag">● ONLY FOR YOU · ONLY ON THIS PAGE</span>
     <span class="so__tile" aria-hidden="true"><i>✳</i><em>SKILL</em></span>
     <h3>Let Claude build it for you</h3>
-    <p>Add the Stadium Builder skill: type one line and Claude builds the whole stadium site, seat by seat.</p>
+    <p>{mi ? 'Add the Miami Builder skill: type one line and Claude builds a whole city from the real map, button by button.' : 'Add the Stadium Builder skill: type one line and Claude builds the whole stadium site, seat by seat.'}</p>
     <div class="so__pz"><s>€20</s><b>€3.99</b><span>-80%</span></div>
     <button type="button" class="so__go" data-so-go="skill">Add the skill · €3.99</button>
     <span class="so__note">One tap with the card you just used</span>
@@ -25,7 +28,7 @@ const L = '/learn/';
 
   <article class="so__card so__card--y" data-so-card="all">
     <span class="so__tag">● ONLY FOR YOU · ONLY ON THIS PAGE</span>
-    <span class="so__fan" aria-hidden="true"><img src={`${L}3d_book.webp`} alt="" /><img src={`${L}tt_book_tight.webp`} alt="" /><img src={`${L}sd_book_tight.webp`} alt="" /><img src={`${L}tw_book.webp`} alt="" /><img src={`${L}pk_pb02.webp`} alt="" /></span>
+    <span class="so__fan" aria-hidden="true"><img src={`${L}3d_book.webp`} alt="" /><img src={`${L}tt_book_tight.webp`} alt="" /><img src={mi ? `${L}mi_book_tight.webp` : `${L}sd_book_tight.webp`} alt="" /><img src={`${L}tw_book.webp`} alt="" /><img src={`${L}pk_pb02.webp`} alt="" /></span>
     <h3>Get every guide we have</h3>
     <p>Every Full guide, the 3 playbooks and every new guide we make.</p>
     <div class="so__pz"><s>€260</s><b>€45.99</b><span>-82%</span></div>

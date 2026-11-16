@@ -9,6 +9,7 @@
 // omnya-optin-<free>): only then /go/<free> opens the PDF, otherwise it comes back to this card (views/Go.astro).
 import '../styles/optin.css';
 import '../styles/optin-build.css';
+import '../styles/optin-miami.css';
 import AllSetOffer from './AllSetOffer.astro';
 
 interface Props {
@@ -20,7 +21,8 @@ interface Props {
   hero: string;
   heroMobile: string;
   book?: boolean; // 9/11 (Nico, Build page): the cover in book format (1000x1375) instead of the tall 9:16 PDF
-  theme?: 'c1'; // 9/11 (Nico): C1 green on the Build page (src/styles/optin-build.css, made by scripts/recolor-build.py)
+  theme?: 'c1' | 'vc'; // 16/11: vc = the Miami night colours (src/styles/optin-miami.css, scripts/recolor-miami.py)
+  // // 9/11 (Nico): C1 green on the Build page (src/styles/optin-build.css, made by scripts/recolor-build.py)
   fade?: boolean; // 9/11 (Nico, Towers page): the blue fade between the form and the offer, like the green one of the Build page
   noClose?: boolean; // 9/11 (Nico, Build page): no × on the card, and the card never closes (no click outside, no Escape):
   // the card is the whole page; "I'm good with the free one" downloads the free PDF instead of revealing a page
@@ -68,7 +70,7 @@ const next = after || `/${slug}/sent`;
      with `allset` (Towers, 11/11) "You're all set" and the Full offer instead -->
 {allset ? (
 <div class="oil oil--as" hidden data-oil data-as>
-  <AllSetOffer next={next} hero={heroMobile} mail={!!watch} kind={slug === 'the-build-blueprint' ? 'build' : slug === 'the-tower-blueprint' ? 'tower' : slug === 'the-stadium-blueprint' ? 'stadium' : 'towers'} />
+  <AllSetOffer next={next} hero={heroMobile} mail={!!watch} kind={slug === 'the-build-blueprint' ? 'build' : slug === 'the-tower-blueprint' ? 'tower' : slug === 'the-stadium-blueprint' ? 'stadium' : slug === 'the-miami-blueprint' ? 'miami' : 'towers'} />
 </div>
 ) : (
 <div class="oil" hidden data-oil>
@@ -132,7 +134,7 @@ const next = after || `/${slug}/sent`;
       // a place on this same page (the City page, "#full"): the card and the loading screen go away
       if (url.charAt(0) === '#') { oil.hidden = true; box.hidden = true; var el = document.querySelector(url); if (el) el.scrollIntoView(); return; }
       if (!green) { location.href = url; return; }
-      var f = document.createElement('div'); f.className = 'oi-fade' + (box.classList.contains('oi--c1') ? '' : ' oi-fade--blue'); document.body.appendChild(f);
+      var f = document.createElement('div'); var vc = (box.className.match(/oi--(vc\d?)\b/) || [])[1]; f.className = 'oi-fade' + (box.classList.contains('oi--c1') ? '' : vc ? ' oi-fade--' + vc : ' oi-fade--blue'); document.body.appendChild(f);
       requestAnimationFrame(function () { f.classList.add('on'); });
       setTimeout(function () { location.href = url; }, 520);
     };

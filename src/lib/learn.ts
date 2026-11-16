@@ -38,7 +38,10 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'full-towers-scene'
   // the free and the paid stadium PDFs, on /the-stadium-blueprint (15/11, "Choose your seat" stadium reel, word TICKET)
   | 'free-stadium'
-  | 'full-stadium';
+  | 'full-stadium'
+  // the free and the paid Miami PDFs, on /the-miami-blueprint (16/11, GTA 6 reels "Build Miami", word GTA)
+  | 'free-miami'
+  | 'full-miami';
 
 /**
  * Step 2 (10/11, Nico): after a Full guide (€5.99) the page /learn/thanks/full-* offers "Everything we teach" for the
@@ -105,6 +108,10 @@ export const products: { id: ProductId; checkout: string }[] = [
   { id: 'free-stadium', checkout: '/learn/free/omnya-lab-stadium-blueprint.pdf' },
   // the Full Stadium Blueprint at €5.99 (€29 struck), Stripe link created 15/11, plink_1Uc7IkATIF7pxfqfvItPpbJQ, prod_VdO4h1RXKJKsew (Nico: "crea tutto"; product "The Full Stadium Blueprint", back to /learn/thanks/full-stadium)
   { id: 'full-stadium', checkout: 'https://buy.stripe.com/28EaEW3Ot7scdWeeyN8so0M' },
+  { id: 'free-miami', checkout: '/learn/free/omnya-lab-miami-blueprint.pdf' },
+  // the Full Miami Blueprint at €5.99 (€29 struck), Stripe product "The Full Miami Blueprint", back to /learn/thanks/full-miami (16/11, Nico: P1 C1 T1 N1 K1), prod_Vdm0H9ykCVnpbg, plink_1UcUURATIF7pxfqfKbJDD2j0;
+  // "Miami Builder Skill + The Full Miami Blueprint" €9.99 is prod_Vdm1I3xPuTwCIh, https://buy.stripe.com/6oU00i0Ch7sc2dw1M18so0Q (plink_1UcUVMATIF7pxfqfilkkGHH2), used on the watch page
+  { id: 'full-miami', checkout: 'https://buy.stripe.com/00w28qet713O8BUbmB8so0P' },
 ];
 
 // 10/11 (site check 2 and 21): the launch prices are gone from the code. fullTowerDeal, full3dDeal and fullCityDeal (the Full
@@ -140,6 +147,7 @@ export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: Pr
   'full-build': { kind: 'pdf', oto: 'community' },
   'full-towers': { kind: 'pdf', oto: 'community' },
   'full-stadium': { kind: 'pdf', oto: 'community' },
+  'full-miami': { kind: 'pdf', oto: 'community' },
 };
 
 /** The words used in the reels ("Comment 3D"). Each one has its own page, /learn/<word>, and leads with one playbook. */

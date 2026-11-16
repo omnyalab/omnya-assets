@@ -49,6 +49,8 @@ const FULL_BUILD = pdf('How to build a house that builds itself', 'full-build-bl
 const FULL_TOWERS = pdf('How to build three towers you choose the view of', 'full-towers-blueprint.pdf');
 // 15/11: the stadium where you pick your own seat (word TICKET); not in the pack (yet)
 const FULL_STADIUM = pdf('How to build a stadium where you pick your own seat', 'full-stadium-blueprint.pdf');
+// 16/11: Miami built from the real map (GTA 6 reels, word GTA), and its skill sold with it at €9.99
+const FULL_MIAMI = pdf('How to build Miami from the real map', 'full-miami-blueprint.pdf');
 // 10/11 (Nico): "The Towers Scene File" (€12), the one file that is not a PDF. It is sold in the same Stripe cart as the
 // Full Towers Blueprint (a recommended product of that payment link): the base three.js scene of the three towers as a
 // zip that opens in the browser, with the panel for views, light, height, fog and video recording. It is the base 3D
@@ -65,7 +67,12 @@ const SKILL = {
   note: 'is a skill for Claude: on claude.ai open Settings, Capabilities, Skills and upload the zip, or unzip it into ~/.claude/skills for Claude Code, then ask "build me a stadium for…". It needs Claude Pro or Claude Code, and the README inside has every step.',
 };
 
-const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, SCENE, SKILL];
+const MIAMI_SKILL = {
+  name: 'The Miami Builder skill', file: 'en/miami-builder-skill.zip', kind: 'zip',
+  note: 'is a skill for Claude: on claude.ai open Settings, Capabilities, Skills and upload the zip, or unzip it into ~/.claude/skills for Claude Code, then ask "build me Lisbon like Build Miami". It needs Claude Pro or Claude Code, and the README inside has every step.',
+};
+
+const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, SCENE, SKILL, MIAMI_SKILL];
 // 13/11: the playbooks got new names. The one-year links already in buyers' emails still carry the old file names, so
 // the old names stay valid and point to the new files (who bought the old playbook 02 now gets the new one).
 const OLD = {
@@ -86,7 +93,8 @@ export const allFiles = () => EVERY.flatMap((f) => [{ name: f.name, file: f.file
 // 9/11 (Nico): the Full Build Blueprint took the place of the Full City one in the pack, then the Full Towers one joined it
 // 16/11 (Nico): every Full guide is in it now (City and Stadium joined), and the Stadium Builder skill; the Black Friday
 // product "Black Friday · Everything we teach" (€39) is matched by the /everything we teach/ rule and delivers the same
-const PACK = [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_CITY, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, SKILL];
+// 16/11: the Full Miami Blueprint and the Miami Builder skill joined it
+const PACK = [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_CITY, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, SKILL, MIAMI_SKILL];
 /** True for every Stripe product that is the pack, whatever its price: "Everything we teach" (€59),
     "Everything we teach · upgrade" (€53 after a Full guide) and "Everything we teach · thank you price" (€29, sent by hand). */
 export const isPack = (name) => /everything we teach/i.test(String(name || ''));
@@ -96,7 +104,7 @@ export const isPack = (name) => /everything we teach/i.test(String(name || ''));
     alone is not a guide. */
 export const oneFullGuide = (files) => {
   const pdfs = files.filter((f) => !f.kind);
-  return pdfs.length === 1 && [FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM].some((g) => g.file === pdfs[0].en);
+  return pdfs.length === 1 && [FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI].some((g) => g.file === pdfs[0].en);
 };
 
 /** One Stripe product name → the files it should deliver. Checked in order, first match wins. */
@@ -111,6 +119,9 @@ const RULES = [
   // 16/11: "Stadium Builder Skill + The Full Stadium Blueprint" (€9.99) BEFORE the plain stadium rule, which would match it too
   [/stadium builder skill/i, [FULL_STADIUM, SKILL]],
   [/full stadium blueprint/i, [FULL_STADIUM]],
+  // 16/11: "Miami Builder Skill + The Full Miami Blueprint" (€9.99) and "Miami Builder skill · upgrade" before the plain Miami rule
+  [/miami builder skill/i, [FULL_MIAMI, MIAMI_SKILL]],
+  [/full miami blueprint/i, [FULL_MIAMI]],
   // 10/11: "The Towers Scene File" BEFORE every rule with "tower" in it. It delivers the zip and nothing else: without
   // this line /tower/ below would send the Full Tower PDF to who bought the scene. "The Full Towers Blueprint" has no
   // "towers scene" in its name, so it still reaches its own rule and its own PDF.
