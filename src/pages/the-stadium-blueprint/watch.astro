@@ -387,7 +387,6 @@ body.rv .hero .cbtn .px{display:inline}
    html.bf is set by the script below while the offer runs; without it nothing of this shows. */
 .bfc{display:none}
 html.bf .bfc{display:block}
-html.bf .opt[data-o="all"]{display:none}
 html.bf .offer{background:linear-gradient(180deg,var(--bg) 0,#0d0e12cc 40px,#0000 150px),linear-gradient(0deg,var(--bg),#0000 140px),radial-gradient(110% 34% at 50% 13%,#ffd60a77,transparent 70%),radial-gradient(80% 30% at 0% 60%,#ff7a0055,transparent 70%),radial-gradient(80% 30% at 100% 85%,#ff3b3044,transparent 70%),#0b0905;margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px}
 html.bf .offer .box{background:#120f07d9;border-color:#ffd60a55}
 .opt.bfc{position:relative;margin:14px 0 16px;padding:16px 14px 14px;border-radius:18px;background:radial-gradient(120% 90% at 50% 0%,#3a2c00 0%,#0b0a06 62%);border:1.5px solid #ffd60a;box-shadow:0 0 0 5px #ffd60a1a,0 24px 60px -24px #ffd60a99;text-align:center;overflow:hidden;cursor:pointer}
@@ -410,6 +409,62 @@ html.bf .offer .box{background:#120f07d9;border-color:#ffd60a55}
 .bfc .go{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:54px;margin:12px 0 0;border-radius:14px;border:0;font:900 16px Poppins;letter-spacing:.03em;text-transform:uppercase;color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);box-shadow:0 14px 34px -12px #ffd60acc;cursor:pointer}
 .bfc .end{display:block;margin:8px 0 0;font:700 11.5px Inter;color:#ffb3ad}
 @media (min-width:821px){.bfc .fan{transform:scale(1.15);transform-origin:50% 100%}}
+/* 16/11 (Nico, board C1 + B1): the top is "1M views in less than 24 hours", the reel as on Instagram, and while the
+   Black Friday runs the bridge and its card with the real countdown (to 27 November 23:59); the card under Pay is gone */
+.big .b2h{margin:0;font:900 clamp(40px,7vw,60px)/1 Poppins;letter-spacing:-.02em;text-wrap:balance}
+.big .b2h b{display:block;font-size:clamp(84px,15vw,140px);letter-spacing:-.035em;filter:drop-shadow(0 0 30px #0a84ff80)}
+.igv{position:relative;width:min(380px,100%);aspect-ratio:9/16;margin:24px auto 0;border-radius:24px;overflow:hidden;background:#000;box-shadow:0 0 0 1.5px #0a84ff99,0 0 80px -20px #0a84ff}
+.igv video{width:100%;height:100%;object-fit:cover;display:block}
+.igv::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0007,#0000 18%,#0000 62%,#000c);pointer-events:none}
+.igv .vw{position:absolute;z-index:2;left:12px;top:12px;display:flex;align-items:center;gap:6px;padding:7px 11px;border-radius:12px;background:#0009;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font:800 14px Inter}
+.igv .vw svg{width:14px;height:14px}
+.igv .rail{position:absolute;z-index:2;right:10px;bottom:84px;display:grid;gap:16px;justify-items:center}
+.igv .rail span{display:grid;justify-items:center;gap:3px;font:700 12px Inter;text-shadow:0 1px 6px #000}
+.igv .rail svg{width:27px;height:27px;filter:drop-shadow(0 1px 4px #0009)}
+.igv .who{position:absolute;z-index:2;left:12px;right:60px;bottom:14px;text-align:left}
+.igv .who .u{display:flex;align-items:center;gap:8px;font:700 14px Inter}
+.igv .who .u img{width:28px;height:28px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #fff}
+.igv .who .u small{margin-left:4px;padding:3px 9px;border-radius:8px;border:1px solid #fffa;font:600 12px Inter}
+.igv .who p{margin:8px 0 0;font:400 13px/1.35 Inter;color:#eef}
+.bfw{display:none;width:min(420px,100%);margin:0 auto}
+html.bf .bfw{display:block}
+.bridge{margin:34px 0 0}
+.bridge h3{margin:0;font:900 27px/1.1 Poppins;text-wrap:balance}
+.bridge p{margin:10px auto 0;max-width:300px;font:800 15.5px/1.35 Poppins;color:#ffd60a}
+.bridge .ar{display:block;margin:8px auto 0;font:900 22px/1 Poppins;color:#ffd60a;animation:bdn 1.4s ease-in-out infinite}
+@keyframes bdn{50%{transform:translateY(5px)}}
+.bfc.bft{position:relative;margin:14px 0 0;padding:16px 14px 14px;border-radius:18px;background:radial-gradient(120% 90% at 50% 0%,#3a2c00 0%,#0b0a06 62%);border:1.5px solid #ffd60a;box-shadow:0 0 0 5px #ffd60a1a,0 24px 60px -24px #ffd60a99;text-align:center;overflow:hidden}
+.bft .go{text-decoration:none;margin-top:14px}
+.bcd{margin:12px 0 0}
+.bcd small{display:block;font:800 11px Inter;letter-spacing:.16em;text-transform:uppercase;color:#ffb3ad}
+.bcd .bx{display:flex;justify-content:center;gap:6px;margin-top:7px}
+.bcd .bx span{display:grid;justify-items:center;min-width:56px;padding:7px 4px 6px;border-radius:10px;background:#000;border:1px solid #ffd60a44}
+.bcd .bx b{font:900 22px/1 Poppins;color:#fff;font-variant-numeric:tabular-nums}
+.bcd .bx i{margin-top:3px;font:700 9.5px Inter;font-style:normal;letter-spacing:.12em;color:#a99e78}
+.bcd .bx .sc b{color:#ffd60a}
+.opt-all .ck{background:#ffd60a;color:#111}
+html.bf .opt-all{border-color:#ffd60a88}
+html.bf .opt-all.on{box-shadow:0 0 0 2px #ffd60a,0 0 34px -10px #ffd60a}
+.reels2 .rsub{margin:8px 0 0;color:#a1a1aa;font-size:14px}
+.reels2 .reel{width:250px;opacity:1;transform:none;cursor:pointer}
+.reels2 .reel.on{border-color:#ffffff1f;box-shadow:none}
+.reels2 .reel::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0006,#0000 20%,#0000 55%,#000e);pointer-events:none}
+.reels2 .lks{position:absolute;z-index:2;left:12px;top:12px;display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:99px;background:#000a;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font:800 12px Inter}
+.reels2 .lks svg{width:13px;height:13px;color:#ff375f}
+.reels2 .cap{z-index:2;background:none;padding:0 14px 14px}
+.reels2 .cap b{font:800 19px/1.1 Poppins}
+.reels2 .cap span{display:block;margin:4px 0 10px;font-size:12.5px;color:#d5dbe7}
+.reels2 .wch{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:99px;background:#fff;color:#000;font:800 12px Inter;font-style:normal}
+.reels2 .wch svg{width:11px;height:11px}
+@media (max-width:820px){.reels2 .reel{width:76%}}
+.rov{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#000e;padding:calc(20px + env(safe-area-inset-top,0px)) 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.rov[hidden]{display:none}
+.rov .rin{position:relative;height:min(86vh,760px);aspect-ratio:9/16;max-width:100%;border-radius:22px;overflow:hidden;background:#000}
+.rov video{width:100%;height:100%;object-fit:cover;display:block}
+.rov .rx{position:absolute;z-index:2;right:10px;top:10px;width:38px;height:38px;border-radius:50%;border:0;background:#0009;color:#fff;font:700 16px Inter;cursor:pointer}
+.rov a{position:absolute;z-index:2;left:14px;right:14px;bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:14px;background:#fff;color:#000;font:800 14px Inter;text-decoration:none}
+.rov a svg{width:17px;height:17px}
+@media (prefers-reduced-motion:reduce){.bridge .ar{animation:none}}
 
 /* 16/11 (Nico, board C9): the Full Guide + Claude Skill, €9.99, stadium page only */
 .right .opt.opt-sk{grid-template-columns:64px 1fr auto;border:1.5px solid transparent;background:linear-gradient(#0d1422,#0d1422) padding-box,linear-gradient(120deg,#0a84ff,#7c5cff 55%,#ffd60a) border-box;box-shadow:0 0 34px -12px #7c5cffaa}
@@ -463,27 +518,21 @@ html.bf .offer .box{background:#120f07d9;border-color:#ffd60a55}
     <p class="rvl"><span class="rvs">-80%</span><span><s>€29</s> <b>€5.99</b> · only on this page · <b class="rvt" data-tl>14:59</b></span></p>
   </section>
 
-  <section class="big">
-    <p>How we got</p><strong class="hb">+1M</strong><span class="sub hb2">views in a few days, and how you can too</span>
-    <div class="viral"><video src="/learn/watch/r_viral.mp4" poster="/learn/watch/p_viral.jpg" muted loop playsinline autoplay></video><div class="cap"><b>Claude just cooked every 3D artist</b><span>Built with the Full Guide</span></div></div>
-    <div class="stats">
-      <div class="stat"><b class="hb" data-count="500" data-suf="K+">500K+</b><span>views in 10 days</span></div>
-      <div class="stat"><b class="hb" data-count="155" data-suf="+">155+</b><span>guides sold in 12 days</span></div>
-      <div class="stat"><b class="hb" data-count="6000" data-suf="+">6,000+</b><span>new followers in 10 days</span></div>
-    </div>
+  <section class="big c1">
+    <p class="b2h"><b class="hb">1M views</b>in less than 24 hours</p>
+    <div class="igv"><video src="/learn/watch/r_stadio.mp4" poster="/learn/watch/p_stadio.jpg" muted loop playsinline autoplay></video><span class="vw"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l12.5-7.5z"/></svg>1M views</span><div class="rail"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.6-4.6-9.7-9.2C.8 8.5 3 5 6.7 5c2.1 0 3.6 1.2 5.3 3.1C13.7 6.2 15.2 5 17.3 5 21 5 23.2 8.5 21.7 11.8 19.6 16.4 12 21 12 21z"/></svg>35.8K</span><span><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" d="M20.6 12a8.6 8.6 0 0 1-12.7 7.6L3.4 21l1.4-4.5A8.6 8.6 0 1 1 20.6 12z"/></svg>2,509</span><span><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" d="M21.5 3 10.3 14.2M21.5 3l-6.8 18-4.4-6.8L3.5 9.8z"/></svg>Share</span></div><div class="who"><span class="u"><img src="/learn/watch/omnya_avatar.jpg" alt="" width="28" height="28">omnyalab<small>Follow</small></span><p>Comment “TICKET” and I’ll send you the free guide…</p></div></div>
+    <div class="bfw"><div class="bridge"><h3>How you can do it too</h3><p>Right now there’s a Black Friday offer on everything we teach</p><span class="ar">↓</span></div>
+      <div class="bfc bft" data-bft><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan"><img src="/learn/3d_book.webp" alt=""><img src="/learn/tt_book_tight.webp" alt=""><img src="/learn/sd_book_tight.webp" alt=""><img src="/learn/tw_book.webp" alt=""><img src="/learn/pk_pb02.webp" alt=""></span><span class="bh">Get everything</span><span class="inc">Every Full guide, the 3 playbooks, the stadium skill and every new guide</span><span class="pz"><s>€260</s><b>€59</b><span>-77%</span></span><div class="bcd"><small>Black Friday ends in</small><div class="bx"><span><b data-bd>11</b><i>DAYS</i></span><span><b data-bh>00</b><i>HRS</i></span><span><b data-bm>00</b><i>MIN</i></span><span class="sc"><b data-bs>00</b><i>SEC</i></span></div></div><a class="go" href="#buy" data-bfgo>Get everything · €59 ↓</a></div></div>
   </section>
 
-  <section class="reels">
-    <h2>More projects we <span class="hb2">built</span> with <span class="hb2">this method</span></h2>
-    <div class="track">
-      <div class="reel"><video src="/learn/watch/r_towers.mp4" poster="/learn/watch/p_towers.jpg" muted loop playsinline autoplay></video><div class="cap"><b>The Three Towers</b><span>Choose your view</span></div></div>
-      <div class="reel on"><video src="/learn/watch/r_stadio.mp4" poster="/learn/watch/p_stadio.jpg" muted loop playsinline autoplay></video><div class="cap"><b>The Stadium</b><span>Choose your seat</span></div></div>
-      <div class="reel"><video src="/learn/watch/r_burj2.mp4" poster="/learn/watch/p_burj2.jpg" muted loop playsinline autoplay></video><div class="cap"><b>Burj Al Sahab</b><span>From the tower to the pool</span></div></div>
-      <div class="reel"><video src="/learn/watch/r_house2.mp4" poster="/learn/watch/p_house2.jpg" muted loop playsinline autoplay></video><div class="cap"><b>The House</b><span>From the garden to the living room</span></div></div>
-    </div>
-    <div class="dots" data-dots><i></i><i class="on"></i><i></i><i></i></div>
+  <section class="reels reels2">
+    <h2>Our other reels that <span class="hb2">went viral</span></h2>
+    <p class="rsub">Swipe, then tap one to watch it</p>
+    <div class="track"><div class="reel" tabindex="0" role="button" data-rv="/learn/watch/r_house2.mp4" data-ig="https://www.instagram.com/reel/Dfh6DZ3xe5Z/"><video src="/learn/watch/r_house2.mp4" poster="/learn/watch/p_house2.jpg" muted loop playsinline autoplay></video><span class="lks"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.6-4.6-9.7-9.2C.8 8.5 3 5 6.7 5c2.1 0 3.6 1.2 5.3 3.1C13.7 6.2 15.2 5 17.3 5 21 5 23.2 8.5 21.7 11.8 19.6 16.4 12 21 12 21z"/></svg>7K</span><div class="cap"><b>The House</b><span>From the garden to the living room</span><em class="wch"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l12.5-7.5z"/></svg>Watch</em></div></div><div class="reel" tabindex="0" role="button" data-rv="/learn/watch/r_towers.mp4" data-ig="https://www.instagram.com/reel/Dfm-xp2RIC9/"><video src="/learn/watch/r_towers.mp4" poster="/learn/watch/p_towers.jpg" muted loop playsinline autoplay></video><span class="lks"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.6-4.6-9.7-9.2C.8 8.5 3 5 6.7 5c2.1 0 3.6 1.2 5.3 3.1C13.7 6.2 15.2 5 17.3 5 21 5 23.2 8.5 21.7 11.8 19.6 16.4 12 21 12 21z"/></svg>4K</span><div class="cap"><b>The Three Towers</b><span>Pick a view, we fly you there</span><em class="wch"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l12.5-7.5z"/></svg>Watch</em></div></div><div class="reel" tabindex="0" role="button" data-rv="/learn/watch/r_viral.mp4" data-ig="https://www.instagram.com/reel/DfSXvGDtt4s/"><video src="/learn/watch/r_viral.mp4" poster="/learn/watch/p_viral.jpg" muted loop playsinline autoplay></video><span class="lks"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.6-4.6-9.7-9.2C.8 8.5 3 5 6.7 5c2.1 0 3.6 1.2 5.3 3.1C13.7 6.2 15.2 5 17.3 5 21 5 23.2 8.5 21.7 11.8 19.6 16.4 12 21 12 21z"/></svg>3.7K</span><div class="cap"><b>SAMAR Tower</b><span>Choose your floor</span><em class="wch"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l12.5-7.5z"/></svg>Watch</em></div></div><div class="reel" tabindex="0" role="button" data-rv="/learn/watch/r_burj2.mp4" data-ig="https://www.instagram.com/reel/Dfpi7f6RhjA/"><video src="/learn/watch/r_burj2.mp4" poster="/learn/watch/p_burj2.jpg" muted loop playsinline autoplay></video><span class="lks"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.6-4.6-9.7-9.2C.8 8.5 3 5 6.7 5c2.1 0 3.6 1.2 5.3 3.1C13.7 6.2 15.2 5 17.3 5 21 5 23.2 8.5 21.7 11.8 19.6 16.4 12 21 12 21z"/></svg>1.6K</span><div class="cap"><b>The $3,390 Tower</b><span>From the tower to the pool</span><em class="wch"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l12.5-7.5z"/></svg>Watch</em></div></div></div>
+    <div class="dots" data-dots><i class="on"></i><i></i><i></i><i></i></div>
     <p class="kick hb2">Every one of them started with the same prompts you get today</p>
   </section>
+  <div class="rov" data-rov hidden><div class="rin"><video muted loop playsinline></video><button class="rx" type="button" aria-label="Close" data-rx>✕</button><a target="_blank" rel="noopener" data-rig><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.1"><rect x="3" y="3" width="18" height="18" rx="5.2"/><circle cx="12" cy="12" r="4.2"/></g><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor"/></svg>Watch on Instagram</a></div></div>
 
   <div class="join"><span class="jc"><img src="/learn/sd_book_tight.webp" alt=""><img src="/learn/tw_book.webp" alt=""><img src="/learn/bd_book_tight.webp" alt=""><img src="/learn/3d_book.webp" alt=""><img src="/learn/pk_pb01.webp" alt=""></span><p>Join <b class="hb2">1,000+</b> people who use the same method to land clients and get paid</p></div>
 
@@ -502,14 +551,14 @@ html.bf .offer .box{background:#120f07d9;border-color:#ffd60a55}
       <a class="getnow" href="#buy" data-getnow>Get it now · <span data-gnp>€9.99</span> <b>↓</b></a>
       <div class="right"><div class="tm" data-t3>00:14:59</div><h3>YOURS FOREVER</h3><p class="one"><b data-pr>€9.99</b> one-time · no subscription</p>
         <span id="buy"></span><label class="opt opt-sk on" data-o="skill"><span class="ck">✓</span><span class="duo"><img class="a" src="/learn/sd_book_tight.webp" alt=""><img class="b" src="/learn/sd_scene_preview.webp" alt=""></span><span><b>Full Guide + Claude Skill<em>NEW</em></b><small>The guide + the <strong class="sk">skill</strong> that builds this for you + how we made this video viral</small></span><span class="pp"><strong>€9.99</strong><s>€49.99</s></span><span class="off bs">★ BEST SELLER</span></label><label class="opt opt-fu" data-o="full"><span class="ck">✓</span><img src="/learn/sd_book_tight.webp" alt=""><span><b>The Full Guide</b><small>Every prompt, word for word</small></span><span class="pp"><strong>€5.99</strong><s>€29</s></span><span class="off">-80%</span></label>
-        <label class="opt" data-o="all"><img src="/learn/pk_pb02.webp" alt=""><span><b>Everything we teach</b><small>Every Full guide + 3 playbooks + the skill</small></span><span class="pp"><strong>€59</strong><s>€260</s></span><span class="off">-75%</span></label>
+        <label class="opt opt-all" data-o="all"><span class="ck">✓</span><img src="/learn/pk_pb02.webp" alt=""><span><b>Everything we teach</b><small>Every Full guide + 3 playbooks + the skill</small></span><span class="pp"><strong>€59</strong><s>€260</s></span><span class="off">-75%</span></label>
         <div class="tap">Tap a card, it takes you straight to the payment ↓</div><div class="sp"><div class="emw" data-emw><span class="lab">Email <small style="color:#ff6b6b;font-weight:700">(required)</small> · the guide arrives here</span><input class="in" type="email" placeholder="you@example.com" aria-label="Your email" data-em autocomplete="email" required></div>
         <span class="lab pml">Payment method</span>
         <div class="cpanel"><div class="chead"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/></svg>Card</div>
           <div class="cbody"><div class="ecw"><div class="ec" data-ec></div><div class="cbr" data-cbr aria-hidden="true"><span class="b-mc"><svg viewBox="0 0 31 19"><circle cx="12.6" cy="9.5" r="5.6" fill="#eb001b"/><circle cx="18.4" cy="9.5" r="5.6" fill="#f79e1b"/><path d="M15.5 4.8a5.6 5.6 0 0 1 0 9.4a5.6 5.6 0 0 1 0-9.4z" fill="#ff5f00"/></svg></span><span class="b-visa">VISA</span><span class="b-amex">AMEX</span><span class="b-rot"><i class="b-disc">DISC<em></em>VER</i><i class="b-jcb"><b>J</b><b>C</b><b>B</b></i><i class="b-up">UnionPay</i><i class="b-din"><em></em></i></span></div></div><span class="lab cl">Cardholder name <small style="color:#8b93a5;font-weight:500">(optional)</small></span><input class="in" type="text" placeholder="Full name on card" aria-label="Cardholder name" data-cn autocomplete="cc-name"></div></div></div>
         <button class="pay" type="button" data-pay>Pay €9.99<small>Get Guide + Claude Skill</small></button>
         <p class="perr" data-perr role="alert"></p>
-        <p class="pwr">Powered by <b>stripe</b><i></i><a href="https://stripe.com/legal/end-users" target="_blank" rel="noopener">Terms</a><a href="https://stripe.com/privacy" target="_blank" rel="noopener">Privacy</a></p><div class="sep dm">Don’t miss this offer <b>↓</b></div><label class="opt bfc" data-o="bf"><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan"><img src="/learn/3d_book.webp" alt=""><img src="/learn/tt_book_tight.webp" alt=""><img src="/learn/sd_book_tight.webp" alt=""><img src="/learn/tw_book.webp" alt=""><img src="/learn/pk_pb02.webp" alt=""></span><span class="bh">Get everything</span><span class="inc">Every Full guide, the 3 playbooks, the stadium skill and every new guide, until 27 November</span><span class="pz"><s>€260</s><b>€59</b><span>-77%</span></span><span class="go" data-bfgo>Get everything · €59</span><span class="end">Ends Friday 27 November at 23:59</span></label></div>
+        <p class="pwr">Powered by <b>stripe</b><i></i><a href="https://stripe.com/legal/end-users" target="_blank" rel="noopener">Terms</a><a href="https://stripe.com/privacy" target="_blank" rel="noopener">Privacy</a></p></div>
     </div>
   </section>
 </main>
@@ -649,10 +698,22 @@ document.querySelectorAll('.right .opt').forEach(o => o.addEventListener('click'
 // 16/11 (Nico, B1): the Black Friday offer runs until Friday 27 November 23:59 (Rome): its card sits above the choices,
 // already chosen, and Everything at €59 waits behind it; after the end the page is as before. #buy (the link at the end
 // of the free PDF) opens straight on the prices.
-{ const bfEnd = Date.parse('2026-11-27T23:59:59+01:00'), bfCard = document.querySelector('.opt.bfc')
+{ const bfEnd = Date.parse('2026-11-27T23:59:59+01:00'), bfCard = document.querySelector('[data-bft]')
   if (bfCard && Date.now() < bfEnd) { document.documentElement.classList.add('bf')
     document.querySelectorAll('.p-all .pr b').forEach(b => b.textContent = '€59'); document.querySelectorAll('.p-all .fanstk b').forEach(b => b.textContent = '-77%'); document.querySelectorAll('.p-all .fanstk small').forEach(b => b.textContent = 'BLACK FRIDAY')
-    const go = bfCard.querySelector('[data-bfgo]'); if (go) go.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); bfCard.click(); setTimeout(() => { const t = document.querySelector('[data-em]') || document.querySelector('[data-pay]'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'center' }) }, 50) }) }
+    document.querySelectorAll('.opt-all .off').forEach(b => b.textContent = '-77%')
+    const all = document.querySelector('.opt-all'), go = bfCard.querySelector('[data-bfgo]')
+    if (go && all) go.addEventListener('click', e => { e.preventDefault(); document.body.classList.add('rv'); all.click(); setTimeout(() => { const t = document.querySelector('.sp'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }) }, 60) })
+    const p2 = n => String(n).padStart(2, '0'), q = a => bfCard.querySelector('[data-' + a + ']')
+    const bt = () => { const x = Math.max(0, Math.floor((bfEnd - Date.now()) / 1000)); q('bd').textContent = Math.floor(x / 86400); q('bh').textContent = p2(Math.floor(x % 86400 / 3600)); q('bm').textContent = p2(Math.floor(x % 3600 / 60)); q('bs').textContent = p2(x % 60) }
+    bt(); setInterval(bt, 1000) }
+  // the reels: a tap plays it big on the page, the white button opens the real one on Instagram
+  { const ov = document.querySelector('[data-rov]')
+    if (ov) { const v = ov.querySelector('video'), a = ov.querySelector('[data-rig]'), shut = () => { ov.hidden = true; v.pause() }
+      const open = r => { v.src = r.dataset.rv; a.href = r.dataset.ig; ov.hidden = false; v.play().catch(() => {}) }
+      document.querySelectorAll('.reels2 .reel').forEach(r => { r.addEventListener('click', () => open(r)); r.addEventListener('keydown', e => { if (e.key === 'Enter') open(r) }) })
+      ov.querySelector('[data-rx]').addEventListener('click', shut); ov.addEventListener('click', e => { if (e.target === ov) shut() })
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && !ov.hidden) shut() }) } }
   if (location.hash === '#buy') { document.body.classList.add('rv'); setTimeout(() => { const b = document.querySelector('#buy'); if (b) b.scrollIntoView({ block: 'start' }) }, 400) } }
 </script>
 </body></html>
