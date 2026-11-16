@@ -1,0 +1,114 @@
+---
+// The one-tap offer on /learn/thanks/full-stadium (16/11, Nico, board T1 + T2, "perfetti").
+// T1 after the Full Stadium Guide (€5.99): the Stadium Builder skill, €3.99 instead of €20.
+// T2 after the Guide + Claude Skill (€9.99): every guide we have, €45.99 instead of €260.
+// It starts hidden: scripts/learn.ts shows it once api/files.js has confirmed the payment, and sets data-offer to
+// "skill" or "all" from what was bought (never after the pack). The button asks api/upsell.js to charge the same card
+// once; if that card cannot be charged again, it opens a Stripe page for the same price.
+const L = '/learn/';
+---
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&display=swap" />
+<section class="so" data-so hidden>
+  <h2 class="so__hi">Thank you <span>🙌🏻</span></h2>
+  <p class="so__sub">Your files are ready, and we saved a special offer just for you.</p>
+
+  <article class="so__card" data-so-card="skill">
+    <span class="so__tag">● ONLY FOR YOU · ONLY ON THIS PAGE</span>
+    <span class="so__tile" aria-hidden="true"><i>✳</i><em>SKILL</em></span>
+    <h3>Let Claude build it for you</h3>
+    <p>Add the Stadium Builder skill: type one line and Claude builds the whole stadium site, seat by seat.</p>
+    <div class="so__pz"><s>€20</s><b>€3.99</b><span>-80%</span></div>
+    <button type="button" class="so__go" data-so-go="skill">Add the skill · €3.99</button>
+    <span class="so__note">One tap with the card you just used</span>
+  </article>
+
+  <article class="so__card so__card--y" data-so-card="all">
+    <span class="so__tag">● ONLY FOR YOU · ONLY ON THIS PAGE</span>
+    <span class="so__fan" aria-hidden="true"><img src={`${L}3d_book.webp`} alt="" /><img src={`${L}tt_book_tight.webp`} alt="" /><img src={`${L}sd_book_tight.webp`} alt="" /><img src={`${L}tw_book.webp`} alt="" /><img src={`${L}pk_pb02.webp`} alt="" /></span>
+    <h3>Get every guide we have</h3>
+    <p>Every Full guide, the 3 playbooks and every new guide we make.</p>
+    <div class="so__pz"><s>€260</s><b>€45.99</b><span>-82%</span></div>
+    <button type="button" class="so__go" data-so-go="all">Get everything · €45.99</button>
+    <span class="so__note">One tap with the card you just used</span>
+  </article>
+
+  <p class="so__err" data-so-err role="alert"></p>
+  <div class="so__done" data-so-done hidden>
+    <p class="so__ok">✓ Added. Download it here</p>
+    <div class="so__dl" data-so-dl></div>
+  </div>
+  <button type="button" class="so__no" data-so-no>No thanks</button>
+</section>
+
+<script is:inline>
+(function () {
+  var box = document.querySelector('[data-so]'); if (!box) return;
+  var err = box.querySelector('[data-so-err]'), busy = false;
+  var id = new URLSearchParams(location.search).get('session_id') || '';
+  box.querySelector('[data-so-no]').addEventListener('click', function () { box.hidden = true; });
+  box.querySelectorAll('[data-so-go]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (busy) return; busy = true; err.textContent = '';
+      var label = b.textContent; b.textContent = 'One moment…'; b.disabled = true;
+      fetch('/api/upsell', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ session_id: id, offer: b.dataset.soGo }) })
+        .then(function (r) { return r.json().catch(function () { return {}; }); })
+        .then(function (j) {
+          if (j.url) { location.href = j.url; return; }
+          if (!j.ok) throw new Error('no');
+          box.querySelectorAll('[data-so-card]').forEach(function (c) { c.hidden = true; });
+          box.querySelector('[data-so-no]').hidden = true;
+          var dl = box.querySelector('[data-so-dl]');
+          (j.files || []).forEach(function (f) {
+            var a = document.createElement('a'); a.className = 'so__file'; a.href = f.href; a.setAttribute('download', '');
+            a.textContent = f.kind === 'zip' ? f.name + ' · zip' : f.name; dl.appendChild(a);
+          });
+          box.querySelector('[data-so-done]').hidden = false;
+        })
+        .catch(function () { err.textContent = 'It did not go through, nothing was charged. Try again, or write to info@omnyalab.com'; b.textContent = label; b.disabled = false; busy = false; });
+    });
+  });
+})();
+</script>
+
+<style is:global>
+  /* the site page is light: the offer is its own dark panel, like the funnel it comes from */
+  .so { box-sizing: border-box; width: min(560px, 100%); margin: 34px auto 10px; padding: 24px 16px 18px; border-radius: 28px; background: #07090d; box-shadow: 0 40px 90px -40px #0a84ff88; color: #fff; font-family: Inter, -apple-system, sans-serif; text-align: left; scroll-margin-top: 90px; }
+  .so[hidden], .so [hidden] { display: none !important; }
+  .so[data-offer='skill'] [data-so-card='all'], .so[data-offer='all'] [data-so-card='skill'] { display: none; }
+  .so__hi { margin: 0; font: 900 30px/1.05 Poppins, sans-serif; letter-spacing: -0.01em; color: #fff; }
+  .so__hi span { color: #30d158; }
+  .so__sub { margin: 6px 0 16px; color: #c9d1df; font-size: 14.5px; line-height: 1.5; }
+  .so__card { position: relative; box-sizing: border-box; padding: 18px 16px 16px; border-radius: 22px; text-align: center; border: 1.5px solid transparent;
+    background: linear-gradient(#0d1422, #0d1422) padding-box, linear-gradient(120deg, #0a84ff, #7c5cff 55%, #ffd60a) border-box; box-shadow: 0 0 44px -12px #7c5cffaa; }
+  .so__card--y { background: radial-gradient(120% 80% at 50% 0%, #3a2c00, #0b0a06 65%) padding-box, linear-gradient(120deg, #ffd60a, #ff9f0a) border-box; box-shadow: 0 0 44px -12px #ffd60aaa; }
+  .so__tag { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: #ffd60a; color: #111; font: 900 10.5px Poppins, sans-serif; letter-spacing: 0.12em; }
+  .so__tile { position: relative; display: block; margin: 16px auto 0; width: 96px; height: 96px; border-radius: 24px; overflow: hidden; background: url(/learn/sd_scene_preview.webp) center/cover; box-shadow: 0 0 0 2px #7c5cff, 0 16px 34px -10px #7c5cffcc; }
+  .so__tile::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, #0000 35%, #000d); }
+  .so__tile i { position: absolute; left: 9px; top: 8px; z-index: 1; width: 26px; height: 26px; border-radius: 8px; background: #d97757; display: grid; place-items: center; color: #fff; font: 900 18px/1 Poppins, sans-serif; font-style: normal; }
+  .so__tile em { position: absolute; left: 0; right: 0; bottom: 9px; z-index: 1; font: 900 12px Poppins, sans-serif; letter-spacing: 0.16em; font-style: normal; color: #fff; }
+  .so__fan { position: relative; display: block; margin: 16px auto 0; width: 210px; height: 100px; }
+  .so__fan img { position: absolute; bottom: 0; width: 54px; height: auto; border-radius: 4px; box-shadow: 0 10px 20px #000c; }
+  .so__fan img:nth-child(1) { left: 4px; transform: rotate(-15deg) translateY(8px); filter: brightness(0.8); }
+  .so__fan img:nth-child(2) { left: 44px; transform: rotate(-7deg); }
+  .so__fan img:nth-child(3) { left: 78px; width: 58px; z-index: 3; transform: translateY(-6px); box-shadow: 0 0 0 1.5px #ffd60a, 0 0 24px #ffd60a88; }
+  .so__fan img:nth-child(4) { left: 118px; transform: rotate(7deg); z-index: 2; }
+  .so__fan img:nth-child(5) { left: 152px; transform: rotate(15deg) translateY(8px); filter: brightness(0.8); }
+  .so__card h3 { margin: 12px 0 6px; font: 900 24px/1.1 Poppins, sans-serif; color: #fff; }
+  .so__card p { margin: 0 auto; max-width: 300px; color: #c9d1df; font-size: 13.5px; line-height: 1.5; }
+  .so__pz { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 12px 0; }
+  .so__pz s { font: 700 17px Poppins, sans-serif; color: #8a8f99; text-decoration-color: #ff3b30; text-decoration-thickness: 2.5px; }
+  .so__pz b { font: 900 42px/1 Poppins, sans-serif; color: #fff; }
+  .so__card--y .so__pz b { color: #ffd60a; text-shadow: 0 0 24px #ffd60a66; }
+  .so__pz span { padding: 3px 8px; border-radius: 999px; background: #ff3b30; color: #fff; font: 900 12px Poppins, sans-serif; transform: rotate(-8deg); }
+  .so__go { display: block; width: 100%; padding: 16px; border: 0; border-radius: 14px; background: #fff; color: #000; font: 800 16px Poppins, sans-serif; cursor: pointer; }
+  .so__card--y .so__go { background: linear-gradient(180deg, #ffe24a, #ffc400); color: #111; }
+  .so__go:disabled { opacity: 0.7; }
+  .so__note { display: block; margin-top: 8px; font-size: 11.5px; color: #8b93a5; }
+  .so__err { margin: 10px 0 0; min-height: 0; text-align: center; color: #ff6b6b; font-size: 13px; }
+  .so__no { display: block; margin: 12px auto 0; background: none; border: 0; color: #6f7787; font-size: 12.5px; text-decoration: underline; cursor: pointer; }
+  .so__done { padding: 18px 16px; border-radius: 18px; background: #101521; border: 1px solid #30d15866; text-align: center; }
+  .so__ok { margin: 0 0 12px; font: 800 18px Poppins, sans-serif; color: #30d158; }
+  .so__dl { display: grid; gap: 8px; }
+  .so__file { display: block; padding: 13px; border-radius: 12px; background: #0a84ff; color: #fff; font: 800 14px Poppins, sans-serif; text-decoration: none; }
+</style>

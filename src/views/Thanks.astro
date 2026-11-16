@@ -7,6 +7,7 @@
 // no "no thanks" button and no second card.
 import Base from '../layouts/Base.astro';
 import Arrow from '../components/Arrow.astro';
+import StadiumOffer from '../components/StadiumOffer.astro';
 import FunnelUpgrade from '../components/FunnelUpgrade.astro';
 import { goHref, thanks, booking, everythingUpgrade, type ProductId } from '../lib/learn';
 import { t, langFromPath, localize } from '../i18n';
@@ -42,7 +43,9 @@ const v = visual(flow.oto);
 // the page only when lib/learn.ts has the Stripe link (everythingUpgrade), it starts hidden, and the script shows it
 // only after api/files.js has confirmed the payment of a Full guide (never for who already has the pack).
 // It is drawn as the next step of the funnel the buyer came from, in that funnel's colour (components/FunnelUpgrade.astro).
-const up = !!everythingUpgrade && Astro.props.id.startsWith('full-');
+// 16/11: the stadium has its own one-tap offer (StadiumOffer), not the €53 upgrade card
+const so = Astro.props.id === 'full-stadium';
+const up = !!everythingUpgrade && Astro.props.id.startsWith('full-') && !so;
 const vd = flow.down ? visual(flow.down) : null;
 const bookIds = ['white-to-real', 'reel', 'before-it-exists'];
 const book = booking[Astro.props.id as ProductId];
@@ -107,6 +110,8 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
         )
       }
     </div>
+
+    {so && <StadiumOffer />}
 
     <header class="oto__head">
       <p class="oto__done" data-fade>{X.headA}</p>

@@ -47,7 +47,7 @@ export async function GET(request) {
     // kind: 'zip' only on the Towers scene file (10/11), so the page can say what it is; the PDFs are as before
     // email (11/11): the address the copy went to (the same one the webhook writes to), so the page can show it and a
     // buyer who typed it wrong sees it now. Only who holds the session id of the payment gets here
-    return json({ files: files.map((f) => ({ name: f.name, href: f.href, ...(f.kind ? { kind: f.kind } : {}), ...(f.note ? { note: f.note } : {}) })), pack: names.some(isPack), email: fixEmail(session.customer_details?.email) || '' });
+    return json({ files: files.map((f) => ({ name: f.name, href: f.href, ...(f.kind ? { kind: f.kind } : {}), ...(f.note ? { note: f.note } : {}) })), pack: names.some(isPack), skill: names.some((n) => /skill/i.test(n)), email: fixEmail(session.customer_details?.email) || '' });
   } catch (e) {
     console.error('[files]', e.message);
     return json({ error: 'could not check' }, e.statusCode === 404 ? 404 : 502);

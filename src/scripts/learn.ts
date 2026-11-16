@@ -149,12 +149,15 @@ function paidFiles() {
   text.textContent = text.dataset.checking!;
   fetch(`/api/files?session_id=${encodeURIComponent(id)}&lang=${box.dataset.dl}`)
     .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-    .then((j: { files?: { name: string; href: string; kind?: string; note?: string }[]; pack?: boolean; email?: string }) => {
+    .then((j: { files?: { name: string; href: string; kind?: string; note?: string }[]; pack?: boolean; skill?: boolean; email?: string }) => {
       const files = (j.files || []).filter((f) => f.href.startsWith('/api/file?'));
       if (!files.length) return closed();
       // step 2 (10/11): the upgrade to the pack shows only now, with the payment confirmed, and not to who paid for the pack
       const up = document.querySelector<HTMLElement>('[data-upgrade]');
       if (up && j.pack === false) up.hidden = false;
+      // 16/11 (Nico, T1/T2): on the stadium the one-tap offer, the skill after the Full, everything after the guide + skill
+      const so = document.querySelector<HTMLElement>('[data-so]');
+      if (so && j.pack === false) { so.dataset.offer = j.skill ? 'all' : 'skill'; so.hidden = false; }
       // 10/11: the Towers scene file (kind 'zip') sits next to the PDF, with its own words and the line that says what it is
       const scene = files.some((f) => f.kind === 'zip');
       const pdf = files.some((f) => f.kind !== 'zip');

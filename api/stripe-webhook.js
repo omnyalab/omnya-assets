@@ -32,14 +32,14 @@ const upgradeFor = (productNames, files) => !!everythingUpgrade && oneFullGuide(
 // email is exactly as before, in the HTML and in the text part.
 // 16/11: every zip (the Towers scene, the Stadium Builder skill) carries its own line (note, api/_lib/learn-files.js)
 const split = (files) => ({ pdfs: files.filter((f) => !f.kind), zips: files.filter((f) => f.kind === 'zip') });
-const subjectFor = (files) => {
+export const subjectFor = (files) => {
   const { pdfs, zips } = split(files);
   if (!pdfs.length) return `Your ${zips[0]?.name.replace(/^The /, '') || 'files'}`;
   if (pdfs.length > 1) return 'Your Omnya Lab files';
   return `Your ${pdfs[0].name}` + (zips.length ? ` and ${zips.map((z) => z.name.replace(/^The /, 'the ')).join(' and ')}` : '');
 };
 
-function filesEmail(name, files, upgrade = false) {
+export function filesEmail(name, files, upgrade = false) {
   const { zips } = split(files); // files come with the PDFs first and the zips after them (filesForProduct)
   const btn = (f) =>
     `<a href="https://www.omnyalab.com${f.href.replace(/&/g, '&amp;')}" style="display:inline-block;background:#b8613c;color:#fff;text-decoration:none;padding:12px 20px;border-radius:999px;margin:4px 8px 4px 0">${f.kind === 'zip' ? `${f.name} · zip` : f.name}</a>`;
