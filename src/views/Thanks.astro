@@ -9,6 +9,8 @@ import Base from '../layouts/Base.astro';
 import Arrow from '../components/Arrow.astro';
 import StadiumOffer from '../components/StadiumOffer.astro';
 import FunnelUpgrade from '../components/FunnelUpgrade.astro';
+import RiyadhBlackFriday from '../components/RiyadhBlackFriday.astro';
+import RiyadhFuture from '../components/RiyadhFuture.astro';
 import { goHref, thanks, booking, everythingUpgrade, type ProductId } from '../lib/learn';
 import { t, langFromPath, localize } from '../i18n';
 
@@ -114,6 +116,8 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
 
     {so && <StadiumOffer kind={Astro.props.id === 'full-miami' ? 'miami' : 'stadium'} />}
 
+    {Astro.props.id === 'full-riyadh' && <RiyadhBlackFriday />}
+
     <header class="oto__head">
       <p class="oto__done" data-fade>{X.headA}</p>
       <h1 class="t-h2 oto__title" data-split="intro">{X.only} <span class="mute">{X.headB}</span></h1>
@@ -122,6 +126,7 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
 
     {up && <FunnelUpgrade id={Astro.props.id} lang={lang} />}
 
+    {Astro.props.id === 'full-riyadh' ? <RiyadhFuture /> : (
     <article class:list={['oto__card', { 'oto__card--skool': v.kind === 'skool' }]} data-fade>
       <div class="oto__visual">
         {
@@ -151,6 +156,7 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
         {down && <button type="button" class="oto__no" data-oto-no>{X.no}</button>}
       </div>
     </article>
+    )}
   </section>
 
   {
@@ -205,6 +211,29 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
   )}
 </Base>
 
+{Astro.props.id === 'full-riyadh' && (
+<style is:global>
+  /* 17/11 (Nico): after paying for the Riyadh guide the page is in the colours of that funnel (violet night, white text) */
+  :root{--bg:#0b0714;--ink:#ffffff;--mute:#b6a9d4;--mute-lg:#9a8fb8;--line:#2a2240}
+  html,body{background:radial-gradient(900px 600px at 50% -8%,#9d5cff33,#0000 70%),#0b0714!important;color:#fff}
+  .oto .btn--fill,.oto-dl .btn--fill{background:#9d5cff!important;border-color:#9d5cff!important;color:#fff!important}
+  .oto__steps .is-done span,.oto__steps .is-now span{background:#9d5cff!important;color:#fff!important;border-color:#9d5cff!important}
+  .hdr .logo__img--dark{filter:invert(1)}
+  .hdr::before{background:#0b0714e6!important;border-bottom-color:#2a2240!important}
+  .hdr{color:#fff!important}
+  .wa-fab{background:#9d5cff!important;color:#fff!important}
+  html[data-page='thanks'] .oto-dl{background:linear-gradient(160deg,#ffffff1a,#ffffff08)!important;border:1px solid #ffffff26!important;-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);color:#fff!important;box-shadow:0 40px 80px -40px #9d5cffaa,inset 0 1px #ffffff33!important}
+  html[data-page='thanks'] .oto-dl *{color:#fff}
+  html[data-page='thanks'] .oto-dl .t-sub{color:#fff!important;-webkit-text-fill-color:#fff!important}
+  html[data-page='thanks'] .oto-dl .oto-dl__note,html[data-page='thanks'] .oto-dl .oto-dl__note *{color:#b6a9d4!important}
+  html[data-page='thanks'] .oto-dl .btn:not(.btn--fill){background:#ffffff14!important;border-color:#ffffff33!important;color:#fff!important}
+  html[data-page='thanks'] .oto__down{background:#9d5cff!important}
+  html[data-page='thanks'] .oto__head{display:none}
+  html[data-page='thanks'] .oto__card{background:#140b26!important;border:1px solid #2a2240;box-shadow:0 40px 70px -40px #9d5cff88!important;color:#fff}
+  html[data-page='thanks'] .oto__card *{color:#fff}
+  html[data-page='thanks'] .oto__card .t-sub,html[data-page='thanks'] .oto__card p{color:#cfc4e6}
+</style>
+)}
 <style is:global>
   /* 10/11 (Nico): no free image after a payment. On this page the site's own "Get a free image" buttons
      (header, menu and footer, all [data-sample]) stay hidden too; everywhere else they are as before. */

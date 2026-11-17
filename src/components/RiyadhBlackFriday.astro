@@ -1,0 +1,59 @@
+---
+// 17/11 (Nico): on the Riyadh thanks page, after the download, the same yellow Black Friday card that was on the
+// Riyadh watch page (copied as it was: pill, fanned covers, Get everything, €260 struck, €59, -77%, the real countdown
+// to Friday 27 November 23:59 Rome, the yellow button). The button opens the "Everything we teach" Stripe link (€59).
+// After the end the card hides itself, and the Everything upgrade card of the page (€53, components/FunnelUpgrade) comes
+// back: while the card runs it is hidden (html.ry-bf), so the page never shows two prices for the same pack.
+---
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+<section class="rybf" data-rybf hidden>
+<div class="bfw"><div class="bridge"><h3>One more thing before you go</h3><p>Right now there’s a Black Friday offer on everything we teach</p><span class="ar">↓</span></div>
+      <div class="bfc bft" data-bft><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan"><img src="/learn/3d_book.webp" alt=""><img src="/learn/tt_book_tight.webp" alt=""><img src="/learn/ry_book_tight.webp" alt=""><img src="/learn/sd_book_tight.webp" alt=""><img src="/learn/pk_pb02.webp" alt=""></span><span class="bh">Get everything</span><span class="inc">Every Full guide, Riyadh too, the 3 playbooks, the skills and every new guide</span><span class="pz"><s>€260</s><b>€59</b><span>-77%</span></span><div class="bcd"><small>Black Friday ends in</small><div class="bx"><span><b data-bd>11</b><i>DAYS</i></span><span><b data-bh>00</b><i>HRS</i></span><span><b data-bm>00</b><i>MIN</i></span><span class="sc"><b data-bs>00</b><i>SEC</i></span></div></div><a class="go" href="https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C" data-bfgo>Get everything · €59 →</a></div></div>
+</section>
+<style is:global>
+.rybf{padding:8px 16px 40px;text-align:center;color:#fff;font-family:Inter,-apple-system,sans-serif}
+.rybf[hidden]{display:none}
+
+.bfc .rib{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;background:#ffd60a;color:#111;font:900 11px Poppins;letter-spacing:.16em}
+.bfc .rib i{width:7px;height:7px;border-radius:50%;background:#ff3b30;box-shadow:0 0 0 3px #ff3b3044}
+.bfc .fan{display:block;position:relative;height:96px;margin:12px auto 4px;width:250px}
+.bfc .fan img{position:absolute;bottom:0;width:58px;height:auto;border-radius:4px;box-shadow:0 10px 20px #000c,0 0 0 1px #ffffff14}
+.bfc .fan img:nth-child(1){left:6px;transform:rotate(-16deg) translateY(8px);filter:brightness(.75)}
+.bfc .fan img:nth-child(2){left:52px;transform:rotate(-8deg) translateY(2px);filter:brightness(.9)}
+.bfc .fan img:nth-child(3){left:96px;width:62px;z-index:3;transform:translateY(-6px);box-shadow:0 0 0 1.5px #ffd60a,0 0 26px #ffd60a88}
+.bfc .fan img:nth-child(4){left:142px;transform:rotate(8deg) translateY(2px);filter:brightness(.9);z-index:2}
+.bfc .fan img:nth-child(5){left:186px;transform:rotate(16deg) translateY(8px);filter:brightness(.75)}
+.bfc .bh{display:block;margin:6px 0 0;font:900 26px/1 Poppins;letter-spacing:-.01em;text-transform:uppercase;color:#fff}
+.bfc .inc{display:block;margin:6px 0 0;font:600 12.5px/1.45 Inter;color:#e5d9a6}
+.bfc .pz{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0 0}
+.bfc .pz s{font:700 18px Poppins;color:#8a8270;text-decoration-color:#ff3b30;text-decoration-thickness:2.5px}
+.bfc .pz b{font:900 46px/1 Poppins;color:#ffd60a;text-shadow:0 0 26px #ffd60a66}
+.bfc .pz span{padding:3px 8px;border-radius:999px;background:#ff3b30;color:#fff;font:900 12px Poppins;transform:rotate(-8deg)}
+.bfc .go{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:54px;margin:12px 0 0;border-radius:14px;border:0;font:900 16px Poppins;letter-spacing:.03em;text-transform:uppercase;color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);box-shadow:0 14px 34px -12px #ffd60acc;cursor:pointer}
+.bfc .end{display:block;margin:8px 0 0;font:700 11.5px Inter;color:#ffb3ad}
+@media (min-width:821px){.bfc .fan{transform:scale(1.15);transform-origin:50% 100%}}
+.bfw{display:block;width:min(420px,100%);margin:0 auto}
+.bridge{margin:34px 0 0}
+.bridge h3{margin:0;font:900 27px/1.1 Poppins;text-wrap:balance}
+.bridge p{margin:10px auto 0;max-width:300px;font:800 15.5px/1.35 Poppins;color:#ffd60a}
+.bridge .ar{display:block;margin:8px auto 0;font:900 22px/1 Poppins;color:#ffd60a;animation:bdn 1.4s ease-in-out infinite}
+@keyframes bdn{50%{transform:translateY(5px)}}
+.bfc.bft{position:relative;margin:14px 0 0;padding:16px 14px 14px;border-radius:18px;background:radial-gradient(120% 90% at 50% 0%,#3a2c00 0%,#0b0a06 62%);border:1.5px solid #ffd60a;box-shadow:0 0 0 5px #ffd60a1a,0 24px 60px -24px #ffd60a99;text-align:center;overflow:hidden}
+.bft .go{text-decoration:none;margin-top:14px}
+.bcd{margin:12px 0 0}
+.bcd small{display:block;font:800 11px Inter;letter-spacing:.16em;text-transform:uppercase;color:#ffb3ad}
+.bcd .bx{display:flex;justify-content:center;gap:6px;margin-top:7px}
+.bcd .bx span{display:grid;justify-items:center;min-width:56px;padding:7px 4px 6px;border-radius:10px;background:#000;border:1px solid #ffd60a44}
+.bcd .bx b{font:900 22px/1 Poppins;color:#fff;font-variant-numeric:tabular-nums}
+.bcd .bx i{margin-top:3px;font:700 9.5px Inter;font-style:normal;letter-spacing:.12em;color:#a99e78}
+.bcd .bx .sc b{color:#ffd60a}
+.rybf .bfc .go{background:linear-gradient(180deg,#ffe24a,#ffc400);color:#111;text-decoration:none}
+html.ry-bf [data-upgrade]{display:none!important}
+</style>
+<script is:inline>
+{ const end = Date.parse('2026-11-27T23:59:59+01:00'), box = document.querySelector('[data-rybf]')
+  if (box && Date.now() < end) { box.hidden = false; document.documentElement.classList.add('ry-bf')
+    const card = box.querySelector('[data-bft]'), p2 = n => String(n).padStart(2, '0'), q = a => card.querySelector('[data-' + a + ']')
+    const bt = () => { const x = Math.max(0, Math.floor((end - Date.now()) / 1000)); if (!x) { box.hidden = true; document.documentElement.classList.remove('ry-bf'); return } q('bd').textContent = Math.floor(x / 86400); q('bh').textContent = p2(Math.floor(x % 86400 / 3600)); q('bm').textContent = p2(Math.floor(x % 3600 / 60)); q('bs').textContent = p2(x % 60) }
+    bt(); setInterval(bt, 1000) } }
+</script>

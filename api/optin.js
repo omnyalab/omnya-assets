@@ -21,6 +21,8 @@ const FREE = {
   'free-miami': { name: 'The Miami Blueprint', file: '/learn/free/omnya-lab-miami-blueprint.pdf' },
   'free-riyadh': { name: 'The Riyadh Blueprint', file: '/learn/free/omnya-lab-riyadh-blueprint.pdf' },
   free: { name: 'The Blueprint', file: '/learn/free/omnya-lab-blueprint.pdf' },
+  // 17/11 (Nico): the waiting list of The 3D Future (opens Friday 27 November), from the Riyadh thanks page pop-up; no email
+  'waitlist-3d-future': { name: 'The 3D Future waitlist', file: '' },
 };
 const KEY = 'omnya:optin';
 const FREE_CAP = hasM365() ? Number(process.env.FREE_MAIL_CAP || 5000) : Number(process.env.FREE_MAIL_CAP || 65); // free blueprint emails a day; with Resend Pro set FREE_MAIL_CAP on Vercel to 1500
@@ -43,7 +45,7 @@ function mailHtml(name, f) {
 </div></body></html>`;
 }
 
-const NO_MAIL = new Set(['free-stadium', 'free-miami', 'free-riyadh']);
+const NO_MAIL = new Set(['free-stadium', 'free-miami', 'free-riyadh', 'waitlist-3d-future']);
 
 export async function POST(request) {
   let b;
