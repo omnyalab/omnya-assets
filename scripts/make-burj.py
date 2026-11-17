@@ -192,6 +192,79 @@ w = sub(w, '<p class="b2h"><b class="hb">1M views</b>on our last reel in 24 hour
 w = sub(w, '</svg>1M views</span>', '</svg>2M views</span>')
 w = sub(w, '</svg>35.8K</span>', '</svg>63.9K</span>')
 w = sub(w, '</svg>2,509</span>', '</svg>4.8K</span>')
+# 17/11 ~16:30 (Nico): the proof must be ours, not the old stadium reel. PROOF=r1 keeps the 2M stadium reel with the bridge,
+# r2/r3 show our own preview (the Burj from night to day and back, public/learn/watch/r_riyadh.mp4) with a hook above it and
+# no view counts (the reel is new, there are no numbers to show yet)
+PROOF = os.environ.get('PROOF', 'r2')
+# 17/11 ~16:45 (Nico): one story from top to bottom. STORY sets the three lines: the title above the face video (what the
+# video tells you: the guide, today's price), the hook above our preview ("$30,000 is what a developer paid us for this")
+# and the bridge under it (how you get paid like this too, with this guide) down to the prices.
+STORIES = {
+  's1': ('Step 2: watch how we built it, then get the guide at <u class="hb2">today’s price</u>',
+         '<p class="b2h"><b class="hb">$30,000</b>is what a developer paid us for this</p>',
+         '<span class="jk">Your turn</span>Get paid like this too: the guide shows you every prompt, step by step<span class="ja">↓</span>'),
+  's2': ('Step 2: this video opens the guide that got us paid <u class="hb2">$30,000</u>',
+         '<p class="b2h"><b class="hb">$30,000</b>a developer paid us for this tower</p>',
+         '<span class="jk">Now it’s your turn</span>Build the same tower and charge for it like we did. It’s all in the guide<span class="ja">↓</span>'),
+  's3': ('Step 2: see what’s inside the guide, before the price <u class="hb2">goes up</u>',
+         '<p class="b2h"><b class="hb">$30,000</b>is what a developer paid us for this</p>',
+         '<span class="jk">How you get paid too</span>The 3D, the prompts and the remote, ready for your first developer<span class="ja">↓</span>'),
+  # 17/11 ~17:00 (Nico): above the face video only the result you get by watching (no spending), above our reel
+  # "$30,000 is what a developer paid us for this", under it one big line with the gradient word, down to the guide
+  'w1': ('Step 2: learn how to get paid <u class="hb2">$30,000</u> by a developer too',
+         '<p class="b2h"><b class="hb">$30,000</b>is what a developer paid us for this</p>',
+         'We burned <b class="hb2">2,570 credits</b> to get here. Follow the guide and you won’t have to<span class="ja">↓</span>'),
+  'w2': ('Step 2: watch how we turned one tower into <u class="hb2">$30,000</u>',
+         '<p class="b2h"><b class="hb">$30,000</b>is what a developer paid us for this</p>',
+         'You can build it too, <b class="hb2">following the guide</b> step by step<span class="ja">↓</span>'),
+  'w3': ('Step 2: watch this and land your first <u class="hb2">$30,000</u> client',
+         '<p class="b2h"><b class="hb">$30,000</b>is what a developer paid us for this</p>',
+         'Same tower, same prompts: <b class="hb2">follow the guide</b> and get paid like us<span class="ja">↓</span>'),
+  # 17/11 ~17:15 (Nico): $30,000 only once (above the video), another strong hook above our reel, one fluid line under it
+  'z1': ('Step 2: learn how to get paid <u class="hb2">$30,000</u> by a developer too',
+         '<p class="b2h"><b class="hb">1 finger</b>drives this whole tower from a phone</p>',
+         'You can build the same tower for your clients by <b class="hb2">following the full guide</b>, with every prompt already written for you<span class="ja">↓</span>'),
+  'z2': ('Step 2: learn how to get paid <u class="hb2">$30,000</u> by a developer too',
+         '<p class="b2h"><b class="hb">No 3D artist</b>just Claude, Higgsfield and this tower</p>',
+         'Skip the weeks of trial and error and <b class="hb2">discover the full guide</b> that takes you from zero to your first tower<span class="ja">↓</span>'),
+  'z3': ('Step 2: learn how to get paid <u class="hb2">$30,000</u> by a developer too',
+         '<p class="b2h"><b class="hb">Night to day</b>with one slide on your phone</p>',
+         'Everything we did is inside <b class="hb2">the full guide</b> so you can build it too without guessing a single prompt<span class="ja">↓</span>'),
+  # 17/11 ~17:30 (Nico, Z1 + a harder hook above our reel, 'roba cattiva')
+  'g1': ('Step 2: learn how to get paid <u class="hb2">$30,000</u> by a developer too',
+         '<p class="b2h"><b class="hb">Renders are dead</b>developers pay for this now</p>',
+         'You can build the same tower for your clients by <b class="hb2">following the full guide</b>, with every prompt already written for you<span class="ja">↓</span>'),
+  'g2': ('Step 2: learn how to get paid <u class="hb2">$30,000</u> by a developer too',
+         '<p class="b2h"><b class="hb">Stop selling renders</b>this is what closes developers now</p>',
+         'You can build the same tower for your clients by <b class="hb2">following the full guide</b>, with every prompt already written for you<span class="ja">↓</span>'),
+  'g3': ('Step 2: learn how to get paid <u class="hb2">$30,000</u> by a developer too',
+         '<p class="b2h"><b class="hb">While you sell renders</b>we get paid for this</p>',
+         'You can build the same tower for your clients by <b class="hb2">following the full guide</b>, with every prompt already written for you<span class="ja">↓</span>'),
+  'g4': ('Step 2: learn how to get paid <u class="hb2">$30,000</u> by a developer too',
+         '<p class="b2h"><b class="hb">$200K render studio</b>killed by Claude in one tower</p>',
+         'You can build the same tower for your clients by <b class="hb2">following the full guide</b>, with every prompt already written for you<span class="ja">↓</span>'),
+  # 17/11 (Nico): the G2 words in colour, the G1 white line under them -> the final one
+  'g5': ('Step 2: learn how to get paid <u class="hb2">$30,000</u> by a developer too',
+         '<p class="b2h"><b class="hb">Stop selling renders</b>developers pay for this now</p>',
+         'You can build the same tower for your clients by <b class="hb2">following the full guide</b>, with every prompt already written for you<span class="ja">↓</span>'),
+}
+STORY = os.environ.get('STORY', 'g5')
+if PROOF in ('r2', 'r3'):
+    HEAD = {'r2': '<p class="b2h"><b class="hb">$30,000</b>is what developers pay for this</p>',
+            'r3': '<p class="b2h"><b class="hb">$2B</b>Riyadh mega project, built with Claude</p>'}[PROOF]
+    BR = {'r2': '<span class="jk">Now you can build it too</span>The 3D, every prompt and the remote are in the guide, word for word<span class="ja">↓</span>',
+          'r3': '<span class="jk">Now you can build it too</span>Day to night, the sky pool, the remote: every prompt is in the guide<span class="ja">↓</span>'}[PROOF]
+    w = sub(w, '<p class="b2h"><b class="hb">2M views</b>on our last reel</p>', HEAD)
+    w = sub(w, 'src="/learn/watch/r_stadio.mp4" poster="/learn/watch/p_stadio.jpg"', 'src="/learn/watch/r_riyadh.mp4" poster="/learn/watch/p_riyadh.jpg"')
+    w = re.sub(r'(<span class="vw">.*?</svg>)2M views</span>', lambda m: m.group(1) + 'New reel</span>', w, count=1, flags=re.S)
+    w = re.sub(r'<div class="rail">.*?</div>', '', w, count=1, flags=re.S)
+    w = sub(w, '<p>Comment “TICKET” and I’ll send you the free guide…</p>', '<p>Comment “3D” and I’ll send you the free guide…</p>')
+    if STORY:
+        T1, HEAD2, BR = STORIES[STORY]
+        w = sub(w, HEAD, HEAD2)
+        w = re.sub(r'<h1>Step 2:.*?</h1>', '<h1>' + T1 + '</h1>', w, count=1, flags=re.S)
+    w = re.sub(r'<div class="join"><p>.*?</p></div>', '<div class="join"><p>' + BR + '</p></div>', w, count=1, flags=re.S)
+    w = w.replace('</style></head>', '.big .b2h b{font-size:clamp(58px,13vw,118px);line-height:.95}</style></head>', 1)
 if os.environ.get('BF', 'below') == 'below':
     m = re.search(r'\s*<div class="bfw">.*?</div></div>\n', w, flags=re.S)
     blk = m.group(0); w = w.replace(blk, '\n', 1)
