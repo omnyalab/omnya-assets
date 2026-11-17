@@ -93,6 +93,9 @@ export async function listLeads(n = 300) {
 // Comments that arrive while it is off are not kept.
 let off = { at: 0, v: false };
 export async function isOff() {
+  // 17/11 18:20 (Nico): Instant DM answers the comments now; our bot was sending a second reply and a second DM
+  // ("Get the Blueprint", Tower) under the Riyadh reel. Off for good, whatever the switch in Redis says.
+  return true;
   if (Date.now() - off.at > 15_000) off = { at: Date.now(), v: !!(await kv.get('off')) };
   return off.v;
 }
