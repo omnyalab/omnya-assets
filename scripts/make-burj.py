@@ -144,7 +144,7 @@ if TIMER:
     END = {'D1': "Date.parse('2026-11-19T23:59:59+01:00')", 'D2': "(() => { const d = new Date(); d.setHours(24, 0, 0, 0); return +d })()", 'D3': '0'}[TIMER]
     LBL = {'D1': 'Launch price ends in', 'D2': 'Today’s price ends in', 'D3': 'Launch price'}[TIMER]
     RV = {'D1': '<s>€29</s> <b>€5.99</b> · launch price until Thu 19 Nov · <b class="rvt2" data-tx>00:00:00</b>',
-          'D2': 'Today’s price, tomorrow it’s €9.99 · <b class="rvt2" data-tx>00:00:00</b>',
+          'D2': 'Today’s price · tomorrow €9.99 · <b class="rvt2" data-tx>00:00:00</b>',
           'D3': '<s>€29</s> <b>€5.99</b> · launch price for the Riyadh reels'}[TIMER]
     w = re.sub(r'<p class="rvl"><span class="rvs">-80%</span><span>.*?</span></p>', '<p class="rvl"><span class="rvs">-80%</span><span>' + RV + '</span></p>', w, count=1, flags=re.S)
     w = sub(w, '<span class="lbl">Closes forever in</span>', f'<span class="lbl">{LBL}</span>')
@@ -264,7 +264,7 @@ if PROOF in ('r2', 'r3'):
         w = sub(w, HEAD, HEAD2)
         w = re.sub(r'<h1>Step 2:.*?</h1>', '<h1>' + T1 + '</h1>', w, count=1, flags=re.S)
     w = re.sub(r'<div class="join"><p>.*?</p></div>', '<div class="join"><p>' + BR + '</p></div>', w, count=1, flags=re.S)
-    w = w.replace('</style></head>', '.big .b2h b{font-size:clamp(58px,13vw,118px);line-height:.95}</style></head>', 1)
+    w = w.replace('</style></head>', '.big .b2h b{font-size:clamp(44px,13vw,118px);line-height:.95}</style></head>', 1)
 if os.environ.get('BF', 'off') == 'below':
     m = re.search(r'\s*<div class="bfw">.*?</div></div>\n', w, flags=re.S)
     blk = m.group(0); w = w.replace(blk, '\n', 1)
@@ -294,6 +294,11 @@ if K == 'k2':
     w = w.replace(full, kit + '\n        ' + fullp, 1)
     w = sub(w, "p.dataset.p === (k === 'bf' ? 'all' : k === 'skill' ? 'full' : k)", "p.dataset.p === (k === 'bf' ? 'all' : k)")
     w = w.replace(".replace(/save €23/g, 'save €19').replace(/^-80%$/, '-66%')", ".replace(/save €23/g, 'save €19').replace(/save €55/g, 'save €50').replace(/^-80%$/, '-66%').replace(/^-79%$/, '-71%')")
+# 17/11 ~17:10 (Nico, from the phone): the hook above our reel a bit higher (less empty dark above it, not glued to the
+# button), and the line under the button centred and tidy: the -80% sticker inline with the words, one line when it fits
+w = w.replace('</style></head>', '.big.c1{padding-top:120px!important}@media (max-width:820px){.big.c1{padding-top:84px!important}}'
+              'body.rv .rvl{display:block;text-align:center;line-height:1.7}.rvl .rvs{display:inline-grid;vertical-align:1px;margin-right:8px}'
+              '.rvl>span:last-child{display:inline}@media (max-width:440px){.rvl{font-size:13.5px}.rvl .rvs{height:23px;padding:0 7px;font-size:12px}}</style></head>', 1)
 left = [m.start() for m in re.finditer(r'stadium|Stadium|sd_', w)]
 import os; os.makedirs(os.path.dirname(OUT_W), exist_ok=True)
 open(OUT_W, 'w').write(w)
