@@ -300,6 +300,16 @@ if K == 'k2':
 w = w.replace('</style></head>', '.big.c1{padding-top:120px!important}@media (max-width:820px){.big.c1{padding-top:84px!important}}'
               'body.rv .rvl{display:block;text-align:center;line-height:1.7}.rvl .rvs{display:inline-grid;vertical-align:1px;margin-right:8px}'
               '.rvl>span:last-child{display:inline}@media (max-width:440px){.rvl{font-size:13.5px}.rvl .rvs{height:23px;padding:0 7px;font-size:12px}}</style></head>', 1)
+# 17/11 ~17:50 (Nico): the Full Guide €5.99 starts chosen, the kit €14.99 stays first but only if they tap it
+if K == 'k2':
+    w = sub(w, '<label class="opt opt-sk on" data-o="skill">', '<label class="opt opt-sk" data-o="skill">')
+    w = sub(w, '<label class="opt opt-fu" data-o="full">', '<label class="opt opt-fu on" data-o="full">')
+    w = sub(w, '<div class="pane p-full p-kit on" data-p="skill">', '<div class="pane p-full p-kit" data-p="skill">')
+    w = sub(w, '<div class="pane p-full" data-p="full">', '<div class="pane p-full on" data-p="full">')
+    w = sub(w, "let cur = 'skill'", "let cur = 'full'")
+    w = sub(w, '<button class="pay" type="button" data-pay>Pay €14.99<small>Get Guide + Remote Kit</small></button>', '<button class="pay" type="button" data-pay>Pay €5.99 · Get The Full Guide</button>')
+    w = sub(w, '<b data-pr>€14.99</b>', '<b data-pr>€5.99</b>')
+    w = sub(w, '<span data-gnp>€14.99</span>', '<span data-gnp>€5.99</span>')
 left = [m.start() for m in re.finditer(r'stadium|Stadium|sd_', w)]
 import os; os.makedirs(os.path.dirname(OUT_W), exist_ok=True)
 open(OUT_W, 'w').write(w)
