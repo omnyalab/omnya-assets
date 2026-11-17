@@ -41,7 +41,10 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'full-stadium'
   // the free and the paid Miami PDFs, on /the-miami-blueprint (16/11, GTA 6 reels "Build Miami", word GTA)
   | 'free-miami'
-  | 'full-miami';
+  | 'full-miami'
+  // the free and the paid Riyadh PDFs, on /the-riyadh-blueprint (17/11, Burj Al Ballur reels, word 3D on Instant DM)
+  | 'free-riyadh'
+  | 'full-riyadh';
 
 /**
  * Step 2 (10/11, Nico): after a Full guide (€5.99) the page /learn/thanks/full-* offers "Everything we teach" for the
@@ -112,6 +115,10 @@ export const products: { id: ProductId; checkout: string }[] = [
   // the Full Miami Blueprint at €5.99 (€29 struck), Stripe product "The Full Miami Blueprint", back to /learn/thanks/full-miami (16/11, Nico: P1 C1 T1 N1 K1), prod_Vdm0H9ykCVnpbg, plink_1UcUURATIF7pxfqfKbJDD2j0;
   // "Miami Builder Skill + The Full Miami Blueprint" €9.99 is prod_Vdm1I3xPuTwCIh, https://buy.stripe.com/6oU00i0Ch7sc2dw1M18so0Q (plink_1UcUVMATIF7pxfqfilkkGHH2), used on the watch page
   { id: 'full-miami', checkout: 'https://buy.stripe.com/00w28qet713O8BUbmB8so0P' },
+  { id: 'free-riyadh', checkout: '/learn/free/omnya-lab-riyadh-blueprint.pdf' },
+  // the Full Riyadh Blueprint at €5.99 (€29 struck), Stripe product "The Full Riyadh Blueprint", back to /learn/thanks/full-riyadh (17/11, Nico: P1 C1 N1 + Remote Kit €14.99);
+  // prod_Ve3aldbdVukeNB, plink_1UclUiATIF7pxfqfc6TW2EaF; "Riyadh Remote Kit + The Full Riyadh Blueprint" €14.99 is prod_Ve3bQmQ1NCFhph, https://buy.stripe.com/dRmaEWckZ6o83hA76l8so0S (plink_1UclVQATIF7pxfqfRSo7tNwG), used on the watch page
+  { id: 'full-riyadh', checkout: 'https://buy.stripe.com/4gM00i3Ot9AkdWeduJ8so0R' },
 ];
 
 // 10/11 (site check 2 and 21): the launch prices are gone from the code. fullTowerDeal, full3dDeal and fullCityDeal (the Full
@@ -148,6 +155,7 @@ export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: Pr
   'full-towers': { kind: 'pdf', oto: 'community' },
   'full-stadium': { kind: 'pdf', oto: 'community' },
   'full-miami': { kind: 'pdf', oto: 'community' },
+  'full-riyadh': { kind: 'pdf', oto: 'community' },
 };
 
 /** The words used in the reels ("Comment 3D"). Each one has its own page, /learn/<word>, and leads with one playbook. */

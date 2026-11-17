@@ -19,6 +19,7 @@ const FREE = {
   'free-towers': { name: 'The Towers Blueprint', file: '/learn/free/omnya-lab-towers-blueprint.pdf' },
   'free-stadium': { name: 'The Stadium Blueprint', file: '/learn/free/omnya-lab-stadium-blueprint.pdf' },
   'free-miami': { name: 'The Miami Blueprint', file: '/learn/free/omnya-lab-miami-blueprint.pdf' },
+  'free-riyadh': { name: 'The Riyadh Blueprint', file: '/learn/free/omnya-lab-riyadh-blueprint.pdf' },
   free: { name: 'The Blueprint', file: '/learn/free/omnya-lab-blueprint.pdf' },
 };
 const KEY = 'omnya:optin';
@@ -42,7 +43,7 @@ function mailHtml(name, f) {
 </div></body></html>`;
 }
 
-const NO_MAIL = new Set(['free-stadium', 'free-miami']);
+const NO_MAIL = new Set(['free-stadium', 'free-miami', 'free-riyadh']);
 
 export async function POST(request) {
   let b;

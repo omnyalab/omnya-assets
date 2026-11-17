@@ -27,6 +27,9 @@ const P = {
   // 16/11 (Nico, GTA reels): the Full Miami Blueprint €5.99 and Miami Builder Skill + Full €9.99, card kept for the one-tap offer (prod_Vdm0H9ykCVnpbg, prod_Vdm1I3xPuTwCIh, created 16/11 19:16)
   'full-miami': { items: ['price_1UcUSRATIF7pxfqfNQ4U48bG'], back: 'full-miami', save: true },
   'skill-miami': { items: ['price_1UcUT0ATIF7pxfqfur9NIkHm'], back: 'full-miami', save: true },
+  // 17/11 (Nico, Burj reels): the Full Riyadh Blueprint €5.99 (prod_Ve3aldbdVukeNB) and Riyadh Remote Kit + Full €14.99 (prod_Ve3bQmQ1NCFhph)
+  'full-riyadh': { items: ['price_1UclTNATIF7pxfqfIw38rgiT'], back: 'full-riyadh' },
+  'kit-riyadh': { items: ['price_1UclU0ATIF7pxfqfiOnyiMi4'], back: 'full-riyadh' },
   // 16/11 (Nico): Black Friday, Everything we teach for €39 until Friday 27 November (prod_Vdaact6ADqm1W3), same delivery as the pack
   'black-friday': { items: ['price_1UcJPLATIF7pxfqf6pLZSXoy'], back: 'everything', until: Date.parse('2026-11-27T23:59:59+01:00') },
 };

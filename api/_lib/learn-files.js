@@ -51,6 +51,8 @@ const FULL_TOWERS = pdf('How to build three towers you choose the view of', 'ful
 const FULL_STADIUM = pdf('How to build a stadium where you pick your own seat', 'full-stadium-blueprint.pdf');
 // 16/11: Miami built from the real map (GTA 6 reels, word GTA), and its skill sold with it at €9.99
 const FULL_MIAMI = pdf('How to build Miami from the real map', 'full-miami-blueprint.pdf');
+// 17/11: the Riyadh mega tower you drive from your phone (Burj Al Ballur reels, word 3D), and its Remote Kit sold with it at €14.99
+const FULL_RIYADH = pdf('How to build a Riyadh mega tower you drive from your phone', 'full-riyadh-blueprint.pdf');
 // 10/11 (Nico): "The Towers Scene File" (€12), the one file that is not a PDF. It is sold in the same Stripe cart as the
 // Full Towers Blueprint (a recommended product of that payment link): the base three.js scene of the three towers as a
 // zip that opens in the browser, with the panel for views, light, height, fog and video recording. It is the base 3D
@@ -72,7 +74,12 @@ const MIAMI_SKILL = {
   note: 'is a skill for Claude: on claude.ai open Settings, Capabilities, Skills and upload the zip, or unzip it into ~/.claude/skills for Claude Code, then ask "build me Lisbon like Build Miami". It needs Claude Pro or Claude Code, and the README inside has every step.',
 };
 
-const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, SCENE, SKILL, MIAMI_SKILL];
+const RIYADH_KIT = {
+  name: 'The Riyadh Remote Kit', file: 'en/riyadh-remote-kit.zip', kind: 'zip',
+  note: 'is the code of the phone remote: unzip it, run Start (or python3 server.py), open the big screen on your computer and the remote on your phone on the same Wi-Fi. The README inside has every step, and how to put your own clips in.',
+};
+
+const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, SCENE, SKILL, MIAMI_SKILL, RIYADH_KIT];
 // 13/11: the playbooks got new names. The one-year links already in buyers' emails still carry the old file names, so
 // the old names stay valid and point to the new files (who bought the old playbook 02 now gets the new one).
 const OLD = {
@@ -104,7 +111,7 @@ export const isPack = (name) => /everything we teach/i.test(String(name || ''));
     alone is not a guide. */
 export const oneFullGuide = (files) => {
   const pdfs = files.filter((f) => !f.kind);
-  return pdfs.length === 1 && [FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI].some((g) => g.file === pdfs[0].en);
+  return pdfs.length === 1 && [FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH].some((g) => g.file === pdfs[0].en);
 };
 
 /** One Stripe product name → the files it should deliver. Checked in order, first match wins. */
@@ -122,6 +129,9 @@ const RULES = [
   // 16/11: "Miami Builder Skill + The Full Miami Blueprint" (€9.99) and "Miami Builder skill · upgrade" before the plain Miami rule
   [/miami builder skill/i, [FULL_MIAMI, MIAMI_SKILL]],
   [/full miami blueprint/i, [FULL_MIAMI]],
+  // 17/11: "Riyadh Remote Kit + The Full Riyadh Blueprint" (€14.99) before the plain Riyadh rule
+  [/riyadh remote kit/i, [FULL_RIYADH, RIYADH_KIT]],
+  [/full riyadh blueprint/i, [FULL_RIYADH]],
   // 10/11: "The Towers Scene File" BEFORE every rule with "tower" in it. It delivers the zip and nothing else: without
   // this line /tower/ below would send the Full Tower PDF to who bought the scene. "The Full Towers Blueprint" has no
   // "towers scene" in its name, so it still reaches its own rule and its own PDF.
