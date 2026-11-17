@@ -30,6 +30,9 @@ const P = {
   // 17/11 (Nico, Burj reels): the Full Riyadh Blueprint €5.99 (prod_Ve3aldbdVukeNB) and Riyadh Remote Kit + Full €14.99 (prod_Ve3bQmQ1NCFhph)
   'full-riyadh': { items: ['price_1UclTNATIF7pxfqfIw38rgiT'], back: 'full-riyadh' },
   'kit-riyadh': { items: ['price_1UclU0ATIF7pxfqfiOnyiMi4'], back: 'full-riyadh' },
+  // 17/11 (Nico, D2): the price after the launch day, for who comes back the next day (prod_Ve5nDNSX1umOSN €9.99, prod_Ve5oKjIVH0d5Yp €19.99)
+  'full-riyadh-9': { items: ['price_1UcnbnATIF7pxfqfuqxTzniw'], back: 'full-riyadh' },
+  'kit-riyadh-19': { items: ['price_1Ucnd4ATIF7pxfqfgdbnpSfM'], back: 'full-riyadh' },
   // 16/11 (Nico): Black Friday, Everything we teach for €39 until Friday 27 November (prod_Vdaact6ADqm1W3), same delivery as the pack
   'black-friday': { items: ['price_1UcJPLATIF7pxfqf6pLZSXoy'], back: 'everything', until: Date.parse('2026-11-27T23:59:59+01:00') },
 };

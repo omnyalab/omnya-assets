@@ -121,6 +121,75 @@ if K == 'k2':
 # 17/11 (Nico, H1): the Higgsfield line says to tap the blue link
 w = sub(w, 'The photos and clips in our guides are made on Higgsfield, and right now new users get unlimited generations inside Claude with Higgsfield MCP: <a',
         'The photos and clips in our guides are made on Higgsfield. Tap the blue link to get unlimited generations inside Claude: <a')
+# ---- 17/11 afternoon (Nico + the SalesStart review, Hormozi): set by environment variables while Nico picks the codes ----
+import os
+LINE = os.environ.get('LINE', 'L3B')  # 17/11 Nico: L3 with 2,570, only the line, no books
+LINES = {
+  'L1': 'The same prompts we used, <b class="hb2">word for word</b>, so you skip the weeks of trial and error',
+  'L2': 'Every prompt and every file of this tower, so your first one takes <b class="hb2">days, not weeks</b>',
+  'L3': 'We burned <b class="hb2">257 credits</b> of tests on this tower. You get only the prompts that worked',
+  # 17/11 (Nico): "spara su in alto", only the line, bigger, no books
+  'L3B': 'We burned <b class="hb2">2,570 credits</b> of tests on this tower. You get only the prompts that worked',
+}
+if LINE:
+    w, n = re.subn(r'(<div class="join">.*?</span>)<p>.*?</p>', lambda m: m.group(1) + '<p>' + LINES[LINE] + '</p>', w, count=1, flags=re.S)
+    if not n: raise SystemExit('join line not found')
+    if LINE == 'L3B':
+        w = re.sub(r'<div class="join"><span class="jc">.*?</span>', '<div class="join">', w, count=1, flags=re.S)
+        w = w.replace('</style></head>', '.join{padding:56px 16px 0}.join p{max-width:640px;font:900 clamp(26px,4.6vw,40px)/1.15 Poppins;text-wrap:balance}</style></head>', 1)
+TIMER = os.environ.get('TIMER', 'D2')  # 17/11 Nico: D2 without the prices in the line
+if TIMER:
+    END = {'D1': "Date.parse('2026-11-19T23:59:59+01:00')", 'D2': "(() => { const d = new Date(); d.setHours(24, 0, 0, 0); return +d })()", 'D3': '0'}[TIMER]
+    LBL = {'D1': 'Launch price ends in', 'D2': 'Today’s price ends in', 'D3': 'Launch price'}[TIMER]
+    RV = {'D1': '<s>€29</s> <b>€5.99</b> · launch price until Thu 19 Nov · <b class="rvt2" data-tx>00:00:00</b>',
+          'D2': 'Today’s price, tomorrow it’s €9.99 · <b class="rvt2" data-tx>00:00:00</b>',
+          'D3': '<s>€29</s> <b>€5.99</b> · launch price for the Riyadh reels'}[TIMER]
+    w = re.sub(r'<p class="rvl"><span class="rvs">-80%</span><span>.*?</span></p>', '<p class="rvl"><span class="rvs">-80%</span><span>' + RV + '</span></p>', w, count=1, flags=re.S)
+    w = sub(w, '<span class="lbl">Closes forever in</span>', f'<span class="lbl">{LBL}</span>')
+    w = sub(w, '<div class="right"><div class="tm" data-t3>00:14:59</div>', f'<div class="right"><p class="tml">{LBL}</p><div class="tm" data-t3>00:14:59</div>')
+    old_a = "let end; try { end = +localStorage.getItem('omnya_end') } catch (e) {}\nif (!end || end < Date.now() - 864e5) { end = Date.now() + 15 * 60e3; try { localStorage.setItem('omnya_end', end) } catch (e) {} }"
+    w = sub(w, old_a, f"let end = {END}")
+    w = sub(w, "  if (end - Date.now() <= 0) { end = Date.now() + 15 * 60e3; try { localStorage.setItem('omnya_end', end) } catch (e) {} }\n", '')
+    w = sub(w, "const ms = Math.max(0, end - Date.now()), h = Math.floor(ms / 36e5),", "const ms = Math.max(0, end - Date.now()), dd = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24,")
+    w = sub(w, "  document.querySelector('[data-t3]').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`\n",
+            "  const tx = (dd ? dd + 'd ' : '') + `${pad(h)}:${pad(m)}:${pad(s)}`\n  document.querySelector('[data-t3]').textContent = tx; const t4 = document.querySelector('[data-tx]'); if (t4) t4.textContent = tx\n  if (dd) document.querySelector('[data-h]').textContent = pad(dd * 24 + h)\n")
+    css = '.right .tml{margin:0 0 2px;font:800 12px Poppins,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ffb066;text-align:center}.rvl .rvt2{color:#ff4d4d;font-variant-numeric:tabular-nums}'
+    if TIMER == 'D3':
+        css += '.bar .tm,.right [data-t3],.ctop{display:none!important}body.rv .bar .lbl{display:inline}'
+    w = w.replace('</style></head>', css + '</style></head>', 1)
+if TIMER == 'D2':
+    # 17/11 (Nico, D2): the price of the day ends at midnight, and for this visitor it really goes up the day after:
+    # the first day is kept in localStorage; from the next day the page shows €9.99 / €19.99 and pays the day-2 prices.
+    D2A = '''const __ryDay = (() => { const d = new Date(); return d.getFullYear() * 1e4 + (d.getMonth() + 1) * 100 + d.getDate() })()
+let __ryFirst = 0; try { __ryFirst = +localStorage.getItem('omnya_ry_first') || 0; if (!__ryFirst) localStorage.setItem('omnya_ry_first', __ryDay) } catch (e) {}
+window.__ry2 = !!__ryFirst && __ryFirst < __ryDay
+if (window.__ry2) {
+  document.documentElement.classList.add('ry2')
+  const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+  for (let n; (n = walk.nextNode());) n.nodeValue = n.nodeValue.replace(/€5\.99/g, '€9.99').replace(/€14\.99/g, '€19.99').replace(/save €23/g, 'save €19').replace(/^-80%$/, '-66%')
+  const r = document.querySelector('.rvl span:last-child'); if (r) r.innerHTML = 'The launch price is over'
+}
+'''
+    w = sub(w, "let end = (() =>", D2A + "let end = (() =>")
+    w = sub(w, "const P = { full: ['€5.99', '-80%', 'The Full Guide'],", "const P = { full: window.__ry2 ? ['€9.99', '-66%', 'The Full Guide'] : ['€5.99', '-80%', 'The Full Guide'],")
+    w = sub(w, "skill: ['€14.99', '', 'Guide + Remote Kit']", "skill: [window.__ry2 ? '€19.99' : '€14.99', '', 'Guide + Remote Kit']")
+    w = re.sub(r"(const LINK = \{[^}]*\}, PID = \{[^}]*\})", lambda m: m.group(1) + "\nif (window.__ry2) { LINK.full = '" + os.environ.get('LINK9', 'https://buy.stripe.com/28EbJ0dp3bIs6tMbmB8so0U') + "'; LINK.skill = '" + os.environ.get('LINK19', 'https://buy.stripe.com/aFa4gy98NcMwaK2duJ8so0T') + "'; PID.full = 'full-riyadh-9'; PID.skill = 'kit-riyadh-19' }", w, count=1)
+    if "PID.full = 'full-riyadh-9'" not in w: raise SystemExit('day-2 links not placed')
+    w = w.replace('</style></head>', 'html.ry2 .bar .tm,html.ry2 .right [data-t3],html.ry2 .right .tml{display:none!important}</style></head>', 1)
+# 17/11 (Nico): no "Our other reels that went viral" under the proof, the 2,570 line comes right after it
+if os.environ.get('REELS', 'off') == 'off':
+    w, n = re.subn(r'\s*<section class="reels reels2">.*?</section>', '', w, count=1, flags=re.S)
+    if not n: raise SystemExit('reels not found')
+    w = sub(w, "setInterval(() => { if (innerWidth < 820) return; reels[ri]", "setInterval(() => { if (innerWidth < 820 || !reels.length) return; reels[ri]")
+    w = sub(w, "tr.addEventListener('scroll',", "if (tr) tr.addEventListener('scroll',")
+# 17/11 (Nico): the proof line without the comma
+w = w.replace('on our last reel, in 24 hours', 'on our last reel in 24 hours')
+if os.environ.get('BF', 'below') == 'below':
+    m = re.search(r'\s*<div class="bfw">.*?</div></div>\n', w, flags=re.S)
+    blk = m.group(0); w = w.replace(blk, '\n', 1)
+    i = w.index('</section>', w.index('<section class="offer" id="offer">')) + len('</section>')
+    w = w[:i] + '\n  <section class="bfsec">' + blk.strip() + '</section>' + w[i:]
+    w = w.replace('</style></head>', '.bfsec{padding:8px 16px 56px}.bfsec .bridge{text-align:center}</style></head>', 1)
 left = [m.start() for m in re.finditer(r'stadium|Stadium|sd_', w)]
 import os; os.makedirs(os.path.dirname(OUT_W), exist_ok=True)
 open(OUT_W, 'w').write(w)
