@@ -139,11 +139,12 @@ if LINE:
     if LINE in ('L3B', 'L3C'):
         w = re.sub(r'<div class="join"><span class="jc">.*?</span>', '<div class="join">', w, count=1, flags=re.S)
         w = w.replace('</style></head>', '.join{padding:56px 16px 0}.join p{max-width:640px;font:900 clamp(26px,4.6vw,40px)/1.15 Poppins;text-wrap:balance}.join .jk{display:block;margin:0 0 14px;font:800 clamp(14px,1.6vw,16px)/1 Poppins;letter-spacing:.16em;text-transform:uppercase;color:#ffb066}.join p:has(.jk){font-size:clamp(22px,3.8vw,34px)}.join .ja{display:block;margin:14px auto 0;font:900 26px/1 Poppins;color:#ffb066;animation:bdn 1.4s ease-in-out infinite}@media (prefers-reduced-motion:reduce){.join .ja{animation:none}}</style></head>', 1)
-TIMER = os.environ.get('TIMER', 'D2')  # 17/11 Nico: D2 without the prices in the line
+TIMER = os.environ.get('TIMER', 'D4')  # 17/11 evening (Nico): the launch price holds for everyone until Thursday 19/11 23:59 (the Burj reels), then €9.99/€19.99
 if TIMER:
-    END = {'D1': "Date.parse('2026-11-19T23:59:59+01:00')", 'D2': "(() => { const d = new Date(); d.setHours(24, 0, 0, 0); return +d })()", 'D3': '0'}[TIMER]
-    LBL = {'D1': 'Launch price ends in', 'D2': 'Today’s price ends in', 'D3': 'Launch price'}[TIMER]
-    RV = {'D1': '<s>€29</s> <b>€5.99</b> · launch price until Thu 19 Nov · <b class="rvt2" data-tx>00:00:00</b>',
+    END = {'D4': "Date.parse('2026-11-19T23:59:59+01:00')", 'D1': "Date.parse('2026-11-19T23:59:59+01:00')", 'D2': "(() => { const d = new Date(); d.setHours(24, 0, 0, 0); return +d })()", 'D3': '0'}[TIMER]
+    LBL = {'D4': 'Launch price ends in', 'D1': 'Launch price ends in', 'D2': 'Today’s price ends in', 'D3': 'Launch price'}[TIMER]
+    RV = {'D4': 'Launch price · from Friday €9.99 · <b class="rvt2" data-tx>00:00:00</b>',
+          'D1': '<s>€29</s> <b>€5.99</b> · launch price until Thu 19 Nov · <b class="rvt2" data-tx>00:00:00</b>',
           'D2': 'Today’s price · tomorrow €9.99 · <b class="rvt2" data-tx>00:00:00</b>',
           'D3': '<s>€29</s> <b>€5.99</b> · launch price for the Riyadh reels'}[TIMER]
     w = re.sub(r'<p class="rvl"><span class="rvs">-80%</span><span>.*?</span></p>', '<p class="rvl"><span class="rvs">-80%</span><span>' + RV + '</span></p>', w, count=1, flags=re.S)
@@ -159,7 +160,7 @@ if TIMER:
     if TIMER == 'D3':
         css += '.bar .tm,.right [data-t3],.ctop{display:none!important}body.rv .bar .lbl{display:inline}'
     w = w.replace('</style></head>', css + '</style></head>', 1)
-if TIMER == 'D2':
+if TIMER in ('D2', 'D4'):
     # 17/11 (Nico, D2): the price of the day ends at midnight, and for this visitor it really goes up the day after:
     # the first day is kept in localStorage; from the next day the page shows €9.99 / €19.99 and pays the day-2 prices.
     D2A = '''const __ryDay = (() => { const d = new Date(); return d.getFullYear() * 1e4 + (d.getMonth() + 1) * 100 + d.getDate() })()
@@ -173,7 +174,10 @@ if (window.__ry2) {
   const ks = document.querySelector('.p-kit .stk b'); if (ks) ks.textContent = '-71%'
 }
 '''
-    w = sub(w, "let end = (() =>", D2A + "let end = (() =>")
+    if TIMER == 'D4':
+        D2A = D2A.replace('window.__ry2 = !!__ryFirst && __ryFirst < __ryDay', "window.__ry2 = Date.now() > Date.parse('2026-11-19T23:59:59+01:00')")
+        if 'Date.now() > Date.parse' not in D2A: raise SystemExit('D4 switch not placed')
+    w = sub(w, "let end = ", D2A + "let end = ")
     w = sub(w, "const P = { full: ['€5.99', '-80%', 'The Full Guide'],", "const P = { full: window.__ry2 ? ['€9.99', '-66%', 'The Full Guide'] : ['€5.99', '-80%', 'The Full Guide'],")
     w = sub(w, "skill: ['€14.99', '', 'Guide + Remote Kit']", "skill: [window.__ry2 ? '€19.99' : '€14.99', '', 'Guide + Remote Kit']")
     w = re.sub(r"(const LINK = \{[^}]*\}, PID = \{[^}]*\})", lambda m: m.group(1) + "\nif (window.__ry2) { LINK.full = '" + os.environ.get('LINK9', 'https://buy.stripe.com/28EbJ0dp3bIs6tMbmB8so0U') + "'; LINK.skill = '" + os.environ.get('LINK19', 'https://buy.stripe.com/aFa4gy98NcMwaK2duJ8so0T') + "'; PID.full = 'full-riyadh-9'; PID.skill = 'kit-riyadh-19' }", w, count=1)
