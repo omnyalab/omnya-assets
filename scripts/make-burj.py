@@ -123,20 +123,22 @@ w = sub(w, 'The photos and clips in our guides are made on Higgsfield, and right
         'The photos and clips in our guides are made on Higgsfield. Tap the blue link to get unlimited generations inside Claude: <a')
 # ---- 17/11 afternoon (Nico + the SalesStart review, Hormozi): set by environment variables while Nico picks the codes ----
 import os
-LINE = os.environ.get('LINE', 'L3B')  # 17/11 Nico: L3 with 2,570, only the line, no books
+LINE = os.environ.get('LINE', 'L3C')  # 17/11 Nico: L3 with 2,570, only the line, no books
 LINES = {
   'L1': 'The same prompts we used, <b class="hb2">word for word</b>, so you skip the weeks of trial and error',
   'L2': 'Every prompt and every file of this tower, so your first one takes <b class="hb2">days, not weeks</b>',
   'L3': 'We burned <b class="hb2">257 credits</b> of tests on this tower. You get only the prompts that worked',
   # 17/11 (Nico): "spara su in alto", only the line, bigger, no books
   'L3B': 'We burned <b class="hb2">2,570 credits</b> of tests on this tower. You get only the prompts that worked',
+  # 17/11 (Nico): a bridge from the 2M reel to the guides, "now you can do it too, with these guides"
+  'L3C': '<span class="jk">Now you can do it too</span>We burned <b class="hb2">2,570 credits</b> of tests on this tower. The guide gives you only the prompts that worked<span class="ja">↓</span>',
 }
 if LINE:
     w, n = re.subn(r'(<div class="join">.*?</span>)<p>.*?</p>', lambda m: m.group(1) + '<p>' + LINES[LINE] + '</p>', w, count=1, flags=re.S)
     if not n: raise SystemExit('join line not found')
-    if LINE == 'L3B':
+    if LINE in ('L3B', 'L3C'):
         w = re.sub(r'<div class="join"><span class="jc">.*?</span>', '<div class="join">', w, count=1, flags=re.S)
-        w = w.replace('</style></head>', '.join{padding:56px 16px 0}.join p{max-width:640px;font:900 clamp(26px,4.6vw,40px)/1.15 Poppins;text-wrap:balance}</style></head>', 1)
+        w = w.replace('</style></head>', '.join{padding:56px 16px 0}.join p{max-width:640px;font:900 clamp(26px,4.6vw,40px)/1.15 Poppins;text-wrap:balance}.join .jk{display:block;margin:0 0 14px;font:800 clamp(14px,1.6vw,16px)/1 Poppins;letter-spacing:.16em;text-transform:uppercase;color:#ffb066}.join p:has(.jk){font-size:clamp(22px,3.8vw,34px)}.join .ja{display:block;margin:14px auto 0;font:900 26px/1 Poppins;color:#ffb066;animation:bdn 1.4s ease-in-out infinite}@media (prefers-reduced-motion:reduce){.join .ja{animation:none}}</style></head>', 1)
 TIMER = os.environ.get('TIMER', 'D2')  # 17/11 Nico: D2 without the prices in the line
 if TIMER:
     END = {'D1': "Date.parse('2026-11-19T23:59:59+01:00')", 'D2': "(() => { const d = new Date(); d.setHours(24, 0, 0, 0); return +d })()", 'D3': '0'}[TIMER]
@@ -184,6 +186,12 @@ if os.environ.get('REELS', 'off') == 'off':
     w = sub(w, "tr.addEventListener('scroll',", "if (tr) tr.addEventListener('scroll',")
 # 17/11 (Nico): the proof line without the comma
 w = w.replace('on our last reel, in 24 hours', 'on our last reel in 24 hours')
+# 17/11 16:22 (Nico, Instagram insights of the stadium reel): 2,097,694 views, 63.9K likes, 4.8K comments; 2M was not in
+# 24 hours, so the line says only "on our last reel"
+w = sub(w, '<p class="b2h"><b class="hb">1M views</b>on our last reel in 24 hours</p>', '<p class="b2h"><b class="hb">2M views</b>on our last reel</p>')
+w = sub(w, '</svg>1M views</span>', '</svg>2M views</span>')
+w = sub(w, '</svg>35.8K</span>', '</svg>63.9K</span>')
+w = sub(w, '</svg>2,509</span>', '</svg>4.8K</span>')
 if os.environ.get('BF', 'below') == 'below':
     m = re.search(r'\s*<div class="bfw">.*?</div></div>\n', w, flags=re.S)
     blk = m.group(0); w = w.replace(blk, '\n', 1)
