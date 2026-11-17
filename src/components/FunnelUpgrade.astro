@@ -23,8 +23,10 @@ const x = (X.extra as Record<string, { strike: string; items: string[] }>)[upId]
 const themes = {
   blue: '--fc:41 151 255;--g1:#163266;--g2:#0b1630;--g3:#070b14',
   green: '--fc:34 211 94;--g1:#1d6636;--g2:#0e3019;--g3:#06140b',
+  // 17/11 (Nico): after the Riyadh guide the offer is in the Ballur violet of that funnel
+  violet: '--fc:157 92 255;--g1:#311666;--g2:#170b30;--g3:#0b0714',
 };
-const theme = id === 'full-build' ? themes.green : themes.blue;
+const theme = id === 'full-build' ? themes.green : id === 'full-riyadh' ? themes.violet : themes.blue;
 // the three playbooks fanned out on top, the same covers as the funnel (the Italian ones on /it/)
 const covers = lang === 'it'
   ? ['white-to-real', 'reel', 'before-it-exists'].map((b) => `/studio/book_${b}_it_mobile.webp`)

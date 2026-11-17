@@ -265,12 +265,35 @@ if PROOF in ('r2', 'r3'):
         w = re.sub(r'<h1>Step 2:.*?</h1>', '<h1>' + T1 + '</h1>', w, count=1, flags=re.S)
     w = re.sub(r'<div class="join"><p>.*?</p></div>', '<div class="join"><p>' + BR + '</p></div>', w, count=1, flags=re.S)
     w = w.replace('</style></head>', '.big .b2h b{font-size:clamp(58px,13vw,118px);line-height:.95}</style></head>', 1)
-if os.environ.get('BF', 'below') == 'below':
+if os.environ.get('BF', 'off') == 'below':
     m = re.search(r'\s*<div class="bfw">.*?</div></div>\n', w, flags=re.S)
     blk = m.group(0); w = w.replace(blk, '\n', 1)
     i = w.index('</section>', w.index('<section class="offer" id="offer">')) + len('</section>')
     w = w[:i] + '\n  <section class="bfsec">' + blk.strip() + '</section>' + w[i:]
     w = w.replace('</style></head>', '.bfsec{padding:8px 16px 56px}.bfsec .bridge{text-align:center}</style></head>', 1)
+# 17/11 ~17:00 (Nico via the strategy session): the column must not contradict itself. The kit is chosen first, so the
+# left pane shows the kit (€14.99, €69.99 struck, its own list) and follows the choice; the Full list says only what is
+# in the Full. Black Friday and the "Everything" row leave the watch page (Everything is offered on the thanks page).
+if os.environ.get('BF', 'off') == 'off':
+    m = re.search(r'\s*<div class="bfw">.*?</div></div>\n', w, flags=re.S)
+    if m: w = w.replace(m.group(0), '\n', 1)
+    w, n = re.subn(r'\s*<label class="opt opt-all" data-o="all">.*?</label>', '', w, count=1, flags=re.S)
+    if not n: raise SystemExit('opt-all not found')
+if K == 'k2':
+    FULL_UL = '<ul><li>The 3D tower code in three.js</li><li>Every photo prompt, night to sunset</li><li>The clip prompts that fly you inside</li><li>The remote that drives it from a phone</li><li>The sunrise-to-night slider</li><li>What to charge a developer for it</li></ul>'
+    m = re.search(r'<div class="pane p-full on" data-p="full">.*?' + re.escape(FULL_UL) + '</div>', w, flags=re.S)
+    if not m: raise SystemExit('full pane not found')
+    full = m.group(0)
+    kit = (full.replace('<div class="pane p-full on" data-p="full">', '<div class="pane p-full p-kit on" data-p="skill">')
+               .replace('<div class="t">The Full Guide, <i class="hb2">all of it</i></div>', '<div class="t">The Full Guide <i class="hb2">+ Remote Kit</i></div>')
+               .replace('<div class="pr"><s>€29</s><b>€5.99</b> · you save €23</div>', '<div class="pr"><s>€69.99</s><b>€14.99</b> · you save €55</div>')
+               .replace('<b>-80%</b>', '<b>-79%</b>').replace('id="sg"', 'id="sgk"').replace('url(#sg)', 'url(#sgk)')
+               .replace(FULL_UL, '<ul><li>Everything in the Full Guide</li><li>The remote code, ready to run</li><li>The big-screen page of the tower</li><li>Phone and screen on the same Wi-Fi</li><li>Your own clips in one file</li><li>Ready to show a developer</li></ul>'))
+    fullp = (full.replace('<div class="pane p-full on" data-p="full">', '<div class="pane p-full" data-p="full">')
+                 .replace(FULL_UL, '<ul><li>The 3D tower code in three.js</li><li>Every photo prompt, night to sunset</li><li>The clip prompts that fly you inside</li><li>How the remote and the slider work</li><li>Every step, from the 3D to the client</li><li>What to charge a developer for it</li></ul>'))
+    w = w.replace(full, kit + '\n        ' + fullp, 1)
+    w = sub(w, "p.dataset.p === (k === 'bf' ? 'all' : k === 'skill' ? 'full' : k)", "p.dataset.p === (k === 'bf' ? 'all' : k)")
+    w = w.replace(".replace(/save €23/g, 'save €19').replace(/^-80%$/, '-66%')", ".replace(/save €23/g, 'save €19').replace(/save €55/g, 'save €50').replace(/^-80%$/, '-66%').replace(/^-79%$/, '-71%')")
 left = [m.start() for m in re.finditer(r'stadium|Stadium|sd_', w)]
 import os; os.makedirs(os.path.dirname(OUT_W), exist_ok=True)
 open(OUT_W, 'w').write(w)
