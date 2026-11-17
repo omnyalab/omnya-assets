@@ -44,7 +44,7 @@ import''', head, count=1, flags=re.S)
 head = sub(head, 'title="How to build a stadium where you pick your own seat"', 'title="How to build a Riyadh mega tower you drive from your phone"')
 head = sub(head, 'description="Steal our stadium method: the free blueprint in five steps, and the Full Stadium Blueprint with every prompt, the 3D stadium code and the page where you pick your seat."',
            f'description="Steal our {NAME} method: the free blueprint in five steps, and the Full {NAME} Blueprint with every prompt, the 3D tower code and the remote that drives it from your phone."')
-head = re.sub(r'<OptIn [^>]*/>', f'<OptIn slug="{SLUG}" free="free-{ID}" noMail word="{NAME}" book noClose fade theme="{THEME}" allset proof="From the team behind a 1M+ views reel" watch="/{SLUG}/watch" cover="{IMG}cover_book.webp" hero="{IMG}hero.webp" heroMobile="{IMG}hero_mobile.webp" />', head)
+head = re.sub(r'<OptIn [^>]*/>', f'<OptIn slug="{SLUG}" free="free-{ID}" noMail word="{NAME}" book noClose fade theme="{THEME}" allset proof="Steal it before your competitors do" watch="/{SLUG}/watch" cover="{IMG}cover_book.webp" hero="{IMG}hero.webp" heroMobile="{IMG}hero_mobile.webp" />', head)
 style = rc.recolor(style, P).replace('#05070a', '#06050f')
 open(OUT_O, 'w').write(head + '<style is:global>' + style)
 
@@ -170,6 +170,7 @@ if (window.__ry2) {
   const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
   for (let n; (n = walk.nextNode());) n.nodeValue = n.nodeValue.replace(/€5\.99/g, '€9.99').replace(/€14\.99/g, '€19.99').replace(/save €23/g, 'save €19').replace(/^-80%$/, '-66%')
   const r = document.querySelector('.rvl span:last-child'); if (r) r.innerHTML = 'The launch price is over'
+  const ks = document.querySelector('.p-kit .stk b'); if (ks) ks.textContent = '-71%'
 }
 '''
     w = sub(w, "let end = (() =>", D2A + "let end = (() =>")
@@ -255,7 +256,7 @@ if PROOF in ('r2', 'r3'):
     BR = {'r2': '<span class="jk">Now you can build it too</span>The 3D, every prompt and the remote are in the guide, word for word<span class="ja">↓</span>',
           'r3': '<span class="jk">Now you can build it too</span>Day to night, the sky pool, the remote: every prompt is in the guide<span class="ja">↓</span>'}[PROOF]
     w = sub(w, '<p class="b2h"><b class="hb">2M views</b>on our last reel</p>', HEAD)
-    w = sub(w, 'src="/learn/watch/r_stadio.mp4" poster="/learn/watch/p_stadio.jpg"', 'src="/learn/watch/r_riyadh.mp4" poster="/learn/watch/p_riyadh.jpg"')
+    w = sub(w, 'src="/learn/watch/r_stadio.mp4" poster="/learn/watch/p_stadio.jpg"', 'src="/learn/watch/r_riyadh.mp4?v=2" poster="/learn/watch/p_riyadh.jpg"')
     w = re.sub(r'(<span class="vw">.*?</svg>)2M views</span>', lambda m: m.group(1) + 'New reel</span>', w, count=1, flags=re.S)
     w = re.sub(r'<div class="rail">.*?</div>', '', w, count=1, flags=re.S)
     w = sub(w, '<p>Comment “TICKET” and I’ll send you the free guide…</p>', '<p>Comment “3D” and I’ll send you the free guide…</p>')
@@ -287,7 +288,7 @@ if K == 'k2':
     kit = (full.replace('<div class="pane p-full on" data-p="full">', '<div class="pane p-full p-kit on" data-p="skill">')
                .replace('<div class="t">The Full Guide, <i class="hb2">all of it</i></div>', '<div class="t">The Full Guide <i class="hb2">+ Remote Kit</i></div>')
                .replace('<div class="pr"><s>€29</s><b>€5.99</b> · you save €23</div>', '<div class="pr"><s>€69.99</s><b>€14.99</b> · you save €55</div>')
-               .replace('<b>-80%</b>', '<b>-79%</b>').replace('id="sg"', 'id="sgk"').replace('url(#sg)', 'url(#sgk)')
+               .replace('id="sg"', 'id="sgk"').replace('url(#sg)', 'url(#sgk)')
                .replace(FULL_UL, '<ul><li>Everything in the Full Guide</li><li>The remote code, ready to run</li><li>The big-screen page of the tower</li><li>Phone and screen on the same Wi-Fi</li><li>Your own clips in one file</li><li>Ready to show a developer</li></ul>'))
     fullp = (full.replace('<div class="pane p-full on" data-p="full">', '<div class="pane p-full" data-p="full">')
                  .replace(FULL_UL, '<ul><li>The 3D tower code in three.js</li><li>Every photo prompt, night to sunset</li><li>The clip prompts that fly you inside</li><li>How the remote and the slider work</li><li>Every step, from the 3D to the client</li><li>What to charge a developer for it</li></ul>'))
