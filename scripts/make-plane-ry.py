@@ -42,7 +42,7 @@ def sub(s, a, b, n=None):
     return s.replace(a, b)
 
 HOOKS = {
-  'G1': '<b class="hb">Stop selling renders</b>airlines pay for this now',
+  'G1': '<b class="hb">Stop selling renders</b>clients pay for this now',   # 18/11 Nico: clients, not airlines
   'G2': '<b class="hb">The future</b>of booking a flight',
   'G3': '<b class="hb">Pick your seat</b>above the clouds',
 }
