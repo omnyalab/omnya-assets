@@ -117,5 +117,5 @@ open('src/components/BuildThanksColors.astro', 'w').write('''---
 // 18/11 (Nico, board R1): the Build thanks page (/learn/thanks/full-build) in the colours of its funnel, the Build green.
 // Made by scripts/make-build-ry.py from the Riyadh violet block of views/Thanks.astro and components/RiyadhFuture.astro.
 ---
-<style is:global>''' + block + '\n</style>\n')  # 18/11: The 3D Future keeps its own blue, no green rules
+<style is:inline>''' + block + '\n</style>\n')  # 18/11: The 3D Future keeps its own blue, no green rules
 print('thanks colours ok')
