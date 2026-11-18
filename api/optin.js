@@ -20,6 +20,7 @@ const FREE = {
   'free-stadium': { name: 'The Stadium Blueprint', file: '/learn/free/omnya-lab-stadium-blueprint.pdf' },
   'free-miami': { name: 'The Miami Blueprint', file: '/learn/free/omnya-lab-miami-blueprint.pdf' },
   'free-riyadh': { name: 'The Riyadh Blueprint', file: '/learn/free/omnya-lab-riyadh-blueprint.pdf' },
+  'free-plane': { name: 'The Plane Blueprint', file: '/learn/free/omnya-lab-plane-blueprint.pdf' },
   free: { name: 'The Blueprint', file: '/learn/free/omnya-lab-blueprint.pdf' },
   // 17/11 (Nico): the waiting list of The 3D Future (opens Friday 27 November), from the Riyadh thanks page pop-up; no email
   'waitlist-3d-future': { name: 'The 3D Future waitlist', file: '' },
@@ -46,7 +47,7 @@ function mailHtml(name, f) {
 }
 
 // 18/11 (Nico, board M1): the Build free PDF too, it is downloaded from the watch page
-const NO_MAIL = new Set(['free-stadium', 'free-miami', 'free-riyadh', 'free-build', 'waitlist-3d-future']);
+const NO_MAIL = new Set(['free-stadium', 'free-miami', 'free-riyadh', 'free-build', 'free-plane', 'waitlist-3d-future']);
 
 export async function POST(request) {
   let b;

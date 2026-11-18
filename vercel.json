@@ -7,7 +7,7 @@
   ],
   "redirects": [
     {
-      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint|the-stadium-blueprint|the-miami-blueprint|the-riyadh-blueprint|fable)",
+      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint|the-stadium-blueprint|the-miami-blueprint|the-riyadh-blueprint|the-plane-blueprint|fable)",
       "has": [
         {
           "type": "query",
@@ -24,7 +24,7 @@
       "permanent": false
     },
     {
-      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint|the-stadium-blueprint|the-miami-blueprint|the-riyadh-blueprint|fable)",
+      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint|the-stadium-blueprint|the-miami-blueprint|the-riyadh-blueprint|the-plane-blueprint|fable)",
       "has": [
         {
           "type": "query",
@@ -293,6 +293,16 @@
     {
       "source": "/stadium",
       "destination": "/the-stadium-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/plane",
+      "destination": "/the-plane-blueprint",
+      "permanent": true
+    },
+    {
+      "source": "/flight",
+      "destination": "/the-plane-blueprint",
       "permanent": true
     },
     {

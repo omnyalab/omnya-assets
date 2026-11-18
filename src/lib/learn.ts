@@ -44,7 +44,10 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'full-miami'
   // the free and the paid Riyadh PDFs, on /the-riyadh-blueprint (17/11, Burj Al Ballur reels, word 3D on Instant DM)
   | 'free-riyadh'
-  | 'full-riyadh';
+  | 'full-riyadh'
+  // the free and the paid Plane PDFs, on /the-plane-blueprint (18/11, the flight booking reels, word PLANE on Instant DM)
+  | 'free-plane'
+  | 'full-plane';
 
 /**
  * Step 2 (10/11, Nico): after a Full guide (€5.99) the page /learn/thanks/full-* offers "Everything we teach" for the
@@ -119,6 +122,10 @@ export const products: { id: ProductId; checkout: string }[] = [
   // the Full Riyadh Blueprint at €5.99 (€29 struck), Stripe product "The Full Riyadh Blueprint", back to /learn/thanks/full-riyadh (17/11, Nico: P1 C1 N1 + Remote Kit €14.99);
   // prod_Ve3aldbdVukeNB, plink_1UclUiATIF7pxfqfc6TW2EaF; "Riyadh Remote Kit + The Full Riyadh Blueprint" €14.99 is prod_Ve3bQmQ1NCFhph, https://buy.stripe.com/dRmaEWckZ6o83hA76l8so0S (plink_1UclVQATIF7pxfqfRSo7tNwG), used on the watch page
   { id: 'full-riyadh', checkout: 'https://buy.stripe.com/4gM00i3Ot9AkdWeduJ8so0R' },
+  { id: 'free-plane', checkout: '/learn/free/omnya-lab-plane-blueprint.pdf' },
+  // the Full Plane Blueprint at €5.99 (€29 struck), Stripe product "The Full Plane Blueprint", back to /learn/thanks/full-plane (18/11)
+  // prod_VeVeI4G7W68ojp, plink_1UdCdoATIF7pxfqfA86TnibF; "3D Plane Kit + The Full Plane Blueprint" €14.99 is prod_VeVfllW3fiwvGq, https://buy.stripe.com/cNi4gyacReUE4lEfCR8so15; from Monday 23/11 €9.99 https://buy.stripe.com/dRm00i5WBdQA9FY0HX8so16 and €19.99 https://buy.stripe.com/6oUdR83OtcMw3hAeyN8so17, used on the watch page
+  { id: 'full-plane', checkout: 'https://buy.stripe.com/14AaEWgBfdQAg4maix8so14' },
 ];
 
 // 10/11 (site check 2 and 21): the launch prices are gone from the code. fullTowerDeal, full3dDeal and fullCityDeal (the Full
@@ -156,6 +163,7 @@ export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: Pr
   'full-stadium': { kind: 'pdf', oto: 'community' },
   'full-miami': { kind: 'pdf', oto: 'community' },
   'full-riyadh': { kind: 'pdf', oto: 'community' },
+  'full-plane': { kind: 'pdf', oto: 'community' },
 };
 
 /** The words used in the reels ("Comment 3D"). Each one has its own page, /learn/<word>, and leads with one playbook. */

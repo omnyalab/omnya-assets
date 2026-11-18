@@ -42,6 +42,12 @@ const P = {
   // 17/11 (Nico, D2): the price after the launch day, for who comes back the next day (prod_Ve5nDNSX1umOSN €9.99, prod_Ve5oKjIVH0d5Yp €19.99)
   'full-riyadh-9': { items: ['price_1UcnbnATIF7pxfqfuqxTzniw'], back: 'full-riyadh' },
   'kit-riyadh-19': { items: ['price_1Ucnd4ATIF7pxfqfgdbnpSfM'], back: 'full-riyadh' },
+  // 18/11 (Nico, plane reels): the Full Plane Blueprint €5.99 (14AaEWgBfdQAg4maix8so14) and 3D Plane Kit + Full €14.99 (cNi4gyacReUE4lEfCR8so15),
+  // from Monday 23/11 €9.99 (dRm00i5WBdQA9FY0HX8so16) and €19.99 (6oUdR83OtcMw3hAeyN8so17)
+  'full-plane': { items: ['price_1UdCdPATIF7pxfqfXgy7kpAj'], back: 'full-plane' },
+  'kit-plane': { items: ['price_1UdCePATIF7pxfqfeNtWSkX1'], back: 'full-plane' },
+  'full-plane-9': { items: ['price_1UdCfWATIF7pxfqfGqJ241Bn'], back: 'full-plane' },
+  'kit-plane-19': { items: ['price_1UdCgEATIF7pxfqfby6001RM'], back: 'full-plane' },
   // 16/11 (Nico): Black Friday, Everything we teach for €39 until Friday 27 November (prod_Vdaact6ADqm1W3), same delivery as the pack
   'black-friday': { items: ['price_1UcJPLATIF7pxfqf6pLZSXoy'], back: 'everything', until: Date.parse('2026-11-27T23:59:59+01:00') },
 };
