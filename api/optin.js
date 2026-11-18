@@ -45,7 +45,8 @@ function mailHtml(name, f) {
 </div></body></html>`;
 }
 
-const NO_MAIL = new Set(['free-stadium', 'free-miami', 'free-riyadh', 'waitlist-3d-future']);
+// 18/11 (Nico, board M1): the Build free PDF too, it is downloaded from the watch page
+const NO_MAIL = new Set(['free-stadium', 'free-miami', 'free-riyadh', 'free-build', 'waitlist-3d-future']);
 
 export async function POST(request) {
   let b;

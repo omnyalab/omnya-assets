@@ -4,11 +4,13 @@
 // to Friday 27 November 23:59 Rome, the yellow button). The button opens the "Everything we teach" Stripe link (€59).
 // After the end the card hides itself, and the Everything upgrade card of the page (€53, components/FunnelUpgrade) comes
 // back: while the card runs it is hidden (html.ry-bf), so the page never shows two prices for the same pack.
+// 18/11: the Build thanks page uses it too (name="Build", the Build book in the fan).
+const { name = 'Riyadh', book = '/learn/ry_book_tight.webp' } = Astro.props as { name?: string; book?: string };
 ---
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
 <section class="rybf" data-rybf hidden>
 <div class="bfw"><div class="bridge"><h3>One more thing before you go</h3><p>Right now there’s a Black Friday offer on everything we teach</p><span class="ar">↓</span></div>
-      <div class="bfc bft" data-bft><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan"><img src="/learn/3d_book.webp" alt=""><img src="/learn/tt_book_tight.webp" alt=""><img src="/learn/ry_book_tight.webp" alt=""><img src="/learn/sd_book_tight.webp" alt=""><img src="/learn/pk_pb02.webp" alt=""></span><span class="bh">Get everything</span><span class="inc">Every Full guide, Riyadh too, the 3 playbooks, the skills and every new guide</span><span class="pz"><s>€260</s><b>€59</b><span>-77%</span></span><div class="bcd"><small>Black Friday ends in</small><div class="bx"><span><b data-bd>11</b><i>DAYS</i></span><span><b data-bh>00</b><i>HRS</i></span><span><b data-bm>00</b><i>MIN</i></span><span class="sc"><b data-bs>00</b><i>SEC</i></span></div></div><a class="go" href="https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C" data-bfgo>Get everything · €59 →</a></div></div>
+      <div class="bfc bft" data-bft><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan"><img src="/learn/3d_book.webp" alt=""><img src="/learn/tt_book_tight.webp" alt=""><img src={book} alt=""><img src="/learn/sd_book_tight.webp" alt=""><img src="/learn/pk_pb02.webp" alt=""></span><span class="bh">Get everything</span><span class="inc">Every Full guide, {name} too, the 3 playbooks, the skills and every new guide</span><span class="pz"><s>€260</s><b data-bfp>€59</b><span data-bfo>-77%</span></span><span class="pd" data-bfpaid hidden></span><div class="bcd"><small>Black Friday ends in</small><div class="bx"><span><b data-bd>11</b><i>DAYS</i></span><span><b data-bh>00</b><i>HRS</i></span><span><b data-bm>00</b><i>MIN</i></span><span class="sc"><b data-bs>00</b><i>SEC</i></span></div></div><a class="go" href="https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C" data-bfgo>Get everything · €59 →</a></div></div>
 </section>
 <style is:global>
 .rybf{padding:8px 16px 40px;text-align:center;color:#fff;font-family:Inter,-apple-system,sans-serif}
@@ -47,6 +49,8 @@
 .bcd .bx b{font:900 22px/1 Poppins;color:#fff;font-variant-numeric:tabular-nums}
 .bcd .bx i{margin-top:3px;font:700 9.5px Inter;font-style:normal;letter-spacing:.12em;color:#a99e78}
 .bcd .bx .sc b{color:#ffd60a}
+.rybf .bfc .pd{display:block;margin:2px auto 10px;max-width:300px;font:600 13.5px/1.4 Inter,sans-serif;color:#ffe27a}
+.rybf .bfc .pz s+b{transition:transform .3s}
 .rybf .bfc .go{background:linear-gradient(180deg,#ffe24a,#ffc400);color:#111;text-decoration:none}
 html.ry-bf [data-upgrade]{display:none!important}
 </style>
@@ -55,5 +59,17 @@ html.ry-bf [data-upgrade]{display:none!important}
   if (box && Date.now() < end) { box.hidden = false; document.documentElement.classList.add('ry-bf')
     const card = box.querySelector('[data-bft]'), p2 = n => String(n).padStart(2, '0'), q = a => card.querySelector('[data-' + a + ']')
     const bt = () => { const x = Math.max(0, Math.floor((end - Date.now()) / 1000)); if (!x) { box.hidden = true; document.documentElement.classList.remove('ry-bf'); return } q('bd').textContent = Math.floor(x / 86400); q('bh').textContent = p2(Math.floor(x % 86400 / 3600)); q('bm').textContent = p2(Math.floor(x % 3600 / 60)); q('bs').textContent = p2(x % 60) }
-    bt(); setInterval(bt, 1000) } }
+    bt(); setInterval(bt, 1000)
+    // 18/11 (Nico): the offer counts what the buyer has just paid. €59 minus the guide (or guide + kit) of this payment,
+    // read from Stripe through api/files.js (paid = amount_total in cents), never for who already holds the pack.
+    // Each price has its own Stripe link on the product "Everything we teach · upgrade" (it delivers the whole pack).
+    // A price without its link keeps the card at €59, so the page never shows a price it cannot charge.
+    const CREDIT = { 599: [53, 'https://buy.stripe.com/bJedR8acRbIs3hAbmB8so0F'], 999: [49, 'https://buy.stripe.com/8x2eVcckZ5k43hAbmB8so0W'], 1499: [44, 'https://buy.stripe.com/fZu6oGbgVfYIg4meyN8so0X'], 1999: [39, 'https://buy.stripe.com/bJeeVc84J7sccSafCR8so0Y'] }
+    window.__bfCredit = cents => { const c = CREDIT[cents]; if (!c || !c[1]) return
+      const paid = '€' + (cents / 100).toFixed(2)
+      q('bfp').textContent = '€' + c[0]; q('bfo').textContent = '-' + Math.round((1 - c[0] / 260) * 100) + '%'
+      const pd = q('bfpaid'); pd.textContent = 'You already paid ' + paid + ', so you only pay the rest'; pd.hidden = false
+      const go = q('bfgo'); go.href = c[1]; go.textContent = 'Get everything · €' + c[0] + ' →' }
+    const sid = new URLSearchParams(location.search).get('session_id')
+    if (sid) fetch('/api/files?session_id=' + encodeURIComponent(sid)).then(r => r.ok ? r.json() : null).then(d => { if (d && !d.pack && d.paid) window.__bfCredit(d.paid) }).catch(() => {}) } }
 </script>

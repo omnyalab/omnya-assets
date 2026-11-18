@@ -1,0 +1,26 @@
+---
+// 18/11 (Nico, board R1): the Build thanks page (/learn/thanks/full-build) in the colours of its funnel, the Build green.
+// Made by scripts/make-build-ry.py from the Riyadh violet block of views/Thanks.astro and components/RiyadhFuture.astro.
+---
+<style is:global>
+  /* 17/11 (Nico): after paying for the Build guide the page is in the colours of that funnel (green night, white text) */
+  :root{--bg:#06100a;--ink:#ffffff;--mute:#a9c7b4;--mute-lg:#8fb39b;--line:#1f3326}
+  html,body{background:radial-gradient(900px 600px at 50% -8%,#22d35e33,#0000 70%),#06100a!important;color:#fff}
+  .oto .btn--fill,.oto-dl .btn--fill{background:#22d35e!important;border-color:#22d35e!important;color:#fff!important}
+  .oto__steps .is-done span,.oto__steps .is-now span{background:#22d35e!important;color:#fff!important;border-color:#22d35e!important}
+  .hdr .logo__img--dark{filter:invert(1)}
+  .hdr::before{background:#06100ae6!important;border-bottom-color:#1f3326!important}
+  .hdr{color:#fff!important}
+  .wa-fab{background:#22d35e!important;color:#fff!important}
+  html[data-page='thanks'] .oto-dl{background:linear-gradient(160deg,#ffffff1a,#ffffff08)!important;border:1px solid #ffffff26!important;-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);color:#fff!important;box-shadow:0 40px 80px -40px #22d35eaa,inset 0 1px #ffffff33!important}
+  html[data-page='thanks'] .oto-dl *{color:#fff}
+  html[data-page='thanks'] .oto-dl .t-sub{color:#fff!important;-webkit-text-fill-color:#fff!important}
+  html[data-page='thanks'] .oto-dl .oto-dl__note,html[data-page='thanks'] .oto-dl .oto-dl__note *{color:#a9c7b4!important}
+  html[data-page='thanks'] .oto-dl .btn:not(.btn--fill){background:#ffffff14!important;border-color:#ffffff33!important;color:#fff!important}
+  html[data-page='thanks'] .oto__down{background:#22d35e!important}
+  html[data-page='thanks'] .oto__head{display:none}
+  html[data-page='thanks'] .oto__card{background:#0a2213!important;border:1px solid #1f3326;box-shadow:0 40px 70px -40px #22d35e88!important;color:#fff}
+  html[data-page='thanks'] .oto__card *{color:#fff}
+  html[data-page='thanks'] .oto__card .t-sub,html[data-page='thanks'] .oto__card p{color:#c4e6cf}
+
+</style>

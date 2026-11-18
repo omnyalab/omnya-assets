@@ -4,20 +4,37 @@
 // "Save my spot" opens a small glass pop-up with name and email: the sign-up goes to /api/optin as
 // free = 'waitlist-3d-future' (kept in the same list as the opt-ins, no email sent), and Nico's sheet
 // ~/Documents/Omnya Community Waitlist.csv is filled from there by a sync on his Mac.
+// 18/11 (Nico): the card keeps the colours of The 3D Future on every thanks page (never the funnel's): the blue glass
+// knot, "The 3D Future" in Geist with "3D" in the blue gradient, glass with a blue glow, and behind it a blurred photo
+// of one of our projects that is barely seen (bg: towers, burj or stadium; Nico chose B2, the Burj at night).
+// kind="build" only changes the words. The pop-up opens only on a tap of "Save my spot", never by itself, and
+// says what the community is (18/11, Nico: "the pop-up a bit explained").
+const { kind = 'riyadh', bg = 'burj' } = Astro.props as { kind?: 'riyadh' | 'build'; bg?: 'towers' | 'burj' | 'stadium' };
+const what = kind === 'build' ? 'these 3D houses' : 'these 3D towers';
 ---
-<article class="ryf" data-fade>
-  <p class="ryf__tag"><i></i>Opens Friday 27 November</p>
-  <h2 class="ryf__t">The 3D Future</h2>
-  <p class="ryf__sub">Our community goes online in 10 days, and inside we explain everything: how we build these 3D towers, the prompts, the clips and how we sell them</p>
-  <ul class="ryf__li"><li>Every reel taken apart, step by step</li><li>The project files</li><li>Live calls with us</li></ul>
-  <button type="button" class="ryf__btn" data-ryf-open>Save my spot · free →</button>
-  <p class="ryf__note">We write to you the day it opens</p>
-</article>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&display=swap" rel="stylesheet">
+<section class="ryfw" data-fade>
+  <img class="ryfw__bg" src={`/learn/3df_bg_${bg}.webp`} alt="" aria-hidden="true" loading="lazy">
+  <span class="ryfw__glow" aria-hidden="true"></span>
+  <article class="ryf">
+    <img class="ryf__logo" src="/learn/3df_knot.webp" alt="" width="120" height="120">
+    <p class="ryf__tag"><i></i>Opens Friday 27 November</p>
+    <h2 class="ryf__t">The <span>3D</span> Future</h2>
+    <p class="ryf__sub">Our community, where we show you how we build {what} from the first prompt to the client who pays</p>
+    <ul class="ryfm__li ryf__chk"><li>Every reel taken apart, step by step</li><li>The project files we use</li><li>Live calls with us</li></ul>
+    <p class="ryfm__k">Save your spot, it's free</p>
+    <button type="button" class="ryf__btn ryf__btn--card" data-ryf-open>Save my spot →</button>
+  </article>
+</section>
 <div class="ryfm" data-ryf-modal hidden>
   <form class="ryfm__box" data-ryf-form novalidate>
     <button type="button" class="ryfm__x" aria-label="Close" data-ryf-close>×</button>
-    <p class="ryf__tag"><i></i>The 3D Future · 27 November</p>
-    <h3 class="ryfm__t">Save your spot</h3>
+    <img class="ryf__logo ryf__logo--s" src="/learn/3df_knot.webp" alt="" width="64" height="64">
+    <p class="ryf__tag"><i></i>Opens Friday 27 November</p>
+    <h3 class="ryfm__t">The <span>3D</span> Future</h3>
+    <p class="ryfm__sub">Our community, where we show you how we build {what} from the first prompt to the client who pays</p>
+    <ul class="ryfm__li"><li>Every reel taken apart, step by step</li><li>The project files we use</li><li>Live calls with us</li></ul>
+    <p class="ryfm__k">Save your spot, it's free</p>
     <input class="ryfm__in" name="name" placeholder="Your first name" autocomplete="given-name" maxlength="60" required>
     <input class="ryfm__in" name="email" type="email" placeholder="Your best email" autocomplete="email" maxlength="120" required>
     <input name="company" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
@@ -27,27 +44,44 @@
   </form>
 </div>
 <style is:global>
-.ryf{position:relative;margin:0 auto 40px;max-width:640px;padding:30px 24px 26px;border-radius:26px;text-align:center;color:#fff;background:linear-gradient(160deg,#ffffff1a,#ffffff08);border:1px solid #ffffff26;-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);box-shadow:0 40px 80px -40px #9d5cffaa,inset 0 1px #ffffff33}
-.ryf__tag{display:inline-flex;align-items:center;gap:8px;margin:0;padding:6px 12px;border-radius:999px;background:#9d5cff2e;border:1px solid #9d5cff80;font:700 12px/1 var(--font);letter-spacing:.12em;text-transform:uppercase;color:#d9c8ff}
-.ryf__tag i{width:7px;height:7px;border-radius:50%;background:#ffb066;box-shadow:0 0 0 3px #ffb06644}
-.ryf__t{margin:14px 0 0;font:600 clamp(40px,8vw,64px)/1 var(--font);letter-spacing:-.03em;background:linear-gradient(180deg,#fff 0%,#ffb066 45%,#9d5cff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.ryf__sub{margin:14px auto 0;max-width:500px;font:500 17px/1.45 var(--font);color:#d6cdea}
+.ryfw{position:relative;isolation:isolate;max-width:720px;margin:0 auto 48px;padding:56px 18px;font-family:Geist,Inter,-apple-system,system-ui,sans-serif}
+.ryfw__bg{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;border-radius:36px;opacity:.32;filter:blur(14px) saturate(1.1);-webkit-mask:radial-gradient(75% 70% at 50% 50%,#000 45%,transparent 100%);mask:radial-gradient(75% 70% at 50% 50%,#000 45%,transparent 100%)}
+.ryfw__glow{position:absolute;left:50%;top:50%;z-index:-1;width:78%;height:72%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,#2f8bffaa,#0071e355 55%,transparent 100%);filter:blur(30px)}
+.ryf{position:relative;margin:0 auto;max-width:560px;padding:30px 24px 26px;border-radius:28px;text-align:center;color:#fff;background:linear-gradient(160deg,#ffffff24,#ffffff08 55%,#0a1a3a33);border:1px solid #ffffff30;-webkit-backdrop-filter:blur(26px) saturate(1.4);backdrop-filter:blur(26px) saturate(1.4);box-shadow:inset 0 1px #ffffff55,inset 0 0 0 1px #8fc2ff1a,0 40px 80px -40px #000c}
+.ryf__logo{display:block;width:96px;height:96px;margin:0 auto 6px;filter:drop-shadow(0 14px 26px #0b3d8a99)}
+.ryf__logo--s{width:56px;height:56px;margin-bottom:10px}
+.ryf__tag{display:inline-flex;align-items:center;gap:8px;margin:0;padding:6px 12px;border-radius:999px;background:#2f8bff26;border:1px solid #6fb2ff66;font:600 12px/1 Geist,Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#cfe5ff}
+.ryf__tag i{width:7px;height:7px;border-radius:50%;background:#5ab8ff;box-shadow:0 0 0 3px #5ab8ff44}
+.ryf__t{margin:14px 0 0;font:700 clamp(40px,8vw,62px)/1.02 Geist,Inter,sans-serif;letter-spacing:-.035em;color:#fff}
+.ryf__t span{background:linear-gradient(180deg,#bfe0ff 0%,#5ab8ff 45%,#0071e3 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.1em;margin-right:-.1em}
+.ryf__sub{margin:14px auto 0;max-width:470px;font:500 16.5px/1.45 Geist,Inter,sans-serif;color:#d5e3f5}
 .ryf__li{list-style:none;margin:18px auto 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
-.ryf__li li{padding:8px 12px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff22;font:500 14px var(--font);color:#fff}
-.ryf__btn{display:flex;align-items:center;justify-content:center;width:100%;max-width:420px;height:56px;margin:22px auto 0;border:0;border-radius:999px;background:linear-gradient(180deg,#b48cff,#8a4dff);color:#fff;font:600 17px var(--font);cursor:pointer;box-shadow:0 18px 40px -16px #9d5cffee}
+.ryf__li li{padding:8px 12px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff24;font:500 14px Geist,Inter,sans-serif;color:#fff}
+.ryf__btn{display:flex;align-items:center;justify-content:center;width:100%;max-width:420px;height:56px;margin:22px auto 0;border:0;border-radius:999px;background:linear-gradient(180deg,#2f8bff,#0071e3);color:#fff;font:600 17px Geist,Inter,sans-serif;cursor:pointer;box-shadow:inset 0 1px #ffffff55,0 18px 36px -14px #0071e3}
 .ryf__btn:disabled{opacity:.6}
-.ryf__note{margin:10px 0 0;font:500 13px var(--font);color:#a99ec6}
-.ryfm{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:20px;background:#07041099;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+/* 18/11 (Nico): the card uses the words and the layout of the pop-up */
+.ryf__chk{max-width:420px;margin:18px auto 0}
+.ryf .ryfm__k{margin:20px 0 0}
+.ryf .ryf__btn--card{margin-top:12px}
+.ryf__note{margin:10px 0 0;font:500 13px Geist,Inter,sans-serif;color:#9fb6d3}
+.ryfm{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:20px;overflow-y:auto;background:#020814aa;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-family:Geist,Inter,sans-serif}
 .ryfm[hidden]{display:none}
-.ryfm__box{position:relative;width:min(420px,100%);padding:28px 22px 22px;border-radius:24px;text-align:center;color:#fff;background:linear-gradient(160deg,#2a1650e6,#120a24f0);border:1px solid #ffffff2e;box-shadow:0 50px 100px -30px #000,0 0 80px -30px #9d5cff}
-.ryfm__x{position:absolute;right:10px;top:10px;width:36px;height:36px;border:0;border-radius:50%;background:#ffffff14;color:#fff;font-size:22px;cursor:pointer}
-.ryfm__t{margin:14px 0 16px;font:600 30px/1.1 var(--font);letter-spacing:-.02em}
-.ryfm__in{display:block;width:100%;height:52px;margin:0 0 10px;padding:0 16px;border-radius:14px;border:1px solid #ffffff2e;background:#ffffff10;color:#fff;font:500 16px var(--font);outline:none}
-.ryfm__in::placeholder{color:#a99ec6}
-.ryfm__in:focus{border-color:#b48cff;box-shadow:0 0 0 3px #9d5cff44}
+.ryfm__box{position:relative;width:min(420px,100%);padding:28px 22px 22px;border-radius:24px;text-align:center;color:#fff;background:linear-gradient(160deg,#16305acc,#0a1630ee);border:1px solid #ffffff2a;box-shadow:inset 0 1px #ffffff40,0 30px 80px -20px #0071e399}
+.ryfm__x{position:absolute;right:10px;top:10px;width:36px;height:36px;border:0;border-radius:50%;background:#ffffff14;color:#fff;font:400 22px/1 Geist,Inter,sans-serif;cursor:pointer}
+.ryfm__t{margin:12px 0 0;font:700 36px/1.05 Geist,Inter,sans-serif;letter-spacing:-.035em}
+.ryfm__t span{background:linear-gradient(180deg,#bfe0ff 0%,#5ab8ff 45%,#0071e3 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.1em;margin-right:-.1em}
+.ryfm__sub{margin:10px auto 0;max-width:330px;font:500 15px/1.45 Geist,Inter,sans-serif;color:#d5e3f5}
+.ryfm__li{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:7px;text-align:left}
+.ryfm__li li{position:relative;padding:9px 12px 9px 34px;border-radius:12px;background:#ffffff0d;border:1px solid #ffffff1f;font:500 14px Geist,Inter,sans-serif;color:#fff}
+.ryfm__li li::before{content:"✓";position:absolute;left:12px;top:50%;transform:translateY(-50%);font:700 13px Geist,Inter,sans-serif;color:#5ab8ff}
+.ryfm__k{margin:18px 0 12px;font:600 15px Geist,Inter,sans-serif;color:#fff}
+.ryfm__in{display:block;width:100%;box-sizing:border-box;height:52px;margin:0 0 10px;padding:0 16px;border-radius:14px;border:1px solid #ffffff2e;background:#ffffff10;color:#fff;font:500 16px Geist,Inter,sans-serif;outline:none}
+.ryfm__in::placeholder{color:#9fb6d3}
+.ryfm__in:focus{border-color:#5ab8ff;box-shadow:0 0 0 3px #2f8bff44}
 .ryfm .ryf__btn{margin-top:8px}
-.ryfm__err{min-height:18px;margin:8px 0 0;font:500 13px var(--font);color:#ff8f8f}
-.ryfm__ok{margin:6px 0 0;font:600 17px/1.4 var(--font);color:#fff}
+.ryfm__err{min-height:18px;margin:8px 0 0;font:500 13px Geist,Inter,sans-serif;color:#ff8f8f}
+.ryfm__ok{margin:6px 0 0;font:600 17px/1.4 Geist,Inter,sans-serif;color:#fff}
+@media (max-width:620px){.ryfw{padding:40px 10px}.ryf{padding:26px 18px 22px}.ryf__logo{width:84px;height:84px}}
 </style>
 <script is:inline>
 { const m = document.querySelector('[data-ryf-modal]'), f = document.querySelector('[data-ryf-form]')
