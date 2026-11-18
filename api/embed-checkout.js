@@ -18,6 +18,9 @@ const P = {
   'full-towers-scene': { items: ['price_1UZz2fATIF7pxfqfRyPDkrrS', 'price_1UaAr6ATIF7pxfqfbRzsrio6'], back: 'full-towers' }, // 7sY3cu2KpbIsaK2duJ8so0H · 5,99 + scene 12
   'full-build': { items: ['price_1UZs1KATIF7pxfqfhu30zYy6'], back: 'full-build' }, // 5kQ3cuacR3bW2dwgGV8so0D · 5,99
   'full-build-9': { items: ['price_1Ud6DgATIF7pxfqfyM7lgRQA'], back: 'full-build' }, // 6oUdR83Ot3bW9FY4Yd8so0V · 9,99 from Monday 23/11 (18/11)
+  // 18/11: House Builder Skill + The Full Build Blueprint, €14.99 (8x2fZg84J3bW4lEgGV8so0Z) and €19.99 from Monday 23/11 (3cI28q2Kp9Ak6tMfCR8so10)
+  'skill-build': { items: ['price_1Ud6ezATIF7pxfqf4fuX14NZ'], back: 'full-build' },
+  'skill-build-19': { items: ['price_1Ud6gFATIF7pxfqfXU504pqH'], back: 'full-build' },
   'full-tower': { items: ['price_1UZTEcATIF7pxfqfwl2Vl0eu'], back: 'full-tower' }, // cNi9AS1GlfYI5pI4Yd8so0z · 5,99
   'full-3d': { items: ['price_1UZTNRATIF7pxfqfL1MLpQtJ'], back: 'full-3d' }, // 28EcN4dp34g0bO6fCR8so0A · 5,99 (13/11)
   'full-city': { items: ['price_1UZTeWATIF7pxfqfeOIS3Qit'], back: 'full-city' }, // bJecN4gBfcMwf0icqF8so0B · 5,99 (13/11)

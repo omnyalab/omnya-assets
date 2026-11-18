@@ -6,10 +6,12 @@
 # Usage (repo root): python3 scripts/make-build-ry.py [f1|f2|f3|f4]   (f = colour of the free guide card, Nico's choice)
 import sys, re, colorsys
 FC = (sys.argv + ['f1'])[1]
-KIT = False
+KIT = True   # 18/11: the House Builder skill exists (private/learn/en/house-builder-skill.zip)
 LINK_FULL = 'https://buy.stripe.com/5kQ3cuacR3bW2dwgGV8so0D'      # The Full Build Blueprint €5.99 (full-build)
 LINK_FULL9 = 'https://buy.stripe.com/6oUdR83Ot3bW9FY4Yd8so0V'     # €9.99 from Monday 23/11 (full-build-9), prod_VeP1v5W4TvpNi7
 END = '2026-11-22T23:59:59+01:00'
+LINK_SKILL = 'https://buy.stripe.com/8x2fZg84J3bW4lEgGV8so0Z'    # House Builder Skill + The Full Build Blueprint €14.99 (skill-build)
+LINK_SKILL19 = 'https://buy.stripe.com/3cI28q2Kp9Ak6tMfCR8so10'  # the same from Monday 23/11, €19.99 (skill-build-19)
 
 EX = {'#9d5cff': '#22d35e', '#7c5cff': '#1fc458', '#c08cff': '#7be8a0', '#6b3be0': '#13a544', '#372b50': '#24402e', '#140d22': '#0a160e',
       '#130b24': '#08130c', '#948ba5': '#8b93a5', '#d3c7ea': '#cde9d6', '#b3a9c6': '#9aa3b2', '#a29ab2': '#9aa3b2', '#ffb066': '#d4ff5a',
@@ -60,6 +62,7 @@ for a, b in [
   ('/learn/ry_scene_preview.webp', '/learn/bd_3d_04.webp'),
   ('<b>Full Guide + Remote Kit<em>NEW</em></b>', '<b>Full Guide + Claude Skill<em>NEW</em></b>'),
   ('that drives the tower from your phone, ready to use', 'that builds the house page for you, ready to use'),
+  ('the <strong class="sk">remote</strong>', 'the <strong class="sk">skill</strong>'),
   ("'Guide + Remote Kit'", "'Guide + Claude Skill'"),
   ('2026-11-19T23:59:59+01:00', END), ('from Friday €9.99', 'from Monday €9.99'),
   ("omnya_ry_first", "omnya_bd_first"),
@@ -67,9 +70,9 @@ for a, b in [
   ("'full': 'full-riyadh'", "'full': 'full-build'"),
   ("LINK.full = 'https://buy.stripe.com/28EbJ0dp3bIs6tMbmB8so0U'", f"LINK.full = '{LINK_FULL9}'"),
   ("PID.full = 'full-riyadh-9'", "PID.full = 'full-build-9'"),
-  # the skill row is hidden until the Build skill exists: its links point at the Full Build, never at a Riyadh product
-  ("'skill': 'https://buy.stripe.com/dRmaEWckZ6o83hA76l8so0S'", f"'skill': '{LINK_FULL}'"), ("'skill': 'kit-riyadh'", "'skill': 'full-build'"),
-  ("LINK.skill = 'https://buy.stripe.com/aFa4gy98NcMwaK2duJ8so0T'", f"LINK.skill = '{LINK_FULL9}'"), ("PID.skill = 'kit-riyadh-19'", "PID.skill = 'full-build-9'"),
+  # the skill row: the House Builder skill + the Full Build Blueprint (18/11)
+  ("'skill': 'https://buy.stripe.com/dRmaEWckZ6o83hA76l8so0S'", f"'skill': '{LINK_SKILL}'"), ("'skill': 'kit-riyadh'", "'skill': 'skill-build'"),
+  ("LINK.skill = 'https://buy.stripe.com/aFa4gy98NcMwaK2duJ8so0T'", f"LINK.skill = '{LINK_SKILL19}'"), ("PID.skill = 'kit-riyadh-19'", "PID.skill = 'skill-build-19'"),
 ]:
     w = sub(w, a, b)
 if 'remote' in w.lower().replace('remote kit', '') and 'Remote' in w:

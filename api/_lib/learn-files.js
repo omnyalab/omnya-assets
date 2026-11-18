@@ -74,12 +74,19 @@ const MIAMI_SKILL = {
   note: 'is a skill for Claude: on claude.ai open Settings, Capabilities, Skills and upload the zip, or unzip it into ~/.claude/skills for Claude Code, then ask "build me Lisbon like Build Miami". It needs Claude Pro or Claude Code, and the README inside has every step.',
 };
 
+// 18/11 (Nico, K2 of the Build funnel): the House Builder skill, a zip for Claude: the hold to build page from the
+// buyer's phase photos or clips, sold with the Full Build Blueprint at €14.99 (€19.99 from Monday 23/11)
+const HOUSE_SKILL = {
+  name: 'The House Builder skill', file: 'en/house-builder-skill.zip', kind: 'zip',
+  note: 'is a skill for Claude: on claude.ai open Settings, Capabilities, Skills and upload the zip, or unzip it into ~/.claude/skills for Claude Code, then ask "build me a hold to build page with these photos". It needs Claude Pro or Claude Code, and the README inside has every step.',
+};
+
 const RIYADH_KIT = {
   name: 'The Riyadh Remote Kit', file: 'en/riyadh-remote-kit.zip', kind: 'zip',
   note: 'is the code of the phone remote: unzip it, run Start (or python3 server.py), open the big screen on your computer and the remote on your phone on the same Wi-Fi. The README inside has every step, and how to put your own clips in.',
 };
 
-const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, SCENE, SKILL, MIAMI_SKILL, RIYADH_KIT];
+const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, SCENE, SKILL, MIAMI_SKILL, HOUSE_SKILL, RIYADH_KIT];
 // 13/11: the playbooks got new names. The one-year links already in buyers' emails still carry the old file names, so
 // the old names stay valid and point to the new files (who bought the old playbook 02 now gets the new one).
 const OLD = {
@@ -101,7 +108,7 @@ export const allFiles = () => EVERY.flatMap((f) => [{ name: f.name, file: f.file
 // 16/11 (Nico): every Full guide is in it now (City and Stadium joined), and the Stadium Builder skill; the Black Friday
 // product "Black Friday · Everything we teach" (€39) is matched by the /everything we teach/ rule and delivers the same
 // 16/11: the Full Miami Blueprint and the Miami Builder skill joined it
-const PACK = [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_CITY, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, SKILL, MIAMI_SKILL];
+const PACK = [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_CITY, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, SKILL, MIAMI_SKILL, HOUSE_SKILL];
 /** True for every Stripe product that is the pack, whatever its price: "Everything we teach" (€59),
     "Everything we teach · upgrade" (€53 after a Full guide) and "Everything we teach · thank you price" (€29, sent by hand). */
 export const isPack = (name) => /everything we teach/i.test(String(name || ''));
@@ -141,6 +148,8 @@ const RULES = [
   // of the playbook would get the Full Tower guide. The pack and the other-two offers are matched above or have no "tower".
   [/launch kit that sells a tower/i, [BEFORE_IT_EXISTS]],
   // "build blueprint", never /build/ alone: the Build lesson is a product too
+  // 18/11: "House Builder Skill + The Full Build Blueprint" (€14.99 / €19.99) BEFORE the plain Build rule, which would match it too
+  [/house builder skill/i, [FULL_BUILD, HOUSE_SKILL]],
   [/full build blueprint/i, [FULL_BUILD]],
   // "full towers blueprint" before /tower/: the Full Tower Blueprint (one tower) is another product (9/11)
   [/full towers blueprint/i, [FULL_TOWERS]],

@@ -510,8 +510,6 @@ html.bf .opt[data-o="all"]{display:none}
 .fgt small{color:#9fd0ff!important}
 .fgd{background:linear-gradient(90deg,#2997ff,#5ab8ff)!important;color:#ffffff!important;box-shadow:0 10px 24px -10px #2997ff!important}
 .fg:focus-visible{outline-color:#2997ff!important}
-/* the Build skill is not ready yet: only the Full Guide is on sale (K2 comes back with KIT = True) */
-.opt-sk,.p-kit{display:none!important}
 </style></head><body>
 
 <div class="bar"><img src="/learn/watch/logo.svg" alt="Omnya Lab"><span class="lbl">Launch price ends in</span><span class="tm"><span data-h>00</span><small>h</small><span data-m>14</span><small>m</small><span data-s>59</span><small>s</small></span><a class="go cbtn" href="#offer">Get the full guide<i class="dot"></i><span class="px">€5.99</span></a></div>
@@ -557,7 +555,7 @@ html.bf .opt[data-o="all"]{display:none}
       </div>
       <a class="getnow" href="#buy" data-getnow>Get it now · <span data-gnp>€5.99</span> <b>↓</b></a>
       <div class="right"><p class="tml">Launch price ends in</p><div class="tm" data-t3>00:14:59</div><h3>YOURS FOREVER</h3><p class="one"><b data-pr>€5.99</b> one-time · no subscription</p>
-        <span id="buy"></span><label class="opt opt-sk" data-o="skill"><span class="ck">✓</span><span class="duo"><img class="a" src="/learn/bd_book_tight.webp" alt=""><img class="b" src="/learn/bd_3d_04.webp" alt=""></span><span><b>Full Guide + Claude Skill<em>NEW</em></b><small>The guide + the <strong class="sk">remote</strong> that builds the house page for you, ready to use</small></span><span class="pp"><strong>€14.99</strong><s>€69.99</s></span><span class="off bs">★ BEST SELLER</span></label><label class="opt opt-fu on" data-o="full"><span class="ck">✓</span><img src="/learn/bd_book_tight.webp" alt=""><span><b>The Full Guide</b><small>Every prompt, word for word</small></span><span class="pp"><strong>€5.99</strong><s>€29</s></span><span class="off">-80%</span></label>
+        <span id="buy"></span><label class="opt opt-sk" data-o="skill"><span class="ck">✓</span><span class="duo"><img class="a" src="/learn/bd_book_tight.webp" alt=""><img class="b" src="/learn/bd_3d_04.webp" alt=""></span><span><b>Full Guide + Claude Skill<em>NEW</em></b><small>The guide + the <strong class="sk">skill</strong> that builds the house page for you, ready to use</small></span><span class="pp"><strong>€14.99</strong><s>€69.99</s></span><span class="off bs">★ BEST SELLER</span></label><label class="opt opt-fu on" data-o="full"><span class="ck">✓</span><img src="/learn/bd_book_tight.webp" alt=""><span><b>The Full Guide</b><small>Every prompt, word for word</small></span><span class="pp"><strong>€5.99</strong><s>€29</s></span><span class="off">-80%</span></label>
         <div class="tap">Tap a card, it takes you straight to the payment ↓</div><div class="sp"><div class="emw" data-emw><span class="lab">Email <small style="color:#ff6b6b;font-weight:700">(required)</small> · the guide arrives here</span><input class="in" type="email" placeholder="you@example.com" aria-label="Your email" data-em autocomplete="email" required></div>
         <span class="lab pml">Payment method</span>
         <div class="cpanel"><div class="chead"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/></svg>Card</div>
@@ -639,8 +637,8 @@ if (tr) tr.addEventListener('scroll', () => { const n = reels.length, k = Math.r
 dots.forEach((d, i) => d.addEventListener('click', () => { if (innerWidth < 820) reels[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }) }))
 
 // the site: who just left their email (OptIn keeps it for this tab only), the real Stripe Checkout, the link as a fallback
-const LINK = {'full': 'https://buy.stripe.com/5kQ3cuacR3bW2dwgGV8so0D', 'all': 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C', 'bf': 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C', 'skill': 'https://buy.stripe.com/5kQ3cuacR3bW2dwgGV8so0D'}, PID = {'full': 'full-build', 'all': 'everything', 'bf': 'everything', 'skill': 'full-build'}
-if (window.__ry2) { LINK.full = 'https://buy.stripe.com/6oUdR83Ot3bW9FY4Yd8so0V'; LINK.skill = 'https://buy.stripe.com/6oUdR83Ot3bW9FY4Yd8so0V'; PID.full = 'full-build-9'; PID.skill = 'full-build-9' }
+const LINK = {'full': 'https://buy.stripe.com/5kQ3cuacR3bW2dwgGV8so0D', 'all': 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C', 'bf': 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C', 'skill': 'https://buy.stripe.com/8x2fZg84J3bW4lEgGV8so0Z'}, PID = {'full': 'full-build', 'all': 'everything', 'bf': 'everything', 'skill': 'skill-build'}
+if (window.__ry2) { LINK.full = 'https://buy.stripe.com/6oUdR83Ot3bW9FY4Yd8so0V'; LINK.skill = 'https://buy.stripe.com/3cI28q2Kp9Ak6tMfCR8so10'; PID.full = 'full-build-9'; PID.skill = 'skill-build-19' }
 let who = {}; try { who = JSON.parse(sessionStorage.getItem('omnya-watch') || '{}') } catch (e) {}
 const em = document.querySelector('[data-em]'), cn = document.querySelector('[data-cn]')
 if (who.email) em.value = who.email
