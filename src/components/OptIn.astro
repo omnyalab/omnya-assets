@@ -11,6 +11,7 @@ import '../styles/optin.css';
 import '../styles/optin-build.css';
 import '../styles/optin-miami.css';
 import '../styles/optin-burj.css';
+import '../styles/optin-stadium.css';
 import AllSetOffer from './AllSetOffer.astro';
 
 interface Props {
@@ -22,7 +23,8 @@ interface Props {
   hero: string;
   heroMobile: string;
   book?: boolean; // 9/11 (Nico, Build page): the cover in book format (1000x1375) instead of the tall 9:16 PDF
-  theme?: 'c1' | 'vc' | 'ry' | 'ry1' | 'ry2' | 'ry3'; // 16/11: vc = the Miami night colours (src/styles/optin-miami.css, scripts/recolor-miami.py); 17/11: ry = the Burj Al Ballur colours (optin-burj.css, scripts/recolor-burj.py)
+  theme?: 'c1' | 'vc' | 'ry' | 'ry1' | 'ry2' | 'ry3' | 'sd'; // 18/11: sd = the stadium red (optin-stadium.css, scripts/recolor-stadium.py)
+  // 16/11: vc = the Miami night colours (src/styles/optin-miami.css, scripts/recolor-miami.py); 17/11: ry = the Burj Al Ballur colours (optin-burj.css, scripts/recolor-burj.py)
   // // 9/11 (Nico): C1 green on the Build page (src/styles/optin-build.css, made by scripts/recolor-build.py)
   fade?: boolean; // 9/11 (Nico, Towers page): the blue fade between the form and the offer, like the green one of the Build page
   noClose?: boolean; // 9/11 (Nico, Build page): no × on the card, and the card never closes (no click outside, no Escape):
@@ -135,7 +137,7 @@ const next = after || `/${slug}/sent`;
       // a place on this same page (the City page, "#full"): the card and the loading screen go away
       if (url.charAt(0) === '#') { oil.hidden = true; box.hidden = true; var el = document.querySelector(url); if (el) el.scrollIntoView(); return; }
       if (!green) { location.href = url; return; }
-      var f = document.createElement('div'); var vc = (box.className.match(/oi--((?:vc|ry)\d?)\b/) || [])[1]; f.className = 'oi-fade' + (box.classList.contains('oi--c1') ? '' : vc ? ' oi-fade--' + vc : ' oi-fade--blue'); document.body.appendChild(f);
+      var f = document.createElement('div'); var vc = (box.className.match(/oi--((?:vc|ry|sd)\d?)\b/) || [])[1]; f.className = 'oi-fade' + (box.classList.contains('oi--c1') ? '' : vc ? ' oi-fade--' + vc : ' oi-fade--blue'); document.body.appendChild(f);
       requestAnimationFrame(function () { f.classList.add('on'); });
       setTimeout(function () { location.href = url; }, 520);
     };

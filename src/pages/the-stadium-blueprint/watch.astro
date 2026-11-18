@@ -1,7 +1,8 @@
 ---
-// the-stadium-blueprint/watch (15/11, copied from the Towers one, 13/11 Nico): after the free blueprint email, the face video, the reels and the Full with the real
-// Stripe Checkout inside the page (api/embed-checkout.js). Built from the approved board (ultimateeditors.com structure,
-// Omnya blue, phone first). OptIn sends people here with `watch` once "Delivered" has shown.
+// the-stadium-blueprint/watch (18/11, Nico: the Build/Riyadh format for the Stadium funnel, in red): the free Stadium
+// Blueprint as step 1 (no email, NO_MAIL), the face video with the stadium, our 1M views reel, then the Full Stadium Guide
+// with the real Stripe Checkout inside the page (api/embed-checkout.js). Launch price for everyone until Sunday 22/11 23:59.
+// Made by scripts/make-stadium-ry.py from the Build page: change the words there, not here.
 ---
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,58 +13,58 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script is:inline>try{var oe=sessionStorage.getItem("omnya-enter"),h=document.documentElement;if(oe){h.classList.add("enter");sessionStorage.removeItem("omnya-enter");var L=JSON.parse(sessionStorage.getItem("omnya-land")||"null");sessionStorage.removeItem("omnya-land");if(oe==="d"&&L){h.classList.add("land");h.style.setProperty("--lx",L.x+"px");h.style.setProperty("--ly",L.y+"px");h.style.setProperty("--ls",L.s+"px")}}}catch(e){}</script>
 <style is:inline>/* 15/11 (Nico, board D): coming from the card, the dark veil and the green check of the "sent" screen are still here, then the check flies onto step 1 */
-html.land body::after{content:"";position:fixed;inset:0;z-index:200;background:#0d0e12;pointer-events:none}
+html.land body::after{content:"";position:fixed;inset:0;z-index:200;background:#100b0b;pointer-events:none}
 html.land.fly body::after{animation:lveil .6s ease .18s both}
 @keyframes lveil{to{opacity:0}}
-html.land body::before{content:"";position:fixed;left:0;top:0;z-index:201;width:var(--ls);height:var(--ls);border-radius:50%;background:#30d158 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5.5 12.5l4.2 4.2 8.8-9.4' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/52% no-repeat;box-shadow:0 0 0 8px #30d15822;transform-origin:0 0;transform:translate(var(--lx),var(--ly));pointer-events:none}
+html.land body::before{content:"";position:fixed;left:0;top:0;z-index:201;width:var(--ls);height:var(--ls);border-radius:50%;background:#d03034 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5.5 12.5l4.2 4.2 8.8-9.4' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/52% no-repeat;box-shadow:0 0 0 8px #d0303422;transform-origin:0 0;transform:translate(var(--lx),var(--ly));pointer-events:none}
 html.land.fly body::before{animation:lfly .75s cubic-bezier(.65,0,.3,1) .12s both}
-@keyframes lfly{to{transform:translate(var(--tx),var(--ty)) scale(var(--tk));box-shadow:0 0 0 0 #30d15800}}
+@keyframes lfly{to{transform:translate(var(--tx),var(--ty)) scale(var(--tk));box-shadow:0 0 0 0 #d0303400}}
 html.land .steps>.ok em{visibility:hidden}
 </style>
 <style is:global>
 /* The page after the free guide on the structure of ultimateeditors.com, in Omnya's bright blue, built phone first
    (the reels traffic lands here). Button variants by URL: ?btn=b1 blue · b2 blue + price · b3 yellow · b4 yellow + price.
    Everything shown is ours and real; no invented reviews. */
-:root{--bg:#0d0e12;--bg2:#14161d;--ink:#f5f5f7;--mute:#a1a1aa;--line:#ffffff14;--blue:#0a84ff;--blue2:#3aa0ff;--red:#ff1f1f;--yes:#30d158;--gold:#ffd60a}
+:root{--bg:#120d0d;--bg2:#141a16;--ink:#f5f5f7;--mute:#a1a1aa;--line:#ffffff14;--blue:#d32127;--blue2:#e87a7e;--red:#ff1f1f;--yes:#d03034;--gold:#ffd60a}
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
 .wrap{max-width:1180px;margin:0 auto;padding:0 16px}
-.hb{background:linear-gradient(180deg,#ffffff 0%,#9fd2ff 38%,#1f8fff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.hb2{background:linear-gradient(90deg,#8fd0ff,#1f8fff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hb{background:linear-gradient(180deg,#ffffff 0%,#ffb066 38%,#d32127 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hb2{background:linear-gradient(90deg,#ffb066,#d32127);-webkit-background-clip:text;background-clip:text;color:transparent}
 /* 13/11 (Nico): the gradient is cut to the text box and the italic leans out of it (the last letter was clipped):
    a little room on the right and under, given back with a negative margin so nothing moves */
 .hb,.hb2{padding:0 .16em .08em 0;margin-right:-.16em}
 h1 u.hb2{padding:0 .05em 0 0;margin-right:-.05em}
 .tm{font-family:Poppins,sans-serif;font-weight:900;color:var(--red);font-variant-numeric:tabular-nums;text-shadow:0 0 10px #ff1f1f40}
-.bar{position:fixed;left:50%;top:10px;width:calc(100% - 20px);transform:translate(-50%,-160%);opacity:0;transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .3s;z-index:30;margin:0;max-width:900px;display:flex;align-items:center;gap:12px;padding:7px 7px 7px 16px;border-radius:999px;background:#15171ee8;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #ff1f1f66;box-shadow:0 20px 40px -20px #000}
+.bar{position:fixed;left:50%;top:10px;width:calc(100% - 20px);transform:translate(-50%,-160%);opacity:0;transition:transform .45s cubic-bezier(.2,.8,.2,1),opacity .3s;z-index:30;margin:0;max-width:900px;display:flex;align-items:center;gap:12px;padding:7px 7px 7px 16px;border-radius:999px;background:#1a1313e8;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid #ff1f1f66;box-shadow:0 20px 40px -20px #000}
 .bar.show{transform:translate(-50%,0);opacity:1}
 .bar img{height:17px}
 .bar .lbl{font:600 14px Poppins;white-space:nowrap}
 .bar .tm{font-size:19px;white-space:nowrap}.bar .tm small{font-size:11px;margin:0 5px 0 1px;color:#ff8a8a}
 .bar .go{margin-left:auto}
-.cbtn{display:flex;align-items:center;justify-content:center;gap:12px;border-radius:14px;font:800 clamp(17px,2.4vw,22px) Poppins;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;color:#fff;background:linear-gradient(180deg,#2b96ff,#0066ff);box-shadow:0 0 0 6px #0a84ff26,0 20px 50px -12px #0a84ffcc,inset 0 1px 0 #ffffff55}
+.cbtn{display:flex;align-items:center;justify-content:center;gap:12px;border-radius:14px;font:800 clamp(17px,2.4vw,22px) Poppins;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;color:#fff;background:linear-gradient(180deg,#d32127,#a51217);box-shadow:0 0 0 6px #d3212726,0 20px 50px -12px #d32127cc,inset 0 1px 0 #ffffff55}
 .cbtn .dot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.75}
 .cbtn .px,.cbtn .dot{display:none}
 body.withprice .cbtn .px,body.withprice .cbtn .dot{display:inline-block}
 body.yellow .cbtn{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);box-shadow:0 0 0 6px #ffd60a2b,0 20px 50px -12px #ffd60acc,inset 0 1px 0 #ffffffaa}
-.go.cbtn{height:44px;padding:0 18px;border-radius:999px;font-size:13px;gap:8px;box-shadow:0 0 24px -4px #0a84ff}
+.go.cbtn{height:44px;padding:0 18px;border-radius:999px;font-size:13px;gap:8px;box-shadow:0 0 24px -4px #d32127}
 body.yellow .go.cbtn{box-shadow:0 0 24px -4px #ffd60a}
 .hero .cbtn{width:min(560px,100%);height:66px;animation:bob 1.6s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 .hero{position:relative;text-align:center;padding:40px 0 18px}
-.hero::before{content:"";position:absolute;left:50%;top:-90px;width:900px;height:560px;margin-left:-450px;background:radial-gradient(closest-side,#0a84ff3a,#0000);pointer-events:none}
+.hero::before{content:"";position:absolute;left:50%;top:-90px;width:900px;height:560px;margin-left:-450px;background:radial-gradient(closest-side,#d321273a,#0000);pointer-events:none}
 .ctop{font-size:clamp(40px,6vw,56px);letter-spacing:.02em;line-height:1}
 .ctop i{font-style:normal;color:#ff7a7a;margin:0 4px}
 .csub{margin:8px 0 0;font-size:min(14.5px,3.7vw);font-weight:700;color:var(--red);white-space:nowrap}
-.free{display:inline-flex;align-items:center;gap:10px;margin-top:22px;padding:10px 18px 10px 10px;border-radius:999px;background:#30d15826;border:1.5px solid #30d158aa;font:700 15px Inter;color:#c6f7d4;box-shadow:0 0 30px -8px #30d158aa}
+.free{display:inline-flex;align-items:center;gap:10px;margin-top:22px;padding:10px 18px 10px 10px;border-radius:999px;background:#d0303426;border:1.5px solid #d03034aa;font:700 15px Inter;color:#f7c5c7;box-shadow:0 0 30px -8px #d03034aa}
 .free b{color:#fff}
-.free i{width:24px;height:24px;font-size:14px;border-radius:50%;background:var(--yes);display:grid;place-items:center;font-style:normal;color:#04210f;font-size:12px;font-weight:900}
+.free i{width:24px;height:24px;font-size:14px;border-radius:50%;background:var(--yes);display:grid;place-items:center;font-style:normal;color:#210404;font-size:12px;font-weight:900}
 h1{position:relative;margin:16px auto 0;max-width:1000px;font-family:Poppins,sans-serif;font-weight:800;font-size:clamp(30px,5.2vw,58px);line-height:1.08;letter-spacing:-.02em}
-h1 u{text-decoration-thickness:4px;text-underline-offset:8px;text-decoration-color:#1f8fff}
-.vsl{position:relative;max-width:820px;margin:30px auto 0;border-radius:18px;overflow:hidden;border:1.5px solid #0a84ff88;box-shadow:0 0 0 6px #0a84ff18,0 40px 90px -30px #000,0 0 120px -30px #0a84ffaa;background:#000}
+h1 u{text-decoration-thickness:4px;text-underline-offset:8px;text-decoration-color:#d32127}
+.vsl{position:relative;max-width:820px;margin:30px auto 0;border-radius:18px;overflow:hidden;border:1.5px solid #d3212788;box-shadow:0 0 0 6px #d3212718,0 40px 90px -30px #000,0 0 120px -30px #d32127aa;background:#000}
 .vsl video{display:block;width:100%;aspect-ratio:16/9}
-.unm{position:absolute;left:50%;top:50%;width:min(420px,70%);transform:translate(-50%,-50%);padding:24px 18px;border-radius:16px;background:#0a6cffcc;backdrop-filter:blur(8px);border:1.5px solid #ffffff66;text-align:center;font:700 clamp(15px,2.4vw,24px)/1.35 Poppins;cursor:pointer;transition:opacity .3s}
+.unm{position:absolute;left:50%;top:50%;width:min(420px,70%);transform:translate(-50%,-50%);padding:24px 18px;border-radius:16px;background:#a51217cc;backdrop-filter:blur(8px);border:1.5px solid #ffffff66;text-align:center;font:700 clamp(15px,2.4vw,24px)/1.35 Poppins;cursor:pointer;transition:opacity .3s}
 .unm svg{width:44px;height:44px;display:block;margin:0 auto 8px}
 .vsl.on .unm{opacity:0;pointer-events:none}
 .watch{display:flex;align-items:center;justify-content:center;gap:10px;margin:26px 0 0;font:800 clamp(14px,2vw,17px) Poppins;letter-spacing:.06em;text-transform:uppercase}
@@ -73,37 +74,37 @@ h1 u{text-decoration-thickness:4px;text-underline-offset:8px;text-decoration-col
 .cta{display:flex;justify-content:center;margin:28px auto 0}
 .big{text-align:center;padding:84px 0 10px}
 .big p{margin:0;font:600 20px Poppins}
-.big strong{display:block;font:900 clamp(80px,14vw,156px)/1 Poppins;letter-spacing:-.02em;margin:8px 0 6px;filter:drop-shadow(0 0 42px #0a84ff88)}
+.big strong{display:block;font:900 clamp(80px,14vw,156px)/1 Poppins;letter-spacing:-.02em;margin:8px 0 6px;filter:drop-shadow(0 0 42px #d3212788)}
 .big .sub{font:700 clamp(17px,2.4vw,22px) Poppins}
-.viral{position:relative;width:min(340px,82vw);aspect-ratio:9/16;margin:26px auto 0;border-radius:22px;overflow:hidden;border:1.5px solid #0a84ffaa;box-shadow:0 40px 80px -30px #000,0 0 90px -20px #0a84ff}
+.viral{position:relative;width:min(340px,82vw);aspect-ratio:9/16;margin:26px auto 0;border-radius:22px;overflow:hidden;border:1.5px solid #d32127aa;box-shadow:0 40px 80px -30px #000,0 0 90px -20px #d32127}
 .viral video{width:100%;height:100%;object-fit:cover;display:block}
 .viral .cap{position:absolute;left:0;right:0;bottom:0;padding:50px 16px 16px;background:linear-gradient(0deg,#000d,#0000);text-align:left}
-.viral .cap b{display:block;font:700 17px Poppins}.viral .cap span{font-size:13px;color:#c7d6ea}
+.viral .cap b{display:block;font:700 17px Poppins}.viral .cap span{font-size:13px;color:#e9cdcd}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:760px;margin:26px auto 0}
-.stat{position:relative;padding:16px 10px 14px;border-radius:18px;background:linear-gradient(180deg,#0c1b36,#0b0f1a);text-align:center;overflow:hidden;isolation:isolate}
-.stat::before{content:"";position:absolute;inset:0;padding:1.5px;border-radius:18px;background:conic-gradient(from var(--a,0deg),#0a84ff00 0deg,#3aa0ff 70deg,#0a84ff00 140deg,#0a84ff00 360deg);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spinb 4s linear infinite;z-index:-1}
-.stat::after{content:"";position:absolute;inset:0;border-radius:18px;box-shadow:inset 0 0 0 1px #0a84ff33,inset 0 -30px 50px -30px #0a84ff55;pointer-events:none}
+.stat{position:relative;padding:16px 10px 14px;border-radius:18px;background:linear-gradient(180deg,#300b0c,#17090a);text-align:center;overflow:hidden;isolation:isolate}
+.stat::before{content:"";position:absolute;inset:0;padding:1.5px;border-radius:18px;background:conic-gradient(from var(--a,0deg),#d3212700 0deg,#e87a7e 70deg,#d3212700 140deg,#d3212700 360deg);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spinb 4s linear infinite;z-index:-1}
+.stat::after{content:"";position:absolute;inset:0;border-radius:18px;box-shadow:inset 0 0 0 1px #d3212733,inset 0 -30px 50px -30px #d3212755;pointer-events:none}
 @property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
 @keyframes spinb{to{--a:360deg}}
 .stat b{display:block;font:900 clamp(24px,4vw,34px)/1.05 Poppins}
-.stat span{display:block;margin-top:5px;font:600 12.5px/1.3 Inter;color:#b9c9e0}
+.stat span{display:block;margin-top:5px;font:600 12.5px/1.3 Inter;color:#d5a2a3}
 .reels{padding:60px 0 6px;text-align:center}
 .reels h2,.offer h2{margin:0;font:800 clamp(26px,4vw,40px)/1.1 Poppins;letter-spacing:-.01em}
 .track{display:flex;justify-content:center;align-items:center;gap:16px;margin-top:24px}
 .reel{position:relative;flex:none;width:240px;aspect-ratio:9/16;border-radius:20px;overflow:hidden;border:1.5px solid #ffffff1f;background:#000;opacity:.55;transform:scale(.92);transition:.45s}
-.reel.on{opacity:1;transform:none;border-color:#0a84ffaa;box-shadow:0 30px 60px -20px #000,0 0 70px -20px #0a84ff}
+.reel.on{opacity:1;transform:none;border-color:#d32127aa;box-shadow:0 30px 60px -20px #000,0 0 70px -20px #d32127}
 .reel video{width:100%;height:100%;object-fit:cover;display:block}
 .reel.zoom video{animation:zoomin 7s ease-in-out infinite alternate}
 @keyframes zoomin{from{transform:scale(1)}to{transform:scale(1.35)}}
 .reel .cap{position:absolute;left:0;right:0;bottom:0;padding:44px 14px 14px;background:linear-gradient(0deg,#000d,#0000);text-align:left}
-.reel .cap b{display:block;font:700 15px Poppins}.reel .cap span{font-size:12px;color:#c7d6ea}
+.reel .cap b{display:block;font:700 15px Poppins}.reel .cap span{font-size:12px;color:#e9cdcd}
 .kick{margin:22px auto 0;max-width:640px;font:700 clamp(17px,2.4vw,21px)/1.35 Poppins}
 @media (max-width:820px){.track{justify-content:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 16px 12px;margin:24px -16px 0}.reel{scroll-snap-align:center;opacity:1;transform:none;width:210px}}
 .join{text-align:center;padding:44px 0 0}
 .jc{display:inline-flex}.jc img{width:46px;height:62px;object-fit:cover;border-radius:6px;border:2px solid var(--bg);margin-left:-12px;box-shadow:0 6px 14px #0008}.jc img:first-child{margin-left:0}
 .join p{margin:12px auto 0;max-width:720px;font:700 clamp(18px,3vw,24px)/1.3 Poppins}
 .offer{padding:70px 0 40px}
-.box{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:22px;padding:20px;border-radius:28px;background:linear-gradient(160deg,#08285f,#0a1630 45%,#0d1020);border:1px solid #0a84ff55;box-shadow:0 40px 100px -40px #000,0 0 100px -40px #0a84ff88}
+.box{margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:22px;padding:20px;border-radius:28px;background:linear-gradient(160deg,#570709,#2c080a 45%,#1d0b0b);border:1px solid #d3212755;box-shadow:0 40px 100px -40px #000,0 0 100px -40px #d3212788}
 .left{position:relative;border-radius:20px;background:#ffffff08;border:1px solid #ffffff14;padding:24px 20px;text-align:center;overflow:hidden}
 .left .t{font:600 22px Poppins}.left .t i{font-style:italic}
 .left .pr{margin-top:6px;font:600 15px Inter;color:#cfd8e6}.left .pr s{color:#8a8f99;margin-right:6px}.left .pr b{color:var(--yes);font-weight:800}
@@ -122,7 +123,7 @@ h1 u{text-decoration-thickness:4px;text-underline-offset:8px;text-decoration-col
 .p-all img:nth-child(n+5){width:96px;top:136px}
 .p-all img:nth-child(5){left:12%;transform:rotate(-6deg);z-index:4}.p-all img:nth-child(6){left:38%;transform:rotate(2deg);z-index:5}.p-all img:nth-child(7){left:62%;transform:rotate(8deg);z-index:4}
 .left ul{list-style:none;margin:0;padding:0;text-align:left;display:grid;grid-template-columns:1fr 1fr;gap:9px 14px;font:500 14px/1.35 Inter;color:#dfe6f1}
-.left li{display:flex;gap:9px}.left li::before{content:"✓";flex:none;width:18px;height:18px;border-radius:50%;background:#0a84ff;color:#fff;font:800 11px/18px Inter;text-align:center;margin-top:1px}
+.left li{display:flex;gap:9px}.left li::before{content:"✓";flex:none;width:18px;height:18px;border-radius:50%;background:#d32127;color:#fff;font:800 11px/18px Inter;text-align:center;margin-top:1px}
 .stk{position:absolute;width:104px;height:104px;z-index:6;transform:rotate(14deg)}
 .stk svg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 8px 14px #0009)}
 .stk .spin{transform-origin:50% 50%;animation:spin 14s linear infinite}
@@ -135,31 +136,31 @@ h1 u{text-decoration-thickness:4px;text-underline-offset:8px;text-decoration-col
 .right h3{margin:8px 0 2px;text-align:center;font:900 34px Poppins;letter-spacing:.01em}
 .right .one{margin:0 0 18px;text-align:center;font:500 15px Inter;color:#cfd8e6}.right .one b{color:#fff}
 .opt{position:relative;display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:#ffffff0a;border:1.5px solid #ffffff1a;text-align:left;margin-bottom:10px;cursor:pointer;transition:.2s}
-.opt.on{border-color:#0a84ff;background:#0a84ff1f;box-shadow:0 0 30px -10px #0a84ff}
+.opt.on{border-color:#d32127;background:#d321271f;box-shadow:0 0 30px -10px #d32127}
 .opt img{width:46px;height:58px;object-fit:cover;border-radius:4px}
-.opt b{display:block;font:700 15px Poppins}.opt small{color:#a9b4c6;font-size:12px}
+.opt b{display:block;font:700 15px Poppins}.opt small{color:#9aa3b2;font-size:12px}
 .opt .pp{text-align:right;white-space:nowrap}
 .opt .pp strong{display:block;font:800 21px Poppins}
 .opt .pp s{font:600 13px Inter;color:#8a8f99}
 .opt .off{position:absolute;right:-6px;top:-10px;padding:3px 8px;border-radius:999px;background:var(--gold);color:#111;font:900 11px Poppins;box-shadow:0 4px 12px #ffd60a66}
 .lab{display:block;margin:12px 0 6px;font:600 14px Inter}
-.in{width:100%;height:50px;border-radius:12px;border:1.5px solid #ffffff22;background:#0a0f1d;color:#fff;padding:0 14px;font:500 16px Inter}
+.in{width:100%;height:50px;border-radius:12px;border:1.5px solid #ffffff22;background:#1a0909;color:#fff;padding:0 14px;font:500 16px Inter}
 .pm{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .pm span{height:56px;border-radius:12px;border:1.5px solid #ffffff1f;background:#ffffff08;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding:0 12px;font:600 13px Inter}
 .pm span i{font-style:normal;font-size:16px}
-.pm span.on{background:#0a84ff;border-color:#0a84ff}
-.link{margin:12px 0 0;font:600 14px Inter;color:#6ab8ff}
+.pm span.on{background:#d32127;border-color:#d32127}
+.link{margin:12px 0 0;font:600 14px Inter;color:#e87a7e}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .cards{position:relative}.cards em{position:absolute;right:12px;top:50%;transform:translateY(-50%);display:flex;gap:4px;font-style:normal}
-.cards em i{display:block;width:30px;height:20px;border-radius:4px;background:#fff;font:800 8px/20px Inter;color:#1a1f71;text-align:center;font-style:normal}
+.cards em i{display:block;width:30px;height:20px;border-radius:4px;background:#fff;font:800 8px/20px Inter;color:#671719;text-align:center;font-style:normal}
 .cards em i.mc{background:#252525;color:#ff9a00}
-.pay{width:100%;height:62px;margin-top:16px;border-radius:14px;border:0;color:#fff;font:800 19px Poppins;cursor:pointer;background:linear-gradient(180deg,#2b96ff,#0066ff);box-shadow:0 0 0 5px #0a84ff22,0 20px 40px -14px #0a84ffcc}
+.pay{width:100%;height:62px;margin-top:16px;border-radius:14px;border:0;color:#fff;font:800 19px Poppins;cursor:pointer;background:linear-gradient(180deg,#d32127,#a51217);box-shadow:0 0 0 5px #d3212722,0 20px 40px -14px #d32127cc}
 body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);box-shadow:0 0 0 5px #ffd60a22,0 20px 40px -14px #ffd60acc}
 .secure{margin:12px 0 0;text-align:center;font-size:13px;color:#a1a1aa}
 @media (max-width:820px){.box{grid-template-columns:1fr;padding:10px;gap:10px;border-radius:22px}}
 .foot{padding:50px 0 34px;text-align:center;overflow:hidden}
 .wm{position:relative;display:inline-block;margin:0 -.3em;font:800 clamp(54px,13.5vw,200px)/1.05 Poppins;letter-spacing:-.045em;white-space:nowrap}
-.wm span{display:block;color:#1f6dff;padding:.15em .3em .45em}
+.wm span{display:block;color:#a51217;padding:.15em .3em .45em}
 .w1{-webkit-mask-image:linear-gradient(180deg,#000 0 46%,#0000 74%);mask-image:linear-gradient(180deg,#000 0 46%,#0000 74%)}
 .w2{position:absolute;inset:0;filter:blur(.07em);-webkit-mask-image:linear-gradient(180deg,#0000 34%,#000 56%,#000 70%,#0000 96%);mask-image:linear-gradient(180deg,#0000 34%,#000 56%,#000 70%,#0000 96%)}
 .foot p{margin:0;font:500 13px Poppins;letter-spacing:.06em;color:#ffffff59}
@@ -212,12 +213,12 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 /* the Stripe Payment Element look (dark theme, same fields, same tabs) */
 .sp{border-radius:16px}
 .sp .lab{font:500 14px Inter;color:#e6ebf5;margin:14px 0 6px}
-.sp .in{height:48px;border-radius:10px;border:1px solid #2b3550;background:#0b1224;box-shadow:0 1px 1px #0006,0 0 0 0 #0a84ff;transition:.15s}
-.sp .in:focus{outline:0;border-color:#0a84ff;box-shadow:0 0 0 3px #0a84ff40}
-.pm span{flex-direction:column;align-items:flex-start;gap:6px;padding:10px 12px;height:64px;color:#e6ebf5;border-color:#2b3550;background:#0b1224}
+.sp .in{height:48px;border-radius:10px;border:1px solid #402424;background:#130808;box-shadow:0 1px 1px #0006,0 0 0 0 #d32127;transition:.15s}
+.sp .in:focus{outline:0;border-color:#d32127;box-shadow:0 0 0 3px #d3212740}
+.pm span{flex-direction:column;align-items:flex-start;gap:6px;padding:10px 12px;height:64px;color:#e6ebf5;border-color:#402424;background:#130808}
 .pm span b{font:600 13.5px Inter}
-.pm span.on{background:#0a84ff;border-color:#0a84ff;color:#fff}
-.link{display:flex;align-items:center;gap:7px;color:#6ab8ff;margin-top:14px}.link i{font-style:normal;margin-left:2px}
+.pm span.on{background:#d32127;border-color:#d32127;color:#fff}
+.link{display:flex;align-items:center;gap:7px;color:#e87a7e;margin-top:14px}.link i{font-style:normal;margin-left:2px}
 .cards em{right:10px;gap:5px}.cards em img{height:20px;width:auto;border-radius:3px;background:#fff}
 .sel{position:relative}.sel::after{content:"";position:absolute;right:16px;top:50%;width:8px;height:8px;border-right:2px solid #9aa3b2;border-bottom:2px solid #9aa3b2;transform:translateY(-70%) rotate(45deg);pointer-events:none}
 .sel select{appearance:none;-webkit-appearance:none}
@@ -243,7 +244,7 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 .track{scrollbar-width:none}.track::-webkit-scrollbar{display:none}
 .dots{display:flex;justify-content:center;gap:7px;margin-top:6px}
 .dots i{width:7px;height:7px;border-radius:999px;background:#ffffff33;transition:.3s}
-.dots i.on{width:26px;background:linear-gradient(90deg,#8fd0ff,#1f8fff);box-shadow:0 0 12px #1f8fff}
+.dots i.on{width:26px;background:linear-gradient(90deg,#ffb066,#d32127);box-shadow:0 0 12px #d32127}
 /* a real player */
 .ctl{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;align-items:center;gap:10px;padding:26px 12px 10px;background:linear-gradient(0deg,#000c,#0000);opacity:0;transition:opacity .3s}
 .vsl.on .ctl,.vsl.paused .ctl{opacity:1}
@@ -256,9 +257,9 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 .tt{font:600 12px Inter;color:#fff;font-variant-numeric:tabular-nums;min-width:30px}
 .sk{position:relative;flex:1;height:22px;cursor:pointer}
 .sk::before{content:"";position:absolute;left:0;right:0;top:50%;height:4px;margin-top:-2px;border-radius:4px;background:#ffffff40}
-.sk i{position:absolute;left:0;top:50%;height:4px;margin-top:-2px;border-radius:4px;background:#1f8fff;width:0}
-.sk b{position:absolute;top:50%;width:13px;height:13px;margin:-6.5px 0 0 -6.5px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px #1f8fff55;left:0}
-.big-play{position:absolute;left:50%;top:50%;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;background:#0a6cffd9;display:none;place-items:center;z-index:2;pointer-events:none}
+.sk i{position:absolute;left:0;top:50%;height:4px;margin-top:-2px;border-radius:4px;background:#d32127;width:0}
+.sk b{position:absolute;top:50%;width:13px;height:13px;margin:-6.5px 0 0 -6.5px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px #d3212755;left:0}
+.big-play{position:absolute;left:50%;top:50%;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:50%;background:#a51217d9;display:none;place-items:center;z-index:2;pointer-events:none}
 .vsl.paused .big-play{display:grid}
 .big-play svg{width:30px;fill:#fff;margin-left:4px}
 .p-all .hero2{overflow:visible}
@@ -287,13 +288,13 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 @media (min-width:821px){.fan .fbr{margin-top:4px!important}}
 @media (min-width:821px){.fan .bks .pbr .pb:nth-child(1),.fan .bks .pbr .pb:nth-child(3){width:104px;top:38px}.fan .bks .pbr .pb:nth-child(1){left:46px}.fan .bks .pbr .pb:nth-child(3){left:230px}.fan .bks .pbr .pb:nth-child(2){width:142px;left:119px;top:-12px}}
 .fbl{margin:-8px auto 18px;max-width:520px;text-align:center;font:500 13.5px/1.45 Inter;color:#8b93a5}.fbl a{color:#fff;font-weight:700}
-.fbl.big{margin:0 auto 22px}.fbl.big span{display:block;margin-bottom:10px;color:#c9d2e3;font-size:14px}.fbl.big a{display:inline-flex;align-items:center;gap:8px;padding:13px 20px;border-radius:999px;background:linear-gradient(90deg,#14d95b,#3dff86);color:#05210f;font:800 15px Inter;text-decoration:none;box-shadow:0 12px 30px -10px #30d158bb}
+.fbl.big{margin:0 auto 22px}.fbl.big span{display:block;margin-bottom:10px;color:#c9d2e3;font-size:14px}.fbl.big a{display:inline-flex;align-items:center;gap:8px;padding:13px 20px;border-radius:999px;background:linear-gradient(90deg,#d91419,#ff3d42);color:#210405;font:800 15px Inter;text-decoration:none;box-shadow:0 12px 30px -10px #d03034bb}
 
 .ec{min-height:0}
 .pml{margin-top:18px!important}
 .emw.have{display:none}
-.cpanel{margin-top:6px;border:1px solid #2b3550;border-radius:14px;background:#0a0f1d;overflow:hidden}
-.chead{display:flex;align-items:center;gap:10px;padding:14px 16px;font:600 15px Inter;color:#fff;border-bottom:1px solid #2b3550}
+.cpanel{margin-top:6px;border:1px solid #402424;border-radius:14px;background:#1a0909;overflow:hidden}
+.chead{display:flex;align-items:center;gap:10px;padding:14px 16px;font:600 15px Inter;color:#fff;border-bottom:1px solid #402424}
 .cbody{padding:12px 12px 14px}
 /* 13/11 (Nico): the four card logos in the card number like Stripe's, the fourth one changes; they go when he types */
 .ecw{position:relative}
@@ -302,22 +303,22 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 .cbr>span{position:relative;width:31px;height:19px;border-radius:3px;overflow:hidden;display:grid;place-items:center;font-family:Inter,Arial,sans-serif;font-weight:800;color:#fff}
 .cbr svg{width:31px;height:19px;display:block}
 .b-mc{background:#1d1d1f}
-.b-visa{background:#1434cb;font-size:8.5px;font-style:italic;letter-spacing:.02em}
+.b-visa{background:#ba1117;font-size:8.5px;font-style:italic;letter-spacing:.02em}
 .b-amex{background:#1f72cd;font-size:7.5px;letter-spacing:.03em}
 .b-rot{background:#fff}
 .b-rot i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-style:normal;opacity:0;animation:brot 8s infinite}
 .b-rot i:nth-child(2){animation-delay:2s}.b-rot i:nth-child(3){animation-delay:4s}.b-rot i:nth-child(4){animation-delay:6s}
 @keyframes brot{0%,22%{opacity:1}25%,97%{opacity:0}100%{opacity:1}}
 .b-disc{font-size:5.2px;color:#231f20;letter-spacing:-.01em}.b-disc em{width:5px;height:5px;border-radius:50%;background:#f58220;margin:0 .3px}
-.b-jcb{gap:1px}.b-jcb b{width:7px;height:13px;border-radius:2px;font-size:6px;line-height:13px;text-align:center;color:#fff}.b-jcb b:nth-child(1){background:#0b4ea2}.b-jcb b:nth-child(2){background:#e60012}.b-jcb b:nth-child(3){background:#009944}
+.b-jcb{gap:1px}.b-jcb b{width:7px;height:13px;border-radius:2px;font-size:6px;line-height:13px;text-align:center;color:#fff}.b-jcb b:nth-child(1){background:#0b4ea2}.b-jcb b:nth-child(2){background:#e60012}.b-jcb b:nth-child(3){background:#990004}
 .b-up{font-size:5.4px;color:#fff;background:linear-gradient(100deg,#e21836 0 34%,#00447c 34% 67%,#007b84 67%)}
 .b-din{background:#fff}.b-din em{width:12px;height:12px;border-radius:50%;border:2.4px solid #0079be;box-sizing:border-box}
 
 .cbody .lab.cl{margin:14px 0 6px}
-.cbody .in{height:46px;border-radius:10px;border:1px solid #2b3550;background:#0b1224;font:500 16px Inter;color:#fff;padding:0 13px;width:100%}
+.cbody .in{height:46px;border-radius:10px;border:1px solid #402424;background:#130808;font:500 16px Inter;color:#fff;padding:0 13px;width:100%}
 .pwr{display:flex;align-items:center;justify-content:center;gap:12px;margin:14px 0 0;font:500 13px Inter;color:#8b93a5}
 .pwr b{font:800 15px/1 Inter;letter-spacing:-.03em;color:#c9d2e3;margin-left:-6px}
-.pwr i{width:1px;height:16px;background:#3a4257}
+.pwr i{width:1px;height:16px;background:#503535}
 .pwr a{color:#8b93a5;text-decoration:none}
 
 .ec.load{min-height:200px;border-radius:12px;background:linear-gradient(90deg,#ffffff08,#ffffff14,#ffffff08);background-size:200% 100%;animation:shim 1.2s linear infinite}
@@ -328,7 +329,7 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 
 /* the Get it now button under the card (mobile: the card and the choices are one column) */
 .getnow{display:none}
-@media (max-width:820px){.getnow{display:flex;align-items:center;justify-content:center;gap:8px;margin:6px 6px 4px;height:60px;border-radius:999px;background:linear-gradient(180deg,#2b96ff,#0a6cff);color:#fff;font:900 18px Poppins;text-transform:uppercase;letter-spacing:.01em;text-decoration:none;box-shadow:0 14px 34px -10px #0a84ffcc,inset 0 1px #ffffff55;animation:gnp 2.2s ease-in-out infinite}.getnow b{font-size:20px}}
+@media (max-width:820px){.getnow{display:flex;align-items:center;justify-content:center;gap:8px;margin:6px 6px 4px;height:60px;border-radius:999px;background:linear-gradient(180deg,#d32127,#a51217);color:#fff;font:900 18px Poppins;text-transform:uppercase;letter-spacing:.01em;text-decoration:none;box-shadow:0 14px 34px -10px #d32127cc,inset 0 1px #ffffff55;animation:gnp 2.2s ease-in-out infinite}.getnow b{font-size:20px}}
 @keyframes gnp{50%{transform:scale(1.025)}}
 #buy{display:block;scroll-margin-top:84px}
 /* 13/11 D + T3 (Nico) */
@@ -336,9 +337,9 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 .steps{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 auto 22px;max-width:520px;font:700 12px Inter;color:#8b93a5}
 .steps span{display:flex;align-items:center;gap:6px;white-space:nowrap}
 .steps em{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;font-style:normal;font-size:11px;background:#ffffff14;color:#c9d2e3}
-.steps .ok{color:#9ff0b6}.steps .ok em{background:#30d158;color:#fff}
-.steps .now{color:#fff}.steps .now em{background:#0a84ff;color:#fff;box-shadow:0 0 0 4px #0a84ff33}
-.steps hr{flex:1;min-width:10px;max-width:40px;height:2px;border:0;margin:0;background:#ffffff22}.steps hr.ok{background:#30d158}
+.steps .ok{color:#f09fa1}.steps .ok em{background:#d03034;color:#fff}
+.steps .now{color:#fff}.steps .now em{background:#d32127;color:#fff;box-shadow:0 0 0 4px #d3212733}
+.steps hr{flex:1;min-width:10px;max-width:40px;height:2px;border:0;margin:0;background:#ffffff22}.steps hr.ok{background:#d03034}
 @media (max-width:620px){.steps{font-size:11px;gap:4px}}
 .hero .vsl{margin-top:40px!important}
 .big{padding-top:22px!important}
@@ -359,22 +360,22 @@ body.rv .hero .cbtn .px{display:inline}
 @keyframes enIn{from{opacity:0;transform:translateY(34px) scale(.94);filter:blur(10px)}}
 @media (prefers-reduced-motion:reduce){.enter *{animation:none!important}}
 /* 16/11 (Nico, board B1): the free guide sits on the page as step 1, small and low, with its own download, so nobody waits for the email (it still goes, in the background) */
-.fg{display:flex;align-items:center;gap:14px;width:100%;max-width:520px;margin:0 auto 18px;padding:10px 12px 10px 10px;box-sizing:border-box;border-radius:16px;background:linear-gradient(180deg,#30d1581f,#30d1580a);border:1.5px solid #30d15899;color:#fff;text-decoration:none;text-align:left;box-shadow:0 16px 40px -20px #30d158cc;-webkit-tap-highlight-color:transparent}
+.fg{display:flex;align-items:center;gap:14px;width:100%;max-width:520px;margin:0 auto 18px;padding:10px 12px 10px 10px;box-sizing:border-box;border-radius:16px;background:linear-gradient(180deg,#d030341f,#d030340a);border:1.5px solid #d0303499;color:#fff;text-decoration:none;text-align:left;box-shadow:0 16px 40px -20px #d03034cc;-webkit-tap-highlight-color:transparent}
 .fg img{flex:none;width:44px;height:60px;object-fit:cover;border-radius:4px;box-shadow:3px 3px 0 #0007,0 0 0 1px #ffffff1a}
 .fgt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
-.fgt small{font:800 10.5px Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#7ee89a}
+.fgt small{font:800 10.5px Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#e77e81}
 .fgt b{font:800 17px/1.15 Poppins,sans-serif;letter-spacing:-.01em}
 .fgt span{font:500 12.5px Inter,sans-serif;color:#a1a1aa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fgd{flex:none;display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 16px;border-radius:999px;background:linear-gradient(90deg,#14d95b,#3dff86);color:#05210f;font:800 13.5px Inter,sans-serif;box-shadow:0 10px 24px -10px #30d158}
+.fgd{flex:none;display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 16px;border-radius:999px;background:linear-gradient(90deg,#d91419,#ff3d42);color:#210405;font:800 13.5px Inter,sans-serif;box-shadow:0 10px 24px -10px #d03034}
 .fgd svg{width:15px;height:15px}
 .fg:hover .fgd,.fg:focus-visible .fgd{filter:brightness(1.08)}
-.fg:focus-visible{outline:2px solid #3dff86;outline-offset:3px}
+.fg:focus-visible{outline:2px solid #ff3d42;outline-offset:3px}
 @media (max-width:620px){.fg{gap:10px;padding:8px 9px 8px 8px;margin-bottom:14px}.fg img{width:36px;height:49px}.fgt{gap:2px}.fgt small{font-size:9.5px}.fgt b{font-size:14px;letter-spacing:-.02em;white-space:nowrap}.fgt span{font-size:11px}.fgd{height:34px;padding:0 11px;gap:5px;font-size:12px}.fgd svg{width:13px;height:13px}}
 @media (max-width:360px){.fgt b{white-space:normal}}
 /* 16/11 (Nico, board F1): the free guide card bigger, the book tilted and a full-width Download button */
 .fg{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"img t" "btn btn";gap:14px 16px;padding:16px;border-radius:20px;border-width:2px;margin:0 auto 22px;position:relative;overflow:hidden}
-.fg::before{content:"";position:absolute;inset:0;background:radial-gradient(80% 120% at 0% 0%,#30d15833,transparent 60%);pointer-events:none}
-.fg img{grid-area:img;position:relative;width:86px;height:118px;border-radius:6px;transform:rotate(-4deg);box-shadow:6px 8px 0 #0008,0 0 30px #30d15855}
+.fg::before{content:"";position:absolute;inset:0;background:radial-gradient(80% 120% at 0% 0%,#d0303433,transparent 60%);pointer-events:none}
+.fg img{grid-area:img;position:relative;width:86px;height:118px;border-radius:6px;transform:rotate(-4deg);box-shadow:6px 8px 0 #0008,0 0 30px #d0303455}
 .fgt{grid-area:t;position:relative;justify-content:center;gap:5px}
 .fgt small{font-size:11px}
 .fgt b{font-size:22px;line-height:1.08;white-space:normal}
@@ -387,8 +388,8 @@ body.rv .hero .cbtn .px{display:inline}
    html.bf is set by the script below while the offer runs; without it nothing of this shows. */
 .bfc{display:none}
 html.bf .bfc{display:block}
-html.bf .offer{background:linear-gradient(180deg,var(--bg) 0,#0d0e12cc 40px,#0000 150px),linear-gradient(0deg,var(--bg),#0000 140px),radial-gradient(110% 34% at 50% 13%,#ffd60a77,transparent 70%),radial-gradient(80% 30% at 0% 60%,#ff7a0055,transparent 70%),radial-gradient(80% 30% at 100% 85%,#ff3b3044,transparent 70%),#0b0905;margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px}
-html.bf .offer .box{background:#120f07d9;border-color:#ffd60a55}
+html.bf .offer{background:linear-gradient(180deg,var(--bg) 0,#120d0dcc 40px,#0000 150px),linear-gradient(0deg,var(--bg),#0000 140px),radial-gradient(115% 36% at 50% 12%,#d32127cc,transparent 70%),radial-gradient(85% 34% at 0% 58%,#ffb066aa,transparent 70%),radial-gradient(75% 32% at 100% 80%,#ff3f44aa,transparent 70%),radial-gradient(60% 24% at 30% 96%,#e87a7e77,transparent 70%),#1d0707;margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px}
+html.bf .offer .box{background:#220a0ab8;border-color:#e87a7eaa}
 .opt.bfc{position:relative;margin:14px 0 16px;padding:16px 14px 14px;border-radius:18px;background:radial-gradient(120% 90% at 50% 0%,#3a2c00 0%,#0b0a06 62%);border:1.5px solid #ffd60a;box-shadow:0 0 0 5px #ffd60a1a,0 24px 60px -24px #ffd60a99;text-align:center;overflow:hidden;cursor:pointer}
 .opt.bfc.on{box-shadow:0 0 0 5px #ffd60a40,0 24px 60px -18px #ffd60acc}
 .bfc .rib{display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:999px;background:#ffd60a;color:#111;font:900 11px Poppins;letter-spacing:.16em}
@@ -412,8 +413,8 @@ html.bf .offer .box{background:#120f07d9;border-color:#ffd60a55}
 /* 16/11 (Nico, board C1 + B1): the top is "1M views in less than 24 hours", the reel as on Instagram, and while the
    Black Friday runs the bridge and its card with the real countdown (to 27 November 23:59); the card under Pay is gone */
 .big .b2h{margin:0;font:900 clamp(40px,7vw,60px)/1 Poppins;letter-spacing:-.02em;text-wrap:balance}
-.big .b2h b{display:block;font-size:clamp(84px,15vw,140px);letter-spacing:-.035em;filter:drop-shadow(0 0 30px #0a84ff80)}
-.igv{position:relative;width:min(380px,100%);aspect-ratio:9/16;margin:24px auto 0;border-radius:24px;overflow:hidden;background:#000;box-shadow:0 0 0 1.5px #0a84ff99,0 0 80px -20px #0a84ff}
+.big .b2h b{display:block;font-size:clamp(84px,15vw,140px);letter-spacing:-.035em;filter:drop-shadow(0 0 30px #d3212780)}
+.igv{position:relative;width:min(380px,100%);aspect-ratio:9/16;margin:24px auto 0;border-radius:24px;overflow:hidden;background:#000;box-shadow:0 0 0 1.5px #d3212799,0 0 80px -20px #d32127}
 .igv video{width:100%;height:100%;object-fit:cover;display:block}
 .igv::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0007,#0000 18%,#0000 62%,#000c);pointer-events:none}
 .igv .vw{position:absolute;z-index:2;left:12px;top:12px;display:flex;align-items:center;gap:6px;padding:7px 11px;border-radius:12px;background:#0009;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font:800 14px Inter}
@@ -470,16 +471,16 @@ html.bf .opt[data-o="all"]{display:none}
 @media (prefers-reduced-motion:reduce){.bridge .ar{animation:none}}
 
 /* 16/11 (Nico, board C9): the Full Guide + Claude Skill, €9.99, stadium page only */
-.right .opt.opt-sk{grid-template-columns:64px 1fr auto;border:1.5px solid transparent;background:linear-gradient(#0d1422,#0d1422) padding-box,linear-gradient(120deg,#0a84ff,#7c5cff 55%,#ffd60a) border-box;box-shadow:0 0 34px -12px #7c5cffaa}
-.right .opt.opt-sk.on{background:linear-gradient(#0f1d38,#0f1d38) padding-box,linear-gradient(120deg,#0a84ff,#7c5cff 55%,#ffd60a) border-box;box-shadow:0 0 40px -8px #7c5cffcc}
+.right .opt.opt-sk{grid-template-columns:64px 1fr auto;border:1.5px solid transparent;background:linear-gradient(#160a0a,#160a0a) padding-box,linear-gradient(120deg,#d32127,#c41f23 55%,#ffd60a) border-box;box-shadow:0 0 34px -12px #c41f23aa}
+.right .opt.opt-sk.on{background:linear-gradient(#330c0e,#330c0e) padding-box,linear-gradient(120deg,#d32127,#c41f23 55%,#ffd60a) border-box;box-shadow:0 0 40px -8px #c41f23cc}
 .duo{position:relative;width:62px;height:62px}
 .duo img{position:absolute;border-radius:4px}
 .duo .a{left:0;top:2px;width:40px!important;height:54px!important;transform:rotate(-6deg);box-shadow:3px 3px 0 #0008}
-.duo .b{right:0;bottom:0;width:38px!important;height:38px!important;border-radius:9px;object-fit:cover;border:2px solid #0d1422;box-shadow:0 0 0 1.5px #7c5cff,0 6px 14px #000a}
+.duo .b{right:0;bottom:0;width:38px!important;height:38px!important;border-radius:9px;object-fit:cover;border:2px solid #160a0a;box-shadow:0 0 0 1.5px #c41f23,0 6px 14px #000a}
 .right .opt.opt-sk b{font-size:14.5px;line-height:1.2}
-.opt-sk b em{font-style:normal;margin-left:6px;padding:2px 6px;border-radius:5px;background:linear-gradient(90deg,#7c5cff,#0a84ff);color:#fff;font:900 9.5px Poppins;letter-spacing:.06em;vertical-align:2px}
-.opt-sk .pp small{display:block;font-size:11px;color:#a9b4c6}
-.opt-sk .off{background:linear-gradient(90deg,#7c5cff,#0a84ff)!important;color:#fff!important;box-shadow:0 4px 12px #7c5cff66!important}
+.opt-sk b em{font-style:normal;margin-left:6px;padding:2px 6px;border-radius:5px;background:linear-gradient(90deg,#c41f23,#d32127);color:#fff;font:900 9.5px Poppins;letter-spacing:.06em;vertical-align:2px}
+.opt-sk .pp small{display:block;font-size:11px;color:#9aa3b2}
+.opt-sk .off{background:linear-gradient(90deg,#c41f23,#d32127)!important;color:#fff!important;box-shadow:0 4px 12px #c41f2366!important}
 .fgh{margin:-12px auto 20px;max-width:520px;text-align:center;font:500 12.5px Inter;color:#8b93a5}
 
 /* 16/11 (Nico, board P3 + Q1): the skill first and chosen, the Full in blue, the chosen card lights up with a tick,
@@ -489,11 +490,11 @@ html.bf .opt[data-o="all"]{display:none}
 .right .opt.on:not(.bfc){transform:scale(1.02)}
 .ck{position:absolute;left:-8px;top:-8px;z-index:3;width:22px;height:22px;border-radius:50%;display:none;place-items:center;font:900 12px/1 Inter;color:#fff;box-shadow:0 4px 10px #000a}
 .opt.on .ck{display:grid}
-.opt-sk .ck{background:linear-gradient(135deg,#7c5cff,#0a84ff)}
-.right .opt.opt-sk.on{box-shadow:0 0 0 3px #7c5cff55,0 0 46px -4px #7c5cffee}
-.right .opt.opt-fu{border:1.5px solid transparent;background:linear-gradient(#0d1422,#0d1422) padding-box,linear-gradient(120deg,#0a84ff,#64d2ff) border-box;box-shadow:0 0 30px -14px #0a84ffaa}
-.right .opt.opt-fu.on{background:linear-gradient(#0c2244,#0c2244) padding-box,linear-gradient(120deg,#0a84ff,#64d2ff) border-box;box-shadow:0 0 0 3px #0a84ff55,0 0 46px -4px #0a84ffee}
-.opt-fu .ck{background:#0a84ff}
+.opt-sk .ck{background:linear-gradient(135deg,#c41f23,#d32127)}
+.right .opt.opt-sk.on{box-shadow:0 0 0 3px #c41f2355,0 0 46px -4px #c41f23ee}
+.right .opt.opt-fu{border:1.5px solid transparent;background:linear-gradient(#160a0a,#160a0a) padding-box,linear-gradient(120deg,#d32127,#e87a7e) border-box;box-shadow:0 0 30px -14px #d32127aa}
+.right .opt.opt-fu.on{background:linear-gradient(#2c0c0c,#2c0c0c) padding-box,linear-gradient(120deg,#d32127,#e87a7e) border-box;box-shadow:0 0 0 3px #d3212755,0 0 46px -4px #d32127ee}
+.opt-fu .ck{background:#d32127}
 .opt-sk .off.bs{opacity:1;background:linear-gradient(180deg,#ffe24a,#ffc400)!important;color:#111!important;box-shadow:0 6px 18px -4px #ffd60acc!important;font-size:10.5px;padding:4px 10px;top:-11px;right:10px}
 .opt-sk small .sk{font-weight:700;color:#fff}
 .tap{margin:-2px 0 10px;text-align:center;font:600 11.5px Inter;color:#8b93a5}
@@ -501,9 +502,17 @@ html.bf .opt[data-o="all"]{display:none}
 .sep.dm:before,.sep.dm:after{content:"";flex:1;height:1px;background:#ffd60a55}
 .sep.dm b{margin-left:4px}
 .sep.dm,.after-bf{display:none}html.bf .sep.dm{display:flex}
+.right .opt.opt-sk.on{background:linear-gradient(#241c06,#241c06) padding-box,linear-gradient(120deg,#ffe24a,#ffb000) border-box!important;box-shadow:0 0 0 3px #ffd60a55,0 0 46px -4px #ffd60acc!important}.right .opt.opt-sk.on .ck{background:linear-gradient(135deg,#ffe24a,#ffb000)!important;color:#111!important}.join{padding:56px 16px 0}.join p{max-width:640px;font:900 clamp(26px,4.6vw,40px)/1.15 Poppins;text-wrap:balance}.join .jk{display:block;margin:0 0 14px;font:800 clamp(14px,1.6vw,16px)/1 Poppins;letter-spacing:.16em;text-transform:uppercase;color:#ffb066}.join p:has(.jk){font-size:clamp(22px,3.8vw,34px)}.join .ja{display:block;margin:14px auto 0;font:900 26px/1 Poppins;color:#ffb066;animation:bdn 1.4s ease-in-out infinite}@media (prefers-reduced-motion:reduce){.join .ja{animation:none}}.right .tml{margin:0 0 2px;font:800 12px Poppins,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ffb066;text-align:center}.rvl .rvt2{color:#ff4d4d;font-variant-numeric:tabular-nums}html.ry2 .bar .tm,html.ry2 .right [data-t3],html.ry2 .right .tml{display:none!important}.big .b2h b{font-size:clamp(44px,13vw,118px);line-height:.95}.big.c1{padding-top:120px!important}@media (max-width:820px){.big.c1{padding-top:84px!important}}body.rv .rvl{display:block;text-align:center;line-height:1.7}.rvl .rvs{display:inline-grid;vertical-align:1px;margin-right:8px}.rvl>span:last-child{display:inline}@media (max-width:440px){.rvl{font-size:13.5px}.rvl .rvs{height:23px;padding:0 7px;font-size:12px}}
+/* 18/11 (Nico): the page is all green, so the free guide card has its own colour (f1) */
+.fg{background:linear-gradient(180deg,rgb(41 151 255 / .14),rgb(41 151 255 / .04))!important;border-color:rgb(41 151 255 / .7)!important;box-shadow:0 16px 40px -20px rgb(41 151 255 / .8)!important}
+.fg::before{background:radial-gradient(80% 120% at 0% 0%,rgb(41 151 255 / .22),transparent 60%)!important}
+.fg img{box-shadow:6px 8px 0 #0008,0 0 30px rgb(41 151 255 / .35)!important}
+.fgt small{color:#9fd0ff!important}
+.fgd{background:linear-gradient(90deg,#2997ff,#5ab8ff)!important;color:#ffffff!important;box-shadow:0 10px 24px -10px #2997ff!important}
+.fg:focus-visible{outline-color:#2997ff!important}
 </style></head><body>
 
-<div class="bar"><img src="/learn/watch/logo.svg" alt="Omnya Lab"><span class="lbl">Closes forever in</span><span class="tm"><span data-h>00</span><small>h</small><span data-m>14</span><small>m</small><span data-s>59</span><small>s</small></span><a class="go cbtn" href="#offer">Get the full guide<i class="dot"></i><span class="px">€5.99</span></a></div>
+<div class="bar"><img src="/learn/watch/logo.svg" alt="Omnya Lab"><span class="lbl">Launch price ends in</span><span class="tm"><span data-h>00</span><small>h</small><span data-m>14</span><small>m</small><span data-s>59</span><small>s</small></span><a class="go cbtn" href="#offer">Get the full guide<i class="dot"></i><span class="px">€5.99</span></a></div>
 
 <main class="wrap">
   <section class="hero">
@@ -518,31 +527,24 @@ html.bf .opt[data-o="all"]{display:none}
       <div class="big-play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.4-6.5a1 1 0 0 0 0-1.7L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg></div><div class="ctl" data-ctl><button type="button" class="pp" data-pp aria-label="Pause"><svg viewBox="0 0 24 24" class="i-pause"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg><svg viewBox="0 0 24 24" class="i-play"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.4-6.5a1 1 0 0 0 0-1.7L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg></button><span class="tt" data-tt>0:00</span><div class="sk" data-sk><i data-fill></i><b data-knob></b></div><span class="tt" data-dur>0:45</span><button type="button" class="mu" data-mu aria-label="Sound"><svg viewBox="0 0 24 24"><path d="M3 9.5h4L12 5v14l-5-4.5H3z" fill="currentColor"/><path class="w" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="x" d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><button type="button" class="fs" data-fs aria-label="Full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
       <div class="unm" data-unm><svg viewBox="0 0 24 24" fill="#fff"><path d="M3 9.5h4L12 5v14l-5-4.5H3z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Your video is playing<br>Tap to unmute</div></div>
     <div class="cta"><a class="cbtn" href="#offer">Get the full guide<i class="dot"></i><span class="px">€5.99</span></a></div>
-    <p class="rvl"><span class="rvs">-80%</span><span><s>€29</s> <b>€5.99</b> · only on this page · <b class="rvt" data-tl>14:59</b></span></p>
+    <p class="rvl"><span class="rvs">-80%</span><span>Launch price · from Monday €9.99 · <b class="rvt2" data-tx>00:00:00</b></span></p>
   </section>
 
   <section class="big c1">
     <p class="b2h"><b class="hb">1M views</b>in less than 24 hours</p>
-    <div class="igv"><video src="/learn/watch/r_stadio.mp4" poster="/learn/watch/p_stadio.jpg" muted loop playsinline autoplay></video><span class="vw"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l12.5-7.5z"/></svg>1M views</span><div class="rail"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.6-4.6-9.7-9.2C.8 8.5 3 5 6.7 5c2.1 0 3.6 1.2 5.3 3.1C13.7 6.2 15.2 5 17.3 5 21 5 23.2 8.5 21.7 11.8 19.6 16.4 12 21 12 21z"/></svg>35.8K</span><span><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" d="M20.6 12a8.6 8.6 0 0 1-12.7 7.6L3.4 21l1.4-4.5A8.6 8.6 0 1 1 20.6 12z"/></svg>2,509</span><span><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round" d="M21.5 3 10.3 14.2M21.5 3l-6.8 18-4.4-6.8L3.5 9.8z"/></svg>Share</span></div><div class="who"><span class="u"><img src="/learn/watch/omnya_avatar.jpg" alt="" width="28" height="28">omnyalab<small>Follow</small></span><p>Comment “TICKET” and I’ll send you the free guide…</p></div></div>
-    <div class="bfw"><div class="bridge"><h3>How you can do it too</h3><p>Right now there’s a Black Friday offer on everything we teach</p><span class="ar">↓</span></div>
-      <div class="bfc bft" data-bft><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan"><img src="/learn/3d_book.webp" alt=""><img src="/learn/tt_book_tight.webp" alt=""><img src="/learn/sd_book_tight.webp" alt=""><img src="/learn/tw_book.webp" alt=""><img src="/learn/pk_pb02.webp" alt=""></span><span class="bh">Get everything</span><span class="inc">Every Full guide, the 3 playbooks, the Claude skills and every new guide</span><span class="pz"><s>€260</s><b>€59</b><span>-77%</span></span><div class="bcd"><small>Black Friday ends in</small><div class="bx"><span><b data-bd>11</b><i>DAYS</i></span><span><b data-bh>00</b><i>HRS</i></span><span><b data-bm>00</b><i>MIN</i></span><span class="sc"><b data-bs>00</b><i>SEC</i></span></div></div><a class="go" href="#buy" data-bfgo>Get everything · €59 ↓</a></div></div>
-  </section>
-
-  <section class="reels reels2">
-    <h2>Our other reels that <span class="hb2">went viral</span></h2>
-    <p class="rsub">Swipe, then tap one to watch it</p>
-    <div class="track"><div class="reel" tabindex="0" role="button" data-rv="/learn/watch/r_house2.mp4" data-ig="https://www.instagram.com/reel/Dfh6DZ3xe5Z/"><video src="/learn/watch/r_house2.mp4" poster="/learn/watch/p_house2.jpg" muted loop playsinline autoplay></video><span class="lks"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.6-4.6-9.7-9.2C.8 8.5 3 5 6.7 5c2.1 0 3.6 1.2 5.3 3.1C13.7 6.2 15.2 5 17.3 5 21 5 23.2 8.5 21.7 11.8 19.6 16.4 12 21 12 21z"/></svg>7K</span><div class="cap"><b>The House</b><span>From the garden to the living room</span><em class="wch"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l12.5-7.5z"/></svg>Watch</em></div></div><div class="reel" tabindex="0" role="button" data-rv="/learn/watch/r_towers.mp4" data-ig="https://www.instagram.com/reel/Dfm-xp2RIC9/"><video src="/learn/watch/r_towers.mp4" poster="/learn/watch/p_towers.jpg" muted loop playsinline autoplay></video><span class="lks"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.6-4.6-9.7-9.2C.8 8.5 3 5 6.7 5c2.1 0 3.6 1.2 5.3 3.1C13.7 6.2 15.2 5 17.3 5 21 5 23.2 8.5 21.7 11.8 19.6 16.4 12 21 12 21z"/></svg>4K</span><div class="cap"><b>The Three Towers</b><span>Pick a view, we fly you there</span><em class="wch"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l12.5-7.5z"/></svg>Watch</em></div></div><div class="reel" tabindex="0" role="button" data-rv="/learn/watch/r_viral.mp4" data-ig="https://www.instagram.com/reel/DfSXvGDtt4s/"><video src="/learn/watch/r_viral.mp4" poster="/learn/watch/p_viral.jpg" muted loop playsinline autoplay></video><span class="lks"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.6-4.6-9.7-9.2C.8 8.5 3 5 6.7 5c2.1 0 3.6 1.2 5.3 3.1C13.7 6.2 15.2 5 17.3 5 21 5 23.2 8.5 21.7 11.8 19.6 16.4 12 21 12 21z"/></svg>3.7K</span><div class="cap"><b>SAMAR Tower</b><span>Choose your floor</span><em class="wch"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l12.5-7.5z"/></svg>Watch</em></div></div><div class="reel" tabindex="0" role="button" data-rv="/learn/watch/r_burj2.mp4" data-ig="https://www.instagram.com/reel/Dfpi7f6RhjA/"><video src="/learn/watch/r_burj2.mp4" poster="/learn/watch/p_burj2.jpg" muted loop playsinline autoplay></video><span class="lks"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.6-4.6-9.7-9.2C.8 8.5 3 5 6.7 5c2.1 0 3.6 1.2 5.3 3.1C13.7 6.2 15.2 5 17.3 5 21 5 23.2 8.5 21.7 11.8 19.6 16.4 12 21 12 21z"/></svg>1.6K</span><div class="cap"><b>The $3,390 Tower</b><span>From the tower to the pool</span><em class="wch"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l12.5-7.5z"/></svg>Watch</em></div></div></div>
-    <div class="dots" data-dots><i class="on"></i><i></i><i></i><i></i></div>
-    <p class="kick hb2">Every one of them started with the same prompts you get today</p>
+    <div class="igv"><video src="/learn/watch/r_stadio.mp4" poster="/learn/watch/p_stadio.jpg" muted loop playsinline autoplay></video><span class="vw"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.5v15l12.5-7.5z"/></svg>1M views</span><div class="who"><span class="u"><img src="/learn/watch/omnya_avatar.jpg" alt="" width="28" height="28">omnyalab<small>Follow</small></span><p>Comment “TICKET” and I’ll send you the free guide…</p></div></div>
   </section>
   <div class="rov" data-rov hidden><div class="rin"><video muted loop playsinline></video><button class="rx" type="button" aria-label="Close" data-rx>✕</button><a target="_blank" rel="noopener" data-rig><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.1"><rect x="3" y="3" width="18" height="18" rx="5.2"/><circle cx="12" cy="12" r="4.2"/></g><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor"/></svg>Watch on Instagram</a></div></div>
 
-  <div class="join"><span class="jc"><img src="/learn/sd_book_tight.webp" alt=""><img src="/learn/tw_book.webp" alt=""><img src="/learn/bd_book_tight.webp" alt=""><img src="/learn/3d_book.webp" alt=""><img src="/learn/pk_pb01.webp" alt=""></span><p>Join <b class="hb2">1,000+</b> people who use the same method to land clients and get paid</p></div>
+  <div class="join"><p>You can build the same stadium for your clients by <b class="hb2">following the full guide</b>, with every prompt already written for you<span class="ja">↓</span></p></div>
 
   <section class="offer" id="offer">
     <h2 style="text-align:center">GET THE FULL GUIDE NOW</h2>
     <div class="box">
       <div class="left">
+        <div class="pane p-full p-kit" data-p="skill"><div class="t">The Full Guide <i class="hb2">+ Claude Skill</i></div><div class="pr"><s>€69.99</s><b>€14.99</b> · you save €55</div>
+          <div class="hero2"><div class="bk"><img src="/learn/sd_book_tight.webp" alt="The Full Stadium Guide"><div class="stk" aria-hidden="true"><svg viewBox="0 0 100 100"><defs><radialGradient id="sgk" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fff27a"/><stop offset=".55" stop-color="#ffd60a"/><stop offset="1" stop-color="#ffb000"/></radialGradient></defs><g class="spin"><polygon points="100.0,50.0 92.6,56.1 98.0,64.1 89.1,67.9 92.1,77.0 82.5,78.2 82.7,87.8 73.2,86.2 70.8,95.5 62.1,91.3 57.1,99.5 50.0,93.0 42.9,99.5 37.9,91.3 29.2,95.5 26.8,86.2 17.3,87.8 17.5,78.2 7.9,77.0 10.9,67.9 2.0,64.1 7.4,56.1 0.0,50.0 7.4,43.9 2.0,35.9 10.9,32.1 7.9,23.0 17.5,21.8 17.3,12.2 26.8,13.8 29.2,4.5 37.9,8.7 42.9,0.5 50.0,7.0 57.1,0.5 62.1,8.7 70.8,4.5 73.2,13.8 82.7,12.2 82.5,21.8 92.1,23.0 89.1,32.1 98.0,35.9 92.6,43.9" fill="url(#sgk)"/></g><circle cx="50" cy="50" r="36" fill="none" stroke="#11111130" stroke-width="1" stroke-dasharray="2 3"/></svg><div><em>SAVE</em><b>-80%</b><small>ONLY HERE</small></div></div></div></div>
+          <ul><li>Everything in the Full Guide</li><li>The Claude skill that builds the stadium for you</li><li>Your club, colours and prices in one file</li><li>Every seat with the view from it</li><li>How we made this video viral</li><li>Ready to show a club</li></ul></div>
         <div class="pane p-full on" data-p="full"><div class="t">The Full Guide, <i class="hb2">all of it</i></div><div class="pr"><s>€29</s><b>€5.99</b> · you save €23</div>
           <div class="hero2"><div class="bk"><img src="/learn/sd_book_tight.webp" alt="The Full Stadium Guide"><div class="stk" aria-hidden="true"><svg viewBox="0 0 100 100"><defs><radialGradient id="sg" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#fff27a"/><stop offset=".55" stop-color="#ffd60a"/><stop offset="1" stop-color="#ffb000"/></radialGradient></defs><g class="spin"><polygon points="100.0,50.0 92.6,56.1 98.0,64.1 89.1,67.9 92.1,77.0 82.5,78.2 82.7,87.8 73.2,86.2 70.8,95.5 62.1,91.3 57.1,99.5 50.0,93.0 42.9,99.5 37.9,91.3 29.2,95.5 26.8,86.2 17.3,87.8 17.5,78.2 7.9,77.0 10.9,67.9 2.0,64.1 7.4,56.1 0.0,50.0 7.4,43.9 2.0,35.9 10.9,32.1 7.9,23.0 17.5,21.8 17.3,12.2 26.8,13.8 29.2,4.5 37.9,8.7 42.9,0.5 50.0,7.0 57.1,0.5 62.1,8.7 70.8,4.5 73.2,13.8 82.7,12.2 82.5,21.8 92.1,23.0 89.1,32.1 98.0,35.9 92.6,43.9" fill="url(#sg)"/></g><circle cx="50" cy="50" r="36" fill="none" stroke="#11111130" stroke-width="1" stroke-dasharray="2 3"/></svg><div><em>SAVE</em><b>-80%</b><small>ONLY HERE</small></div></div></div></div>
           <ul><li>The 3D stadium code, every seat in it</li><li>Pick a stand, a block, then your seat</li><li>Every photo prompt, view by view</li><li>The clip prompts that fly you down</li><li>The ticket with the view from your seat</li><li>What to charge a club for it</li></ul></div>
@@ -551,35 +553,44 @@ html.bf .opt[data-o="all"]{display:none}
           <ul><li>The Full Towers Guide</li><li>The Full Tower Guide</li><li>The Full 3D Guide</li><li>The Full Build Guide</li><li>The Full Stadium, City and Miami Guides</li><li>The Claude skills</li><li>3 playbooks</li><li>Prompts and checklists</li></ul></div>
 
       </div>
-      <a class="getnow" href="#buy" data-getnow>Get it now · <span data-gnp>€9.99</span> <b>↓</b></a>
-      <div class="right"><div class="tm" data-t3>00:14:59</div><h3>YOURS FOREVER</h3><p class="one"><b data-pr>€9.99</b> one-time · no subscription</p>
-        <span id="buy"></span><label class="opt opt-sk on" data-o="skill"><span class="ck">✓</span><span class="duo"><img class="a" src="/learn/sd_book_tight.webp" alt=""><img class="b" src="/learn/sd_scene_preview.webp" alt=""></span><span><b>Full Guide + Claude Skill<em>NEW</em></b><small>The guide + the <strong class="sk">skill</strong> that builds this for you + how we made this video viral</small></span><span class="pp"><strong>€9.99</strong><s>€49.99</s></span><span class="off bs">★ BEST SELLER</span></label><label class="opt opt-fu" data-o="full"><span class="ck">✓</span><img src="/learn/sd_book_tight.webp" alt=""><span><b>The Full Guide</b><small>Every prompt, word for word</small></span><span class="pp"><strong>€5.99</strong><s>€29</s></span><span class="off">-80%</span></label>
-        <label class="opt opt-all" data-o="all"><span class="ck">✓</span><img src="/learn/pk_pb02.webp" alt=""><span><b>Everything we teach</b><small>Every Full guide + 3 playbooks + the skills</small></span><span class="pp"><strong>€59</strong><s>€260</s></span><span class="off">-75%</span></label>
+      <a class="getnow" href="#buy" data-getnow>Get it now · <span data-gnp>€5.99</span> <b>↓</b></a>
+      <div class="right"><p class="tml">Launch price ends in</p><div class="tm" data-t3>00:14:59</div><h3>YOURS FOREVER</h3><p class="one"><b data-pr>€5.99</b> one-time · no subscription</p>
+        <span id="buy"></span><label class="opt opt-sk" data-o="skill"><span class="ck">✓</span><span class="duo"><img class="a" src="/learn/sd_book_tight.webp" alt=""><img class="b" src="/learn/sd_scene_preview.webp" alt=""></span><span><b>Full Guide + Claude Skill<em>NEW</em></b><small>The guide + the <strong class="sk">skill</strong> that builds this for you + how we made this video viral</small></span><span class="pp"><strong>€14.99</strong><s>€69.99</s></span><span class="off bs">★ BEST SELLER</span></label><label class="opt opt-fu on" data-o="full"><span class="ck">✓</span><img src="/learn/sd_book_tight.webp" alt=""><span><b>The Full Guide</b><small>Every prompt, word for word</small></span><span class="pp"><strong>€5.99</strong><s>€29</s></span><span class="off">-80%</span></label>
         <div class="tap">Tap a card, it takes you straight to the payment ↓</div><div class="sp"><div class="emw" data-emw><span class="lab">Email <small style="color:#ff6b6b;font-weight:700">(required)</small> · the guide arrives here</span><input class="in" type="email" placeholder="you@example.com" aria-label="Your email" data-em autocomplete="email" required></div>
         <span class="lab pml">Payment method</span>
         <div class="cpanel"><div class="chead"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/></svg>Card</div>
           <div class="cbody"><div class="ecw"><div class="ec" data-ec></div><div class="cbr" data-cbr aria-hidden="true"><span class="b-mc"><svg viewBox="0 0 31 19"><circle cx="12.6" cy="9.5" r="5.6" fill="#eb001b"/><circle cx="18.4" cy="9.5" r="5.6" fill="#f79e1b"/><path d="M15.5 4.8a5.6 5.6 0 0 1 0 9.4a5.6 5.6 0 0 1 0-9.4z" fill="#ff5f00"/></svg></span><span class="b-visa">VISA</span><span class="b-amex">AMEX</span><span class="b-rot"><i class="b-disc">DISC<em></em>VER</i><i class="b-jcb"><b>J</b><b>C</b><b>B</b></i><i class="b-up">UnionPay</i><i class="b-din"><em></em></i></span></div></div><span class="lab cl">Cardholder name <small style="color:#8b93a5;font-weight:500">(optional)</small></span><input class="in" type="text" placeholder="Full name on card" aria-label="Cardholder name" data-cn autocomplete="cc-name"></div></div></div>
-        <button class="pay" type="button" data-pay>Pay €9.99<small>Get Guide + Claude Skill</small></button>
+        <button class="pay" type="button" data-pay>Pay €5.99 · Get The Full Guide</button>
         <p class="perr" data-perr role="alert"></p>
         <p class="pwr">Powered by <b>stripe</b><i></i><a href="https://stripe.com/legal/end-users" target="_blank" rel="noopener">Terms</a><a href="https://stripe.com/privacy" target="_blank" rel="noopener">Privacy</a></p></div>
     </div>
   </section>
 </main>
-<footer class="foot"><p style="max-width:520px;margin:0 auto 10px">The photos and clips in our guides are made on Higgsfield, and right now new users get unlimited generations inside Claude with Higgsfield MCP: <a href="https://higgsfield.ai?fpr=omnya-5b7f71" target="_blank" rel="noopener sponsored" style="color:#2997ff">higgsfield.ai</a> (affiliate link, it costs you nothing more)</p><p>© 2026 Omnya Lab. All rights reserved.</p></footer>
+<footer class="foot"><p style="max-width:520px;margin:0 auto 10px">The photos and clips in our guides are made on Higgsfield. Tap the blue link to get unlimited generations inside Claude: <a href="https://higgsfield.ai?fpr=omnya-5b7f71" target="_blank" rel="noopener sponsored" style="color:#2997ff">higgsfield.ai</a> (affiliate link, it costs you nothing more)</p><p>© 2026 Omnya Lab. All rights reserved.</p></footer>
 
 <script is:inline>
 const q = new URLSearchParams(location.search), v = q.get('btn') || 'b1'
 if (v === 'b2' || v === 'b4') document.body.classList.add('withprice')
 if (v === 'b3' || v === 'b4') document.body.classList.add('yellow')
-let end; try { end = +localStorage.getItem('omnya_end') } catch (e) {}
-if (!end || end < Date.now() - 864e5) { end = Date.now() + 15 * 60e3; try { localStorage.setItem('omnya_end', end) } catch (e) {} }
+const __ryDay = (() => { const d = new Date(); return d.getFullYear() * 1e4 + (d.getMonth() + 1) * 100 + d.getDate() })()
+let __ryFirst = 0; try { __ryFirst = +localStorage.getItem('omnya_sd_first') || 0; if (!__ryFirst) localStorage.setItem('omnya_sd_first', __ryDay) } catch (e) {}
+window.__ry2 = Date.now() > Date.parse('2026-11-22T23:59:59+01:00')
+if (window.__ry2) {
+  document.documentElement.classList.add('ry2')
+  const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
+  for (let n; (n = walk.nextNode());) n.nodeValue = n.nodeValue.replace(/€5\.99/g, '€9.99').replace(/€14\.99/g, '€19.99').replace(/save €23/g, 'save €19').replace(/save €55/g, 'save €50').replace(/^-80%$/, '-66%').replace(/^-79%$/, '-71%')
+  const r = document.querySelector('.rvl span:last-child'); if (r) r.innerHTML = 'The launch price is over'
+  const ks = document.querySelector('.p-kit .stk b'); if (ks) ks.textContent = '-71%'
+}
+let end = Date.parse('2026-11-22T23:59:59+01:00')
 const pad = n => String(n).padStart(2, '0')
 function tick() {
-  if (end - Date.now() <= 0) { end = Date.now() + 15 * 60e3; try { localStorage.setItem('omnya_end', end) } catch (e) {} }
-  const ms = Math.max(0, end - Date.now()), h = Math.floor(ms / 36e5), m = Math.floor(ms / 6e4) % 60, s = Math.floor(ms / 1e3) % 60
+  const ms = Math.max(0, end - Date.now()), dd = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60, s = Math.floor(ms / 1e3) % 60
   document.querySelector('[data-h]').textContent = pad(h); document.querySelector('[data-m]').textContent = pad(m); document.querySelector('[data-s]').textContent = pad(s)
   document.querySelector('[data-t2]').innerHTML = `${pad(h)}<i>:</i>${pad(m)}<i>:</i>${pad(s)}`
-  document.querySelector('[data-t3]').textContent = `${pad(h)}:${pad(m)}:${pad(s)}`
+  const tx = (dd ? dd + 'd ' : '') + `${pad(h)}:${pad(m)}:${pad(s)}`
+  document.querySelector('[data-t3]').textContent = tx; const t4 = document.querySelector('[data-tx]'); if (t4) t4.textContent = tx
+  if (dd) document.querySelector('[data-h]').textContent = pad(dd * 24 + h)
 }
 tick(); setInterval(tick, 1000)
 const bar = document.querySelector('.bar'), top0 = document.querySelector('[data-t2]')
@@ -587,12 +598,12 @@ new IntersectionObserver(([e]) => bar.classList.toggle('show', !e.isIntersecting
 const vsl = document.querySelector('[data-vsl]'), vv = vsl.querySelector('video')
 vsl.querySelector('[data-unm]').addEventListener('click', () => { vv.muted = false; vv.currentTime = 0; vv.play(); vsl.classList.add('on') })
 const reels = [...document.querySelectorAll('.reel')]; let ri = 1
-setInterval(() => { if (innerWidth < 820) return; reels[ri].classList.remove('on'); ri = (ri + 1) % reels.length; reels[ri].classList.add('on'); document.querySelectorAll('[data-dots] i').forEach((d, i) => d.classList.toggle('on', i === ri)) }, 3000)
-const P = { full: ['€5.99', '-80%', 'The Full Guide'], scene: ['€17.99', '', 'Full Guide + 3D scene'], all: ['€59', '-75%', 'Everything we teach'], bf: ['€59', '-77%', 'Everything we teach'], skill: ['€9.99', '', 'Guide + Claude Skill'] }
+setInterval(() => { if (innerWidth < 820 || !reels.length) return; reels[ri].classList.remove('on'); ri = (ri + 1) % reels.length; reels[ri].classList.add('on'); document.querySelectorAll('[data-dots] i').forEach((d, i) => d.classList.toggle('on', i === ri)) }, 3000)
+const P = { full: window.__ry2 ? ['€9.99', '-66%', 'The Full Guide'] : ['€5.99', '-80%', 'The Full Guide'], scene: ['€17.99', '', 'Full Guide + 3D scene'], all: ['€59', '-75%', 'Everything we teach'], bf: ['€59', '-77%', 'Everything we teach'], skill: [window.__ry2 ? '€19.99' : '€14.99', '', 'Guide + Claude Skill'] }
 document.querySelectorAll('.opt').forEach(o => o.addEventListener('click', () => {
   const k = o.dataset.o
   document.querySelectorAll('.opt').forEach(x => x.classList.toggle('on', x === o))
-  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.dataset.p === (k === 'bf' ? 'all' : k === 'skill' ? 'full' : k)))
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.dataset.p === (k === 'bf' ? 'all' : k)))
   document.querySelector('[data-pr]').textContent = P[k][0]
   document.querySelector('[data-pay]').innerHTML = k === 'full' ? `Pay ${P[k][0]} · Get ${P[k][2]}` : `Pay ${P[k][0]}<small>Get ${P[k][2]}</small>`
 }))
@@ -622,22 +633,23 @@ sk.addEventListener('pointerdown', e => { seekTo(e); sk.setPointerCapture(e.poin
 vsl.querySelector('[data-unm]').addEventListener('click', () => { vsl.classList.remove('muted'); vv.loop = false })
 // carousel dots follow the scroll
 const tr = document.querySelector('.track'), dots = [...document.querySelectorAll('[data-dots] i')]
-tr.addEventListener('scroll', () => { const n = reels.length, k = Math.round(tr.scrollLeft / Math.max(1, tr.scrollWidth - tr.clientWidth) * (n - 1)); dots.forEach((d, i) => d.classList.toggle('on', i === k)) }, { passive: true })
+if (tr) tr.addEventListener('scroll', () => { const n = reels.length, k = Math.round(tr.scrollLeft / Math.max(1, tr.scrollWidth - tr.clientWidth) * (n - 1)); dots.forEach((d, i) => d.classList.toggle('on', i === k)) }, { passive: true })
 dots.forEach((d, i) => d.addEventListener('click', () => { if (innerWidth < 820) reels[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }) }))
 
 // the site: who just left their email (OptIn keeps it for this tab only), the real Stripe Checkout, the link as a fallback
-const LINK = {'full': 'https://buy.stripe.com/28EaEW3Ot7scdWeeyN8so0M', 'all': 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C', 'bf': 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C', 'skill': 'https://buy.stripe.com/5kQ14mgBf4g05pIfCR8so0O'}, PID = {'full': 'full-stadium', 'all': 'everything', 'bf': 'everything', 'skill': 'skill-stadium'}
+const LINK = {'full': 'https://buy.stripe.com/28EaEW3Ot7scdWeeyN8so0M', 'all': 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C', 'bf': 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C', 'skill': 'https://buy.stripe.com/8x2fZg84J13O2dw3U98so11'}, PID = {'full': 'full-stadium', 'all': 'everything', 'bf': 'everything', 'skill': 'skill-stadium-14'}
+if (window.__ry2) { LINK.full = 'https://buy.stripe.com/00w4gyckZfYI8BU76l8so13'; LINK.skill = 'https://buy.stripe.com/4gMcN44SxdQA5pI3U98so12'; PID.full = 'full-stadium-9'; PID.skill = 'skill-stadium-19' }
 let who = {}; try { who = JSON.parse(sessionStorage.getItem('omnya-watch') || '{}') } catch (e) {}
 const em = document.querySelector('[data-em]'), cn = document.querySelector('[data-cn]')
 if (who.email) em.value = who.email
-let cur = 'skill', ec = null, busy = false
+let cur = 'full', ec = null, busy = false
 const ecBox = document.querySelector('[data-ec]'), right = document.querySelector('.right')
 function payLink() { const e = em.value.trim(); location.href = LINK[cur] + (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e) ? '?prefilled_email=' + encodeURIComponent(e) : '') }
 document.querySelector('[data-pay]').addEventListener('click', payLink)
 function loadStripe() { return window.Stripe ? Promise.resolve() : new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'https://js.stripe.com/endive/stripe.js'; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc) }) }
 // 13/11 (Nico): the Stripe fields inside OUR checkout, black and blue like the board, our own Pay button
-const LOOK = { theme: 'night', inputs: 'condensed', labels: 'above', variables: { colorPrimary: '#0a84ff', colorBackground: '#0b1224', colorText: '#ffffff', colorTextSecondary: '#c9d2e3', colorTextPlaceholder: '#6b7385', colorDanger: '#ff6b6b', fontFamily: 'Inter, system-ui, sans-serif', fontSizeBase: '16px', borderRadius: '10px', spacingUnit: '4px' },
-  rules: { '.Input': { border: '1px solid #2b3550', boxShadow: 'none' }, '.Input:focus': { border: '1px solid #0a84ff', boxShadow: '0 0 0 3px #0a84ff40' }, '.Label': { color: '#e6ebf5', fontWeight: '500', fontSize: '14px' } } }
+const LOOK = { theme: 'night', inputs: 'condensed', labels: 'above', variables: { colorPrimary: '#0a84ff', colorBackground: '#210a0a', colorText: '#ffffff', colorTextSecondary: '#c9d2e3', colorTextPlaceholder: '#6b7385', colorDanger: '#ff6b6b', fontFamily: 'Inter, system-ui, sans-serif', fontSizeBase: '16px', borderRadius: '10px', spacingUnit: '4px' },
+  rules: { '.Input': { border: '1px solid #482728', boxShadow: 'none' }, '.Input:focus': { border: '1px solid #0a84ff', boxShadow: '0 0 0 3px #0a84ff40' }, '.Label': { color: '#e6ebf5', fontWeight: '500', fontSize: '14px' } } }
 const payBtn = document.querySelector('[data-pay]'), perr = document.querySelector('[data-perr]')
 let actions = null, pel = null
 payBtn.removeEventListener('click', payLink)

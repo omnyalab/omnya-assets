@@ -12,6 +12,7 @@ import FunnelUpgrade from '../components/FunnelUpgrade.astro';
 import RiyadhBlackFriday from '../components/RiyadhBlackFriday.astro';
 import RiyadhFuture from '../components/RiyadhFuture.astro';
 import BuildThanksColors from '../components/BuildThanksColors.astro';
+import StadiumThanksColors from '../components/StadiumThanksColors.astro';
 import { goHref, thanks, booking, everythingUpgrade, type ProductId } from '../lib/learn';
 import { t, langFromPath, localize } from '../i18n';
 
@@ -48,7 +49,8 @@ const v = visual(flow.oto);
 // It is drawn as the next step of the funnel the buyer came from, in that funnel's colour (components/FunnelUpgrade.astro).
 // 16/11: the stadium has its own one-tap offer (StadiumOffer), not the €53 upgrade card
 // 16/11: the Miami funnel has the same one-tap offer, with the Miami Builder skill (StadiumOffer kind="miami")
-const so = Astro.props.id === 'full-stadium' || Astro.props.id === 'full-miami';
+// 18/11 (Nico, board R1): the stadium leaves the one-tap offer for the Black Friday card that counts what was paid
+const so = Astro.props.id === 'full-miami';
 const up = !!everythingUpgrade && Astro.props.id.startsWith('full-') && !so;
 const vd = flow.down ? visual(flow.down) : null;
 const bookIds = ['white-to-real', 'reel', 'before-it-exists'];
@@ -120,6 +122,7 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
     {Astro.props.id === 'full-riyadh' && <RiyadhBlackFriday />}
     {/* 18/11 (Nico, board R1): the Build thanks page like the Riyadh one, in the Build green */}
     {Astro.props.id === 'full-build' && <RiyadhBlackFriday name="Build" book="/learn/bd_book_tight.webp" />}
+    {Astro.props.id === 'full-stadium' && <RiyadhBlackFriday name="Stadium" book="/learn/sd_book_tight.webp" />}
 
     <header class="oto__head">
       <p class="oto__done" data-fade>{X.headA}</p>
@@ -129,7 +132,7 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
 
     {up && <FunnelUpgrade id={Astro.props.id} lang={lang} />}
 
-    {Astro.props.id === 'full-riyadh' ? <RiyadhFuture /> : Astro.props.id === 'full-build' ? <RiyadhFuture kind="build" /> : (
+    {Astro.props.id === 'full-riyadh' ? <RiyadhFuture /> : Astro.props.id === 'full-build' ? <RiyadhFuture kind="build" /> : Astro.props.id === 'full-stadium' ? <RiyadhFuture kind="stadium" /> : (
     <article class:list={['oto__card', { 'oto__card--skool': v.kind === 'skool' }]} data-fade>
       <div class="oto__visual">
         {
@@ -215,6 +218,7 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
 </Base>
 
 {Astro.props.id === 'full-build' && <BuildThanksColors />}
+{Astro.props.id === 'full-stadium' && <StadiumThanksColors />}
 {Astro.props.id === 'full-riyadh' && (
 <style is:global>
   /* 17/11 (Nico): after paying for the Riyadh guide the page is in the colours of that funnel (violet night, white text) */

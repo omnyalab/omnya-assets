@@ -9,8 +9,8 @@
 // of one of our projects that is barely seen (bg: towers, burj or stadium; Nico chose B2, the Burj at night).
 // kind="build" only changes the words. The pop-up opens only on a tap of "Save my spot", never by itself, and
 // says what the community is (18/11, Nico: "the pop-up a bit explained").
-const { kind = 'riyadh', bg = 'burj' } = Astro.props as { kind?: 'riyadh' | 'build'; bg?: 'towers' | 'burj' | 'stadium' };
-const what = kind === 'build' ? 'these 3D houses' : 'these 3D towers';
+const { kind = 'riyadh', bg = 'burj' } = Astro.props as { kind?: 'riyadh' | 'build' | 'stadium'; bg?: 'towers' | 'burj' | 'stadium' };
+const what = kind === 'build' ? 'these 3D houses' : kind === 'stadium' ? 'these 3D stadiums' : 'these 3D towers';
 ---
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&display=swap" rel="stylesheet">
 <section class="ryfw" data-fade>

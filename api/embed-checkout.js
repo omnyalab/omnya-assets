@@ -28,6 +28,11 @@ const P = {
   everything: { items: ['price_1UZlPGATIF7pxfqf9vf0kJhG'], back: 'everything' }, // 5kQcN4bgVbIs6tMeyN8so0C · 59
   // 16/11 (Nico): the Full Stadium Blueprint + the Stadium Builder skill, €9.99 (prod_VdaamfuFvksbaw), back to the stadium thanks page
   'skill-stadium': { items: ['price_1UcJOtATIF7pxfqfVgfJrHi2'], back: 'full-stadium', save: true },
+  // 18/11 (Nico): the stadium in the Build format: Stadium Builder skill + Full at €14.99 (8x2fZg84J13O2dw3U98so11), from Monday
+  // 23/11 €19.99 (4gMcN44SxdQA5pI3U98so12), and the Full at €9.99 from Monday (00w4gyckZfYI8BU76l8so13)
+  'skill-stadium-14': { items: ['price_1Ud7QjATIF7pxfqfU2jLZPH5'], back: 'full-stadium' },
+  'skill-stadium-19': { items: ['price_1Ud7S3ATIF7pxfqfAfOHsZxB'], back: 'full-stadium' },
+  'full-stadium-9': { items: ['price_1Ud7StATIF7pxfqfTwB2zdvG'], back: 'full-stadium' },
   // 16/11 (Nico, GTA reels): the Full Miami Blueprint €5.99 and Miami Builder Skill + Full €9.99, card kept for the one-tap offer (prod_Vdm0H9ykCVnpbg, prod_Vdm1I3xPuTwCIh, created 16/11 19:16)
   'full-miami': { items: ['price_1UcUSRATIF7pxfqfNQ4U48bG'], back: 'full-miami', save: true },
   'skill-miami': { items: ['price_1UcUT0ATIF7pxfqfur9NIkHm'], back: 'full-miami', save: true },
