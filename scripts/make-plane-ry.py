@@ -66,6 +66,7 @@ for a, b in [
   ('The Build Blueprint · PDF', 'The Plane Blueprint · PDF'),
   ('Step 2: see how the free blueprint becomes a <u class="hb2">€1,990</u> client', TITLES[TITLE]),
   ('vsl_build.mp4?v=1', 'vsl_plane.mp4?v=1'),
+  ('/learn/watch/vsl_poster.jpg', '/learn/watch/vsl_poster_plane.jpg'),   # the shared poster shows the Towers book
   ('<b class="hb">Stop selling renders</b>clients pay for this now', HOOKS[HOOK]),
   ('r_house2.mp4', 'r_plane.mp4'), ('p_house2.jpg', 'p_plane.jpg'),
   ('Comment “BUILD” and I’ll send you the free guide…', 'Comment “PLANE” and I’ll send you the free guide…'),
