@@ -45,7 +45,7 @@ const P = {
   // 18/11 (Nico, plane reels): the Full Plane Blueprint €5.99 (14AaEWgBfdQAg4maix8so14) and 3D Plane Kit + Full €14.99 (cNi4gyacReUE4lEfCR8so15),
   // from Monday 23/11 €9.99 (dRm00i5WBdQA9FY0HX8so16) and €19.99 (6oUdR83OtcMw3hAeyN8so17)
   'full-plane': { items: ['price_1UdCdPATIF7pxfqfXgy7kpAj'], back: 'full-plane' },
-  // 19/11 (Nico): Plane Builder Skill + The Full Plane Blueprint €5.99 (prod_VerjXM6BW7I8KQ, https://buy.stripe.com/5kQaEW1Gl3bW05oduJ8so18)
+  // 19/11 (Nico): The Plane Builder Skill €5.99 (the skill only) (prod_VerjXM6BW7I8KQ, https://buy.stripe.com/5kQaEW1Gl3bW05oduJ8so18)
   'skill-plane': { items: ['price_1UdY06ATIF7pxfqfNNUm5fUQ'], back: 'full-plane' },
   'kit-plane': { items: ['price_1UdCePATIF7pxfqfeNtWSkX1'], back: 'full-plane' },
   'full-plane-9': { items: ['price_1UdCfWATIF7pxfqfGqJ241Bn'], back: 'full-plane' },
