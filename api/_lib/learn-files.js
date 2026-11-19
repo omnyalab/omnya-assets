@@ -93,7 +93,14 @@ const PLANE_KIT = {
   note: 'is the interactive plane where you pick your seat: unzip it, double click Start (Mac) or Start (Windows), and it opens in your browser. Your flight, cities and prices are in config.js, and the README inside has every step.',
 };
 
-const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE, SCENE, SKILL, MIAMI_SKILL, HOUSE_SKILL, RIYADH_KIT, PLANE_KIT];
+// 19/11 (Nico): the Plane Builder skill, a zip for Claude that builds the flight booking site for any brand; sold at €5.99
+// with the Full Plane Blueprint and the 3D Plane Kit (the photos and clips the skill copies in) on /the-plane-skill/watch
+const PLANE_SKILL = {
+  name: 'The Plane Builder skill', file: 'en/plane-builder-skill.zip', kind: 'zip',
+  note: 'is a skill for Claude: unzip it into ~/.claude/skills for Claude Code (or on claude.ai open Settings, Capabilities, Skills and upload the zip), unzip The 3D Plane Kit too, then ask "build me the plane booking site for my airline". The README inside has every step.',
+};
+
+const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE, SCENE, SKILL, MIAMI_SKILL, HOUSE_SKILL, RIYADH_KIT, PLANE_KIT, PLANE_SKILL];
 // 13/11: the playbooks got new names. The one-year links already in buyers' emails still carry the old file names, so
 // the old names stay valid and point to the new files (who bought the old playbook 02 now gets the new one).
 const OLD = {
@@ -115,7 +122,8 @@ export const allFiles = () => EVERY.flatMap((f) => [{ name: f.name, file: f.file
 // 16/11 (Nico): every Full guide is in it now (City and Stadium joined), and the Stadium Builder skill; the Black Friday
 // product "Black Friday · Everything we teach" (€39) is matched by the /everything we teach/ rule and delivers the same
 // 16/11: the Full Miami Blueprint and the Miami Builder skill joined it
-const PACK = [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_CITY, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, SKILL, MIAMI_SKILL, HOUSE_SKILL];
+// 19/11: the Plane joined the pack (the Black Friday card says "Plane too"): its Full guide, skill and kit
+const PACK = [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_CITY, FULL_PLANE, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, SKILL, MIAMI_SKILL, HOUSE_SKILL, PLANE_SKILL, PLANE_KIT];
 /** True for every Stripe product that is the pack, whatever its price: "Everything we teach" (€59),
     "Everything we teach · upgrade" (€53 after a Full guide) and "Everything we teach · thank you price" (€29, sent by hand). */
 export const isPack = (name) => /everything we teach/i.test(String(name || ''));
@@ -146,6 +154,8 @@ const RULES = [
   // 17/11: "Riyadh Remote Kit + The Full Riyadh Blueprint" (€14.99) before the plain Riyadh rule
   [/riyadh remote kit/i, [FULL_RIYADH, RIYADH_KIT]],
   [/full riyadh blueprint/i, [FULL_RIYADH]],
+  // 19/11: "Plane Builder Skill + The Full Plane Blueprint" (€5.99) before every other plane rule
+  [/plane builder skill/i, [FULL_PLANE, PLANE_SKILL, PLANE_KIT]],
   // 18/11: "3D Plane Kit + The Full Plane Blueprint" (€14.99 / €19.99) before the plain plane rule
   [/3d plane kit/i, [FULL_PLANE, PLANE_KIT]],
   [/full plane blueprint/i, [FULL_PLANE]],

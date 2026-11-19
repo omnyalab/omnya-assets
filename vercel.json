@@ -7,7 +7,7 @@
   ],
   "redirects": [
     {
-      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint|the-stadium-blueprint|the-miami-blueprint|the-riyadh-blueprint|the-plane-blueprint|fable)",
+      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint|the-stadium-blueprint|the-miami-blueprint|the-riyadh-blueprint|the-plane-blueprint|the-plane-skill|fable)",
       "has": [
         {
           "type": "query",
@@ -24,7 +24,7 @@
       "permanent": false
     },
     {
-      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint|the-stadium-blueprint|the-miami-blueprint|the-riyadh-blueprint|the-plane-blueprint|fable)",
+      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint|the-stadium-blueprint|the-miami-blueprint|the-riyadh-blueprint|the-plane-blueprint|the-plane-skill|fable)",
       "has": [
         {
           "type": "query",
@@ -294,6 +294,16 @@
       "source": "/stadium",
       "destination": "/the-stadium-blueprint",
       "permanent": true
+    },
+    {
+      "source": "/skill",
+      "destination": "/the-plane-skill",
+      "permanent": false
+    },
+    {
+      "source": "/prompt",
+      "destination": "/the-plane-skill",
+      "permanent": false
     },
     {
       "source": "/plane",
