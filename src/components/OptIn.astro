@@ -20,6 +20,9 @@ interface Props {
   free: string; // the free product id, e.g. free-tower
   word: string; // FREE + this word in the box (Tower, Floor, 3D to film)
   small?: boolean; // a long word gets a smaller box
+  last?: string; // 19/11: the last word of the title (default Method; the plane skill page says Skill)
+  stamp?: string; // 19/11: the stamp before the word (default Free; '' hides it, Nico: the skill page is not free)
+  btn?: string; // 19/11: the button (default 'Send me the blueprint →')
   cover: string; // the free PDF cover
   hero: string;
   heroMobile: string;
@@ -45,7 +48,7 @@ interface Props {
   // page scrolls, the card is not a dialog and never moves or shrinks to fit the screen (styles/optin.css, .oi--inline)
   noMail?: boolean; // 16/11: this funnel sends no email (the PDF is on the next page): the button says Ready, not Sent
 }
-const { slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, fade, after, landing, inline, noMail, allset, watch, proof = '371 people asked for a blueprint in 4 days' } = Astro.props;
+const { last = 'Method', stamp = 'Free', btn = 'Send me the blueprint →', slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, fade, after, landing, inline, noMail, allset, watch, proof = '371 people asked for a blueprint in 4 days' } = Astro.props;
 const next = after || `/${slug}/sent`;
 ---
 
@@ -54,7 +57,7 @@ const next = after || `/${slug}/sent`;
     <button type="button" class="oix" data-oi-close aria-label="Close">×</button>
     <div class="oibk" role="img" aria-label="The free blueprint"><div class="oibk__b"><span class="oibk__k"></span><span class="oibk__t"></span><span class="oibk__p"></span><span class="oibk__f"></span></div></div>
     <p class="x3-kick">Where do we send it?</p>
-    <h2 class="oist" id="oi-title"><span class="a">Steal our</span><span class="row"><span class="oistamp">Free</span><span class="b" style={small ? 'font-size:.8em' : undefined}>{word}</span></span><span class="c">Method</span></h2>
+    <h2 class="oist" id="oi-title"><span class="a">Steal our</span><span class="row">{stamp && <span class="oistamp">{stamp}</span>}<span class="b" style={small ? 'font-size:.8em' : undefined}>{word}</span></span><span class="c">{last}</span></h2>
     <form class="oif" data-oi-form novalidate>
       <label class="oihp" aria-hidden="true">Company<input name="company" tabindex="-1" autocomplete="off" /></label>
       <input name="name" placeholder="Your first name" autocomplete="given-name" required maxlength="60" />
@@ -62,7 +65,7 @@ const next = after || `/${slug}/sent`;
       <label class="oiag oiag--nl"><input type="checkbox" name="nl" /><i>✓</i><span>Also send me an update now and then. No spam, unsubscribe in one click.</span></label>
       <p class="oiag oiag--line">By sending you accept the <a href="/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>.</p>
       <p class="oierr" data-oi-err hidden></p>
-      <button class="x3-btn x3-btn--blue">Send me the blueprint →</button>
+      <button class="x3-btn x3-btn--blue">{btn}</button>
       <p class="oiproof"><b aria-hidden="true">★</b> {proof}</p>
     </form>
     {/* 13/11 (Nico): under the card only the © line, like the video page (the VAT number stays in the site's own footer) */}
