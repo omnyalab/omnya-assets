@@ -10,7 +10,7 @@ import OptIn from '../components/OptIn.astro';
 
 <Base page="learn" header={false} footer={false} title="The Plane Builder skill" description="Steal our plane method: the free blueprint in five steps, and the Claude skill that builds the flight booking site where you pick your own seat.">
 <div class="x3">
-<OptIn slug="the-plane-skill" free="free-plane" noMail word="Plane" last="Skill" stamp="" btn="Show me the skill →" book noClose fade theme="pl" allset proof="Steal it before your competitors do" watch="/the-plane-skill/watch" cover="/learn/pl_skill_cover.webp" hero="/learn/pl_hero.webp" heroMobile="/learn/pl_hero_mobile.webp" />
+<OptIn slug="the-plane-skill" free="free-plane" noMail word="Plane" last="" stamp="Skill" stampAfter inMsg="Your skill is on the next page" btn="Show me the skill →" book noClose fade theme="pl" allset proof="Steal it before your competitors do" watch="/the-plane-skill/watch" cover="/learn/pl_skill_cover.webp" hero="/learn/pl_hero.webp" heroMobile="/learn/pl_hero_mobile.webp" />
 
 
 </div>
@@ -18,6 +18,17 @@ import OptIn from '../components/OptIn.astro';
 
 
 <style is:global>
+/* 19/11 (Nico): the plane skill card in a brighter sky blue, a little lower, SKILL stamp on the right of PLANE */
+.oidim.oi--pl{padding-top:230px}
+.oi--pl .oisheet{background:linear-gradient(170deg,#0f6fd6 0%,#0a3f7e 34%,#08213f 64%,#05101c 100%);box-shadow:0 60px 120px -40px #1fa8ffcc,inset 0 1px #ffffff40}
+.oi--pl .oisheet::before{background:radial-gradient(closest-side,#1fa8ffcc,#1fa8ff44 55%,transparent)}
+.oi--pl .oisheet::after{background:radial-gradient(closest-side,#1fa8ff88,#1fa8ff2a 60%,transparent)}
+.oi--pl .oistamp{color:#5cc6ff;border-color:#5cc6ff;background:#1fa8ff1f;font-size:17px}
+.oi--pl .oistamp--r{transform:rotate(9deg);margin-left:12px}
+.oi--pl .oist .row{margin-bottom:6px}
+.x3 .x3-btn--blue{background:#1fa8ff!important;box-shadow:0 14px 34px -10px #1fa8ffcc}
+.oi-fade.oi-fade--pl{background:radial-gradient(120% 90% at 50% 35%,#0f6fd6 0%,#0a3f7e 45%,#04101e 100%)}
+
 html,body{background:#05080a}
 @font-face{font-family:Montserrat;src:url(/fonts/montserrat-latin.woff2) format("woff2");font-weight:500 900;font-display:swap}
 .x3{--bg:#05080a;--bg2:#0d1217;--ink:#fff;--mute:rgba(255,255,255,.66);--line:rgba(255,255,255,.14);--blue:#38b6ff;--blue2:#38b6ff;background:var(--bg);color:var(--ink);font-family:Montserrat,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}

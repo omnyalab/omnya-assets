@@ -23,6 +23,8 @@ interface Props {
   last?: string; // 19/11: the last word of the title (default Method; the plane skill page says Skill)
   stamp?: string; // 19/11: the stamp before the word (default Free; '' hides it, Nico: the skill page is not free)
   btn?: string; // 19/11: the button (default 'Send me the blueprint →')
+  stampAfter?: boolean; // 19/11: the stamp sits after the word, on the right (plane skill: PLANE then the SKILL stamp)
+  inMsg?: string; // 19/11: the line under "You're in" (default: the free blueprint is on the next page)
   cover: string; // the free PDF cover
   hero: string;
   heroMobile: string;
@@ -48,16 +50,16 @@ interface Props {
   // page scrolls, the card is not a dialog and never moves or shrinks to fit the screen (styles/optin.css, .oi--inline)
   noMail?: boolean; // 16/11: this funnel sends no email (the PDF is on the next page): the button says Ready, not Sent
 }
-const { last = 'Method', stamp = 'Free', btn = 'Send me the blueprint →', slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, fade, after, landing, inline, noMail, allset, watch, proof = '371 people asked for a blueprint in 4 days' } = Astro.props;
+const { last = 'Method', stamp = 'Free', btn = 'Send me the blueprint →', stampAfter = false, inMsg = 'Your free blueprint is on the next page', slug, free, word, small, cover, hero, heroMobile, book, noClose, theme, fade, after, landing, inline, noMail, allset, watch, proof = '371 people asked for a blueprint in 4 days' } = Astro.props;
 const next = after || `/${slug}/sent`;
 ---
 
-<div class={`oidim${book ? ' oi--book' : ''}${noClose ? ' oi--nox' : ''}${theme ? ' oi--' + theme : ''}${fade ? ' oi--fade' : ''}${inline ? ' oi--inline' : ''}`} data-optin data-slug={slug} data-free={free} data-next={next} data-watch={watch} data-landing={landing ? '' : undefined} data-nomail={noMail ? '' : undefined} style={`--oi-cover:url(${cover});--oi-hero:url(${hero});--oi-hero-m:url(${heroMobile})`} role={inline ? 'group' : 'dialog'} aria-modal={inline ? undefined : 'true'} aria-labelledby="oi-title">
+<div class={`oidim${book ? ' oi--book' : ''}${noClose ? ' oi--nox' : ''}${theme ? ' oi--' + theme : ''}${fade ? ' oi--fade' : ''}${inline ? ' oi--inline' : ''}`} data-optin data-inmsg={inMsg} data-slug={slug} data-free={free} data-next={next} data-watch={watch} data-landing={landing ? '' : undefined} data-nomail={noMail ? '' : undefined} style={`--oi-cover:url(${cover});--oi-hero:url(${hero});--oi-hero-m:url(${heroMobile})`} role={inline ? 'group' : 'dialog'} aria-modal={inline ? undefined : 'true'} aria-labelledby="oi-title">
   <div class="oisheet">
     <button type="button" class="oix" data-oi-close aria-label="Close">×</button>
     <div class="oibk" role="img" aria-label="The free blueprint"><div class="oibk__b"><span class="oibk__k"></span><span class="oibk__t"></span><span class="oibk__p"></span><span class="oibk__f"></span></div></div>
     <p class="x3-kick">Where do we send it?</p>
-    <h2 class="oist" id="oi-title"><span class="a">Steal our</span><span class="row">{stamp && <span class="oistamp">{stamp}</span>}<span class="b" style={small ? 'font-size:.8em' : undefined}>{word}</span></span><span class="c">{last}</span></h2>
+    <h2 class="oist" id="oi-title"><span class="a">Steal our</span><span class="row">{stamp && !stampAfter && <span class="oistamp">{stamp}</span>}<span class="b" style={small ? 'font-size:.8em' : undefined}>{word}</span>{stamp && stampAfter && <span class="oistamp oistamp--r">{stamp}</span>}</span>{last && <span class="c">{last}</span>}</h2>
     <form class="oif" data-oi-form novalidate>
       <label class="oihp" aria-hidden="true">Company<input name="company" tabindex="-1" autocomplete="off" /></label>
       <input name="name" placeholder="Your first name" autocomplete="given-name" required maxlength="60" />
@@ -213,7 +215,7 @@ const next = after || `/${slug}/sent`;
         var first = String(name || '').trim().split(/\s+/)[0] || '';
         first = first ? first.charAt(0).toUpperCase() + first.slice(1) : '';
         ov.querySelector('.oid-t').textContent = first ? 'You’re in, ' + first : 'You’re in';
-        ov.querySelector('.oid-s').textContent = 'Your free blueprint is on the next page';
+        ov.querySelector('.oid-s').textContent = box.dataset.inmsg || 'Your free blueprint is on the next page';
         ov.querySelector('.oid-s2').remove();
         document.body.appendChild(ov);
         T(function () { ov.classList.add('on'); }, 250);
