@@ -44,6 +44,8 @@ import '../../styles/global.css';
     .ct-tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: #efece7; margin: 0 0 10px; }
     .ct-tabs button { border: 0; background: none; font: inherit; font-size: 14px; padding: 8px 16px; border-radius: 999px; color: var(--mute); cursor: pointer; }
     .ct-tabs button.ct-on { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+    .ct-ty { display: none; width: 100%; margin: 0 0 10px; font-family: 'Mrs Saint Delafield', cursive !important; font-size: 40px !important; padding: 10px 16px !important; }
+    .ct-ty.ct-on { display: block; }
     .ct-done img { display: block; max-width: 260px; max-height: 90px; margin: 6px auto 10px; }
     .ct-pad { position: relative; border: 1px dashed #b9b3a9; border-radius: 14px; background: #fbfaf8; height: 190px; touch-action: none; }
     .ct-pad canvas { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 14px; cursor: crosshair; }
@@ -134,7 +136,7 @@ import '../../styles/global.css';
         '<h2>Sign the agreement</h2><p class="ct-sub">Signing for ' + esc(C.client) + '.</p>' +
         '<div class="ct-grid"><div><label for="nm">Full name</label><input id="nm" type="text" autocomplete="name" placeholder="Your full name"></div>' +
         '<div><label for="rl">Role</label><input id="rl" type="text" autocomplete="organization-title" placeholder="e.g. Partner, Director"></div></div>' +
-        '<div class="ct-pad-wrap"><label>Signature</label><div class="ct-tabs" id="tabs"><button type="button" data-m="draw" class="ct-on">Draw</button><button type="button" data-m="type">Type</button></div><div class="ct-pad"><canvas id="pad"></canvas><div class="ct-line"></div><div class="ct-hint" id="hint">Sign here with your finger or mouse</div></div>' +
+        '<div class="ct-pad-wrap"><label>Signature</label><div class="ct-tabs" id="tabs"><button type="button" data-m="draw" class="ct-on">Draw</button><button type="button" data-m="type">Type</button></div><input id="ty" class="ct-ty" type="text" autocomplete="name" placeholder="Type your name"><div class="ct-pad"><canvas id="pad"></canvas><div class="ct-line"></div><div class="ct-hint" id="hint">Sign here with your finger or mouse</div></div>' +
         '<button class="ct-clear" id="clr" type="button">Clear</button></div>' +
         '<label class="ct-agree"><input id="ag" type="checkbox"><span>' + esc(AGREE) + '</span></label>' +
         '<button class="ct-btn" id="send" type="button" disabled>Email me the signing code</button>' +
@@ -143,7 +145,7 @@ import '../../styles/global.css';
         '<div class="ct-msg" id="msg"></div>' +
         '<p class="ct-legal">To confirm it’s you, we email a 6-digit code to the address in the agreement. Your name, signature, date, time and IP address are saved with a fingerprint of this exact text, and a copy is emailed to you and to Omnya Lab.</p>';
 
-      var nm = document.getElementById('nm');
+      var nm = document.getElementById('nm'), ty = document.getElementById('ty');
       var cv = document.getElementById('pad'), ctx = cv.getContext('2d'), drawing = false, inked = 0, last = null;
       function size() {
         var r = cv.getBoundingClientRect(), dpr = Math.max(1, window.devicePixelRatio || 1);
@@ -163,7 +165,7 @@ import '../../styles/global.css';
       ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (t) { cv.addEventListener(t, function () { drawing = false; }); });
       var mode = 'draw';
       function typed() {
-        var r = cv.getBoundingClientRect(), txt = nm.value.trim();
+        var r = cv.getBoundingClientRect(), txt = (ty.value || '').trim();
         ctx.clearRect(0, 0, cv.width, cv.height); inked = txt.length > 1 ? 100 : 0;
         document.getElementById('hint').style.display = txt ? 'none' : '';
         if (!txt) { check(); return; }
@@ -178,18 +180,20 @@ import '../../styles/global.css';
         mode = b.getAttribute('data-m');
         [].forEach.call(this.querySelectorAll('button'), function (x) { x.classList.toggle('ct-on', x === b); });
         cv.style.pointerEvents = mode === 'draw' ? '' : 'none';
-        document.getElementById('hint').textContent = mode === 'draw' ? 'Sign here with your finger or mouse' : 'Your name appears here as you type it above';
+        ty.classList.toggle('ct-on', mode === 'type');
+        if (mode === 'type') { if (!ty.value) ty.value = nm.value; ty.focus(); }
+        document.getElementById('hint').textContent = mode === 'draw' ? 'Sign here with your finger or mouse' : 'Type your signature in the box above';
         ctx.clearRect(0, 0, cv.width, cv.height); inked = 0; document.getElementById('hint').style.display = '';
         if (mode === 'type') { if (document.fonts && document.fonts.load) document.fonts.load('40px "Mrs Saint Delafield"').then(typed); else typed(); }
         check();
       });
-      document.getElementById('clr').onclick = function () { ctx.clearRect(0, 0, cv.width, cv.height); inked = 0; document.getElementById('hint').style.display = ''; if (mode === 'type') { nm.value = ''; } check(); };
+      document.getElementById('clr').onclick = function () { ctx.clearRect(0, 0, cv.width, cv.height); inked = 0; document.getElementById('hint').style.display = ''; if (mode === 'type') { ty.value = ''; ty.focus(); } check(); };
 
       var ag = document.getElementById('ag'), send = document.getElementById('send'), go = document.getElementById('go'), cd = document.getElementById('cd'), msg = document.getElementById('msg');
       function ready() { return nm.value.trim().length > 1 && ag.checked && inked > 60; }
       function check() { send.disabled = !ready(); go.disabled = !(ready() && /^\d{6}$/.test(cd.value.trim())); }
       [nm, ag, cd].forEach(function (el) { el.addEventListener('input', check); el.addEventListener('change', check); });
-      nm.addEventListener('input', function () { if (mode === 'type') typed(); });
+      ty.addEventListener('input', function () { if (mode === 'type') typed(); });
       function say(t, err) { msg.textContent = t; msg.className = 'ct-msg' + (err ? ' ct-err' : ''); }
 
       send.onclick = function () {
