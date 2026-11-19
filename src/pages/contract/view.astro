@@ -99,8 +99,16 @@ import '../../styles/global.css';
         '<section class="ct-sign" id="sign"></section>';
       var f = document.getElementById('doc');
       f.srcdoc = C.html;
+      function fit() { try { var d = f.contentDocument; f.style.height = (d.documentElement.scrollHeight + 10) + 'px'; } catch (e) {} }
       f.addEventListener('load', function () {
-        try { var d = f.contentDocument; d.body.style.margin = '0'; d.body.style.padding = 'clamp(18px,4vw,44px)'; f.style.height = (d.documentElement.scrollHeight + 10) + 'px'; } catch (e) {}
+        try {
+          var d = f.contentDocument; d.body.style.margin = '0'; d.body.style.padding = 'clamp(18px,4vw,44px)'; fit();
+          // images (signatures) and web fonts change the height after load: measure again when they arrive
+          [].forEach.call(d.images, function (im) { if (!im.complete) im.addEventListener('load', fit); });
+          if (d.fonts && d.fonts.ready) d.fonts.ready.then(fit);
+          if (window.ResizeObserver) new ResizeObserver(fit).observe(d.body);
+          [300, 1000, 2500].forEach(function (ms) { setTimeout(fit, ms); });
+        } catch (e) {}
       });
       window.addEventListener('resize', function () { try { f.style.height = (f.contentDocument.documentElement.scrollHeight + 10) + 'px'; } catch (e) {} });
       C.signed ? renderDone(C.signed) : renderSign();
