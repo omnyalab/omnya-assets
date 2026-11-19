@@ -1,7 +1,7 @@
 ---
 // the-plane-skill/watch (19/11, Nico): copy of /the-plane-blueprint/watch for the reels of 19/11 (PROMPT and SKILL).
 // It sells only the Plane Builder skill at €5.99 (Stripe "The Plane Builder Skill", embed id
-// skill-plane, delivers only the skill zip, with the photos and clips inside) and right under it the yellow Black Friday
+// skill-plane, delivers only the skill zip, with the photos and clips inside) and right under its €5.99 card the yellow Black Friday
 // "Everything we teach" €59 with Playbook 02 "How to go viral" in the middle of the fan. Price and clock run to the end
 // of Black Friday (27/11 23:59). No Higgsfield line in the footer (Nico: only Claude).
 ---
@@ -511,7 +511,9 @@ html.bf .opt[data-o="all"]{display:none}
 .fgt small{color:#a6f3c0!important}
 .fgd{background:linear-gradient(90deg,#1fc458,#3ddc74)!important;color:#ffffff!important;box-shadow:0 10px 24px -10px #22d35e!important}
 .fg:focus-visible{outline-color:#22d35e!important}
-.bfw{text-align:center;margin-top:8px}
+.bfw{text-align:center;margin:4px 0 22px}
+.right .bfw .bridge{margin-top:18px}
+.right .bfw .bridge h3{font-size:22px}
 </style></head><body>
 
 <div class="bar"><img src="/learn/watch/logo.svg" alt="Omnya Lab"><span class="lbl">Black Friday price ends in</span><span class="tm"><span data-h>00</span><small>h</small><span data-m>14</span><small>m</small><span data-s>59</span><small>s</small></span><a class="go cbtn" href="#offer">Get the skill<i class="dot"></i><span class="px">€5.99</span></a></div>
@@ -555,7 +557,8 @@ html.bf .opt[data-o="all"]{display:none}
       <a class="getnow" href="#buy" data-getnow>Get it now · <span data-gnp>€5.99</span> <b>↓</b></a>
       <div class="right"><p class="tml">Black Friday price ends in</p><div class="tm" data-t3>00:14:59</div><h3>YOURS FOREVER</h3><p class="one"><b data-pr>€5.99</b> one-time · no subscription</p>
         <span id="buy"></span><label class="opt opt-fu on" data-o="full"><span class="ck">✓</span><img src="/learn/pl_skill_card.webp" alt=""><span><b>The Plane Builder skill</b><small>Claude builds the booking site for you</small></span><span class="pp"><strong>€5.99</strong><s>€29</s></span><span class="off">-80%</span></label>
-        <div class="sp"><div class="emw" data-emw><span class="lab">Email <small style="color:#ff6b6b;font-weight:700">(required)</small> · the guide arrives here</span><input class="in" type="email" placeholder="you@example.com" aria-label="Your email" data-em autocomplete="email" required></div>
+        <div class="bfw"><div class="bridge"><h3>Or get everything we teach</h3><p>Black Friday: every guide, every skill and the 3 playbooks</p><span class="ar">↓</span></div>
+      <div class="bfc bft" data-bft><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan"><img src="/learn/3d_book.webp" alt=""><img src="/learn/tt_book_tight.webp" alt=""><img src="/learn/pk_pb02.webp" alt="How to go viral in days, not years"><img src="/learn/sd_book_tight.webp" alt=""><img src="/learn/pl_book_tight.webp" alt=""></span><span class="bh">Get everything</span><span class="inc">Every Full guide, Plane too, the 3 playbooks with How to go viral, the skills and every new guide</span><span class="pz"><s>€260</s><b>€59</b><span>-77%</span></span><div class="bcd"><small>Black Friday ends in</small><div class="bx"><span><b data-bd>8</b><i>DAYS</i></span><span><b data-bh>00</b><i>HRS</i></span><span><b data-bm>00</b><i>MIN</i></span><span class="sc"><b data-bs>00</b><i>SEC</i></span></div></div><a class="go" href="https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C" data-bfgo>Get everything · €59 →</a></div></div><div class="sp"><div class="emw" data-emw><span class="lab">Email <small style="color:#ff6b6b;font-weight:700">(required)</small> · the guide arrives here</span><input class="in" type="email" placeholder="you@example.com" aria-label="Your email" data-em autocomplete="email" required></div>
         <span class="lab pml">Payment method</span>
         <div class="cpanel"><div class="chead"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/></svg>Card</div>
           <div class="cbody"><div class="ecw"><div class="ec" data-ec></div><div class="cbr" data-cbr aria-hidden="true"><span class="b-mc"><svg viewBox="0 0 31 19"><circle cx="12.6" cy="9.5" r="5.6" fill="#eb001b"/><circle cx="18.4" cy="9.5" r="5.6" fill="#f79e1b"/><path d="M15.5 4.8a5.6 5.6 0 0 1 0 9.4a5.6 5.6 0 0 1 0-9.4z" fill="#ff5f00"/></svg></span><span class="b-visa">VISA</span><span class="b-amex">AMEX</span><span class="b-rot"><i class="b-disc">DISC<em></em>VER</i><i class="b-jcb"><b>J</b><b>C</b><b>B</b></i><i class="b-up">UnionPay</i><i class="b-din"><em></em></i></span></div></div><span class="lab cl">Cardholder name <small style="color:#8b93a5;font-weight:500">(optional)</small></span><input class="in" type="text" placeholder="Full name on card" aria-label="Cardholder name" data-cn autocomplete="cc-name"></div></div></div>
@@ -563,8 +566,6 @@ html.bf .opt[data-o="all"]{display:none}
         <p class="perr" data-perr role="alert"></p>
         <p class="pwr">Powered by <b>stripe</b><i></i><a href="https://stripe.com/legal/end-users" target="_blank" rel="noopener">Terms</a><a href="https://stripe.com/privacy" target="_blank" rel="noopener">Privacy</a></p></div>
     </div>
-    <div class="bfw"><div class="bridge"><h3>Or get everything we teach</h3><p>Black Friday: every guide, every skill and the 3 playbooks</p><span class="ar">↓</span></div>
-      <div class="bfc bft" data-bft><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan"><img src="/learn/3d_book.webp" alt=""><img src="/learn/tt_book_tight.webp" alt=""><img src="/learn/pk_pb02.webp" alt="How to go viral in days, not years"><img src="/learn/sd_book_tight.webp" alt=""><img src="/learn/pl_book_tight.webp" alt=""></span><span class="bh">Get everything</span><span class="inc">Every Full guide, Plane too, the 3 playbooks with How to go viral, the skills and every new guide</span><span class="pz"><s>€260</s><b>€59</b><span>-77%</span></span><div class="bcd"><small>Black Friday ends in</small><div class="bx"><span><b data-bd>8</b><i>DAYS</i></span><span><b data-bh>00</b><i>HRS</i></span><span><b data-bm>00</b><i>MIN</i></span><span class="sc"><b data-bs>00</b><i>SEC</i></span></div></div><a class="go" href="https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C" data-bfgo>Get everything · €59 →</a></div></div>
 
   </section>
 </main>
