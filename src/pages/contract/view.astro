@@ -1,0 +1,172 @@
+---
+// /contract/<slug> (vercel.json rewrite → this page): a private contract, read and signed on omnyalab.com (19/11).
+// The text comes from /api/contract, never from the repo. Simple electronic signature: email code + drawn signature.
+import '../../styles/global.css';
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="referrer" content="no-referrer" />
+  <title>Private agreement · Omnya Lab</title>
+  <link rel="icon" href="/favicon.svg" />
+  <style is:global>
+    :root { --paper: #ffffff; --accent: #111; }
+    html, body { background: var(--bg) !important; color: var(--ink) !important; }
+    .ct-main, .ct-main * { box-sizing: border-box; }
+    .ct-main h1, .ct-main h2, .ct-main p { color: var(--ink); }
+    body { margin: 0; font-family: var(--font); -webkit-font-smoothing: antialiased; }
+    .ct-top { display: flex; justify-content: space-between; align-items: center; padding: 18px var(--g); max-width: 980px; margin: 0 auto; }
+    .ct-logo { font-size: 22px; font-weight: 500; letter-spacing: -.02em; }
+    .ct-logo span { color: var(--mute-lg); font-weight: 400; }
+    .ct-tag { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); display: flex; align-items: center; gap: 8px; }
+    .ct-tag i { width: 8px; height: 8px; border-radius: 50%; background: #2f9e5b; display: inline-block; }
+    .ct-main { max-width: 980px; margin: 0 auto; padding: 0 var(--g) 80px; }
+    .ct-hero { padding: 28px 0 22px; }
+    .ct-hero small { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+    .ct-hero h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); line-height: 1.02; letter-spacing: -.03em; font-weight: 600; margin: 10px 0 6px; }
+    .ct-hero p { color: var(--mute); margin: 0; font-size: 17px; }
+    .ct-doc { background: var(--paper); border-radius: 18px; box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 18px 40px -24px rgba(0,0,0,.25); overflow: hidden; }
+    .ct-doc iframe { display: block; width: 100%; border: 0; height: 900px; }
+    .ct-sign { margin-top: 26px; background: var(--paper); border-radius: 18px; padding: clamp(20px, 4vw, 36px); box-shadow: 0 18px 40px -24px rgba(0,0,0,.25); }
+    .ct-sign h2 { margin: 0 0 4px; font-size: 26px; letter-spacing: -.02em; font-weight: 600; }
+    .ct-sign .ct-sub { color: var(--mute); margin: 0 0 22px; }
+    .ct-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 640px) { .ct-grid { grid-template-columns: 1fr; } }
+    label { display: block; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--mute); margin-bottom: 6px; }
+    input[type=text], input[type=tel] { width: 100%; box-sizing: border-box; font: inherit; font-size: 17px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink); }
+    input:focus { outline: 2px solid #111; outline-offset: 1px; }
+    .ct-pad-wrap { margin-top: 18px; }
+    .ct-pad { position: relative; border: 1px dashed #b9b3a9; border-radius: 14px; background: #fbfaf8; height: 190px; touch-action: none; }
+    .ct-pad canvas { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 14px; cursor: crosshair; }
+    .ct-pad .ct-hint { position: absolute; left: 18px; bottom: 14px; color: #a39d93; font-size: 14px; pointer-events: none; }
+    .ct-pad .ct-line { position: absolute; left: 18px; right: 18px; bottom: 44px; border-bottom: 1px solid #d6d1c8; pointer-events: none; }
+    .ct-clear { background: none; border: 0; color: var(--mute); font: inherit; font-size: 14px; text-decoration: underline; cursor: pointer; padding: 6px 0; }
+    .ct-agree { display: flex; gap: 12px; align-items: flex-start; margin: 18px 0 6px; font-size: 15px; line-height: 1.45; text-transform: none; letter-spacing: 0; color: var(--ink); cursor: pointer; }
+    .ct-agree input { width: 22px; height: 22px; margin: 1px 0 0; flex: none; accent-color: #111; }
+    .ct-btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 56px; border: 0; border-radius: 999px; background: #111; color: #fff; font: inherit; font-size: 17px; font-weight: 500; cursor: pointer; margin-top: 18px; }
+    .ct-btn:disabled { opacity: .35; cursor: default; }
+    .ct-code { display: none; margin-top: 18px; }
+    .ct-code.ct-on { display: block; }
+    .ct-code input { letter-spacing: .4em; font-size: 24px; text-align: center; max-width: 260px; }
+    .ct-msg { margin-top: 12px; font-size: 15px; color: var(--mute); min-height: 1.4em; }
+    .ct-msg.ct-err { color: #b3261e; }
+    .ct-done { text-align: center; padding: 28px 10px; }
+    .ct-done .ct-tick { width: 64px; height: 64px; border-radius: 50%; background: #111; color: #fff; display: grid; place-items: center; margin: 0 auto 16px; font-size: 30px; }
+    .ct-done h2 { margin: 0 0 6px; }
+    .ct-legal { color: var(--mute-lg); font-size: 13px; line-height: 1.5; margin-top: 16px; }
+    .ct-missing { padding: 80px 0; text-align: center; color: var(--mute); }
+  </style>
+</head>
+<body>
+  <div class="ct-top">
+    <div class="ct-logo">omnya <span>lab</span></div>
+    <div class="ct-tag"><i></i>Private agreement</div>
+  </div>
+  <div class="ct-main" id="app">
+    <div class="ct-missing" id="loading">Loading your agreement…</div>
+  </div>
+
+  <script is:inline>
+  (function () {
+    var slug = location.pathname.replace(/\/+$/, '').split('/').pop();
+    var app = document.getElementById('app');
+    var C = null;
+    var AGREE = 'I have read this agreement and I accept it on behalf of the client named in it.';
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    function when(iso) { try { return new Date(iso).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' }); } catch (e) { return iso; } }
+    function api(body) { return fetch('/api/contract', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json().then(function (j) { j._status = r.status; return j; }); }); }
+
+    fetch('/api/contract?slug=' + encodeURIComponent(slug)).then(function (r) { return r.ok ? r.json() : null; }).then(function (c) {
+      if (!c) { app.innerHTML = '<div class="ct-missing">This link is not active. Please ask Omnya Lab for a new one.</div>'; return; }
+      C = c; render();
+    }).catch(function () { app.innerHTML = '<div class="ct-missing">Something went wrong, please reload the page.</div>'; });
+
+    function render() {
+      app.innerHTML =
+        '<section class="ct-hero"><small>' + esc(C.client) + '</small><h1>' + esc(C.title) + '</h1><p>Read it through, then sign at the bottom. It takes a minute.</p></section>' +
+        '<div class="ct-doc"><iframe id="doc" title="Agreement" sandbox="allow-same-origin"></iframe></div>' +
+        '<section class="ct-sign" id="sign"></section>';
+      var f = document.getElementById('doc');
+      f.srcdoc = C.html;
+      f.addEventListener('load', function () {
+        try { var d = f.contentDocument; d.body.style.margin = '0'; d.body.style.padding = 'clamp(18px,4vw,44px)'; f.style.height = (d.documentElement.scrollHeight + 10) + 'px'; } catch (e) {}
+      });
+      window.addEventListener('resize', function () { try { f.style.height = (f.contentDocument.documentElement.scrollHeight + 10) + 'px'; } catch (e) {} });
+      C.signed ? renderDone(C.signed) : renderSign();
+    }
+
+    function renderDone(s) {
+      document.getElementById('sign').innerHTML =
+        '<div class="ct-done"><div class="ct-tick">✓</div><h2>Signed</h2><p class="ct-sub">by ' + esc(s.name) + (s.role ? ', ' + esc(s.role) : '') + '<br>' + esc(when(s.at)) + '</p>' +
+        '<p class="ct-legal">A confirmation has been sent by email. The countersigned PDF follows from Omnya Lab.</p></div>';
+    }
+
+    function renderSign() {
+      var box = document.getElementById('sign');
+      box.innerHTML =
+        '<h2>Sign the agreement</h2><p class="ct-sub">Signing for ' + esc(C.client) + '.</p>' +
+        '<div class="ct-grid"><div><label for="nm">Full name</label><input id="nm" type="text" autocomplete="name" placeholder="Your full name"></div>' +
+        '<div><label for="rl">Role</label><input id="rl" type="text" autocomplete="organization-title" placeholder="e.g. Partner, Director"></div></div>' +
+        '<div class="ct-pad-wrap"><label>Signature</label><div class="ct-pad"><canvas id="pad"></canvas><div class="ct-line"></div><div class="ct-hint" id="hint">Sign here with your finger or mouse</div></div>' +
+        '<button class="ct-clear" id="clr" type="button">Clear</button></div>' +
+        '<label class="ct-agree"><input id="ag" type="checkbox"><span>' + esc(AGREE) + '</span></label>' +
+        '<button class="ct-btn" id="send" type="button" disabled>Email me the signing code</button>' +
+        '<div class="ct-code" id="codebox"><label for="cd">Code sent to <span style="text-transform:none;letter-spacing:0">' + esc(C.emailHint) + '</span></label><input id="cd" type="tel" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="••••••">' +
+        '<button class="ct-btn" id="go" type="button" disabled>Sign the agreement</button></div>' +
+        '<div class="ct-msg" id="msg"></div>' +
+        '<p class="ct-legal">To confirm it’s you, we email a 6-digit code to the address in the agreement. Your name, signature, date, time and IP address are saved with a fingerprint of this exact text, and a copy is emailed to you and to Omnya Lab.</p>';
+
+      var cv = document.getElementById('pad'), ctx = cv.getContext('2d'), drawing = false, inked = 0, last = null;
+      function size() {
+        var r = cv.getBoundingClientRect(), dpr = Math.max(1, window.devicePixelRatio || 1);
+        var keep = inked ? cv.toDataURL() : null;
+        cv.width = r.width * dpr; cv.height = r.height * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#111'; ctx.lineWidth = 2.4;
+        if (keep) { var im = new Image(); im.onload = function () { ctx.drawImage(im, 0, 0, r.width, r.height); }; im.src = keep; }
+      }
+      size(); window.addEventListener('resize', size);
+      function pt(e) { var r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+      cv.addEventListener('pointerdown', function (e) { drawing = true; last = pt(e); cv.setPointerCapture(e.pointerId); document.getElementById('hint').style.display = 'none'; });
+      cv.addEventListener('pointermove', function (e) {
+        if (!drawing) return; var p = pt(e);
+        ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+        inked += Math.hypot(p.x - last.x, p.y - last.y); last = p; check();
+      });
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (t) { cv.addEventListener(t, function () { drawing = false; }); });
+      document.getElementById('clr').onclick = function () { ctx.clearRect(0, 0, cv.width, cv.height); inked = 0; document.getElementById('hint').style.display = ''; check(); };
+
+      var nm = document.getElementById('nm'), ag = document.getElementById('ag'), send = document.getElementById('send'), go = document.getElementById('go'), cd = document.getElementById('cd'), msg = document.getElementById('msg');
+      function ready() { return nm.value.trim().length > 1 && ag.checked && inked > 60; }
+      function check() { send.disabled = !ready(); go.disabled = !(ready() && /^\d{6}$/.test(cd.value.trim())); }
+      [nm, ag, cd].forEach(function (el) { el.addEventListener('input', check); el.addEventListener('change', check); });
+      function say(t, err) { msg.textContent = t; msg.className = 'ct-msg' + (err ? ' ct-err' : ''); }
+
+      send.onclick = function () {
+        send.disabled = true; say('Sending the code…');
+        api({ action: 'code', slug: slug }).then(function (j) {
+          if (j.ok) { document.getElementById('codebox').classList.add('ct-on'); send.textContent = 'Send the code again'; say('We’ve emailed you a 6-digit code. It works for 15 minutes.'); cd.focus(); }
+          else if (j.error === 'already_signed') { renderDone(j.signed); }
+          else say(j.error === 'too_many' ? 'Too many codes requested, please try again in an hour.' : 'The code could not be sent, please try again.', true);
+          check();
+        }).catch(function () { say('The code could not be sent, please try again.', true); check(); });
+      };
+
+      go.onclick = function () {
+        go.disabled = true; say('Signing…');
+        var w = cv.width, h = cv.height, out = document.createElement('canvas'); out.width = w; out.height = h;
+        out.getContext('2d').drawImage(cv, 0, 0);
+        api({ action: 'sign', slug: slug, code: cd.value.trim(), name: nm.value.trim(), role: document.getElementById('rl').value.trim(), signature: out.toDataURL('image/png'), agree: ag.checked, agreeText: AGREE, hash: C.hash })
+          .then(function (j) {
+            if (j.ok || j.error === 'already_signed') { renderDone(j.signed); window.scrollTo({ top: document.getElementById('sign').offsetTop - 20, behavior: 'smooth' }); }
+            else say({ bad_code: 'That code is not right, please check the email and try again.', too_many: 'Too many attempts, please request a new code.', changed: 'The agreement was updated, please reload the page.' }[j.error] || 'Something went wrong, please try again.', true);
+            check();
+          }).catch(function () { say('Something went wrong, please try again.', true); check(); });
+      };
+    }
+  })();
+  </script>
+</body>
+</html>

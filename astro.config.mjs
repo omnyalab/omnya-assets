@@ -13,6 +13,7 @@ const devApi = () => ({
     server.middlewares.use((req, _res, next) => {
       const p = decodeURIComponent((req.url || '').split('?')[0]);
       if (/^\/city\/(yacht|island)\/?$/.test(p)) { req.url = '/city/auction/'; return next(); } // 7/11: the two auctions
+      if (/^\/contract\/[a-z0-9-]+\/?$/.test(p) && !/^\/contract\/view\/?$/.test(p)) { req.url = '/contract/view/'; return next(); } // 19/11: private contracts
       if (/^\/city\/[^/]+\/?$/.test(p) && !/^\/city\/house\/?$/.test(p) && !/^\/city\/auction\/?$/.test(p) && !existsSync(`${server.config.root}/public${p}`)) req.url = '/city/house/';
       next();
     });

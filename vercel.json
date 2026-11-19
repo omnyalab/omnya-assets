@@ -529,6 +529,19 @@
           "value": "noindex"
         }
       ]
+    },
+    {
+      "source": "/contract/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        }
+      ]
     }
   ],
   "functions": {
@@ -565,6 +578,10 @@
     {
       "source": "/centrale/:f*",
       "destination": "/api/centrale?f=:f*"
+    },
+    {
+      "source": "/contract/:slug",
+      "destination": "/contract/view/index.html"
     }
   ]
 }
