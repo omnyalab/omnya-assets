@@ -55,7 +55,7 @@ export async function GET(req) {
   if (!c.firstOpened) { c.firstOpened = { at: new Date().toISOString(), ip: ipOf(req), ua: req.headers.get('user-agent') || '' }; await save(c); }
   return json({
     title: c.title, client: c.client, html: c.html, hash: c.hash, emailHint: mask(c.email),
-    signed: c.signed ? { name: c.signed.name, role: c.signed.role, at: c.signed.at } : null,
+    signed: c.signed ? { name: c.signed.name, role: c.signed.role, at: c.signed.at, signature: c.signed.signature } : null,
   });
 }
 
@@ -66,7 +66,7 @@ export async function PUT(req) {
   if (!SLUG.test(b.slug || '') || !b.html || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(b.email || '')) return json({ error: 'bad_input' }, 400);
   const old = await load(b.slug);
   if (old && old.signed && !url.searchParams.get('force')) return json({ error: 'already_signed' }, 409);
-  const c = { slug: b.slug, title: String(b.title || 'Agreement'), client: String(b.client || ''), email: b.email.trim().toLowerCase(), html: String(b.html), hash: sha(b.html), createdAt: new Date().toISOString() };
+  const c = { slug: b.slug, test: !!b.test, title: String(b.title || 'Agreement'), client: String(b.client || ''), email: b.email.trim().toLowerCase(), html: String(b.html), hash: sha(b.html), createdAt: new Date().toISOString() };
   await save(c);
   return json({ ok: true, slug: c.slug, hash: c.hash, url: `${SITE}/contract/${c.slug}` });
 }
@@ -92,7 +92,7 @@ export async function POST(req) {
       html: `<div style="font:15px/1.5 -apple-system,Helvetica,Arial,sans-serif;color:#111">Your code to sign <b>${esc(c.title)}</b> on omnyalab.com is<div style="font-size:32px;font-weight:600;letter-spacing:6px;margin:14px 0">${code}</div>It works for 15 minutes. If you didn't ask for it, just ignore this email.<br><br>Omnya Lab</div>`,
     });
     // local preview only (no Upstash, no Vercel): the code comes back so the page can be tried without email
-    return json({ ok: true, sentTo: mask(c.email), ...(!hasStore() && !process.env.VERCEL ? { devCode: code } : {}) });
+    return json({ ok: true, sentTo: mask(c.email), ...((!hasStore() && !process.env.VERCEL) || c.test ? { devCode: code } : {}) });
   }
 
   if (b.action === 'sign') {
@@ -103,7 +103,7 @@ export async function POST(req) {
     const name = String(b.name || '').trim().slice(0, 120);
     const role = String(b.role || '').trim().slice(0, 120);
     const sig = String(b.signature || '');
-    if (!name || !b.agree || !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(sig) || sig.length > 400_000 || sig.length < 1500) return json({ error: 'bad_input' }, 400);
+    if (!name || !b.agree || !/^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(sig) || sig.length > 400_000 || sig.length < 400) return json({ error: 'bad_input' }, 400);
     if (b.hash && b.hash !== c.hash) return json({ error: 'changed' }, 409);
     const at = new Date().toISOString();
     c.signed = {
@@ -122,7 +122,7 @@ export async function POST(req) {
       sendMail({ to: c.email, subject: `Signed · ${c.title}`, text: `Thank you, the agreement is signed.\n\n${text}\n\nThe countersigned PDF follows from Omnya Lab.\n\nOmnya Lab`, html: htmlMail('Thank you, the agreement is signed. The countersigned PDF follows from Omnya Lab.'), attachments: att }),
       sendMail({ to: NOTIFY, subject: `✍️ Signed: ${c.title}`, text: `${text}\n\n${SITE}/contract/${c.slug}`, html: htmlMail(`<b>${esc(c.client)}</b> has signed.`), attachments: att }),
     ]);
-    return json({ ok: true, signed: { name, role, at } });
+    return json({ ok: true, signed: { name, role, at, signature: sig } });
   }
 
   return json({ error: 'bad_input' }, 400);
