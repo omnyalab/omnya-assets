@@ -8,6 +8,7 @@
 #   scripts/new-funnel stripe <id>                      the Stripe products to create (names, prices, return page), for Nico's ok
 #   scripts/new-funnel judge <id> --base REV --vs REV   rebuild a funnel that exists on the repo as it was at REV and compare
 #   scripts/new-funnel test <id> --url URL [--live]     opt-in → watch → checkout → thanks, Chromium and WebKit, phone and computer
+#   scripts/new-funnel board <id> --url URL --out DIR  the official board for Nico (screenshots, DM, Stripe, files, checks) before the vai
 #   scripts/new-funnel controllo <id>                   the funnel pages in the funnel check (~/Omnya Automazioni), after the push
 #   scripts/new-funnel set-stripe <id> <full|kit|full9|kit19> --prod --price --link   the ids of a product just made on Stripe
 #   scripts/new-funnel dm <id>                          the Instant DM texts of the funnel
@@ -169,6 +170,12 @@ def cmd_test(a):
     return test.run(REPO, cfg(REPO, a.id), a.url, a.live, a.only)
 
 
+def cmd_board(a):
+    from funnel import board
+    extra = open(a.extra, encoding='utf-8').read() if a.extra else ''
+    return board.run(REPO, cfg(REPO, a.id), a.url, os.path.abspath(a.out), extra)
+
+
 def cmd_controllo(a):
     from funnel import controllo
     return controllo.run(cfg(REPO, a.id), a.dry)
@@ -184,6 +191,7 @@ def main():
     p = sp.add_parser('set-stripe'); p.add_argument('id'); p.add_argument('k', choices=['full', 'kit', 'full9', 'kit19']); p.add_argument('--prod', required=True); p.add_argument('--price', required=True); p.add_argument('--link', required=True); p.set_defaults(f=cmd_set_stripe)
     p = sp.add_parser('judge'); p.add_argument('id'); p.add_argument('--base', required=True); p.add_argument('--vs', required=True); p.add_argument('--pages-vs', default='HEAD'); p.set_defaults(f=cmd_judge)
     p = sp.add_parser('test'); p.add_argument('id'); p.add_argument('--url', required=True); p.add_argument('--live', action='store_true'); p.add_argument('--only', default=''); p.set_defaults(f=cmd_test)
+    p = sp.add_parser('board'); p.add_argument('id'); p.add_argument('--url', required=True); p.add_argument('--out', required=True); p.add_argument('--extra'); p.set_defaults(f=cmd_board)
     p = sp.add_parser('controllo'); p.add_argument('id'); p.add_argument('--dry', action='store_true'); p.set_defaults(f=cmd_controllo)
     a = ap.parse_args()
     try:

@@ -17,6 +17,8 @@ scripts/new-funnel stripe <id>         # i prodotti Stripe da creare (solo dopo 
 scripts/new-funnel check <id>          # file mancanti, Stripe, consegna dei file
 scripts/new-funnel test <id> --url http://localhost:5490          # prova completa in locale
 scripts/new-funnel test <id> --url https://www.omnyalab.com --live # dopo il push
+scripts/new-funnel board <id> --url http://localhost:5490 --out <cartella>   # la board ufficiale per Nico, prima del vai
+scripts/new-funnel set-stripe <id> full --prod prod_… --price price_… --link https://buy.stripe.com/…
 scripts/new-funnel controllo <id>      # le pagine nel controllo funnel, dopo il push
 scripts/new-funnel judge plane --base e43bc69^ --vs e43bc69       # il giudice dello strumento
 ```
