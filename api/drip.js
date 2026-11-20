@@ -4,7 +4,8 @@
 //                    Sends nothing until Nico's ok is switched on (?key=…&on=1 sets omnya:drip:on).
 // GET /m/<token>     (rewrite to ?c=) counts the click of mail N and opens the page of that note.
 // GET ?o=<token>     the 1×1 picture: counts the open of mail N.
-// GET ?key=IG_ADMIN_KEY&status=1 | &on=1|0 | &cap=N | &report=1 | &test=<email>&step=1..4[&free=free-stadium]
+// GET ?key=IG_ADMIN_KEY&status=1 | &on=1|0 | &cap=N | &future=1|0 | &quiet=YYYY-MM-DD,… | &unquiet=… | &report=1
+//     | &test=<email>&step=1..4[&free=free-stadium][&club=soon|open|closed]
 //
 // The rules, decided with Nico on 20/11:
 // - Resend only (never info@'s Microsoft 365 box), at most omnya:drip:cap a day (default DRIP_CAP or 80): Resend free sends
@@ -17,6 +18,8 @@
 // - Never two of our emails on the same day: omnya:mail:day:<day> holds who got any of them (this, the buyers' PDFs,
 //   THE 3D FUTURE's mails); a note due that day moves to the next one.
 // - Unsubscribed (omnya:nl:off) = nothing more, at once.
+// - THE 3D FUTURE (20/11, with the club session): on its launch days (omnya:drip:quiet, UTC dates) the series is silent,
+//   and mail 4, which links the club page, waits until that page is online (omnya:drip:future = 1).
 import { redis, hasStore, storeDown } from './_lib/store.js';
 import { OFF_KEY } from './_lib/newsletter.js';
 import { sendResend, hasResend } from './_lib/mail.js';
@@ -29,7 +32,6 @@ const PER_TICK = 12; // a tick never sends more than this (a burst of hundreds l
 const json = (o, status = 200) => new Response(JSON.stringify(o), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 const dayOf = (ms) => new Date(ms).toISOString().slice(0, 10);
 const GIF = Buffer.from('R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==', 'base64');
-const launched = () => { const d = process.env.DRIP_FUTURE_OPEN || '2026-11-27T20:00:00Z'; return Date.now() >= Date.parse(d); };
 
 const loadAdd = async (ms, n) => { const k = `${K}load:${dayOf(ms)}`; await redis('INCRBY', k, n); await redis('EXPIRE', k, 15 * 86400); };
 
@@ -82,7 +84,7 @@ async function prune(now) {
 
 // ---- 2. send one note; false = stop the tick (quota) ----
 async function sendStep(email, person, step, now) {
-  const m = renderNote(step, { email, name: person.n, free: person.f }, { launched: launched() });
+  const m = renderNote(step, { email, name: person.n, free: person.f });
   try {
     await sendResend({ to: `${person.n || ''} <${email}>`.trim(), from: 'Nico <info@omnyalab.com>', replyTo: host.email, ...m });
   } catch (e) {
@@ -107,6 +109,8 @@ async function tick() {
   await prune(now);
   const d = dayOf(now);
   if (await redis('GET', `${K}stop:${d}`)) return { ok: true, stopped: d, got };
+  // THE 3D FUTURE's launch days (UTC dates in omnya:drip:quiet): the series sends nothing, its notes move to the next day
+  if (Number(await redis('SISMEMBER', `${K}quiet`, d)) === 1) return { ok: true, quiet: d, got };
   const cap = Number(await redis('GET', `${K}cap`)) || Number(process.env.DRIP_CAP) || 80;
   let room = Math.min(PER_TICK, cap - Number((await redis('GET', `${K}n:${d}`)) || 0));
   const out = { got, due: 0, started: 0, moved: 0 };
@@ -123,6 +127,8 @@ async function tick() {
       await redis('ZADD', `${K}due`, now + DAY, email); await loadAdd(now, -1); await loadAdd(now + DAY, 1); out.moved++; continue;
     }
     const step = person.step + 1;
+    // mail 4 links the club page: it waits until the club session says the page is online (omnya:drip:future = 1)
+    if (step === STEPS && (await redis('GET', `${K}future`)) !== '1') { await redis('ZADD', `${K}due`, now + DAY, email); out.held = (out.held || 0) + 1; continue; }
     const r = await sendStep(email, person, step, now);
     if (r === 'stop') return { ok: true, stopped: d, ...out };
     if (r === 'fail') { await redis('ZADD', `${K}due`, now + 3600_000, email); continue; }
@@ -207,12 +213,15 @@ export async function GET(request) {
   if (q.get('test')) { // one note to one address (Nico's), outside the series and its counts
     const step = Math.min(STEPS, Math.max(1, Number(q.get('step')) || 1));
     const to = String(q.get('test')).trim().toLowerCase();
-    const m = renderNote(step, { email: to, name: q.get('name') || 'Nico', free: q.get('free') || 'free-stadium' }, { launched: q.get('launched') === '1' || launched() });
+    const m = renderNote(step, { email: to, name: q.get('name') || 'Nico', free: q.get('free') || 'free-stadium' }, q.get('club') ? { club: q.get('club') } : {});
     await sendResend({ to, from: 'Nico <info@omnyalab.com>', replyTo: host.email, ...m });
     return json({ ok: true, sent: m.subject, to });
   }
   if (q.get('on') === '1' || q.get('on') === '0') await redis('SET', `${K}on`, q.get('on'));
   if (q.get('cap')) await redis('SET', `${K}cap`, String(Math.max(0, Math.min(1000, Number(q.get('cap')) || 0))));
+  if (q.get('future') === '1' || q.get('future') === '0') await redis('SET', `${K}future`, q.get('future'));
+  for (const x of String(q.get('quiet') || '').split(',').filter((x) => /^\d{4}-\d{2}-\d{2}$/.test(x))) await redis('SADD', `${K}quiet`, x);
+  for (const x of String(q.get('unquiet') || '').split(',').filter(Boolean)) await redis('SREM', `${K}quiet`, x);
   const d = dayOf(Date.now());
   const status = {
     on: (await redis('GET', `${K}on`)) === '1',
@@ -221,6 +230,8 @@ export async function GET(request) {
     startedToday: Number((await redis('GET', `${K}s:${d}`)) || 0),
     planToday: Number((await redis('GET', `${K}plan:${d}`)) || 0),
     stoppedToday: await redis('GET', `${K}stop:${d}`),
+    quietDays: ((await redis('SMEMBERS', `${K}quiet`)) || []).sort(),
+    mail4Live: (await redis('GET', `${K}future`)) === '1',
     people: Number(await redis('HLEN', `${K}people`)),
     due: Number(await redis('ZCARD', `${K}due`)),
     poolYes: Number(await redis('ZCARD', `${K}pool:yes`)),

@@ -62,7 +62,10 @@ export function readToken(tok) {
 }
 
 // The four notes. {link} is the one link of the note (tracked), the rest is plain text.
-// launched = THE 3D FUTURE doors are open (from DRIP_FUTURE_OPEN, the day the club opens): mail 4 says it the right way.
+// club = 'soon' | 'open' | 'closed': THE 3D FUTURE doors (DRIP_FUTURE_OPEN / DRIP_FUTURE_CLOSE), so mail 4 says it right.
+const OPEN = () => Date.parse(process.env.DRIP_FUTURE_OPEN || '2026-11-28T08:00:00Z'); // 28/11 9:00 Rome (club session's plan)
+const CLOSE = () => Date.parse(process.env.DRIP_FUTURE_CLOSE || '2026-12-04T22:59:00Z'); // 4/12 23:59 Rome
+export const clubState = (ms = Date.now()) => (ms < OPEN() ? 'soon' : ms <= CLOSE() ? 'open' : 'closed');
 const NOTES = [
   {
     subject: 'the trick behind the one-take',
@@ -93,12 +96,14 @@ const NOTES = [
   {
     subject: 'the only reference that matters',
     link: 'f',
-    body: ({ link, launched }) => [
+    body: ({ link, club }) => [
       `one last thing before I tell you where we're taking all this: when you turn a 3D into a photo, the 3D has to be the only reference you give, because the moment you add a nicer photo "for the look" the model rebuilds the room or the building its own way and the framing you worked on is gone. So we give it the 3D alone, we describe only what you can see in that exact shot, we add a line with what is not there, and the photo lands on top of the 3D like a print.`,
       `The one-take, the straight camera moves, the reversed clips and the 3D-only photos are what we put inside THE 3D FUTURE, our new community, where every Friday we take one build, a house, a tower, a stadium, and do it step by step from the empty scene to the finished video, so you can build yours next to us.`,
-      launched
+      club === 'open'
         ? `The doors are open now, and you can see everything that's inside here: ${link("see what's inside")}`
-        : `The doors open on Friday 27 November, and you can see what's inside here: ${link("see what's inside")}`,
+        : club === 'closed'
+          ? `The doors are closed for this round, and you can get on the list for the next one here: ${link('get on the list')}`
+          : `The doors open on Saturday 28 November, and you can see what's inside here: ${link("see what's inside")}`,
     ],
   },
 ];
@@ -108,13 +113,13 @@ export const STEPS = NOTES.length;
  * One note of the series, ready for nodemailer. step = 1..4, p = { email, name, free }
  * Plain like the delivery note: hello, paragraphs, Nico, then one small grey line with why they get it and the unsubscribe.
  */
-export function renderNote(step, p, { launched = false } = {}) {
+export function renderNote(step, p, { club = clubState() } = {}) {
   const n = NOTES[step - 1];
   const guide = GUIDES[p.free] || GUIDES.free;
   const url = n.link ? `${SITE}/m/${token(p.email, step, n.link)}` : '';
   const off = unsubUrl(p.email);
-  const html = n.body({ guide: esc(guide), launched, link: (label) => `<a href="${url}">${esc(label)}</a>` });
-  const text = n.body({ guide, launched, link: () => url });
+  const html = n.body({ guide: esc(guide), club, link: (label) => `<a href="${url}">${esc(label)}</a>` });
+  const text = n.body({ guide, club, link: () => url });
   const why = `You're getting this because you asked for ${guide} on omnyalab.com. Omnya Lab, Venice, Italy.`;
   return {
     subject: n.subject,
