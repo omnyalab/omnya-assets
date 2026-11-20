@@ -133,19 +133,41 @@ export async function seats(stripe) {
     const c = JSON.parse((await kv('GET', K.seats)) || 'null');
     if (c && Date.now() - c.at < 60_000) return (memo = c).taken;
   } catch {}
-  if (!stripe) throw Object.assign(new Error('not configured'), { code: 'not_configured' });
-  const subs = new Set(); // by id: a subscription with two of the prices is one seat
-  for (const price of new Set(priceIds())) {
-    // status 'all' and the filter here: active, trialing and past_due are the three that hold a seat
-    for await (const s of stripe.subscriptions.list({ price, status: 'all', limit: 100, created: { gte: Math.floor(EARLY / 1000) } })) {
-      if (LIVE.has(s.status)) subs.add(s.id);
+  let taken;
+  try {
+    if (!stripe) throw Object.assign(new Error('not configured'), { code: 'not_configured' });
+    const subs = new Set(); // by id: a subscription with two of the prices is one seat
+    for (const price of new Set(priceIds())) {
+      // status 'all' and the filter here: active, trialing and past_due are the three that hold a seat
+      for await (const s of stripe.subscriptions.list({ price, status: 'all', limit: 100, created: { gte: Math.floor(EARLY / 1000) } })) {
+        if (LIVE.has(s.status)) subs.add(s.id);
+      }
     }
+    taken = subs.size;
+  } catch (e) {
+    // 20/11: the site's Stripe key may not read subscriptions (restricted key): then the seats are the members of this
+    // round the webhook wrote in Redis (clubJoined), minus the ones who left (clubLeft). Still a real count, never a typed one
+    console.error('[club] seats from Stripe failed, counting the members in Redis:', e.message);
+    taken = await seatsFromMembers();
   }
-  memo = { taken: subs.size, at: Date.now() };
+  memo = { taken, at: Date.now() };
   await kv('SET', K.seats, JSON.stringify(memo), 'EX', 60).catch(() => {});
   return memo.taken;
 }
 const forgetSeats = () => { memo = null; return kv('DEL', K.seats).catch(() => {}); };
+
+/** The members of this round written by the webhook, without the ones who left: the seat count when Stripe can't be read. */
+async function seatsFromMembers() {
+  const all = (await kv('HGETALL', K.members)) || [];
+  let n = 0;
+  for (let i = 1; i < all.length; i += 2) {
+    try {
+      const m = JSON.parse(all[i]);
+      if ((m.round || ROUND) === ROUND && m.status !== 'canceled' && Date.parse(m.at) >= EARLY) n++;
+    } catch {}
+  }
+  return n;
+}
 
 // ---- who is a guide buyer ----
 /** A paid one-time Checkout Session of ours with at least one guide in it (line item descriptions are the product names). */
