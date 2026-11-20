@@ -63,7 +63,7 @@ export function readToken(tok) {
 
 // The four notes. {link} is the one link of the note (tracked), the rest is plain text.
 // club = 'soon' | 'open' | 'closed': THE 3D FUTURE doors (DRIP_FUTURE_OPEN / DRIP_FUTURE_CLOSE), so mail 4 says it right.
-const OPEN = () => Date.parse(process.env.DRIP_FUTURE_OPEN || '2026-11-28T08:00:00Z'); // 28/11 9:00 Rome (club session's plan)
+const OPEN = () => Date.parse(process.env.DRIP_FUTURE_OPEN || '2026-11-28T17:00:00Z'); // 28/11 18:00 Rome, open to everyone (club plan L1; 9:00 is only for its list and buyers)
 const CLOSE = () => Date.parse(process.env.DRIP_FUTURE_CLOSE || '2026-12-04T22:59:00Z'); // 4/12 23:59 Rome
 export const clubState = (ms = Date.now()) => (ms < OPEN() ? 'soon' : ms <= CLOSE() ? 'open' : 'closed');
 const NOTES = [
@@ -98,7 +98,7 @@ const NOTES = [
     link: 'f',
     body: ({ link, club }) => [
       `one last thing before I tell you where we're taking all this: when you turn a 3D into a photo, the 3D has to be the only reference you give, because the moment you add a nicer photo "for the look" the model rebuilds the room or the building its own way and the framing you worked on is gone. So we give it the 3D alone, we describe only what you can see in that exact shot, we add a line with what is not there, and the photo lands on top of the 3D like a print.`,
-      `The one-take, the straight camera moves, the reversed clips and the 3D-only photos are what we put inside THE 3D FUTURE, our new community, where every Friday we take one build, a house, a tower, a stadium, and do it step by step from the empty scene to the finished video, so you can build yours next to us.`,
+      `The one-take, the straight camera moves, the reversed clips and the 3D-only photos all live inside THE 3D FUTURE, our new club, where you get the files, the prompts and the Claude skills behind the builds from our reels, a new build every Friday, and my comments on your own builds every Monday.`,
       club === 'open'
         ? `The doors are open now, and you can see everything that's inside here: ${link("see what's inside")}`
         : club === 'closed'
