@@ -112,7 +112,7 @@ const NOTES = [
     link: 'f',
     body: ({ link, club }) => [
       `one last tip before I tell you where we're taking all this: when you turn a 3D into a realistic photo, give the image tool your 3D and nothing else. The moment you add a nice photo "for the look", it starts redesigning the room or the building its own way and the view you worked on is gone, while with the 3D alone, and a prompt that describes only what you can see in that exact view, the photo comes out matching your 3D.`,
-      `Everything I sent you in these emails, and a lot more, is inside THE 3D FUTURE, our new club: first of all a video course that walks you step by step through one of our builds, so you can make it exactly the way we do, then the files, the prompts and the Claude skills behind the builds from our reels, a new build every Friday, and my comments on your own builds every Monday.`,
+      `Everything I sent you in these emails, and a lot more, is inside THE 3D FUTURE, our new club: first of all a video course that walks you step by step through one of our builds, so you can make it exactly the way we do, and a new course every Friday with the build of the week, then the files, the prompts and the Claude skills behind the builds from our reels, and my comments on your own builds every Monday.`,
       club === 'open'
         ? `The doors are open now, and you can join here: ${link('join THE 3D FUTURE')}`
         : club === 'closed'
