@@ -20,7 +20,7 @@ DAYS = int(sys.argv[sys.argv.index('--days') + 1]) if '--days' in sys.argv else 
 ENV = os.path.expanduser('~/Omnya Automazioni/.env')
 env = dict(l.strip().split('=', 1) for l in open(ENV) if '=' in l and not l.lstrip().startswith('#'))
 SITE = 'https://www.omnyalab.com'
-SUBJECTS = ['the trick behind the one-take', 'why our first two clips went in the bin', 'never pay for the same clip twice', 'the only reference that matters']
+SUBJECTS = ['why our videos look like one shot', 'why we threw away our first two clips', 'never pay for the same clip twice', "where we're taking all this"]
 
 
 def get(url, headers=None):

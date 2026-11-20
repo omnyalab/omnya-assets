@@ -68,37 +68,38 @@ const CLOSE = () => Date.parse(process.env.DRIP_FUTURE_CLOSE || '2026-12-04T22:5
 export const clubState = (ms = Date.now()) => (ms < OPEN() ? 'soon' : ms <= CLOSE() ? 'open' : 'closed');
 const NOTES = [
   {
-    subject: 'the trick behind the one-take',
+    subject: 'why our videos look like one shot',
     body: ({ guide }) => [
-      `you grabbed ${guide} yesterday, so here's the one thing that makes our videos look like a single camera move: every clip starts from the real last frame of the clip before it, never from the photo you planned.`,
-      `Kling never lands exactly on the end image you give it, so if the next clip starts from your clean photo there's a tiny jump that the eye catches straight away, while if you take the true last frame out of the clip and use it as the next start image the cut disappears, which is why before moving on we check every clip, first and last frame against the start and end images.`,
-      `That's how the stadium reel was made, six clips that look like one shot, and it passed a million views in less than 24 hours.`,
-      `One question, and just reply with one word: what do you want to build first, a house, a tower, a stadium or something else? I read every reply.`,
+      `you grabbed ${guide} yesterday, so here's a small thing that makes a big difference. Our stadium video looks like one camera flying through the whole stadium, but it's six short clips put together, and the reason you can't see where one ends and the next one starts is simple: every new clip starts from the very last picture of the clip before it, not from the photo we had planned.`,
+      `The video tool (we use Kling) rarely stops exactly on the photo you asked for, it usually ends a tiny bit off, so if you start the next clip from your planned photo you see a little jump. Save the last frame of the clip as a picture instead, start the next clip from that, and the jump is gone.`,
+      `That stadium video passed a million views in less than 24 hours.`,
+      `Quick question, and just reply with one word: what would you like to build first, a house, a tower, a stadium or something else? I read every reply.`,
     ],
   },
   {
-    subject: 'why our first two clips went in the bin',
+    subject: 'why we threw away our first two clips',
     link: 'v',
     body: ({ link }) => [
-      `on the Burj our first two Kling clips went straight in the bin, and the reason is the most useful thing I can tell you about animating a 3D: Kling copies the movement of the 3D video you give it, so if your camera moves on a curve the clip curves too, and if your fog sits there flat and still Kling doesn't understand it's fog and makes something up.`,
-      `Since then every camera move we make in the 3D is a straight line from one photo to the next, a clean zoom in, with the fog clearly visible and drifting a little in every frame.`,
-      `And if you want to see where the two tricks lead together, here are our three towers: every view you jump to is a Kling clip that starts where the last one ends, and you can move through it yourself here: ${link('move through the three towers')}`,
+      `on one of our towers, the Burj, we threw away the first two clips we made, and what we learned there is the most useful thing I can tell you about turning a 3D into a video.`,
+      `We give Kling a rough 3D video of the camera move we want, and Kling copies it, so when our camera in the 3D was turning on a curve the clip came out turning too, and when the fog in the 3D was just a flat grey layer that didn't move, Kling didn't understand it was fog and made up something else.`,
+      `So now we keep it simple: in the 3D the camera only moves in a straight line, slowly forward, and the fog is thick and drifts a little in every frame, so Kling knows exactly what it's looking at.`,
+      `If you want to see where this goes, you can click through our three towers yourself here, where every view is a Kling clip that starts where the last one ended: ${link('click through the three towers')}`,
     ],
   },
   {
     subject: 'never pay for the same clip twice',
     body: () => [
-      `here's a small one that has saved us a lot of credits: if you need a clip from night to day and another one from day to night you only make the first, because the second is the same clip played backwards, and one line of ffmpeg (-vf reverse) gives it to you for free.`,
-      `It works for zooms too, and it's the trick I like most: we make the zoom in as a zoom out, starting from the close photo and ending on the far one, then we reverse it, and in my test that single clip went from the first photo straight to the third, skipping the one in the middle.`,
-      `So before you generate anything, look at your list of clips and ask which ones are just another one played backwards. If you try it, reply "done" and tell me how it went.`,
+      `here's one that has saved us a lot of credits: if your video goes from night to day and later from day back to night, you only need to make the first clip, because the second one is the same clip played backwards. You don't generate it again, you just flip it (any video editor can play a clip in reverse, we do it with one line of ffmpeg).`,
+      `The same trick works when the camera flies in close, and it's my favourite: I ask Kling for the opposite, a clip that starts close and flies out, and then I flip it. When I tested it, that one clip took me from the first photo straight to the third, so I didn't even need the one in the middle.`,
+      `So before you make anything, look at your list of clips and check which ones are just another one played backwards. If you try it, reply "done" and tell me how it went.`,
     ],
   },
   {
-    subject: 'the only reference that matters',
+    subject: "where we're taking all this",
     link: 'f',
     body: ({ link, club }) => [
-      `one last thing before I tell you where we're taking all this: when you turn a 3D into a photo, the 3D has to be the only reference you give, because the moment you add a nicer photo "for the look" the model rebuilds the room or the building its own way and the framing you worked on is gone. So we give it the 3D alone, we describe only what you can see in that exact shot, we add a line with what is not there, and the photo lands on top of the 3D like a print.`,
-      `The one-take, the straight camera moves, the reversed clips and the 3D-only photos all live inside THE 3D FUTURE, our new club, where first of all you get a video course that walks you step by step through one of our builds, so you can make it exactly the way we do, then the files, the prompts and the Claude skills behind the builds from our reels, a new build every Friday, and my comments on your own builds every Monday.`,
+      `one last tip before I tell you where we're taking all this: when you turn a 3D into a realistic photo, give the image tool your 3D and nothing else. The moment you add a nice photo "for the look", it starts redesigning the room or the building its own way and the view you worked on is gone, while with the 3D alone, and a prompt that describes only what you can see in that exact view, the photo comes out matching your 3D.`,
+      `Everything I sent you in these emails, and a lot more, is inside THE 3D FUTURE, our new club: first of all a video course that walks you step by step through one of our builds, so you can make it exactly the way we do, then the files, the prompts and the Claude skills behind the builds from our reels, a new build every Friday, and my comments on your own builds every Monday.`,
       club === 'open'
         ? `The doors are open now, and you can see everything that's inside here: ${link("see what's inside")}`
         : club === 'closed'
