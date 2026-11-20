@@ -18,7 +18,10 @@
 // the build time, for who has no JavaScript). Preview of any state: ?at=<ISO date>, e.g.
 // /learn/thanks/full-stadium?at=2026-11-28T10:00:00%2B01:00&seats=63
 // panel: on the light thanks pages (full-tower, full-towers, full-3d, everything) the card sits on its own night ground.
-const { kind = 'riyadh', bg = 'burj', panel = false } = Astro.props as { kind?: 'riyadh' | 'build' | 'stadium' | 'plane'; bg?: 'towers' | 'burj' | 'stadium'; panel?: boolean };
+// href (20/11, Nico, Riyadh video page): the same card before the purchase; its buttons open the club page
+// (/the-3d-future does the pre-registration, then the join) instead of the pop-up, and the "you bought this guide" line
+// is left out. Without href the card is exactly the one of the thanks pages.
+const { kind = 'riyadh', bg = 'burj', panel = false, href = '' } = Astro.props as { kind?: 'riyadh' | 'build' | 'stadium' | 'plane'; bg?: 'towers' | 'burj' | 'stadium'; panel?: boolean; href?: string };
 const what = kind === 'build' ? 'these 3D houses' : kind === 'stadium' ? 'these 3D stadiums' : kind === 'plane' ? 'these 3D planes' : 'these 3D towers';
 // Rome is on +01:00 for the whole window (CET), so the two instants are fixed
 const OPEN = '2026-11-28T09:00:00+01:00', CLOSE = '2026-12-05T00:00:00+01:00';
@@ -37,7 +40,7 @@ const state = at < Date.parse(OPEN) ? 'soon' : at < Date.parse(CLOSE) ? 'open' :
     <p class="ryf__sub">Our community, where we show you how we build {what} from the first prompt to the client who pays</p>
     <ul class="ryfm__li ryf__chk"><li>Every reel taken apart, step by step</li><li>The project files we use</li><li>Live calls with us</li></ul>
     <p class="ryfm__k">Save your spot, it's free</p>
-    <button type="button" class="ryf__btn ryf__btn--card" data-ryf-open>Save my spot →</button>
+    {href ? <a class="ryf__btn ryf__btn--card ryf__btn--link" href={href}>Save my spot →</a> : <button type="button" class="ryf__btn ryf__btn--card" data-ryf-open>Save my spot →</button>}
   </article>
   {/* 2. open: 28/11 09:00 to 4/12 23:59, the join card */}
   <article class="ryf" data-ryf-state="open" hidden={state !== 'open'}>
@@ -45,7 +48,7 @@ const state = at < Date.parse(OPEN) ? 'soon' : at < Date.parse(CLOSE) ? 'open' :
     <h2 class="ryf__t">The <span>3D</span> Future</h2>
     <p class="ryf__sub">The club where you learn to build the 3D that sells</p>
     <ul class="ryfm__li ryf__chk"><li>Step-by-step video courses on our builds</li><li>Six builds from our reels, with files, prompts and Claude skills</li><li>My comments on your builds every Monday</li></ul>
-    <p class="ryf__lock">You bought this guide, so your price stays €9 a month, even after the first 100</p>
+    {!href && <p class="ryf__lock">You bought this guide, so your price stays €9 a month, even after the first 100</p>}
     {/* 20/11 (Nico: only the real number): the seats left come from /api/club/seats (Stripe, 60 s); until it answers, or
         if it cannot count, the counter stays hidden. ?seats=<n> previews a number */}
     <div class="ryf__seats" data-ryf-seats-box hidden>
@@ -53,7 +56,7 @@ const state = at < Date.parse(OPEN) ? 'soon' : at < Date.parse(CLOSE) ? 'open' :
       <span class="ryf__bar" aria-hidden="true"><i data-ryf-bar style="width:0%"></i></span>
     </div>
     {/* TODO: the Stripe subscription link (€9/month) goes here */}
-    <a class="ryf__btn ryf__btn--card ryf__btn--join" href="#join">Join for €9/month</a>
+    <a class="ryf__btn ryf__btn--card ryf__btn--join" href={href || '#join'}>Join for €9/month</a>
     <p class="ryf__note">Cancel in one tap</p>
   </article>
   {/* 3. closed: from Sat 5/12 00:00, the list for the next round (same pop-up, same free 'waitlist-3d-future') */}
@@ -61,10 +64,10 @@ const state = at < Date.parse(OPEN) ? 'soon' : at < Date.parse(CLOSE) ? 'open' :
     <img class="ryf__logo" src="/learn/3df_knot.webp" alt="" width="120" height="120">
     <p class="ryf__tag ryf__tag--off"><i></i>Doors closed for this round</p>
     <h2 class="ryf__t">The <span>3D</span> Future</h2>
-    <button type="button" class="ryf__btn ryf__btn--card ryf__btn--next" data-ryf-open>Get on the list for the next one</button>
+    {href ? <a class="ryf__btn ryf__btn--card ryf__btn--next ryf__btn--link" href={href}>Get on the list for the next one</a> : <button type="button" class="ryf__btn ryf__btn--card ryf__btn--next" data-ryf-open>Get on the list for the next one</button>}
   </article>
 </section>
-<div class="ryfm" data-ryf-modal hidden>
+{!href && <div class="ryfm" data-ryf-modal hidden>
   <form class="ryfm__box" data-ryf-form novalidate>
     <button type="button" class="ryfm__x" aria-label="Close" data-ryf-close>×</button>
     <img class="ryf__logo ryf__logo--s" src="/learn/3df_knot.webp" alt="" width="64" height="64">
@@ -80,7 +83,7 @@ const state = at < Date.parse(OPEN) ? 'soon' : at < Date.parse(CLOSE) ? 'open' :
     <p class="ryfm__err" data-ryf-err role="alert"></p>
     <p class="ryfm__ok" data-ryf-ok hidden></p>
   </form>
-</div>
+</div>}
 <style is:global>
 .ryfw{position:relative;isolation:isolate;max-width:720px;margin:0 auto 48px;padding:56px 18px;font-family:Geist,Inter,-apple-system,system-ui,sans-serif}
 .ryfw__bg{position:absolute;inset:0;z-index:-2;width:100%;height:100%;object-fit:cover;border-radius:36px;opacity:.32;filter:blur(14px) saturate(1.1);-webkit-mask:radial-gradient(75% 70% at 50% 50%,#000 45%,transparent 100%);mask:radial-gradient(75% 70% at 50% 50%,#000 45%,transparent 100%)}
@@ -130,6 +133,7 @@ const state = at < Date.parse(OPEN) ? 'soon' : at < Date.parse(CLOSE) ? 'open' :
 .ryf__bar{display:block;height:6px;margin:9px auto 0;border-radius:999px;background:#ffffff1a;overflow:hidden}
 .ryf__bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#5ab8ff,#0071e3)}
 .ryf .ryf__btn--join{margin-top:16px;text-decoration:none}
+.ryf .ryf__btn--link{text-decoration:none}
 .ryf .ryf__btn--next{margin-top:20px}
 .ryf .ryf__note{margin-top:10px}
 .ryf__tag--off{background:#ffffff14;border-color:#ffffff33;color:#d5e3f5}
