@@ -80,7 +80,6 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
   <!-- Interactive 3D (8/11): first, launch offer with the full price struck through -->
   <section class="prices wrap" aria-labelledby="i3-title">
     <h2 class="t-h3 prices__title" id="i3-title" data-split>{P.i3A}{' '}<span class="mute">{P.i3B}</span></h2>
-    <span class="xm-snow" aria-hidden="true"></span>
     <p class="pbf bf-on" data-fade><span class="pbf__tag"><span class="t-bf">{P.bf.tag}</span><span class="t-xm">{P.xm.tag}</span></span><span class="pbf__line"><span class="t-bf">{P.bf.line}</span><span class="t-xm">{P.xm.line}</span></span><span class="pbf__left">{P.bf.left} <b data-bf-clock data-u={P.bf.units.join(',')}>&nbsp;</b></span></p>
     <table class="ptable ptable--films ptable--i3" data-fade>
       <caption class="sr-only">{P.i3A}, {P.i3B}</caption>
@@ -137,7 +136,6 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
 
   <!-- Films -->
   <section class="prices wrap" aria-labelledby="films-title">
-    <span class="xm-snow" aria-hidden="true"></span>
     <h2 class="t-h3 prices__title" id="films-title" data-split>{P.filmsA}{' '}<span class="mute">{P.filmsB}</span></h2>
     <table class="ptable ptable--films" data-fade>
       <caption class="sr-only">{P.filmsA}, {P.filmsB}</caption>

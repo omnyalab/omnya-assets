@@ -267,7 +267,8 @@ const en = {
       ['Full tower launch', '€7,900', '€5,900', 'Choose your floor with a 60-second film, 15 images and the reels, all from the same work.'],
     ],
     i3Extras: [
-      ['Hosting & updates', '€49 / month', 'We keep your link online and fast on every phone, and we update it when an apartment sells.'],
+      // 20/11 (Nico): €49 a month is hosting and support only, changes to the 3D are quoted apart
+      ['Hosting & support', '€49 / month', 'We keep your link online and fast on every phone, with technical support. Any change to the 3D we quote apart.'],
       ['Offline version', '+€490', 'A version that runs on the sales office screen without internet, on request.'],
     ],
     i3Best: 1,
@@ -919,7 +920,7 @@ const it: Dict = {
       ['Lancio torre completo', '7.900 €', '5.900 €', 'Choose your floor con un video da 60 secondi, 15 immagini e i reel, tutto dallo stesso lavoro.'],
     ],
     i3Extras: [
-      ['Hosting e aggiornamenti', '49 € / mese', 'Teniamo il tuo link online e veloce su ogni telefono, e lo aggiorniamo quando si vende un appartamento.'],
+      ['Hosting e assistenza', '49 € / mese', 'Teniamo il tuo link online e veloce su ogni telefono, con l’assistenza tecnica. Ogni modifica al 3D la quotiamo a parte.'],
       ['Versione offline', '+490 €', 'Una versione che gira sullo schermo dell’ufficio vendite senza internet, su richiesta.'],
     ],
     i3Best: 1,
