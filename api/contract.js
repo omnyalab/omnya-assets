@@ -17,7 +17,7 @@
 // POST {action:'code', slug}          → sends the code
 // POST {action:'sign', slug, code, name, role, signature, agree}
 // PUT  ?key=IG_ADMIN_KEY  {slug, title, client, email, html, contact, phone, project, goal, tz, test, internal, remind, sentAt}
-// PATCH ?key=IG_ADMIN_KEY&slug=  {sentAt:'now'|iso|null, remind, contact, phone, project, goal, tz, internal}
+// PATCH ?key=IG_ADMIN_KEY&slug=  {sentAt:'now'|iso|null, remindFrom:iso|null, remind, contact, phone, project, goal, tz, internal}
 // PATCH ?key=IG_ADMIN_KEY&remind=on|off                         → reminders to real clients on or off
 // GET  ?key=IG_ADMIN_KEY&slug=&full=1                          → everything, signature and evidence included
 // GET  ?key=IG_ADMIN_KEY&list=1[&rebuild=1]                    → the summaries (rebuild: from the contracts in Redis)
@@ -75,7 +75,7 @@ async function load(slug) {
 const meta = (c) => ({
   slug: c.slug, title: c.title, client: c.client, email: c.email, contact: c.contact || '', phone: c.phone || '',
   project: c.project || '', goal: c.goal || '', tz: c.tz || '', test: !!c.test, internal: !!c.internal, remind: c.remind !== false,
-  createdAt: c.createdAt, sentAt: c.sentAt || null,
+  createdAt: c.createdAt, sentAt: c.sentAt || null, remindFrom: c.remindFrom || null,
   firstOpened: c.firstOpened ? { at: c.firstOpened.at, tz: c.firstOpened.tz || '', country: c.firstOpened.country || '' } : null,
   lastOpened: c.lastOpened || (c.firstOpened ? c.firstOpened.at : null), opens: c.opens || (c.firstOpened ? 1 : 0),
   signed: c.signed ? { name: c.signed.name, role: c.signed.role, at: c.signed.at } : null,
@@ -90,7 +90,9 @@ async function summaries() {
 }
 
 // ---------- reminders ----------
-const startOf = (m) => Math.min(...[m.sentAt, m.firstOpened && m.firstOpened.at].filter(Boolean).map(Date.parse).filter(Number.isFinite));
+// remindFrom (set by hand) wins: e.g. a client out of office until Monday
+const startOf = (m) => (m.remindFrom && Number.isFinite(Date.parse(m.remindFrom)) ? Date.parse(m.remindFrom)
+  : Math.min(...[m.sentAt, m.firstOpened && m.firstOpened.at].filter(Boolean).map(Date.parse).filter(Number.isFinite)));
 function due(m, now) {
   const start = startOf(m);
   if (!Number.isFinite(start)) return 0;                     // never sent, never opened: nothing to remind yet
@@ -191,9 +193,11 @@ const pick = (b) => {
   for (const f of ['contact', 'project', 'goal', 'tz']) if (typeof b[f] === 'string') o[f] = b[f].trim().slice(0, 200);
   if (typeof b.phone === 'string') o.phone = b.phone.replace(/\D/g, '').slice(0, 20);
   for (const f of ['internal', 'remind']) if (typeof b[f] === 'boolean') o[f] = b[f];
-  if (b.sentAt === null) o.sentAt = null;
-  else if (b.sentAt === 'now') o.sentAt = iso();
-  else if (typeof b.sentAt === 'string' && Number.isFinite(Date.parse(b.sentAt))) o.sentAt = iso(Date.parse(b.sentAt));
+  for (const f of ['sentAt', 'remindFrom']) {
+    if (b[f] === null) o[f] = null;
+    else if (b[f] === 'now') o[f] = iso();
+    else if (typeof b[f] === 'string' && Number.isFinite(Date.parse(b[f]))) o[f] = iso(Date.parse(b[f]));
+  }
   return o;
 };
 
@@ -231,7 +235,7 @@ export async function PUT(req) {
   if (old && old.signed && !url.searchParams.get('force')) return json({ error: 'already_signed' }, 409);
   // a corrected text keeps the history of the link (sent, opens, reminders) unless ?reset=1
   const keep = old && !url.searchParams.get('reset')
-    ? Object.fromEntries(['sentAt', 'firstOpened', 'lastOpened', 'opens', 'reminders', 'nicoAlert'].filter((f) => old[f] != null).map((f) => [f, old[f]]))
+    ? Object.fromEntries(['sentAt', 'remindFrom', 'firstOpened', 'lastOpened', 'opens', 'reminders', 'nicoAlert'].filter((f) => old[f] != null).map((f) => [f, old[f]]))
     : {};
   const c = {
     slug: b.slug, test: !!b.test, title: String(b.title || 'Agreement'), client: String(b.client || ''), email: b.email.trim().toLowerCase(),
@@ -252,7 +256,7 @@ export async function PATCH(req) {
   let b = {};
   try { b = await req.json(); } catch {}
   Object.assign(c, pick(b));
-  if (c.sentAt === null) delete c.sentAt;
+  for (const f of ['sentAt', 'remindFrom']) if (c[f] === null) delete c[f];
   await save(c);
   return json({ ok: true, contract: meta(c) });
 }
