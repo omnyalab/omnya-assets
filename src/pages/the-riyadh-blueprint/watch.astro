@@ -3,7 +3,8 @@
 // (no email, NO_MAIL), the face video with the Burj Al Ballur, the proof of our last viral reel, then the Full Riyadh Guide
 // with the real Stripe Checkout inside the page (api/embed-checkout.js).
 // Made by scripts/make-burj.py: change the words there, not here.
-// 20/11 (Nico): the card of our community THE 3D FUTURE, the one of the thanks pages, opens the club page (pre-registration).
+// 20/11 (Nico, C1): the card of our community THE 3D FUTURE, the one of the thanks pages, at the end under the payment;
+// it opens the club page (pre-registration, then the join).
 import RiyadhFuture from '../../components/RiyadhFuture.astro';
 ---
 <!doctype html>
@@ -566,7 +567,6 @@ html.x2 .opt[data-o="all"]{display:none}
 </main>
 <footer class="foot"><p style="max-width:520px;margin:0 auto 10px">The photos and clips in our guides are made on Higgsfield. Tap the blue link to get unlimited generations inside Claude: <a href="https://higgsfield.ai?fpr=omnya-5b7f71" target="_blank" rel="noopener sponsored" style="color:#2997ff">higgsfield.ai</a> (affiliate link, it costs you nothing more)</p><p>© 2026 Omnya Lab. All rights reserved.</p></footer>
 
-<script is:inline>{ const c = document.querySelector('[data-clubw]'), r = document.querySelector('.big.c1'); if (c && r && new URLSearchParams(location.search).get('club') === 'mid') r.after(c) }</script>
 <script is:inline>
 const q = new URLSearchParams(location.search), v = q.get('btn') || 'b1'
 if (v === 'b2' || v === 'b4') document.body.classList.add('withprice')
