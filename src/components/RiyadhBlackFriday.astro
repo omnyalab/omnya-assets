@@ -66,11 +66,13 @@ html.ry-bf [data-upgrade]{display:none!important}
     // read from Stripe through api/files.js (paid = amount_total in cents), never for who already holds the pack.
     // Each price has its own Stripe link on the product "Everything we teach · upgrade" (it delivers the whole pack).
     // A price without its link keeps the card at €59, so the page never shows a price it cannot charge.
-    const CREDIT = { 599: [53, 'https://buy.stripe.com/bJedR8acRbIs3hAbmB8so0F'], 999: [49, 'https://buy.stripe.com/8x2eVcckZ5k43hAbmB8so0W'], 1499: [44, 'https://buy.stripe.com/fZu6oGbgVfYIg4meyN8so0X'], 1999: [39, 'https://buy.stripe.com/bJeeVc84J7sccSafCR8so0Y'] }
+    // 20/11 (Nico): who bought the Plane Builder Skill at €1.99 gets a super discount, Everything at €44 (the €44 upgrade link
+    // that already exists), with its own line: it is more than "what you paid comes off"
+    const CREDIT = { 199: [44, 'https://buy.stripe.com/fZu6oGbgVfYIg4meyN8so0X', 'You just got the skill, so for you it’s €44 instead of €59'], 599: [53, 'https://buy.stripe.com/bJedR8acRbIs3hAbmB8so0F'], 999: [49, 'https://buy.stripe.com/8x2eVcckZ5k43hAbmB8so0W'], 1499: [44, 'https://buy.stripe.com/fZu6oGbgVfYIg4meyN8so0X'], 1999: [39, 'https://buy.stripe.com/bJeeVc84J7sccSafCR8so0Y'] }
     window.__bfCredit = cents => { const c = CREDIT[cents]; if (!c || !c[1]) return
       const paid = '€' + (cents / 100).toFixed(2)
       q('bfp').textContent = '€' + c[0]; q('bfo').textContent = '-' + Math.round((1 - c[0] / 260) * 100) + '%'
-      const pd = q('bfpaid'); pd.textContent = 'You already paid ' + paid + ', so you only pay the rest'; pd.hidden = false
+      const pd = q('bfpaid'); pd.textContent = c[2] || 'You already paid ' + paid + ', so you only pay the rest'; pd.hidden = false
       const go = q('bfgo'); go.href = c[1]; go.textContent = 'Get everything · €' + c[0] + ' →' }
     const sid = new URLSearchParams(location.search).get('session_id')
     if (sid) fetch('/api/files?session_id=' + encodeURIComponent(sid)).then(r => r.ok ? r.json() : null).then(d => { if (d && !d.pack && d.paid) window.__bfCredit(d.paid) }).catch(() => {}) } }

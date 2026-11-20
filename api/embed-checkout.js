@@ -47,6 +47,8 @@ const P = {
   'full-plane': { items: ['price_1UdCdPATIF7pxfqfXgy7kpAj'], back: 'full-plane' },
   // 19/11 (Nico): The Plane Builder Skill €5.99 (the skill only) (prod_VerjXM6BW7I8KQ, https://buy.stripe.com/5kQaEW1Gl3bW05oduJ8so18)
   'skill-plane': { items: ['price_1UdY06ATIF7pxfqfNNUm5fUQ'], back: 'full-plane' },
+  // 20/11 (Nico): The Plane Builder Skill at €1.99 for the Black Friday week, until 27/11 (prod_Vf8FNVbXVfQiyN, https://buy.stripe.com/8x228q4Sx7sc9FYbmB8so19)
+  'skill-plane-1': { items: ['price_1Udnz5ATIF7pxfqf6Qa3BiYS'], back: 'full-plane' },
   'kit-plane': { items: ['price_1UdCePATIF7pxfqfeNtWSkX1'], back: 'full-plane' },
   'full-plane-9': { items: ['price_1UdCfWATIF7pxfqfGqJ241Bn'], back: 'full-plane' },
   'kit-plane-19': { items: ['price_1UdCgEATIF7pxfqfby6001RM'], back: 'full-plane' },
