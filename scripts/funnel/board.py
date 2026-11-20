@@ -65,6 +65,36 @@ def no_cookies(pg):
         pass
 
 
+LIVE = 'https://www.omnyalab.com'
+
+
+def real_checkout(route):
+    """The board shows the REAL Stripe card (number, expiry, security code, name), never the empty box of a preview
+    without Stripe (20/11, Nico). The local page asks the live /api/embed-checkout for a session (a session is not a
+    payment, it expires by itself); a product that is not online yet borrows the session of the Full Build, which draws
+    the very same card fields (the price on our Pay button is the page's own)."""
+    body = route.request.post_data or '{}'
+    resp = route.fetch(url=LIVE + '/api/embed-checkout')
+    if resp.status == 400:
+        d = json.loads(body)
+        d['p'] = 'full-build'
+        resp = route.fetch(url=LIVE + '/api/embed-checkout', post_data=json.dumps(d))
+    route.fulfill(response=resp)
+
+
+def card_ok(pg, where):
+    """The outside check: the Stripe card frame is there and tall enough to show its fields (after a tap on another
+    choice the card is mounted again: wait for the new one)."""
+    h = 0
+    for _ in range(60):
+        h = pg.evaluate("document.querySelector('.right.live') ? Math.max(0, ...[...document.querySelectorAll('[data-ec] iframe')].map(f => f.getBoundingClientRect().height)) : 0")
+        if h >= 120:
+            pg.wait_for_timeout(800)
+            return h
+        pg.wait_for_timeout(500)
+    raise RuntimeError(f'{where}: la carta Stripe non si è caricata (alta {h:.0f}px), la board non si fa così')
+
+
 def shots(c, url, out, repo):
     from playwright.sync_api import sync_playwright
     X, slug = c['id'], c['slug']
@@ -77,7 +107,7 @@ def shots(c, url, out, repo):
             ctx = b.new_context(**size)
             pg = ctx.new_page()
             pg.route('**/api/optin', lambda r: r.fulfill(status=200, content_type='application/json', body='{"ok":true,"mail":false}'))
-            pg.route('**/api/embed-checkout', lambda r: r.fulfill(status=503, content_type='application/json', body='{"error":"local"}'))
+            pg.route('**/api/embed-checkout', real_checkout)
             pg.route('**/api/files?**', lambda r: r.fulfill(status=200, content_type='application/json',
                                                             body=json.dumps({'files': files, 'pack': False, 'paid': 1499, 'skill': False, 'email': f'check+{X}@omnyalab.com'})))
             pg.goto(f'{url}/{slug}', wait_until='load')
@@ -94,13 +124,16 @@ def shots(c, url, out, repo):
             p = f'{out}/_b.png'; pg.screenshot(path=p); got[f'watch-top-{dev}'] = jpg(p, f'{out}/b-video-{dev}.jpg', w)
             pg.evaluate("document.body.classList.add('rv')")        # the prices as after the video says them
             no_cookies(pg)
+            got[f'card-{dev}'] = card_ok(pg, f'pagina video {dev}')
             p = f'{out}/_b2.png'; long_shot(pg, p); got[f'watch-full-{dev}'] = jpg(p, f'{out}/b-video-intera-{dev}.jpg', w)
             pg.evaluate("for (const e of document.querySelectorAll('body *')) e.style.visibility = ''")
             if c.get('kit'):
                 pg.click('.right .opt-sk'); time.sleep(0.8)
+                card_ok(pg, f'kit {dev}')
                 pg.locator('#offer').scroll_into_view_if_needed(); time.sleep(0.6)
                 p = f'{out}/_c.png'; pg.locator('#offer').screenshot(path=p); got[f'kit-{dev}'] = jpg(p, f'{out}/c-kit-{dev}.jpg', w)
                 pg.click('.right .opt-fu'); time.sleep(0.8)
+                card_ok(pg, f'Full {dev}')
             p = f'{out}/_c2.png'; pg.locator('#offer').screenshot(path=p); got[f'full-{dev}'] = jpg(p, f'{out}/c-full-{dev}.jpg', w)
             pg.goto(f"{url}/learn/thanks/full-{X}?session_id=cs_test_board{X}abcdefgh", wait_until='load')
             time.sleep(2); no_cookies(pg); pg.evaluate(SCROLL); time.sleep(1.5)
@@ -191,7 +224,7 @@ def page(c, got, files, checks, extra=''):
 <section><h2><b>B</b>La pagina video</h2><div class="row">{fig('B1', 'watch-top-telefono', 'Telefono, appena arriva')}{fig('B2', 'watch-top-computer', 'Computer, appena arriva')}</div>
 <details><summary>Le pagine intere (B3 telefono, B4 computer)</summary><div class="row wide" style="margin-top:12px">{fig('B3', 'watch-full-telefono', 'Telefono, tutta la pagina (prezzi già visibili)', True)}{fig('B4', 'watch-full-computer', 'Computer, tutta la pagina', True)}</div></details></section>
 <section><h2><b>C</b>La scelta e il pagamento</h2><div class="row">{fig('C1', 'full-telefono', 'Full già scelto, telefono')}{fig('C2', 'kit-telefono', 'Tocco il kit, telefono')}{fig('C3', 'full-computer', 'Full già scelto, computer')}</div>
-<p class="lead">In anteprima la carta Stripe non si carica: sul sito vero c'è, e la prova dopo il push la controlla.</p></section>
+<p class="lead">La carta è quella vera di Stripe (numero, scadenza, codice di sicurezza, nome): la board non si fa se non si carica.</p></section>
 <section><h2><b>D</b>La pagina grazie</h2><div class="row wide">{fig('D1', 'thanks-telefono', 'Telefono, con i file di chi ha preso il kit', True)}{fig('D2', 'thanks-computer', 'Computer', True)}</div></section>
 <section><h2><b>E</b>Instant DM</h2>{chat}</section>
 <section><h2><b>F</b>Stripe</h2><div class="tbl"><table><tr><th></th><th>Prodotto (nome esatto)</th><th>Prezzo</th><th>Link</th></tr>{rows}</table></div>
@@ -207,9 +240,11 @@ def page(c, got, files, checks, extra=''):
 def run(repo, c, url, out, extra=''):
     os.makedirs(out, exist_ok=True)
     got, files = shots(c, url.rstrip('/'), out, repo)
+    cards = {k[5:]: got.pop(k) for k in [k for k in got if k.startswith('card-')]}
     r = subprocess.run([os.path.join(repo, 'scripts', 'new-funnel'), 'check', c['_path'] if c['_path'].startswith('/') else c['id']],
                        capture_output=True, text=True, cwd=repo)
     checks = [l.strip() for l in r.stdout.splitlines() if l.strip().startswith(('ok', 'NO', 'file', 'Pronto')) or 'cose da sistemare' in l]
+    checks.insert(0, 'ok  carta Stripe vera nella pagina (numero, scadenza, codice di sicurezza, nome): ' + ', '.join(f'{k} {v:.0f}px' for k, v in cards.items()))
     with open(os.path.join(out, 'index.html'), 'w', encoding='utf-8') as f:
         f.write(page(c, got, files, checks, extra))
     print(f"board: {out}/index.html con {len(got)} screenshot")
