@@ -5,7 +5,7 @@
 // GET /m/<token>     (rewrite to ?c=) counts the click of mail N and opens the page of that note.
 // GET ?o=<token>     the 1×1 picture: counts the open of mail N.
 // GET ?key=IG_ADMIN_KEY&status=1 | &on=1|0 | &cap=N | &future=1|0 | &quiet=YYYY-MM-DD,… | &unquiet=… | &report=1
-//     | &test=<email>&step=1..4[&free=free-stadium][&club=soon|open|closed]
+//     | &test=<email>&step=1..4[&free=free-stadium][&club=soon|open|closed][&live=1 with the P.S.]
 //
 // The rules, decided with Nico on 20/11:
 // - Resend only (never info@'s Microsoft 365 box), at most omnya:drip:cap a day (default DRIP_CAP or 80): Resend free sends
@@ -84,7 +84,8 @@ async function prune(now) {
 
 // ---- 2. send one note; false = stop the tick (quota) ----
 async function sendStep(email, person, step, now) {
-  const m = renderNote(step, { email, name: person.n, free: person.f });
+  const live = (await redis('GET', `${K}future`)) === '1'; // the club page is online: the P.S. opens its door
+  const m = renderNote(step, { email, name: person.n, free: person.f }, { live });
   try {
     await sendResend({ to: `${person.n || ''} <${email}>`.trim(), from: 'Nico <info@omnyalab.com>', replyTo: host.email, ...m });
   } catch (e) {
@@ -213,7 +214,7 @@ export async function GET(request) {
   if (q.get('test')) { // one note to one address (Nico's), outside the series and its counts
     const step = Math.min(STEPS, Math.max(1, Number(q.get('step')) || 1));
     const to = String(q.get('test')).trim().toLowerCase();
-    const m = renderNote(step, { email: to, name: q.get('name') || 'Nico', free: q.get('free') || 'free-stadium' }, q.get('club') ? { club: q.get('club') } : {});
+    const m = renderNote(step, { email: to, name: q.get('name') || 'Nico', free: q.get('free') || 'free-stadium' }, { ...(q.get('club') ? { club: q.get('club') } : {}), live: q.get('live') === '1' || (await redis('GET', `${K}future`)) === '1' });
     await sendResend({ to, from: 'Nico <info@omnyalab.com>', replyTo: host.email, ...m });
     return json({ ok: true, sent: m.subject, to });
   }

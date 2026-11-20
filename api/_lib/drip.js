@@ -66,6 +66,16 @@ export function readToken(tok) {
 const OPEN = () => Date.parse(process.env.DRIP_FUTURE_OPEN || '2026-11-28T17:00:00Z'); // 28/11 18:00 Rome, open to everyone (club plan L1; 9:00 is only for its list and buyers)
 const CLOSE = () => Date.parse(process.env.DRIP_FUTURE_CLOSE || '2026-12-04T22:59:00Z'); // 4/12 23:59 Rome
 export const clubState = (ms = Date.now()) => (ms < OPEN() ? 'soon' : ms <= CLOSE() ? 'open' : 'closed');
+// the end of every P.S. (and of mail 4): the club's door, said the way it is that day
+const door = (club, link) =>
+  club === 'open'
+    ? `and the doors are open now: ${link('join THE 3D FUTURE', 'f')}`
+    : club === 'closed'
+      ? `and the doors are closed for this round, but you can get on the list for the next one here: ${link('get on the list', 'f')}`
+      : `and the doors open on Saturday 28 November, so you can get on the list here: ${link('get on the list', 'f')}`;
+
+// Mails 1-3 end with a P.S. that opens the club's door (Nico 20/11: «these emails are to bring people into the community»),
+// only while the club page is online (live); mail 4 is the invitation itself and waits for the page.
 const NOTES = [
   {
     subject: 'why our videos look like one shot',
@@ -75,6 +85,7 @@ const NOTES = [
       `That stadium video passed a million views in less than 24 hours.`,
       `Quick question, and just reply with one word: what would you like to build first, a house, a tower, a stadium or something else? I read every reply.`,
     ],
+    ps: ({ link, club }) => `If you'd rather learn the whole stadium properly, step by step, it's the first video course inside THE 3D FUTURE, our new club, ${door(club, link)}`,
   },
   {
     subject: 'why we threw away our first two clips',
@@ -85,6 +96,7 @@ const NOTES = [
       `So now we keep it simple: in the 3D the camera only moves in a straight line, slowly forward, and the fog is thick and drifts a little in every frame, so Kling knows exactly what it's looking at.`,
       `If you want to see where this goes, you can click through our three towers yourself here, where every view is a Kling clip that starts where the last one ended: ${link('click through the three towers')}`,
     ],
+    ps: ({ link, club }) => `Inside THE 3D FUTURE, our new club, you get the files, the prompts and the Claude skills behind builds like these, plus my comments on your own builds every Monday, ${door(club, link)}`,
   },
   {
     subject: 'never pay for the same clip twice',
@@ -93,6 +105,7 @@ const NOTES = [
       `The same trick works when the camera flies in close, and it's my favourite: I ask Kling for the opposite, a clip that starts close and flies out, and then I flip it. When I tested it, that one clip took me from the first photo straight to the third, so I didn't even need the one in the middle.`,
       `So before you make anything, look at your list of clips and check which ones are just another one played backwards. If you try it, reply "done" and tell me how it went.`,
     ],
+    ps: ({ link, club }) => `If you want to learn all of this properly instead of one trick at a time, that's what THE 3D FUTURE, our new club, is for, ${door(club, link)}`,
   },
   {
     subject: "where we're taking all this",
@@ -101,10 +114,10 @@ const NOTES = [
       `one last tip before I tell you where we're taking all this: when you turn a 3D into a realistic photo, give the image tool your 3D and nothing else. The moment you add a nice photo "for the look", it starts redesigning the room or the building its own way and the view you worked on is gone, while with the 3D alone, and a prompt that describes only what you can see in that exact view, the photo comes out matching your 3D.`,
       `Everything I sent you in these emails, and a lot more, is inside THE 3D FUTURE, our new club: first of all a video course that walks you step by step through one of our builds, so you can make it exactly the way we do, then the files, the prompts and the Claude skills behind the builds from our reels, a new build every Friday, and my comments on your own builds every Monday.`,
       club === 'open'
-        ? `The doors are open now, and you can see everything that's inside here: ${link("see what's inside")}`
+        ? `The doors are open now, and you can join here: ${link('join THE 3D FUTURE')}`
         : club === 'closed'
-          ? `The doors are closed for this round, and you can get on the list for the next one here: ${link('get on the list')}`
-          : `The doors open on Saturday 28 November, and you can see what's inside here: ${link("see what's inside")}`,
+          ? `The doors are closed for this round, but you can get on the list for the next one here: ${link('get on the list')}`
+          : `The doors open on Saturday 28 November, and you can get on the list here: ${link('get on the list')}`,
     ],
   },
 ];
@@ -114,22 +127,24 @@ export const STEPS = NOTES.length;
  * One note of the series, ready for nodemailer. step = 1..4, p = { email, name, free }
  * Plain like the delivery note: hello, paragraphs, Nico, then one small grey line with why they get it and the unsubscribe.
  */
-export function renderNote(step, p, { club = clubState() } = {}) {
+export function renderNote(step, p, { club = clubState(), live = false } = {}) {
   const n = NOTES[step - 1];
   const guide = GUIDES[p.free] || GUIDES.free;
-  const url = n.link ? `${SITE}/m/${token(p.email, step, n.link)}` : '';
+  const url = (t) => `${SITE}/m/${token(p.email, step, t)}`;
   const off = unsubUrl(p.email);
-  const html = n.body({ guide: esc(guide), club, link: (label) => `<a href="${url}">${esc(label)}</a>` });
-  const text = n.body({ guide, club, link: () => url });
+  const H = { guide: esc(guide), club, link: (label, t = n.link) => `<a href="${url(t)}">${esc(label)}</a>` };
+  const T = { guide, club, link: (label, t = n.link) => url(t) };
+  const html = n.body(H), text = n.body(T);
+  const ps = live && n.ps ? [n.ps(H), n.ps(T)] : null;
   const why = `You're getting this because you asked for ${guide} on omnyalab.com. Omnya Lab, Venice, Italy.`;
   return {
     subject: n.subject,
-    text: [`Hi ${firstName(p.name)},`, '', ...text.flatMap((t) => [t, '']), 'Nico', '', '--', why, `Unsubscribe: ${off}`].join('\n'),
+    text: [`Hi ${firstName(p.name)},`, '', ...text.flatMap((t) => [t, '']), 'Nico', ...(ps ? ['', `P.S. ${ps[1]}`] : []), '', '--', why, `Unsubscribe: ${off}`].join('\n'),
     html: `<!doctype html><html><body><div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#222">
 <p>Hi ${esc(firstName(p.name))},</p>
 ${html.map((t) => `<p>${t}</p>`).join('\n')}
 <p>Nico</p>
-<p style="margin-top:28px;font-size:12px;color:#888">${esc(why)} <a href="${off}" style="color:#888">Unsubscribe</a></p>
+${ps ? `<p>P.S. ${ps[0]}</p>\n` : ''}<p style="margin-top:28px;font-size:12px;color:#888">${esc(why)} <a href="${off}" style="color:#888">Unsubscribe</a></p>
 <img src="${SITE}/api/drip?o=${token(p.email, step)}" width="1" height="1" alt="" style="display:block;border:0">
 </div></body></html>`,
     headers: { 'List-Unsubscribe': `<${off}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' },
