@@ -5,6 +5,7 @@
 // GET /m/<token>     (rewrite to ?c=) counts the click of mail N and opens the page of that note.
 // GET ?o=<token>     the 1×1 picture: counts the open of mail N.
 // GET ?key=IG_ADMIN_KEY&status=1 | &on=1|0 | &cap=N | &future=1|0 | &quiet=YYYY-MM-DD,… | &unquiet=… | &report=1
+//     | &loadold=1 (the people we already had into pool:old) | &oldday=N (how many of them start a day)
 //     | &test=<email>&step=1..4[&free=free-stadium][&club=soon|open|closed][&live=1 with the P.S.]
 //
 // The rules, decided with Nico on 20/11:
@@ -108,10 +109,37 @@ async function prune(now) {
   }
 }
 
+// the people who asked for a guide before the series (or were not picked): pool:old, once, for &loadold=1.
+// Only who ticked the update box (Nico 20/11: «the 1,957 who gave consent»), not unsubscribed, not already in the series,
+// not in the comparison group (that is the judge until 28/11), the latest sign-up of each person.
+async function loadOld(now) {
+  const last = new Map();
+  for (let page = 0; page < 50; page++) {
+    const raw = await redis('LRANGE', 'omnya:optin', page * 1000, page * 1000 + 999);
+    if (!raw?.length) break;
+    for (const r of raw) {
+      let o; try { o = JSON.parse(r); } catch { continue; }
+      const email = String(o.email || '').trim().toLowerCase();
+      if (!email || last.has(email)) continue; // newest first: the first row is the latest sign-up
+      last.set(email, o);
+    }
+    if (raw.length < 1000) break;
+  }
+  const rows = [...last.entries()].filter(([, o]) => o.consent?.newsletter && GUIDES[o.free] && o.at < now - 28 * 3600_000);
+  const checks = await pipe(rows.flatMap(([e]) => [['HEXISTS', `${K}people`, e], ['HEXISTS', `${K}ctrl`, e], ['SISMEMBER', OFF_KEY, e]]));
+  const cmds = [];
+  rows.forEach(([email, o], i) => {
+    if (checks.slice(i * 3, i * 3 + 3).some((x) => Number(x) === 1)) return;
+    cmds.push(['ZADD', `${K}pool:old`, o.at, email], ['HSET', `${K}whoold`, email, JSON.stringify({ n: o.name, f: o.free, at: o.at, nl: true })]);
+  });
+  if (cmds.length) await pipe(cmds);
+  return cmds.length / 2;
+}
+
 // ---- 2. send one note; false = stop the tick (quota) ----
 async function sendStep(email, person, step, now) {
   const live = (await redis('GET', `${K}future`)) === '1'; // the club page is online: the P.S. opens its door
-  const m = renderNote(step, { email, name: person.n, free: person.f }, { live });
+  const m = renderNote(step, { email, name: person.n, free: person.f, at: person.at }, { live });
   try {
     await sendResend({ to: `${person.n || ''} <${email}>`.trim(), from: 'Nico <info@omnyalab.com>', replyTo: host.email, ...m });
   } catch (e) {
@@ -178,8 +206,25 @@ async function tick() {
   const startedToday = Number((await redis('GET', `${K}s:${d}`)) || 0);
   const elapsed = (now - Date.parse(`${d}T00:00:00Z`) + 15 * 60_000) / DAY;
   let want = Math.min(room, Math.ceil(plan * Math.min(1, elapsed)) - startedToday);
-  if (want <= 0) return { ok: true, ...out };
-  for (const p of ['yes', 'no']) { // who ticked the update box first
+  const oldDay = Number((await redis('GET', `${K}oldday`)) || 0);
+  // one start: the HSETNX is the lock (once in a life, a second tick can't start the same person), then mail 1
+  const start = async (email, w) => {
+    if (!w || (await off(email)) || today.has(email) || (await redis('HEXISTS', `${K}people`, email))) return 'skip';
+    const person = { n: w.n, f: w.f, at: w.at, nl: w.nl, start: now, step: 0, ...(w.old ? { old: 1 } : {}) };
+    if (Number(await redis('HSETNX', `${K}people`, email, JSON.stringify(person))) !== 1) return 'skip';
+    const r = await sendStep(email, person, 1, now);
+    if (r !== 'ok') { await redis('HDEL', `${K}people`, email); return r; }
+    person.step = 1; person.sent = [now];
+    await redis('HSET', `${K}people`, email, JSON.stringify(person));
+    await redis('ZADD', `${K}due`, now + OFFSETS[1] * DAY, email);
+    for (const o of OFFSETS) await loadAdd(now + o * DAY, 1);
+    out.started++; room--;
+    return 'ok';
+  };
+  // who ticked the update box; who left it empty only with omnya:drip:all = 1 (never happens at 80 a day, the ticked ones
+  // are always more than the room; with a bigger cap the people we already had with the box come first, see c)
+  const pools = ['yes', ...((await redis('GET', `${K}all`)) === '1' && !oldDay ? ['no'] : [])];
+  for (const p of want > 0 ? pools : []) {
     if (want <= 0) break;
     const cands = (await redis('ZRANGEBYSCORE', `${K}pool:${p}`, now - 28 * 3600_000, now - 20 * 3600_000)) || [];
     for (let i = cands.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [cands[i], cands[j]] = [cands[j], cands[i]]; }
@@ -188,19 +233,30 @@ async function tick() {
       await redis('ZREM', `${K}pool:${p}`, email);
       const w = JSON.parse((await redis('HGET', `${K}who`, email)) || 'null');
       await redis('HDEL', `${K}who`, email);
-      if (!w || (await off(email)) || today.has(email) || (await redis('HEXISTS', `${K}people`, email))) continue;
-      const person = { n: w.n, f: w.f, at: w.at, nl: w.nl, start: now, step: 0 };
-      // once in a life: the HSETNX is the lock, a second tick can't start the same person
-      if (Number(await redis('HSETNX', `${K}people`, email, JSON.stringify(person))) !== 1) continue;
-      const r = await sendStep(email, person, 1, now);
-      if (r === 'stop') { await redis('HDEL', `${K}people`, email); return { ok: true, stopped: d, ...out }; }
-      if (r === 'fail') { await redis('HDEL', `${K}people`, email); continue; }
-      person.step = 1; person.sent = [now];
-      await redis('HSET', `${K}people`, email, JSON.stringify(person));
-      await redis('ZADD', `${K}due`, now + OFFSETS[1] * DAY, email);
-      for (const o of OFFSETS) await loadAdd(now + o * DAY, 1);
-      await redis('INCR', `${K}s:${d}`); await redis('EXPIRE', `${K}s:${d}`, 2 * 86400);
-      out.started++; want--;
+      const r = await start(email, w);
+      if (r === 'stop') return { ok: true, stopped: d, ...out };
+      if (r === 'ok') { await redis('INCR', `${K}s:${d}`); await redis('EXPIRE', `${K}s:${d}`, 2 * 86400); want--; }
+    }
+  }
+
+  // c) the people we already had (20/11, Nico: «send the new emails to the ones we already have, a few a day»):
+  // omnya:drip:oldday a day from pool:old (loaded with &loadold=1), newest first, spread over the day, and only while
+  // every day of their four notes stays under the cap, so they never take the place of the new ones
+  if (oldDay > 0 && room > 0) {
+    let wantOld = Math.min(room, Math.ceil(oldDay * Math.min(1, elapsed)) - Number((await redis('GET', `${K}so:${d}`)) || 0));
+    if (wantOld > 0) {
+      const loads = await Promise.all(OFFSETS.map(async (o) => Number((await redis('GET', `${K}load:${dayOf(now + o * DAY)}`)) || 0)));
+      wantOld = Math.min(wantOld, ...loads.map((l) => cap - l));
+      const cands = wantOld > 0 ? (await redis('ZREVRANGE', `${K}pool:old`, 0, wantOld * 2)) || [] : [];
+      for (const email of cands) {
+        if (wantOld <= 0) break;
+        await redis('ZREM', `${K}pool:old`, email);
+        const w = JSON.parse((await redis('HGET', `${K}whoold`, email)) || 'null');
+        await redis('HDEL', `${K}whoold`, email);
+        const r = await start(email, w && { ...w, old: 1 });
+        if (r === 'stop') return { ok: true, stopped: d, ...out };
+        if (r === 'ok') { await redis('INCR', `${K}so:${d}`); await redis('EXPIRE', `${K}so:${d}`, 2 * 86400); wantOld--; out.old = (out.old || 0) + 1; }
+      }
     }
   }
   return { ok: true, ...out };
@@ -246,6 +302,9 @@ export async function GET(request) {
   }
   if (q.get('on') === '1' || q.get('on') === '0') await redis('SET', `${K}on`, q.get('on'));
   if (q.get('cap')) await redis('SET', `${K}cap`, String(Math.max(0, Math.min(1000, Number(q.get('cap')) || 0))));
+  if (q.get('loadold') === '1') return json({ ok: true, old: await loadOld(Date.now()) });
+  if (q.get('all') === '1' || q.get('all') === '0') await redis('SET', `${K}all`, q.get('all'));
+  if (q.get('oldday')) await redis('SET', `${K}oldday`, String(Math.max(0, Math.min(1000, Number(q.get('oldday')) || 0))));
   if (Number(q.get('cursor')) > 0) await redis('SET', `${K}cursor`, String(Date.now() - Number(q.get('cursor')) * 3600_000)); // read the opt-ins of the last N hours again
   if (q.get('resetstat') === '1') { await redis('DEL', `${K}stat`); await redis('DEL', `${K}ev`); } // the counts of the test mails
   if (q.get('future') === '1' || q.get('future') === '0') await redis('SET', `${K}future`, q.get('future'));
@@ -266,6 +325,9 @@ export async function GET(request) {
     poolYes: Number(await redis('ZCARD', `${K}pool:yes`)),
     poolNo: Number(await redis('ZCARD', `${K}pool:no`)),
     comparison: Number(await redis('HLEN', `${K}ctrl`)),
+    poolOld: Number(await redis('ZCARD', `${K}pool:old`)),
+    oldPerDay: Number((await redis('GET', `${K}oldday`)) || 0),
+    oldStartedToday: Number((await redis('GET', `${K}so:${d}`)) || 0),
     stat: await redis('HGETALL', `${K}stat`),
   };
   if (!q.get('report')) return json(status);

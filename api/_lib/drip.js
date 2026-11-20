@@ -79,8 +79,8 @@ const door = (club, link) =>
 const NOTES = [
   {
     subject: 'why our videos look like one shot',
-    body: ({ guide }) => [
-      `you grabbed ${guide} yesterday, so here's a small thing that makes a big difference. Our stadium video looks like one camera flying through the whole stadium, but it's six short clips put together, and the reason you can't see where one ends and the next one starts is simple: every new clip starts from the very last picture of the clip before it, not from the photo we had planned.`,
+    body: ({ guide, ago }) => [
+      `you grabbed ${guide} ${ago}, so here's a small thing that makes a big difference. Our stadium video looks like one camera flying through the whole stadium, but it's six short clips put together, and the reason you can't see where one ends and the next one starts is simple: every new clip starts from the very last picture of the clip before it, not from the photo we had planned.`,
       `The video tool (we use Kling) rarely stops exactly on the photo you asked for, it usually ends a tiny bit off, so if you start the next clip from your planned photo you see a little jump. Save the last frame of the clip as a picture instead, start the next clip from that, and the jump is gone.`,
       `That stadium video passed a million views in less than 24 hours.`,
       `Quick question, and just reply with one word: what would you like to build first, a house, a tower, a stadium or something else? I read every reply.`,
@@ -132,8 +132,9 @@ export function renderNote(step, p, { club = clubState(), live = false } = {}) {
   const guide = GUIDES[p.free] || GUIDES.free;
   const url = (t) => `${SITE}/m/${token(p.email, step, t)}`;
   const off = unsubUrl(p.email);
-  const H = { guide: esc(guide), club, link: (label, t = n.link) => `<a href="${url(t)}">${esc(label)}</a>` };
-  const T = { guide, club, link: (label, t = n.link) => url(t) };
+  const ago = p.at && Date.now() - p.at > 36 * 3600_000 ? 'a little while ago' : 'yesterday'; // the people we already had signed up days ago
+  const H = { guide: esc(guide), ago, club, link: (label, t = n.link) => `<a href="${url(t)}">${esc(label)}</a>` };
+  const T = { guide, ago, club, link: (label, t = n.link) => url(t) };
   const html = n.body(H), text = n.body(T);
   const ps = live && n.ps ? [n.ps(H), n.ps(T)] : null;
   const why = `You're getting this because you asked for ${guide} on omnyalab.com. Omnya Lab, Venice, Italy.`;
