@@ -85,7 +85,7 @@ const NOTES = [
       `That stadium video passed a million views in less than 24 hours.`,
       `Quick question, and just reply with one word: what would you like to build first, a house, a tower, a stadium or something else? I read every reply.`,
     ],
-    ps: ({ link, club }) => `If you'd rather learn the whole stadium properly, step by step, it's the first video course inside THE 3D FUTURE, our new club, ${door(club, link)}`,
+    ps: ({ link, club }) => `If you'd rather build our stadium yourself, step by step, the one where people pick their seat, it's the first video course inside THE 3D FUTURE, our new club, ${door(club, link)}`,
   },
   {
     subject: 'why we threw away our first two clips',
