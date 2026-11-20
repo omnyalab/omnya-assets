@@ -262,9 +262,9 @@ const en = {
     i3Cols: ['Project', 'Price*'],
     i3Star: '*Starting prices for a standard project: the house covers up to three rooms and the tower one building with its floors, while a whole house, more towers or a larger masterplan we price on your plans before we start.',
     i3Rows: [
-      ['Walk-through house', '€2,490', '€1,990', 'A house that builds itself as you scroll, or turns as you drag, and you walk inside. The price covers up to three rooms; a whole house we price on the plans.'],
-      ['Choose your floor', '€4,900', '€3,900', 'The tower with clickable floors, the view from every floor, and which apartments are free or sold.'],
-      ['Full tower launch', '€7,900', '€5,900', 'Choose your floor with a 60-second film, 15 images and the reels, all from the same work.'],
+      ['Walk-through house', '€2,490', '€1,990', 'A house that builds itself as you scroll, or turns as you drag, and you walk inside. The price covers up to three rooms; a whole house we price on the plans. Try one floor is included: you start with it, and what you paid counts as part of the first payment.'],
+      ['Choose your floor', '€4,900', '€3,900', 'The tower with clickable floors, the view from every floor, and which apartments are free or sold. Try one floor is included: you start with it, and what you paid counts as part of the first payment.'],
+      ['Full tower launch', '€7,900', '€5,900', 'Choose your floor with a 60-second film, 15 images and the reels, all from the same work. Try one floor is included: you start with it, and what you paid counts as part of the first payment.'],
     ],
     i3Extras: [
       // 20/11 (Nico): €49 a month is hosting and support only, changes to the 3D are quoted apart
@@ -274,7 +274,7 @@ const en = {
     i3Best: 1,
     // 10/11 (Nico): the first paid step, between the €59 pack of guides and the projects from €1,990
     // 20/11 (Nico): the pilot is called by what it is, so people get it at once
-    i3Pilot: ['Try one floor', '€490', 'Credited if you go ahead', 'Your building with one floor you can click, on a link that works on any phone, in 7 days. If you go ahead with a full project within 30 days, what you paid for it comes off its price.'],
+    i3Pilot: ['Try one floor', '€490', 'Included in every project', 'Your building with one floor you can click, on a link that works on any phone, in 7 days. You pay this first, then you decide: if you go ahead with a full project within 30 days, what you paid counts as part of the first payment.'],
     pilotCta: 'Try one floor first',
     // 20/11 (Nico): Black Friday week, until Sunday 29/11 at 23:59 (Rome): the discount counted from the full price struck
     // (€4,900 → €2,900, €7,900 → €4,900, €2,490 → €1,490; Gulf €3,900 and €6,900) and on the films too. Shown only while html.px-bf is on (Base.astro and
@@ -331,8 +331,9 @@ const en = {
     caseAlt: 'Hygeia Grove, Corfu',
     termsA: 'How payment works',
     termsB: 'and when you get your images',
-    termsFigs: [['50%', 'deposit when you confirm'], ['1–2 days', 'to the first views'], ['50%', 'balance on delivery']],
-    terms: 'You pay 50% when you confirm and the rest on delivery, in euro and with no VAT applied, and the timings start from the deposit: in busier periods they can run a few days longer, but we always confirm the delivery date before we start.',
+    // 20/11 (Nico): 20% when you confirm, 30% halfway with the first proof, 50% on delivery; our logo stays on until the last payment
+    termsFigs: [['20%', 'when you confirm'], ['30%', 'halfway, with the first proof'], ['50%', 'on delivery']],
+    terms: 'You pay 20% when you confirm, 30% halfway when we send you the first proof and 50% on delivery, in euro and with no VAT applied. Until the last payment the work carries our logo, and the clean files come with it. Timings start from the first payment, and we always confirm the delivery date before we start.',
     pdf: 'Download the price list',
   },
   learn: {
@@ -915,16 +916,16 @@ const it: Dict = {
     i3Cols: ['Progetto', 'Prezzo*'],
     i3Star: '*Prezzi di partenza per un progetto standard: la casa comprende fino a tre stanze e la torre un edificio con i suoi piani, mentre una casa intera, più torri o un masterplan più grande li quotiamo sulle tue piante prima di iniziare.',
     i3Rows: [
-      ['Casa da esplorare', '2.490 €', '1.990 €', 'Una casa che si costruisce mentre scorri, o che giri trascinando, e ci entri dentro. Il prezzo vale fino a tre stanze; una casa intera la quotiamo sulle piante.'],
-      ['Scegli il piano', '4.900 €', '3.900 €', 'La torre con i piani cliccabili, la vista da ogni piano e gli appartamenti liberi e venduti.'],
-      ['Lancio torre completo', '7.900 €', '5.900 €', 'Choose your floor con un video da 60 secondi, 15 immagini e i reel, tutto dallo stesso lavoro.'],
+      ['Casa da esplorare', '2.490 €', '1.990 €', 'Una casa che si costruisce mentre scorri, o che giri trascinando, e ci entri dentro. Il prezzo vale fino a tre stanze; una casa intera la quotiamo sulle piante. «Prova un piano» è incluso: si parte da lì e quello che hai pagato vale come parte del primo pagamento.'],
+      ['Scegli il piano', '4.900 €', '3.900 €', 'La torre con i piani cliccabili, la vista da ogni piano e gli appartamenti liberi e venduti. «Prova un piano» è incluso: si parte da lì e quello che hai pagato vale come parte del primo pagamento.'],
+      ['Lancio torre completo', '7.900 €', '5.900 €', 'Choose your floor con un video da 60 secondi, 15 immagini e i reel, tutto dallo stesso lavoro. «Prova un piano» è incluso: si parte da lì e quello che hai pagato vale come parte del primo pagamento.'],
     ],
     i3Extras: [
       ['Hosting e assistenza', '49 € / mese', 'Teniamo il tuo link online e veloce su ogni telefono, con l’assistenza tecnica. Ogni modifica al 3D la quotiamo a parte.'],
       ['Versione offline', '+490 €', 'Una versione che gira sullo schermo dell’ufficio vendite senza internet, su richiesta.'],
     ],
     i3Best: 1,
-    i3Pilot: ['Prova un piano', '490 €', 'Scalati se vai avanti', 'Il tuo edificio con un piano cliccabile, in un link che funziona su qualsiasi telefono, in 7 giorni. Se entro 30 giorni vai avanti con un progetto completo, quello che hai pagato viene scalato dal prezzo.'],
+    i3Pilot: ['Prova un piano', '490 €', 'Incluso in ogni progetto', 'Il tuo edificio con un piano cliccabile, in un link che funziona su qualsiasi telefono, in 7 giorni. Prima paghi questo, poi decidi: se entro 30 giorni vai avanti con un progetto completo, quello che hai pagato vale come parte del primo pagamento.'],
     pilotCta: 'Prova prima un piano',
     bf: { tag: 'Black Friday', line: '3D interattivi e video, fino a 3.000 € in meno', left: 'Finisce tra', units: ['g', 'h', 'm', 's'], rows: ['1.490 €', '2.900 €', '4.900 €'], gulf: ['', '3.900 €', '6.900 €'], films: ['690 €', '1.050 €', '1.790 €'], pilot: '390 €' },
     xm: { tag: 'Natale', line: 'Prezzi di Natale su 3D interattivi e video, fino a 3.000 € in meno' },
@@ -977,8 +978,8 @@ const it: Dict = {
     caseAlt: 'Hygeia Grove, Corfù',
     termsA: 'Condizioni',
     termsB: 'di pagamento',
-    termsFigs: [['50%', 'di acconto alla conferma'], ['1–2 giorni', 'per le prime viste'], ['50%', 'di saldo alla consegna']],
-    terms: 'Paghi il 50% quando confermi e il resto alla consegna, in euro ed esente IVA, e i tempi partono dall’acconto: nei periodi con più lavoro possono allungarsi di qualche giorno, ma la data di consegna te la confermiamo sempre prima di iniziare.',
+    termsFigs: [['20%', 'alla conferma'], ['30%', 'a metà, con la prima prova'], ['50%', 'alla consegna']],
+    terms: 'Paghi il 20% quando confermi, il 30% a metà progetto quando ti mandiamo la prima prova e il 50% alla consegna, in euro ed esente IVA. Fino all’ultimo pagamento il lavoro porta il nostro logo, e i file puliti arrivano con il saldo. I tempi partono dal primo pagamento e la data di consegna te la confermiamo sempre prima di iniziare.',
     pdf: 'Scarica il listino',
   },
   learn: {

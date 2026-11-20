@@ -89,6 +89,7 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
       <tbody>
         <tr class="ptable__pilot bf-row">
           <th scope="row" class="ptable__q">
+            <span class="ptable__pill">{P.i3Pilot[2]}</span>
             <span class="ptable__qn">{P.i3Pilot[0]}<button type="button" class="pinfo" data-info="i3p" aria-label={`${P.info} ${P.i3Pilot[0]}`}><span aria-hidden="true">i</span></button></span>
           </th>
           <td class="ptable__price">
@@ -97,7 +98,6 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
             <span class="ptable__now bf-off">{P.i3Pilot[1]}</span>
             <span class="ptable__now bf-on">{P.bf.pilot}</span>
             <span class="ptable__save ptable__bfs bf-on"><span class="t-bf">{P.bf.tag}</span><span class="t-xm">{P.xm.tag}</span>&nbsp;{bfCut(P.i3Pilot[1], P.bf.pilot)}</span>
-            <span class="ptable__save">{P.i3Pilot[2]}</span>
           </td>
         </tr>
         {
