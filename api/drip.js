@@ -306,7 +306,19 @@ export async function GET(request) {
   if (q.get('all') === '1' || q.get('all') === '0') await redis('SET', `${K}all`, q.get('all'));
   if (q.get('oldday')) await redis('SET', `${K}oldday`, String(Math.max(0, Math.min(1000, Number(q.get('oldday')) || 0))));
   if (Number(q.get('cursor')) > 0) await redis('SET', `${K}cursor`, String(Date.now() - Number(q.get('cursor')) * 3600_000)); // read the opt-ins of the last N hours again
-  if (q.get('resetstat') === '1') { await redis('DEL', `${K}stat`); await redis('DEL', `${K}ev`); } // the counts of the test mails
+  if (q.get('resetstat') === '1') {
+    // the counts again from the people of the series: sent from their notes, opens and clicks only theirs (the test mails
+    // to @omnyalab.com addresses go). 20/11: the old reset deleted every event, real ones too.
+    const pp = (a) => { const o = {}; for (let i = 0; i < (a?.length || 0); i += 2) o[a[i]] = a[i + 1]; return o; };
+    const people = pp(await redis('HGETALL', `${K}people`)), ev = pp(await redis('HGETALL', `${K}ev`));
+    const stat = {};
+    for (const v of Object.values(people)) for (let i = 1; i <= (JSON.parse(v).step || 0); i++) stat[`sent${i}`] = (stat[`sent${i}`] || 0) + 1;
+    const drop = [];
+    for (const k of Object.keys(ev)) { const [e, kind] = k.split('|'); if (people[e]) stat[kind] = (stat[kind] || 0) + 1; else drop.push(k); }
+    if (drop.length) await redis('HDEL', `${K}ev`, ...drop);
+    await redis('DEL', `${K}stat`);
+    for (const [f, n] of Object.entries(stat)) await redis('HSET', `${K}stat`, f, String(n));
+  }
   if (q.get('future') === '1' || q.get('future') === '0') await redis('SET', `${K}future`, q.get('future'));
   for (const x of String(q.get('quiet') || '').split(',').filter((x) => /^\d{4}-\d{2}-\d{2}$/.test(x))) await redis('SADD', `${K}quiet`, x);
   for (const x of String(q.get('unquiet') || '').split(',').filter(Boolean)) await redis('SREM', `${K}quiet`, x);
