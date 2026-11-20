@@ -315,6 +315,7 @@ export function priceInfo() {
   let dim = document.querySelector<HTMLElement>('.pinfo-dim');
   if (!dim) { dim = document.createElement('div'); dim.className = 'pinfo-dim'; dim.setAttribute('aria-hidden', 'true'); document.body.appendChild(dim); }
   const veil = dim;
+  veil.onclick = (e) => { e.stopPropagation(); close(); };
   let open: HTMLButtonElement | null = null;
   let timer = 0;
   // 9/11: each preview is made once and kept, so opening it again is instant, and only the open one plays;
@@ -337,14 +338,19 @@ export function priceInfo() {
   }, { rootMargin: '300px 0px' });
   if (band) warm.observe(band);
   const place = (_b: HTMLButtonElement) => { pop.style.left = ''; pop.style.top = ''; };
-  const close = () => {
-    if (!open) return;
-    open.setAttribute('aria-expanded', 'false');
-    open = null;
+  // 20/11 bug fix (Nico, iPhone): closing always clears the veil and the lock, even if nothing is marked open, so the
+  // page can never stay blurred; and nothing closes the card any more because the page "scrolled" (on iPhone the
+  // Safari bar moves when the card opens, which used to close it half-way and leave the blur on with no way out)
+  const clear = () => {
     pop.classList.remove('is-open');
     veil.classList.remove('is-open');
     document.documentElement.classList.remove('pinfo-lock');
     lenis?.start();
+  };
+  const close = () => {
+    if (open) open.setAttribute('aria-expanded', 'false');
+    open = null;
+    clear();
     window.clearTimeout(timer);
     stopAll();
     timer = window.setTimeout(() => { if (!open) { pop.hidden = true; body.replaceChildren(); } }, 350);
@@ -373,7 +379,8 @@ export function priceInfo() {
     body.querySelector('video')?.play().catch(() => {});
     lenis?.stop();
     document.documentElement.classList.add('pinfo-lock');
-    requestAnimationFrame(() => { pop.classList.add('is-open'); veil.classList.add('is-open'); });
+    // the classes go on only if this card is still the open one when the frame comes
+    requestAnimationFrame(() => { if (open !== b) return; pop.classList.add('is-open'); veil.classList.add('is-open'); });
   };
   btns.forEach((b) => {
     b.setAttribute('aria-expanded', 'false');
@@ -390,16 +397,14 @@ export function priceInfo() {
   const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') { const b = open; close(); b?.focus(); } };
   document.addEventListener('click', outside);
   document.addEventListener('keydown', esc);
-  window.addEventListener('scroll', close, { passive: true });
   onDestroy(() => {
     document.removeEventListener('click', outside);
     document.removeEventListener('keydown', esc);
-    window.removeEventListener('scroll', close);
     warm.disconnect();
     stopAll();
+    open = null;
+    clear();
     pop.hidden = true;
-    veil.classList.remove('is-open');
-    document.documentElement.classList.remove('pinfo-lock');
   });
 }
 
