@@ -136,7 +136,7 @@ function nicoMail(c) {
   const m = meta(c), fmt = (s) => (s ? new Date(s).toLocaleString('it-IT', { timeZone: 'Europe/Rome', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—');
   const righe = [
     `Il contratto di <b>${esc(c.client)}</b> (${esc(c.email)}) non è ancora firmato dopo 3 giorni: è partito il secondo promemoria.`,
-    `Mandato: ${fmt(m.sentAt)} · aperto ${m.opens} ${m.opens === 1 ? 'volta' : 'volte'}${m.lastOpened ? `, l'ultima ${fmt(m.lastOpened)}` : ''} · promemoria: ${(m.reminders || []).map((r) => `${r.n}° ${fmt(r.at)}`).join(', ')}`,
+    `Mandato: ${fmt(m.sentAt)} · ${m.opens ? `aperto ${m.opens} ${m.opens === 1 ? 'volta' : 'volte'}, l'ultima ${fmt(m.lastOpened)}` : 'mai aperto'} · promemoria: ${(m.reminders || []).map((r) => `${r.n}° ${fmt(r.at)}`).join(', ')}`,
     'Adesso tocca a te: una chiamata o un messaggio. Il messaggio WhatsApp pronto è in Tana.',
     `<a href="${link(c)}">${short(c)}</a>`,
   ];
