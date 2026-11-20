@@ -3125,3 +3125,34 @@ html.px-bf .bf-off.bf-off.bf-off.bf-off { display: none !important; }
 @media (max-width: 599px) { .pbf { gap: 6px 10px; } .pbf__line { flex: 1 1 60%; } .pbf__left { margin-left: 0; width: 100%; } }
 /* the yellow "Black Friday −€1,000" in place of the green "You save" on the discounted rows */
 html .pband .ptable .ptable__price .ptable__save.ptable__bfs, html .pband .ptable tr.is-best .ptable__price .ptable__save.ptable__bfs { background: linear-gradient(180deg, #ffe24a, #ffc400); color: #111; font-weight: 600; box-shadow: inset 0 0 0 1px rgba(17, 17, 17, 0.06); }
+/* Board 20/11, Black Friday styles (html[data-bfs]; none = S1). Only the chosen one stays after Nico picks. */
+.bf-pct, .bf-stk, .bf-end, .bf-bar { display: none; }
+html[data-bfs="S2"] .pband .ptable .ptable__price .ptable__save.ptable__bfs, html[data-bfs="S4"] .pband .ptable .ptable__price .ptable__save.ptable__bfs { display: none !important; }
+/* S2 sticker: a round yellow sticker stuck on the card */
+html[data-bfs="S2"] .pband .ptable tr.bf-row .ptable__price { position: relative; }
+html[data-bfs="S2"] .bf-stk { display: flex; position: absolute; z-index: 3; top: -52px; left: -64px; flex-direction: column; align-items: center; justify-content: center; width: 76px; height: 76px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff07a, #ffd21f 55%, #ffbf00); color: #111; transform: rotate(-10deg); box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.45); text-align: center; line-height: 1.05; pointer-events: none; }
+html[data-bfs="S2"] .bf-stk i { font-style: normal; font-size: 9.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+html[data-bfs="S2"] .bf-stk b { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; margin-top: 2px; }
+html[data-bfs="S2"] .ptable__was.bf-on { text-decoration-color: #e0281b; text-decoration-thickness: 2px; }
+@media (max-width: 899px) { html[data-bfs="S2"] .bf-stk { position: static; order: 4; flex-direction: row; gap: 6px; width: auto; height: auto; margin-top: 8px; padding: 6px 12px; border-radius: 999px; transform: rotate(-4deg); } html[data-bfs="S2"] .bf-stk i { font-size: 9px; } html[data-bfs="S2"] .bf-stk b { font-size: 13px; margin: 0; } }
+/* S3 black card: the discounted rows go black, price in yellow */
+html[data-bfs="S3"] .pband .ptable tbody tr.bf-row { background: #111 !important; background-image: none !important; border-color: #111 !important; color: #fff !important; box-shadow: 0 30px 60px -32px rgba(0, 0, 0, 0.55) !important; }
+html[data-bfs="S3"] .pband .ptable tbody tr.bf-row .ptable__now { color: #ffd21f !important; }
+html[data-bfs="S3"] .pband .ptable tbody tr.bf-row .ptable__was { color: rgba(255, 255, 255, 0.5) !important; }
+html[data-bfs="S3"] .pband .ptable tbody tr.bf-row .ptable__each, html[data-bfs="S3"] .pband .ptable tbody tr.bf-row .ptable__unit { color: rgba(255, 255, 255, 0.7) !important; }
+html[data-bfs="S3"] .pband .ptable tbody tr.bf-row .pinfo { color: #fff; background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.3); }
+html[data-bfs="S3"] .pband .ptable tbody tr.bf-row .ptable__pill { background: #ffd21f !important; color: #111 !important; }
+html[data-bfs="S3"] .pbf { background: #111; color: #fff; } html[data-bfs="S3"] .pbf__tag { background: #ffd21f; color: #111; }
+/* S4 percentage: a big yellow block with the percentage */
+html[data-bfs="S4"] .bf-pct { display: inline-flex; order: 4; align-items: center; justify-content: center; height: 30px; margin-top: 8px; padding: 0 11px; border-radius: 8px; background: linear-gradient(180deg, #ffe24a, #ffc400); color: #111; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+html[data-bfs="S4"] .ptable__was.bf-on { color: var(--ink); text-decoration-color: #e0281b; text-decoration-thickness: 2px; }
+/* S5 highlighter: the new price under a yellow marker, black label, the end date */
+html[data-bfs="S5"] .ptable__now.bf-on { background: linear-gradient(180deg, transparent 56%, #ffd21f 56%, #ffd21f 90%, transparent 90%); padding: 0 0.08em; }
+html[data-bfs="S5"] .pband .ptable tr .ptable__price .ptable__save.ptable__bfs { background: #111; color: #ffd21f; }
+html[data-bfs="S5"] .bf-end { display: block; order: 5; margin-top: 6px; color: var(--mute); font-size: 12px; letter-spacing: 0; font-weight: 400; text-align: right; white-space: nowrap; }
+/* S6 coupon: a black bar on top of the prices and a dashed coupon on each price */
+html[data-bfs="S6"] .bf-bar { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 18px; margin: 0; padding: 12px 16px; background: #111; color: #fff; font-size: var(--fs-small, 15px); text-align: center; }
+html[data-bfs="S6"] .bf-bar > b { color: #ffd21f; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; font-size: 13px; }
+html[data-bfs="S6"] .bf-bar span b { color: #ffd21f; font-variant-numeric: tabular-nums; }
+html[data-bfs="S6"] .pbf { display: none !important; }
+html[data-bfs="S6"] .pband .ptable tr .ptable__price .ptable__save.ptable__bfs { background: #fff8d2; color: #6a4d00; border: 1.5px dashed #d1a400; box-shadow: none; }

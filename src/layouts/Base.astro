@@ -128,6 +128,8 @@ const schema = {
       document.documentElement.classList.add('js');
       // 20/11 (Nico): Black Friday on the prices page until Friday 27/11 at 23:59 Rome (pages.ts bfClock, Pricing.astro)
       if (Date.now() < Date.parse('2026-11-27T23:59:59+01:00')) document.documentElement.classList.add('px-bf');
+      // board 20/11: ?bfs=S1…S6 shows one Black Friday style (kept for the visit), to be removed once Nico picks
+      try { var bs = new URLSearchParams(location.search).get('bfs'); if (bs) sessionStorage.setItem('omnya-bfs', bs); bs = bs || sessionStorage.getItem('omnya-bfs'); if (bs) document.documentElement.setAttribute('data-bfs', bs); } catch (e) {}
       // Safety net: never leave content hidden if the app script fails.
       setTimeout(function () { if (!window.__omApp) document.documentElement.classList.remove('js'); }, 5000);
     </script>

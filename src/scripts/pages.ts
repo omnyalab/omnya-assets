@@ -274,15 +274,16 @@ export function priceZone() {
    so the page goes back to the launch prices without a new deploy. ---------- */
 export const BF_END = Date.parse('2026-11-27T23:59:59+01:00');
 export function bfClock() {
-  const el = document.querySelector<HTMLElement>('[data-bf-clock]');
-  if (!el) return;
-  const u = (el.dataset.u || 'd,h,m,s').split(',');
+  const els = document.querySelectorAll<HTMLElement>('[data-bf-clock]');
+  if (!els.length) return;
+  const u = (els[0].dataset.u || 'd,h,m,s').split(',');
   const p2 = (n: number) => String(n).padStart(2, '0');
   let id = 0;
   const tick = () => {
     const x = Math.max(0, Math.floor((BF_END - Date.now()) / 1000));
     if (!x) { document.documentElement.classList.remove('px-bf'); clearInterval(id); return; }
-    el.textContent = `${Math.floor(x / 86400)}${u[0]} ${p2(Math.floor((x % 86400) / 3600))}${u[1]} ${p2(Math.floor((x % 3600) / 60))}${u[2]} ${p2(x % 60)}${u[3]}`;
+    const t = `${Math.floor(x / 86400)}${u[0]} ${p2(Math.floor((x % 86400) / 3600))}${u[1]} ${p2(Math.floor((x % 3600) / 60))}${u[2]} ${p2(x % 60)}${u[3]}`;
+    els.forEach((el) => (el.textContent = t));
   };
   id = window.setInterval(tick, 1000);
   tick();
