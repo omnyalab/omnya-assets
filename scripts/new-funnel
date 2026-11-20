@@ -9,6 +9,7 @@
 #   scripts/new-funnel judge <id> --base REV --vs REV   rebuild a funnel that exists on the repo as it was at REV and compare
 #   scripts/new-funnel test <id> --url URL [--live]     opt-in → watch → checkout → thanks, Chromium and WebKit, phone and computer
 #   scripts/new-funnel controllo <id>                   the funnel pages in the funnel check (~/Omnya Automazioni), after the push
+#   scripts/new-funnel set-stripe <id> <full|kit|full9|kit19> --prod --price --link   the ids of a product just made on Stripe
 #   scripts/new-funnel dm <id>                          the Instant DM texts of the funnel
 import argparse
 import os
@@ -26,12 +27,22 @@ def say(*a):
     print(*a, flush=True)
 
 
-def write(site, files):
+def write(site, files, force=False):
+    # a page of a funnel made by hand (no "Made by scripts/new-funnel" in it) is never rewritten without --rifai:
+    # the funnels online are not touched unless Nico asks for it (16/11)
+    hand = []
+    for rel, text, why in files:
+        p = os.path.join(site, rel)
+        if rel.startswith(('src/pages/', 'src/styles/optin-', 'src/components/')) and os.path.exists(p) and 'scripts/new-funnel' not in open(p, encoding='utf-8').read():
+            if M.code(open(p, encoding='utf-8').read()) != M.code(text):
+                hand.append(rel)
+    if hand and not force:
+        raise M.Stop('queste pagine sono di un funnel fatto a mano e cambierebbero: ' + ', '.join(hand) + '. Si rifanno solo se Nico lo chiede (--rifai)')
     for rel, text, why in files:
         p = os.path.join(site, rel)
         os.makedirs(os.path.dirname(p), exist_ok=True)
         old = open(p, encoding='utf-8').read() if os.path.exists(p) else None
-        if old == text:
+        if old == text or (old is not None and 'scripts/new-funnel' not in old and M.code(old) == M.code(text)):
             say(f'  = {rel} (uguale)')
             continue
         with open(p, 'w', encoding='utf-8') as f:
@@ -54,7 +65,7 @@ def cmd_make(a):
         for rel, _, why in files:
             say(f'  · {rel} · {why}')
     else:
-        write(site, files)
+        write(site, files, a.rifai)
     for n in notes:
         say('  nota:', n)
     miss = [p for p in M.assets(c) if not os.path.exists(os.path.join(site, p))]
@@ -110,11 +121,32 @@ def node():
 
 def cmd_stripe(a):
     c = cfg(REPO, a.id)
-    say(f"Prodotti Stripe del funnel {c['name']} (da creare dal Chrome di Nico SOLO dopo il suo ok, una tantum, EUR):")
+    say(f"Prodotti Stripe del funnel {c['name']}: li crea Claude dal Chrome di Nico (passi nella skill omnya-funnel), dopo il suo ok sulla board.")
+    say('Ogni link: dashboard.stripe.com/acct_1UXEv3ATIF7pxfqf/payment-links/create · nuovo prodotto col nome qui sotto, nessuna descrizione né immagine,')
+    say('prezzo una tantum in EUR, tutte le opzioni spente, «Dopo il pagamento» = niente pagina di conferma, rimanda a:')
+    say(f"  https://www.omnyalab.com/learn/thanks/full-{c['id']}?session_id={{CHECKOUT_SESSION_ID}}")
     for k, p in (c.get('products') or {}).items():
         state = 'GIÀ FATTO ' + p['link'] if p.get('link') else 'DA CREARE'
-        say(f"  {k:6} «{p['stripe_name']}» €{p['eur']} · dopo il pagamento: https://www.omnyalab.com/learn/thanks/full-{c['id']}?session_id={{CHECKOUT_SESSION_ID}} · {state}")
-    say('Poi scrivi prod_, price_ e il link buy.stripe.com in funnels/%s.json → products, e rilancia make.' % c['id'])
+        say(f"  {k:6} «{p['stripe_name']}» {p['eur'].replace('.', ',')} € · {state}")
+    say(f"Dopo ognuno: scripts/new-funnel set-stripe {c['id']} <full|kit|full9|kit19> --prod prod_… --price price_… --link https://buy.stripe.com/…, poi make.")
+
+
+def cmd_set_stripe(a):
+    """After a product is made on Stripe: its ids go in funnels/<id>.json (read back from the dashboard, never typed by hand)."""
+    import json, re
+    c = cfg(REPO, a.id)
+    p = c['products'].get(a.k)
+    if not p:
+        raise M.Stop(f'nel file non c\'è il prodotto {a.k}')
+    for v, rx in ((a.prod, r'prod_[A-Za-z0-9]+'), (a.price, r'price_[A-Za-z0-9]+'), (a.link, r'https://buy\.stripe\.com/[A-Za-z0-9]+')):
+        if not re.fullmatch(rx, v):
+            raise M.Stop(f'«{v}» non sembra {rx}')
+    with open(c['_path'], encoding='utf-8') as f:
+        raw = json.load(f)
+    raw['products'][a.k].update(prod=a.prod, price=a.price, link=a.link)
+    with open(c['_path'], 'w', encoding='utf-8') as f:
+        f.write(json.dumps(raw, indent=2, ensure_ascii=False) + '\n')
+    say(f"{a.k}: {p['stripe_name']} €{p['eur']} → {a.prod} {a.price} {a.link} (scritto in {os.path.relpath(c['_path'], REPO)})")
 
 
 def cmd_dm(a):
@@ -145,10 +177,11 @@ def cmd_controllo(a):
 def main():
     ap = argparse.ArgumentParser(prog='new-funnel')
     sp = ap.add_subparsers(dest='cmd', required=True)
-    p = sp.add_parser('make'); p.add_argument('id'); p.add_argument('--dry', action='store_true'); p.add_argument('--site'); p.add_argument('--pages-only', action='store_true'); p.set_defaults(f=cmd_make)
+    p = sp.add_parser('make'); p.add_argument('id'); p.add_argument('--dry', action='store_true'); p.add_argument('--site'); p.add_argument('--pages-only', action='store_true'); p.add_argument('--rifai', action='store_true'); p.set_defaults(f=cmd_make)
     p = sp.add_parser('check'); p.add_argument('id'); p.add_argument('--site'); p.set_defaults(f=cmd_check)
     p = sp.add_parser('stripe'); p.add_argument('id'); p.set_defaults(f=cmd_stripe)
     p = sp.add_parser('dm'); p.add_argument('id'); p.set_defaults(f=cmd_dm)
+    p = sp.add_parser('set-stripe'); p.add_argument('id'); p.add_argument('k', choices=['full', 'kit', 'full9', 'kit19']); p.add_argument('--prod', required=True); p.add_argument('--price', required=True); p.add_argument('--link', required=True); p.set_defaults(f=cmd_set_stripe)
     p = sp.add_parser('judge'); p.add_argument('id'); p.add_argument('--base', required=True); p.add_argument('--vs', required=True); p.add_argument('--pages-vs', default='HEAD'); p.set_defaults(f=cmd_judge)
     p = sp.add_parser('test'); p.add_argument('id'); p.add_argument('--url', required=True); p.add_argument('--live', action='store_true'); p.add_argument('--only', default=''); p.set_defaults(f=cmd_test)
     p = sp.add_parser('controllo'); p.add_argument('id'); p.add_argument('--dry', action='store_true'); p.set_defaults(f=cmd_controllo)

@@ -165,6 +165,8 @@ def run(repo, c, url, live, only=''):
                     src = v.get_attribute('src')
                     if src:
                         L.ok(pg.request.get(url + src if src.startswith('/') else src, headers={'Range': 'bytes=0-0'}).status in (200, 206), f'{tag}: video {src}')
+                visa = pg.evaluate("(() => { const e = document.querySelector('.b-visa'); return e ? getComputedStyle(e).backgroundColor : '' })()")
+                L.ok(visa in ('rgb(20, 52, 203)', ''), f'{tag}: logo Visa nel suo blu ({visa or "assente"})')
                 broken = pg.evaluate("[...document.images].filter(i => i.complete && i.naturalWidth === 0 && i.offsetParent).map(i => i.src)")
                 L.ok(not broken, f'{tag}: immagini visibili tutte caricate' + (f' (rotte: {broken[:3]})' if broken else ''))
                 # the choices: the Full starts chosen, the kit changes the price, the Pay button follows

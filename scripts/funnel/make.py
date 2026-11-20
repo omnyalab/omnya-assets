@@ -104,6 +104,23 @@ def watch_slots(c):
     return out
 
 
+# 20/11 (Nico): the card brand marks over the Stripe field keep their real colours on every funnel (the Visa blue
+# #1434cb and the JCB green were moved with the funnel colour on the Build, Stadium and Plane pages)
+BRANDS = {'.b-visa': '.b-visa{background:#1434cb;font-size:8.5px;font-style:italic;letter-spacing:.02em}',
+          '.b-amex': '.b-amex{background:#1f72cd;font-size:7.5px;letter-spacing:.03em}',
+          '.b-jcb b:nth-child(1)': '.b-jcb b:nth-child(1){background:#0b4ea2}',
+          '.b-jcb b:nth-child(2)': '.b-jcb b:nth-child(2){background:#e60012}',
+          '.b-jcb b:nth-child(3)': '.b-jcb b:nth-child(3){background:#009944}',
+          '.b-up': '.b-up{font-size:5.4px;color:#fff;background:linear-gradient(100deg,#e21836 0 34%,#00447c 34% 67%,#007b84 67%)}',
+          '.b-din em': '.b-din em{width:12px;height:12px;border-radius:50%;border:2.4px solid #0079be;box-sizing:border-box}'}
+
+
+def brands(w):
+    for sel, rule in BRANDS.items():
+        w = re.sub(re.escape(sel) + r'\{[^}]*\}', lambda m: rule, w)
+    return w
+
+
 FREE_CARD_GREEN = [   # 18/11 (Nico, plane): the page is blue, so the free guide card is green (make-plane-ry.py)
     ('rgb(41 151 255', 'rgb(34 211 94'), ('#9fd0ff', '#a6f3c0'), ('#2997ff,#5ab8ff', '#1fc458,#3ddc74'), ('#2997ff', '#22d35e')]
 FC_MARK = '/* 18/11 (Nico): the page is all green, so the free guide card has its own colour (f1) */'
@@ -129,7 +146,7 @@ def make_watch(repo, c, ref, build_text):
     rs, ts = watch_slots(ref), watch_slots(c)
     for (a, n), (b, _) in zip(rs, ts):
         w = sub(w, a, b, n, where=f"watch di {ref['id']}")
-    w = colors.watch(w, c['colors'].get('watch'))
+    w = brands(colors.watch(w, c['colors'].get('watch')))
     # the free guide card (Step 1): blue as on the Build page, or green when the page itself is blue
     if FC_MARK in w and c['colors'].get('free_card', 'blue') == 'green':
         a = w.index(FC_MARK)

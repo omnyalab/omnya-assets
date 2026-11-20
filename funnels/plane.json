@@ -174,5 +174,15 @@
     "airline",
     "flight",
     "booking site"
-  ]
+  ],
+  "dm": {
+    "note": "letta da Instant DM il 20/11 (reel «We built the future of booking flights», post 18388076119233560)",
+    "dove": "Quick Automation → Posts (o Next Post Automation se il reel non è ancora uscito) → il reel → Send Link or PDF",
+    "trigger": "All comments",
+    "risposte": "Sent ✈️ check your DMs (even in Requests or General) | Check your DMs ✈️ (even in Requests or General) or tap the link in our bio | Just sent it ✈️ look in your DMs (even in Requests or General)",
+    "benvenuto": "Hey 🙌🏻 your free Plane Guide is ready, tap below and I'll send it right away!",
+    "bottone": "Send me the guide",
+    "messaggio": "Here's your free Plane Guide ✈️ https://www.omnyalab.com/plane\nFollow @omnyalab so you catch the next one 🙌🏻",
+    "ritardo": "10 sec"
+  }
 }
