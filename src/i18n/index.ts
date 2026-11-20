@@ -44,7 +44,7 @@ const en = {
   ctaNote: 'A tower with floors you can click, live in your browser.',
   categories: { luxury: 'Luxury', 'real-estate': 'Real estate' } as Record<Project['category'], string>,
   nav: { work: 'Work', studio: 'Studio', pricing: 'Pricing', learn: 'Learn', contact: 'Contact', home: 'Omnya Lab, home', menu: 'Open the menu', close: 'Close the menu', lang: 'Language' },
-  navNotes: { work: '2026', studio: 'How we work', pricing: 'Pilot from €490', learn: 'PDFs and private lessons', contact: 'Same-day answer' },
+  navNotes: { work: '2026', studio: 'How we work', pricing: 'Try one floor from €490', learn: 'PDFs and private lessons', contact: 'Same-day answer' },
   cursor: { view: 'View', next: 'Next', play: 'Play' },
   transitions: {
     home: ['Omnya', 'Lab'],
@@ -274,15 +274,15 @@ const en = {
     i3Best: 1,
     // 10/11 (Nico): the first paid step, between the €59 pack of guides and the projects from €1,990
     // 20/11 (Nico): the pilot is called by what it is, so people get it at once
-    i3Pilot: ['Try one floor', '€490', 'Credited if you go ahead', 'Your building with one floor you can click, on a link that works on any phone, in 7 days. If you go ahead with a full project within 30 days, the €490 comes off its price.'],
+    i3Pilot: ['Try one floor', '€490', 'Credited if you go ahead', 'Your building with one floor you can click, on a link that works on any phone, in 7 days. If you go ahead with a full project within 30 days, what you paid for it comes off its price.'],
     pilotCta: 'Try one floor first',
     // 20/11 (Nico): Black Friday week, until Sunday 29/11 at 23:59 (Rome): the discount counted from the full price struck
     // (€4,900 → €2,900, €7,900 → €4,900, €2,490 → €1,490; Gulf €3,900 and €6,900) and on the films too. Shown only while html.px-bf is on (Base.astro and
     // app.ts), then the page goes back by itself to the launch prices above.
-    bf: { tag: 'Black Friday', line: 'Interactive 3D and films, up to €3,000 off', left: 'Ends in', units: ['d', 'h', 'm', 's'], rows: ['€1,490', '€2,900', '€4,900'], gulf: ['', '€3,900', '€6,900'], films: ['€690', '€1,050', '€1,790'] },
+    bf: { tag: 'Black Friday', line: 'Interactive 3D and films, up to €3,000 off', left: 'Ends in', units: ['d', 'h', 'm', 's'], rows: ['€1,490', '€2,900', '€4,900'], gulf: ['', '€3,900', '€6,900'], films: ['€690', '€1,050', '€1,790'], pilot: '€390' },
     // December (Nico 20/11): the same prices with a Christmas look, from 1/12 to 31/12
     xm: { tag: 'Christmas', line: 'Christmas prices on interactive 3D and films, up to €3,000 off' },
-    pilotMsg: 'hi nico, i saw the prices and i want to try one floor of my building for €490',
+    pilotMsg: 'hi nico, i saw the prices and i want to try one floor of my building',
     from: 'From',
     tryLive: 'Try it',
     info: 'More about',
@@ -697,7 +697,7 @@ const it: Dict = {
   ctaNote: 'Una torre con i piani da cliccare, dal vivo nel tuo browser.',
   categories: { luxury: 'Lusso', 'real-estate': 'Immobiliare' },
   nav: { work: 'Lavori', studio: 'Studio', pricing: 'Prezzi', learn: 'Impara', contact: 'Contatti', home: 'Omnya Lab, home', menu: 'Apri il menu', close: 'Chiudi il menu', lang: 'Lingua' },
-  navNotes: { work: '2026', studio: 'Come lavoriamo', pricing: 'Pilota da 490 €', learn: 'PDF e lezioni private', contact: 'Rispondiamo in giornata' },
+  navNotes: { work: '2026', studio: 'Come lavoriamo', pricing: 'Prova un piano da 490 €', learn: 'PDF e lezioni private', contact: 'Rispondiamo in giornata' },
   cursor: { view: 'Guarda', next: 'Avanti', play: 'Play' },
   transitions: {
     home: ['Omnya', 'Lab'],
@@ -924,11 +924,11 @@ const it: Dict = {
       ['Versione offline', '+490 €', 'Una versione che gira sullo schermo dell’ufficio vendite senza internet, su richiesta.'],
     ],
     i3Best: 1,
-    i3Pilot: ['Prova un piano', '490 €', 'Scalati se vai avanti', 'Il tuo edificio con un piano cliccabile, in un link che funziona su qualsiasi telefono, in 7 giorni. Se entro 30 giorni vai avanti con un progetto completo, i 490 € vengono scalati dal prezzo.'],
+    i3Pilot: ['Prova un piano', '490 €', 'Scalati se vai avanti', 'Il tuo edificio con un piano cliccabile, in un link che funziona su qualsiasi telefono, in 7 giorni. Se entro 30 giorni vai avanti con un progetto completo, quello che hai pagato viene scalato dal prezzo.'],
     pilotCta: 'Prova prima un piano',
-    bf: { tag: 'Black Friday', line: '3D interattivi e video, fino a 3.000 € in meno', left: 'Finisce tra', units: ['g', 'h', 'm', 's'], rows: ['1.490 €', '2.900 €', '4.900 €'], gulf: ['', '3.900 €', '6.900 €'], films: ['690 €', '1.050 €', '1.790 €'] },
+    bf: { tag: 'Black Friday', line: '3D interattivi e video, fino a 3.000 € in meno', left: 'Finisce tra', units: ['g', 'h', 'm', 's'], rows: ['1.490 €', '2.900 €', '4.900 €'], gulf: ['', '3.900 €', '6.900 €'], films: ['690 €', '1.050 €', '1.790 €'], pilot: '390 €' },
     xm: { tag: 'Natale', line: 'Prezzi di Natale su 3D interattivi e video, fino a 3.000 € in meno' },
-    pilotMsg: 'ciao nico, ho visto i prezzi e voglio provare un piano del mio edificio a 490 €',
+    pilotMsg: 'ciao nico, ho visto i prezzi e voglio provare un piano del mio edificio',
     from: 'Da',
     tryLive: 'Provalo',
     info: 'Dettagli su',

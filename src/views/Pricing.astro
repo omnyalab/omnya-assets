@@ -59,7 +59,7 @@ const i3Media: Media[] = [
 const filmMedia: Media[] = ['30', '60', '90'].map((n) => ({ video: `/prices/film-${n}.mp4`, poster: `/prices/film-${n}.webp` }));
 const packMedia: Media[] = ['02_villa_cape_town', '01_penthouse_dubai', '05_corfu_resort'].map((id) => ({ img: byId(id)?.gallery[0]?.mobile }));
 const infos: { id: string; name: string; price: string; text: string; media?: Media; gulf?: string; bf?: string; bfGulf?: string }[] = [
-  { id: 'i3p', name: P.i3Pilot[0], price: P.i3Pilot[1], text: P.i3Pilot[3], media: i3Media[1] },
+  { id: 'i3p', name: P.i3Pilot[0], price: P.i3Pilot[1], text: P.i3Pilot[3], media: i3Media[1], bf: P.bf.pilot },
   ...P.i3Rows.map(([name, was, price, text], i) => ({ id: `i3-${i}`, name, price, text, media: i3Media[i], gulf: gulfRows.includes(i) ? was : undefined, bf: P.bf.rows[i], bfGulf: P.bf.gulf[i] || undefined })),
   ...P.i3Extras.map(([name, price, text], i) => ({ id: `i3x-${i}`, name, price, text })),
   ...P.filmsRows.map(([len, price, use], i) => ({ id: `film-${i}`, name: `${len} ${P.filmsUnit}`, price, text: `${use}. ${P.filmsNoteShort}`, media: filmMedia[i], bf: P.bf.films[i] })),
@@ -87,12 +87,16 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
         <tr>{P.i3Cols.map((c) => <th scope="col">{c}</th>)}</tr>
       </thead>
       <tbody>
-        <tr class="ptable__pilot">
+        <tr class="ptable__pilot bf-row">
           <th scope="row" class="ptable__q">
             <span class="ptable__qn">{P.i3Pilot[0]}<button type="button" class="pinfo" data-info="i3p" aria-label={`${P.info} ${P.i3Pilot[0]}`}><span aria-hidden="true">i</span></button></span>
           </th>
           <td class="ptable__price">
-            <span class="ptable__now">{P.i3Pilot[1]}</span>
+            {/* 20/11 (Nico): Try one floor at €390 during Black Friday and Christmas */}
+            <s class="ptable__was bf-on">{P.i3Pilot[1]}</s>
+            <span class="ptable__now bf-off">{P.i3Pilot[1]}</span>
+            <span class="ptable__now bf-on">{P.bf.pilot}</span>
+            <span class="ptable__save ptable__bfs bf-on"><span class="t-bf">{P.bf.tag}</span><span class="t-xm">{P.xm.tag}</span>&nbsp;{bfCut(P.i3Pilot[1], P.bf.pilot)}</span>
             <span class="ptable__save">{P.i3Pilot[2]}</span>
           </td>
         </tr>
