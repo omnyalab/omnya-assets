@@ -5,7 +5,7 @@
 import { unsubUrl } from './newsletter.js';
 
 export const LAUNCH = [
-  { id: 'e1', at: '2026-11-23T17:00:00Z', list: 'consent' },
+  { id: 'e1', at: '2026-11-20T17:00:00Z', list: 'consent' }, // 20/11 Nico: «oggi si inizia, mai domani» (was Monday 23/11)
   { id: 'e2', at: '2026-11-25T17:00:00Z', list: 'consent' },
   { id: 'e3', at: '2026-11-27T17:00:00Z', list: 'club' },
   { id: 'e4', at: '2026-11-28T17:00:00Z', list: 'consent', seats: true },

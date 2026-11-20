@@ -176,8 +176,56 @@ async function launchList(m) {
   return emails.map((e) => ({ email: e, name: rows.get(e) }));
 }
 
+// one launch mail to a list, 100 per Resend batch request, each person once, until the time budget runs out
+async function sendLaunch(m, people, seatsLeft) {
+  const sentKey = `${LK}${m.id}:sent`;
+  const already = people.length ? await pipe(people.map((p) => ['SISMEMBER', sentKey, p.email])) : [];
+  const todo = people.filter((_, i) => Number(already[i]) !== 1);
+  let sent = 0;
+  const t0 = Date.now();
+  for (let i = 0; i < todo.length && Date.now() - t0 < 35_000; i += 100) {
+    const chunk = todo.slice(i, i + 100);
+    const mails = chunk.map((p) => { const r = renderLaunch(m.id, p, { seatsLeft }); return { from: 'Nico <info@omnyalab.com>', to: [p.email], reply_to: host.email, subject: r.subject, html: r.html, text: r.text, headers: r.headers }; });
+    await pipe([['SADD', sentKey, ...chunk.map((p) => p.email)], ['EXPIRE', sentKey, 40 * 86400]]); // before the request: never twice
+    const res = await fetch('https://api.resend.com/emails/batch', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json', 'Idempotency-Key': `${m.id}-${chunk[0].email}-${chunk.length}` },
+      body: JSON.stringify(mails),
+    });
+    if (!res.ok) {
+      const err = (await res.text()).slice(0, 300);
+      await redis('SREM', sentKey, ...chunk.map((p) => p.email));
+      console.error('[launch]', m.id, res.status, err);
+      await redis('SET', `${LK}${m.id}:error`, `${res.status} ${err}`, 'EX', 20 * 86400);
+      return { sent, error: res.status };
+    }
+    if (m.id === 'e1') await pipe(chunk.map((p) => ['HSET', `${LK}e1:v`, p.email, variantOf(p.email)]));
+    sent += chunk.length;
+    await new Promise((r) => setTimeout(r, 600)); // Resend: 2 requests a second
+  }
+  return { sent, left: todo.length - sent };
+}
+
+// the people kept for the day after (they had a note of the series on the launch day), sent 24 hours later
+async function launchLater(now) {
+  for (const m of LAUNCH) {
+    if (now < Date.parse(m.at) + DAY || now > Date.parse(m.at) + 3 * DAY) continue;
+    const raw = await redis('HGETALL', `${LK}${m.id}:later`);
+    if (!raw?.length) continue;
+    const people = [];
+    for (let i = 0; i < raw.length; i += 2) people.push({ email: raw[i], name: raw[i + 1] });
+    const offs = await pipe(people.map((p) => ['SISMEMBER', OFF_KEY, p.email]));
+    const r = await sendLaunch(m, people.filter((_, i) => Number(offs[i]) !== 1), undefined);
+    if (!r.error && !r.left) await redis('DEL', `${LK}${m.id}:later`);
+    return { later: m.id, ...r };
+  }
+  return null;
+}
+
 async function launchTick(now) {
   if ((await redis('GET', `${LK}on`)) !== '1') return null;
+  const late = await launchLater(now).catch((e) => ({ laterError: String(e.message || e) }));
+  if (late) console.log('[launch] later', JSON.stringify(late));
   const d = dayOf(now);
   const m = LAUNCH.find((x) => x.at.slice(0, 10) === d);
   if (!m || (await redis('GET', `${LK}${m.id}:done`))) return null;
@@ -198,31 +246,18 @@ async function launchTick(now) {
       if (!r || typeof r.left !== 'number') return { launch: m.id, error: 'seats not readable, retry next tick' };
       seatsLeft = r.left;
     }
-    const sentKey = `${LK}${m.id}:sent`;
-    const already = await pipe(people.map((p) => ['SISMEMBER', sentKey, p.email]));
-    const todo = people.filter((_, i) => Number(already[i]) !== 1);
-    let sent = 0;
-    const t0 = Date.now();
-    for (let i = 0; i < todo.length && Date.now() - t0 < 35_000; i += 100) {
-      const chunk = todo.slice(i, i + 100);
-      const mails = chunk.map((p) => { const r = renderLaunch(m.id, p, { seatsLeft }); return { from: 'Nico <info@omnyalab.com>', to: [p.email], reply_to: host.email, subject: r.subject, html: r.html, text: r.text, headers: r.headers }; });
-      await pipe([['SADD', sentKey, ...chunk.map((p) => p.email)], ['EXPIRE', sentKey, 40 * 86400]]); // before the request: never twice
-      const res = await fetch('https://api.resend.com/emails/batch', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json', 'Idempotency-Key': `${m.id}-${chunk[0].email}-${chunk.length}` },
-        body: JSON.stringify(mails),
-      });
-      if (!res.ok) {
-        const err = (await res.text()).slice(0, 300);
-        await redis('SREM', sentKey, ...chunk.map((p) => p.email));
-        console.error('[launch]', m.id, res.status, err);
-        await redis('SET', `${LK}${m.id}:error`, `${res.status} ${err}`, 'EX', 20 * 86400);
-        return { launch: m.id, sent, error: res.status };
-      }
-      if (m.id === 'e1') await pipe(chunk.map((p) => ['HSET', `${LK}e1:v`, p.email, variantOf(p.email)]));
-      sent += chunk.length;
-      await new Promise((r) => setTimeout(r, 600)); // Resend: 2 requests a second
+    // who already got a note of the series today gets this one tomorrow at the same hour (never two of ours in one day)
+    const pp = await redis('HGETALL', `${K}people`);
+    const mailedToday = new Set();
+    for (let i = 0; i < (pp?.length || 0); i += 2) { try { const s = JSON.parse(pp[i + 1]).sent || []; if (s.some((t) => dayOf(t) === d)) mailedToday.add(pp[i]); } catch {} }
+    const later = people.filter((p) => mailedToday.has(p.email));
+    if (later.length) {
+      const tomorrow = `omnya:mail:day:${dayOf(now + DAY)}`;
+      await pipe([...later.flatMap((p) => [['HSET', `${LK}${m.id}:later`, p.email, p.name || '']]), ...later.map((p) => ['SADD', tomorrow, p.email]), ['EXPIRE', tomorrow, 3 * 86400], ['EXPIRE', `${LK}${m.id}:later`, 20 * 86400]]);
     }
+    const r = await sendLaunch(m, people.filter((p) => !mailedToday.has(p.email)), seatsLeft);
+    if (r.error) return { launch: m.id, ...r };
+    const sent = r.sent, todo = { length: r.sent + r.left };
     const left = todo.length - sent;
     if (!left) await redis('SET', `${LK}${m.id}:done`, String(Date.now()), 'EX', 40 * 86400);
     return { launch: m.id, sent, left };
@@ -400,6 +435,7 @@ export async function GET(request) {
   }
   if (q.get('on') === '1' || q.get('on') === '0') await redis('SET', `${K}on`, q.get('on'));
   if (q.get('cap')) await redis('SET', `${K}cap`, String(Math.max(0, Math.min(1000, Number(q.get('cap')) || 0))));
+  if (q.get('replan') === '1') await redis('DEL', `${K}plan:${dayOf(Date.now())}`); // today's starts again from the cap (20/11: Pro came in the afternoon)
   if (q.get('launchon') === '1' || q.get('launchon') === '0') await redis('SET', `${LK}on`, q.get('launchon'));
   if (q.get('clubextra')) { // email:Name,email:Name — the club list people who asked on WhatsApp
     for (const pair of String(q.get('clubextra')).split(',')) { const [e, n] = pair.split(':'); if (/@/.test(e || '')) await redis('HSET', `${LK}club:extra`, e.trim().toLowerCase(), (n || '').trim()); }
