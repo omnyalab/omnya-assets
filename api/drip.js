@@ -6,7 +6,8 @@
 // GET ?o=<token>     the 1×1 picture: counts the open of mail N.
 // GET ?key=IG_ADMIN_KEY&status=1 | &on=1|0 | &cap=N | &future=1|0 | &quiet=YYYY-MM-DD,… | &unquiet=… | &report=1
 //     | &loadold=1 (the people we already had into pool:old) | &oldday=N (how many of them start a day)
-//     | &test=<email>&step=1..4[&free=free-stadium][&club=soon|open|closed][&live=1 with the P.S.]
+//     | &launch=1 (THE 3D FUTURE launch mails) | &launchon=1|0 | &ltest=e1..e7[&to=][&as=<email for the A/B half>]
+//     | &clubextra=email:Name,… | &test=<email>&step=1..4[&free=free-stadium][&club=soon|open|closed][&live=1 with the P.S.]
 //
 // The rules, decided with Nico on 20/11:
 // - Resend only (never info@'s Microsoft 365 box), at most omnya:drip:cap a day (default DRIP_CAP or 80): Resend free sends
@@ -25,6 +26,7 @@ import { redis, hasStore, storeDown } from './_lib/store.js';
 import { OFF_KEY } from './_lib/newsletter.js';
 import { sendResend, hasResend } from './_lib/mail.js';
 import { host } from './_lib/config.js';
+import { LAUNCH, renderLaunch, variantOf } from './_lib/launch.js';
 import { renderNote, readToken, markMailed, OFFSETS, GUIDES, TARGETS, SITE, STEPS } from './_lib/drip.js';
 
 const K = 'omnya:drip:';
@@ -136,6 +138,99 @@ async function loadOld(now) {
   return cmds.length / 2;
 }
 
+// ---- THE 3D FUTURE launch mails (api/_lib/launch.js), sent from here on Nico's «sì, le mandi tu» (20/11) ----
+// Off until omnya:launch:on = 1 (set once Resend Pro is active: 1,970 at a time don't fit the free 100 a day).
+// On the UTC day of a mail, its people go into omnya:mail:day first thing, so the series leaves them alone that day;
+// at 17:00 UTC it goes out through Resend's batch API, 100 per request, each person once (omnya:launch:<id>:sent),
+// with a lock so two ticks never send the same batch, and it carries on at the next tick if time runs out.
+const LK = 'omnya:launch:';
+const isTest = (o, email) => /^check$/i.test(String(o.name || '').trim()) || /@omnyalab\.com$/i.test(email);
+
+async function launchList(m) {
+  const rows = new Map(); // email → name, the latest sign-up first
+  for (let page = 0; page < 50; page++) {
+    const raw = await redis('LRANGE', 'omnya:optin', page * 1000, page * 1000 + 999);
+    if (!raw?.length) break;
+    for (const r of raw) {
+      let o; try { o = JSON.parse(r); } catch { continue; }
+      const email = String(o.email || '').trim().toLowerCase();
+      if (!email || rows.has(email) || isTest(o, email)) continue;
+      const fits = m.list === 'club' ? o.free === 'waitlist-3d-future' : !!o.consent?.newsletter && o.free !== 'waitlist-3d-future';
+      if (fits) rows.set(email, o.name);
+    }
+    if (raw.length < 1000) break;
+  }
+  if (m.list === 'club') { // the people who asked on WhatsApp (Nico's CSV), loaded with &clubextra=
+    const ex = await redis('HGETALL', `${LK}club:extra`);
+    for (let i = 0; i < (ex?.length || 0); i += 2) if (!rows.has(ex[i])) rows.set(ex[i], ex[i + 1]);
+  }
+  let emails = [...rows.keys()];
+  if (!emails.length) return [];
+  const checks = await pipe(emails.flatMap((e) => [['SISMEMBER', OFF_KEY, e], ...(m.seats ? [['HGET', 'omnya:club:members', e]] : [])]));
+  const w = m.seats ? 2 : 1;
+  emails = emails.filter((e, i) => {
+    if (Number(checks[i * w]) === 1) return false; // unsubscribed
+    if (m.seats && checks[i * w + 1]) { try { if (JSON.parse(checks[i * w + 1]).status !== 'canceled') return false; } catch { return false; } } // already inside the club
+    return true;
+  });
+  return emails.map((e) => ({ email: e, name: rows.get(e) }));
+}
+
+async function launchTick(now) {
+  if ((await redis('GET', `${LK}on`)) !== '1') return null;
+  const d = dayOf(now);
+  const m = LAUNCH.find((x) => x.at.slice(0, 10) === d);
+  if (!m || (await redis('GET', `${LK}${m.id}:done`))) return null;
+  if (Number(await redis('SET', `${LK}lock`, String(now), 'NX', 'EX', 55)) !== 1 && (await redis('GET', `${LK}lock`)) !== String(now)) return { launch: m.id, busy: true };
+  try {
+    const marked = await redis('GET', `${LK}${m.id}:marked`);
+    if (marked && now < Date.parse(m.at)) return { launch: m.id, waiting: m.at, people: Number(marked) }; // marked, not yet time
+    const people = await launchList(m);
+    if (!marked) { // first tick of the day: the series leaves these people alone today
+      const day = `omnya:mail:day:${d}`;
+      await pipe([...people.map((p) => ['SADD', day, p.email]), ['EXPIRE', day, 3 * 86400]]);
+      await redis('SET', `${LK}${m.id}:marked`, String(people.length), 'EX', 20 * 86400);
+    }
+    if (now < Date.parse(m.at)) return { launch: m.id, waiting: m.at, people: people.length };
+    let seatsLeft;
+    if (m.seats) {
+      const r = await fetch(`${SITE}/api/club/seats`, { headers: { 'Cache-Control': 'no-cache' } }).then((x) => x.json()).catch(() => null);
+      if (!r || typeof r.left !== 'number') return { launch: m.id, error: 'seats not readable, retry next tick' };
+      seatsLeft = r.left;
+    }
+    const sentKey = `${LK}${m.id}:sent`;
+    const already = await pipe(people.map((p) => ['SISMEMBER', sentKey, p.email]));
+    const todo = people.filter((_, i) => Number(already[i]) !== 1);
+    let sent = 0;
+    const t0 = Date.now();
+    for (let i = 0; i < todo.length && Date.now() - t0 < 35_000; i += 100) {
+      const chunk = todo.slice(i, i + 100);
+      const mails = chunk.map((p) => { const r = renderLaunch(m.id, p, { seatsLeft }); return { from: 'Nico <info@omnyalab.com>', to: [p.email], reply_to: host.email, subject: r.subject, html: r.html, text: r.text, headers: r.headers }; });
+      await pipe([['SADD', sentKey, ...chunk.map((p) => p.email)], ['EXPIRE', sentKey, 40 * 86400]]); // before the request: never twice
+      const res = await fetch('https://api.resend.com/emails/batch', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json', 'Idempotency-Key': `${m.id}-${chunk[0].email}-${chunk.length}` },
+        body: JSON.stringify(mails),
+      });
+      if (!res.ok) {
+        const err = (await res.text()).slice(0, 300);
+        await redis('SREM', sentKey, ...chunk.map((p) => p.email));
+        console.error('[launch]', m.id, res.status, err);
+        await redis('SET', `${LK}${m.id}:error`, `${res.status} ${err}`, 'EX', 20 * 86400);
+        return { launch: m.id, sent, error: res.status };
+      }
+      if (m.id === 'e1') await pipe(chunk.map((p) => ['HSET', `${LK}e1:v`, p.email, variantOf(p.email)]));
+      sent += chunk.length;
+      await new Promise((r) => setTimeout(r, 600)); // Resend: 2 requests a second
+    }
+    const left = todo.length - sent;
+    if (!left) await redis('SET', `${LK}${m.id}:done`, String(Date.now()), 'EX', 40 * 86400);
+    return { launch: m.id, sent, left };
+  } finally {
+    await redis('DEL', `${LK}lock`);
+  }
+}
+
 // ---- 2. send one note; false = stop the tick (quota) ----
 async function sendStep(email, person, step, now) {
   const live = (await redis('GET', `${K}future`)) === '1'; // the club page is online: the P.S. opens its door
@@ -158,11 +253,14 @@ async function sendStep(email, person, step, now) {
 async function tick() {
   if (!hasStore() || storeDown()) return { skipped: 'store' }; // on the memory copy "already sent" would be forgotten
   const now = Date.now();
+  let launch = null;
+  try { launch = await launchTick(now); } catch (e) { console.error('[launch] tick', e); launch = { error: String(e.message || e) }; }
   // while it is off nothing is read, so the comparison group only holds people of the days the series ran
-  if ((await redis('GET', `${K}on`)) !== '1' || !hasResend()) return { ok: true, off: true };
+  if ((await redis('GET', `${K}on`)) !== '1' || !hasResend()) return { ok: true, off: true, launch };
   const got = await ingest(now);
   await prune(now);
   const d = dayOf(now);
+  if (launch) console.log('[launch]', JSON.stringify(launch));
   if (await redis('GET', `${K}stop:${d}`)) return { ok: true, stopped: d, got };
   // THE 3D FUTURE's launch days (UTC dates in omnya:drip:quiet): the series sends nothing, its notes move to the next day
   if (Number(await redis('SISMEMBER', `${K}quiet`, d)) === 1) return { ok: true, quiet: d, got };
@@ -302,6 +400,23 @@ export async function GET(request) {
   }
   if (q.get('on') === '1' || q.get('on') === '0') await redis('SET', `${K}on`, q.get('on'));
   if (q.get('cap')) await redis('SET', `${K}cap`, String(Math.max(0, Math.min(1000, Number(q.get('cap')) || 0))));
+  if (q.get('launchon') === '1' || q.get('launchon') === '0') await redis('SET', `${LK}on`, q.get('launchon'));
+  if (q.get('clubextra')) { // email:Name,email:Name — the club list people who asked on WhatsApp
+    for (const pair of String(q.get('clubextra')).split(',')) { const [e, n] = pair.split(':'); if (/@/.test(e || '')) await redis('HSET', `${LK}club:extra`, e.trim().toLowerCase(), (n || '').trim()); }
+  }
+  if (q.get('ltest')) { // one launch mail to one address (Nico's), outside the counts
+    const m = LAUNCH.find((x) => x.id === q.get('ltest'));
+    if (!m) return json({ error: 'ltest = e1..e7' }, 400);
+    const to = String(q.get('to') || host.email).trim().toLowerCase();
+    const r = renderLaunch(m.id, { email: q.get('as') || to, name: q.get('name') || 'Nico' }, { seatsLeft: Number(q.get('seats')) || 100 });
+    await sendResend({ to, from: 'Nico <info@omnyalab.com>', replyTo: host.email, subject: r.subject, html: r.html, text: r.text, headers: r.headers });
+    return json({ ok: true, sent: r.subject, variant: r.variant, to });
+  }
+  if (q.get('launch') === '1') { // who would get each mail today, and what went
+    const out = { on: (await redis('GET', `${LK}on`)) === '1', mails: [] };
+    for (const m of LAUNCH) out.mails.push({ ...m, people: (await launchList(m)).length, sent: Number(await redis('SCARD', `${LK}${m.id}:sent`)), done: !!(await redis('GET', `${LK}${m.id}:done`)), error: await redis('GET', `${LK}${m.id}:error`) });
+    return json(out);
+  }
   if (q.get('loadold') === '1') return json({ ok: true, old: await loadOld(Date.now()) });
   if (q.get('all') === '1' || q.get('all') === '0') await redis('SET', `${K}all`, q.get('all'));
   if (q.get('oldday')) await redis('SET', `${K}oldday`, String(Math.max(0, Math.min(1000, Number(q.get('oldday')) || 0))));
