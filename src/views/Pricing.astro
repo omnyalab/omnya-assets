@@ -103,10 +103,11 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
                 <s class="ptable__was bf-off" data-geo-off={gulfRows.includes(i) ? 'gulf' : undefined}>{was}</s>
                 <span class="ptable__now bf-off" data-geo-gulf={gulfRows.includes(i) ? was : undefined}>{price}</span>
                 <span class="ptable__save bf-off" data-geo-off={gulfRows.includes(i) ? 'gulf' : undefined}>{P.save} {money(num(was) - num(price))}</span>
-                {/* 20/11 Black Friday: the full price struck in every zone, the Black Friday price, what you save */}
-                <s class="ptable__was bf-on">{was}</s>
+                {/* 20/11 Black Friday (Nico: "it must look like a Black Friday price, not the same as always"): yesterday's
+                    price struck (the launch price, in the Gulf the full one), the new price, a yellow "Black Friday −€1,000" */}
+                <s class="ptable__was bf-on" data-geo-gulf={gulfRows.includes(i) ? was : undefined}>{price}</s>
                 <span class="ptable__now bf-on" data-geo-gulf={gulfRows.includes(i) ? P.bf.gulf[i] : undefined}>{P.bf.rows[i]}</span>
-                <span class="ptable__save bf-on" data-geo-gulf={gulfRows.includes(i) ? `${P.save} ${money(num(was) - num(P.bf.gulf[i]))}` : undefined}>{P.save} {money(num(was) - num(P.bf.rows[i]))}</span>
+                <span class="ptable__save ptable__bfs bf-on">{P.bf.off[i]}</span>
               </td>
             </tr>
           ))

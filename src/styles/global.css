@@ -3123,3 +3123,5 @@ html.px-bf .bf-off.bf-off.bf-off.bf-off { display: none !important; }
 .pbf__left { margin-left: auto; white-space: nowrap; }
 .pbf__left b { font-weight: 600; font-variant-numeric: tabular-nums; }
 @media (max-width: 599px) { .pbf { gap: 6px 10px; } .pbf__line { flex: 1 1 60%; } .pbf__left { margin-left: 0; width: 100%; } }
+/* the yellow "Black Friday −€1,000" in place of the green "You save" on the discounted rows */
+html .pband .ptable .ptable__price .ptable__save.ptable__bfs, html .pband .ptable tr.is-best .ptable__price .ptable__save.ptable__bfs { background: linear-gradient(180deg, #ffe24a, #ffc400); color: #111; font-weight: 600; box-shadow: inset 0 0 0 1px rgba(17, 17, 17, 0.06); }

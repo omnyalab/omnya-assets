@@ -277,7 +277,7 @@ const en = {
     // 20/11 (Nico): Black Friday week, until Friday 27/11 at 23:59 (Rome): €1,000 off Choose your floor and Full tower
     // launch, €500 off the house (the Gulf too, from its own prices). Shown only while html.px-bf is on (Base.astro and
     // app.ts), then the page goes back by itself to the launch prices above.
-    bf: { tag: 'Black Friday', line: '€1,000 off interactive 3D, €500 off the house', left: 'Ends in', units: ['d', 'h', 'm', 's'], rows: ['€1,490', '€2,900', '€4,900'], gulf: ['', '€3,900', '€6,900'] },
+    bf: { tag: 'Black Friday', line: '€1,000 off interactive 3D, €500 off the house', left: 'Ends in', units: ['d', 'h', 'm', 's'], rows: ['€1,490', '€2,900', '€4,900'], gulf: ['', '€3,900', '€6,900'], off: ['Black Friday −€500', 'Black Friday −€1,000', 'Black Friday −€1,000'] },
     pilotMsg: 'hi nico, i saw the prices and i want the €490 pilot for my building',
     from: 'From',
     tryLive: 'Try it',
@@ -922,7 +922,7 @@ const it: Dict = {
     i3Best: 1,
     i3Pilot: ['Pilota', '490 €', 'Scalati se vai avanti', 'Il tuo edificio con un piano cliccabile, in un link che funziona su qualsiasi telefono, in 7 giorni. Se entro 30 giorni vai avanti con un progetto completo, i 490 € vengono scalati dal prezzo.'],
     pilotCta: 'Parti dal pilota',
-    bf: { tag: 'Black Friday', line: '1.000 € in meno sui 3D interattivi, 500 € sulla casa', left: 'Finisce tra', units: ['g', 'h', 'm', 's'], rows: ['1.490 €', '2.900 €', '4.900 €'], gulf: ['', '3.900 €', '6.900 €'] },
+    bf: { tag: 'Black Friday', line: '1.000 € in meno sui 3D interattivi, 500 € sulla casa', left: 'Finisce tra', units: ['g', 'h', 'm', 's'], rows: ['1.490 €', '2.900 €', '4.900 €'], gulf: ['', '3.900 €', '6.900 €'], off: ['Black Friday −500 €', 'Black Friday −1.000 €', 'Black Friday −1.000 €'] },
     pilotMsg: 'ciao nico, ho visto i prezzi e voglio il pilota da 490 € per il mio edificio',
     from: 'Da',
     tryLive: 'Provalo',
