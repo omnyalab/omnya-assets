@@ -283,10 +283,11 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
         )}
         <p class="pinfo-pop__name"><span>{f.name}</span><span class:list={[f.bf && 'bf-off']} data-geo-gulf={f.gulf}>{f.price}</span>{f.bf && <span class="bf-on" data-geo-gulf={f.bfGulf}>{f.bf}</span>}</p>
         <p class="pinfo-pop__text">{f.text}</p>
+        <a class="btn btn--sm btn--fill pinfo-pop__wa" href="https://wa.me/393792220465" target="_blank" rel="noopener" data-wa-name={f.name}>{P.askCta} <Arrow /></a>
       </template>
     ))
   }
-  <div class="pinfo-pop" role="dialog" hidden data-info-pop>
+  <div class="pinfo-pop" role="dialog" hidden data-info-pop data-wa-msg={P.askMsg}>
     <button type="button" class="pinfo-pop__x" aria-label={P.close} data-info-close><span aria-hidden="true">×</span></button>
     <div data-info-body></div>
   </div>

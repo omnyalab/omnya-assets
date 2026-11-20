@@ -3158,3 +3158,8 @@ html.px-xmas .pbf > * { position: relative; z-index: 2; }
 /* 900-1279 px: the project names wrap and shrink a little, so the price never sits on them (was already overlapping on the live site) */
 @media (min-width: 900px) and (max-width: 1279px) { .pband .ptable--i3 .ptable__q { min-width: 0; } .pband .ptable--i3 .ptable__qn { white-space: normal; font-size: clamp(28px, 3.3vw, 40px); line-height: 1.05; } .pband .ptable--i3 .ptable__price .ptable__now { font-size: clamp(30px, 3.6vw, 46px); } }
 @media (max-width: 599px) { html .pband .ptable--i3 tr .ptable__price .ptable__save.ptable__bfs { margin-top: 12px !important; } }
+/* 20/11 (Nico): every price card opens its info card, which ends with a WhatsApp button and a message for that card */
+.pband .ptable tbody tr.has-info { cursor: pointer; }
+.pinfo-pop__wa { margin: 14px 10px 6px; }
+/* on phones the info card sits above the cookie bar while that bar is up, so its WhatsApp button is never hidden */
+@media (max-width: 899px) { html.ocb-on .pinfo-pop { bottom: calc(var(--ocb, 0px) + 12px + env(safe-area-inset-bottom, 0px)); } }

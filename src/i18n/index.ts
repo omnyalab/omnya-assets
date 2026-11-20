@@ -283,6 +283,9 @@ const en = {
     // December (Nico 20/11): the same prices with a Christmas look, from 1/12 to 31/12
     xm: { tag: 'Christmas', line: 'Christmas prices on interactive 3D and films, up to €3,000 off' },
     pilotMsg: 'hi nico, i saw the prices and i want to try one floor of my building',
+    // 20/11 (Nico): every card opens its info, with a WhatsApp button and a message already written for that card
+    askCta: 'Ask about it on WhatsApp',
+    askMsg: 'hi nico, i saw {name} at {price} on your prices, can you tell me more for my project?',
     from: 'From',
     tryLive: 'Try it',
     info: 'More about',
@@ -930,6 +933,8 @@ const it: Dict = {
     bf: { tag: 'Black Friday', line: '3D interattivi e video, fino a 3.000 € in meno', left: 'Finisce tra', units: ['g', 'h', 'm', 's'], rows: ['1.490 €', '2.900 €', '4.900 €'], gulf: ['', '3.900 €', '6.900 €'], films: ['690 €', '1.050 €', '1.790 €'], pilot: '390 €' },
     xm: { tag: 'Natale', line: 'Prezzi di Natale su 3D interattivi e video, fino a 3.000 € in meno' },
     pilotMsg: 'ciao nico, ho visto i prezzi e voglio provare un piano del mio edificio',
+    askCta: 'Chiedi info su WhatsApp',
+    askMsg: 'ciao nico, ho visto {name} a {price} nel listino, mi dai più info per il mio progetto?',
     from: 'Da',
     tryLive: 'Provalo',
     info: 'Dettagli su',

@@ -364,6 +364,13 @@ export function priceInfo() {
     stopAll();
     body.replaceChildren(...content);
     applyZone(body); // a card made before the zone was known gets its price here
+    // 20/11 (Nico): the WhatsApp button carries a message written for this card, with the price the visitor sees now
+    const wa = body.querySelector<HTMLAnchorElement>('[data-wa-name]');
+    if (wa) {
+      const shown = [...body.querySelectorAll<HTMLElement>('.pinfo-pop__name > span:not(:first-child)')].find((e) => getComputedStyle(e).display !== 'none');
+      const msg = (pop.dataset.waMsg || '').replace('{name}', wa.dataset.waName || '').replace('{price}', (shown?.textContent || '').trim());
+      wa.href = `https://wa.me/393792220465?text=${encodeURIComponent(msg)}`;
+    }
     pop.setAttribute('aria-label', b.getAttribute('aria-label') || '');
     pop.hidden = false;
     open = b;
@@ -375,6 +382,12 @@ export function priceInfo() {
   btns.forEach((b) => {
     b.setAttribute('aria-expanded', 'false');
     b.addEventListener('click', (e) => { e.stopPropagation(); open === b ? close() : show(b); });
+    // 20/11 (Nico): the whole card opens its info too, on phones as on desktop
+    const row = b.closest('tr');
+    if (row) {
+      row.classList.add('has-info');
+      row.addEventListener('click', (e) => { if ((e.target as Element).closest('a, button')) return; e.stopPropagation(); open === b ? close() : show(b); });
+    }
     if (fine) {
       b.addEventListener('mouseenter', () => { window.clearTimeout(leave); show(b); });
       b.addEventListener('mouseleave', () => { leave = window.setTimeout(close, 280); });
