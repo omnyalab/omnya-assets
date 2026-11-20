@@ -220,6 +220,7 @@ export async function GET(request) {
   }
   if (q.get('on') === '1' || q.get('on') === '0') await redis('SET', `${K}on`, q.get('on'));
   if (q.get('cap')) await redis('SET', `${K}cap`, String(Math.max(0, Math.min(1000, Number(q.get('cap')) || 0))));
+  if (q.get('resetstat') === '1') { await redis('DEL', `${K}stat`); await redis('DEL', `${K}ev`); } // the counts of the test mails
   if (q.get('future') === '1' || q.get('future') === '0') await redis('SET', `${K}future`, q.get('future'));
   for (const x of String(q.get('quiet') || '').split(',').filter((x) => /^\d{4}-\d{2}-\d{2}$/.test(x))) await redis('SADD', `${K}quiet`, x);
   for (const x of String(q.get('unquiet') || '').split(',').filter(Boolean)) await redis('SREM', `${K}quiet`, x);

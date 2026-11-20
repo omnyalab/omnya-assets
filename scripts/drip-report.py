@@ -31,6 +31,8 @@ def get(url, headers=None):
 
 rep = get(f"{SITE}/api/drip?key={urllib.parse.quote(env['IG_ADMIN_KEY'])}&status=1&report=1")
 people, comp, ev = rep['people'], rep['comparison'], rep['events']
+who = {p['email'] for p in people}
+ev = {k: v for k, v in ev.items() if k.split('|')[0] in who}  # the test mails to info@ don't count
 now = time.time() * 1000
 W = DAYS * 86400000
 
