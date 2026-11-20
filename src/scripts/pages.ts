@@ -269,6 +269,26 @@ export function priceZone() {
     .catch(() => {});
 }
 
+/* ---------- Black Friday on the prices page (20/11, Nico): until Friday 27/11 at 23:59 Rome. html.px-bf is set in
+   Base.astro and after every swap in app.ts; this keeps "Ends in" moving and turns the offer off at the deadline,
+   so the page goes back to the launch prices without a new deploy. ---------- */
+export const BF_END = Date.parse('2026-11-27T23:59:59+01:00');
+export function bfClock() {
+  const el = document.querySelector<HTMLElement>('[data-bf-clock]');
+  if (!el) return;
+  const u = (el.dataset.u || 'd,h,m,s').split(',');
+  const p2 = (n: number) => String(n).padStart(2, '0');
+  let id = 0;
+  const tick = () => {
+    const x = Math.max(0, Math.floor((BF_END - Date.now()) / 1000));
+    if (!x) { document.documentElement.classList.remove('px-bf'); clearInterval(id); return; }
+    el.textContent = `${Math.floor(x / 86400)}${u[0]} ${p2(Math.floor((x % 86400) / 3600))}${u[1]} ${p2(Math.floor((x % 3600) / 60))}${u[2]} ${p2(x % 60)}${u[3]}`;
+  };
+  id = window.setInterval(tick, 1000);
+  tick();
+  onDestroy(() => clearInterval(id));
+}
+
 export function priceInfo() {
   const pop = document.querySelector<HTMLElement>('[data-info-pop]');
   const btns = document.querySelectorAll<HTMLButtonElement>('[data-info]');

@@ -3,7 +3,7 @@ import { gsap, ScrollTrigger, fine, initLenis, lenis, preloaderExit, startScroll
 import { initPage, destroyPage } from './anim';
 import { leave, enter, type Mode } from './transition';
 import { initCursor, initSheet, initMenu, initHeaderLoop, initScrollbar, initScrollLinks, collectHeaderZones, initClocks, closeSheet, closeMenu } from './ui';
-import { home, work, project, contactPage, playOnView, hbars, lazyVideos, priceInfo, priceZone, fabAway } from './pages';
+import { home, work, project, contactPage, playOnView, hbars, lazyVideos, priceInfo, priceZone, fabAway, bfClock, BF_END } from './pages';
 import { studio } from './studio';
 import { learn, thanksPage } from './learn';
 import { booker } from './booker';
@@ -58,6 +58,7 @@ document.addEventListener('astro:before-swap', (e) => {
 
 document.addEventListener('astro:after-swap', () => {
   html.classList.add('js');
+  if (Date.now() < BF_END) html.classList.add('px-bf');
   if (lenis) html.classList.add('lenis', 'lenis-smooth');
   if (lenis && fine) html.classList.add('has-sbar');
   if (fine && document.querySelector('[data-cursor-el]')) html.classList.add('has-dot');
@@ -103,6 +104,7 @@ document.addEventListener('astro:page-load', () => {
   lazyVideos();
   priceInfo();
   priceZone();
+  bfClock();
   fabAway();
   booker();
 });

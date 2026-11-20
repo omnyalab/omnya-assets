@@ -3112,3 +3112,14 @@ html[data-page='thanks'] .oto-dl__btns .btn { min-height: 52px; }
 html[data-page='thanks'] .oto-dl__btns .btn--fill { background: #1f6b35; border-color: #1f6b35; }
 html[data-page='thanks'] .oto-dl__note { flex: none; }
 .oto-hf { padding-block: 0 var(--section); }
+
+/* 20/11 (Nico) Black Friday on the prices page: the .bf-on elements only while html.px-bf is on, the launch prices
+   (.bf-off) the rest of the time. Repeated classes so these win over the !important price rules above. */
+html:not(.px-bf) .bf-on.bf-on.bf-on.bf-on { display: none !important; }
+html.px-bf .bf-off.bf-off.bf-off.bf-off { display: none !important; }
+.pbf { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 0 0 18px; padding: 12px 14px 12px 12px; border-radius: 18px; background: linear-gradient(180deg, #ffe24a, #ffc400); color: #111; font-size: var(--fs-small, 15px); line-height: 1.25; }
+.pbf__tag { display: inline-flex; align-items: center; height: 26px; padding: 0 11px; border-radius: 999px; background: #111; color: #ffe24a; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.pbf__line { font-weight: 600; }
+.pbf__left { margin-left: auto; white-space: nowrap; }
+.pbf__left b { font-weight: 600; font-variant-numeric: tabular-nums; }
+@media (max-width: 599px) { .pbf { gap: 6px 10px; } .pbf__line { flex: 1 1 60%; } .pbf__left { margin-left: 0; width: 100%; } }
