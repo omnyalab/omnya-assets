@@ -98,7 +98,7 @@ const NOTES = [
     link: 'f',
     body: ({ link, club }) => [
       `one last thing before I tell you where we're taking all this: when you turn a 3D into a photo, the 3D has to be the only reference you give, because the moment you add a nicer photo "for the look" the model rebuilds the room or the building its own way and the framing you worked on is gone. So we give it the 3D alone, we describe only what you can see in that exact shot, we add a line with what is not there, and the photo lands on top of the 3D like a print.`,
-      `The one-take, the straight camera moves, the reversed clips and the 3D-only photos all live inside THE 3D FUTURE, our new club, where first of all you get the video courses that walk you through our builds step by step, so you can make them exactly the way we do, then the files, the prompts and the Claude skills behind the builds from our reels, a new build every Friday, and my comments on your own builds every Monday.`,
+      `The one-take, the straight camera moves, the reversed clips and the 3D-only photos all live inside THE 3D FUTURE, our new club, where first of all you get a video course that walks you step by step through one of our builds, so you can make it exactly the way we do, then the files, the prompts and the Claude skills behind the builds from our reels, a new build every Friday, and my comments on your own builds every Monday.`,
       club === 'open'
         ? `The doors are open now, and you can see everything that's inside here: ${link("see what's inside")}`
         : club === 'closed'
