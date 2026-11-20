@@ -139,7 +139,7 @@ html[data-v="a"] [data-vv="b"], html[data-v="b"] [data-vv="a"] { display: none !
 .vcard::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.78) 0%, rgba(0,0,0,.25) 26%, rgba(0,0,0,.35) 48%, rgba(0,0,0,.92) 100%) }
 .vcard .word { position: absolute; z-index: 2; left: 20px; bottom: 76px; font: 600 64px/56px var(--f-sfd); letter-spacing: -.04em; color: rgba(255,255,255,.84); text-shadow: 0 2px 24px rgba(0,0,0,.4); white-space: nowrap }
 .vcard:last-child .word { bottom: 40px }
-.vcard .vt { position: absolute; z-index: 2; left: 16px; right: 16px; top: 16px; display: flex; align-items: center; justify-content: space-between }
+.vcard .vt { position: absolute; z-index: 2; left: 16px; right: 16px; top: 16px; display: flex; align-items: center; justify-content: flex-end }
 .vcard .go { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.22); color: #fff; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px) }
 .vcard .go .ic { width: 20px; height: 20px }
 .vcard.soon { background: radial-gradient(120% 90% at 30% 20%, #2b3a66 0%, #0c1224 60%, #05070d 100%) }

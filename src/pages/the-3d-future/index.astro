@@ -139,17 +139,18 @@ const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
     <div class="secbg soft" aria-hidden="true"><img src="/club/bg-burj-fog.webp" alt="" loading="lazy" decoding="async"></div>
     <div class="wrap">
       <div class="head"><h2>Six builds on day one, then a new one every Friday</h2></div>
+      {/* 20/11 Nico: no labels on the Vault cards ("non hanno senso") */}
       <ul class="deck" data-deck>
         {DROPS.map((d, i) => (
           <li class:list={['vcard', { open: i === 0 }]} role="button" tabindex="0" aria-label={`${d.t}, ${d.type}`} data-card>
             <img src={vImg(d.img)} srcset={vSet(d.img)} sizes="(min-width: 900px) 420px, 100vw" alt="" loading="lazy" decoding="async">
-            <div class="vt"><span class="pill"><Icon name="doc" />{d.type}</span><span class="go ctr"><Icon name="chev" /></span></div>
+            <div class="vt"><span class="go ctr"><Icon name="chev" /></span></div>
             <span class="word" aria-hidden="true">{d.w}</span>
           </li>
         ))}
         <li class="vcard soon" role="button" tabindex="0" aria-label="Next build, Friday 4 December" data-card data-soon>
           <span class="mystery"></span>
-          <div class="vt"><span class="pill"><Icon name="lock" />Fri 4 Dec</span><span class="go ctr"><Icon name="lock" /></span></div>
+          <div class="vt"><span class="go ctr"><Icon name="lock" /></span></div>
           <span class="word" aria-hidden="true">Next build</span><span class="sub2">Friday 4 December</span>
         </li>
       </ul>
