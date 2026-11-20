@@ -176,15 +176,19 @@ async function launchList(m) {
   return emails.map((e) => ({ email: e, name: rows.get(e) }));
 }
 
-// one launch mail to a list, 100 per Resend batch request, each person once, until the time budget runs out
+// addresses Resend refuses for the whole batch (20/11: one example.com address stopped E1's first 100)
+const BAD_MAIL = /@(example|test|invalid|localhost)(\.[a-z]+)?$|@[^.]+$|\.(test|invalid|example|localhost)$/i;
+
+// one launch mail to a list, 100 per Resend batch request, each person once, until the time budget runs out.
+// A batch Resend refuses (422, a bad address inside) is split in two until the bad address is found; that one is skipped.
 async function sendLaunch(m, people, seatsLeft) {
   const sentKey = `${LK}${m.id}:sent`;
+  people = people.filter((p) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(p.email) && !BAD_MAIL.test(p.email));
   const already = people.length ? await pipe(people.map((p) => ['SISMEMBER', sentKey, p.email])) : [];
   const todo = people.filter((_, i) => Number(already[i]) !== 1);
-  let sent = 0;
+  let sent = 0, skipped = 0;
   const t0 = Date.now();
-  for (let i = 0; i < todo.length && Date.now() - t0 < 35_000; i += 100) {
-    const chunk = todo.slice(i, i + 100);
+  const post = async (chunk) => {
     const mails = chunk.map((p) => { const r = renderLaunch(m.id, p, { seatsLeft }); return { from: 'Nico <info@omnyalab.com>', to: [p.email], reply_to: host.email, subject: r.subject, html: r.html, text: r.text, headers: r.headers }; });
     await pipe([['SADD', sentKey, ...chunk.map((p) => p.email)], ['EXPIRE', sentKey, 40 * 86400]]); // before the request: never twice
     const res = await fetch('https://api.resend.com/emails/batch', {
@@ -192,18 +196,30 @@ async function sendLaunch(m, people, seatsLeft) {
       headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json', 'Idempotency-Key': `${m.id}-${chunk[0].email}-${chunk.length}` },
       body: JSON.stringify(mails),
     });
-    if (!res.ok) {
-      const err = (await res.text()).slice(0, 300);
-      await redis('SREM', sentKey, ...chunk.map((p) => p.email));
-      console.error('[launch]', m.id, res.status, err);
-      await redis('SET', `${LK}${m.id}:error`, `${res.status} ${err}`, 'EX', 20 * 86400);
-      return { sent, error: res.status };
-    }
-    if (m.id === 'e1') await pipe(chunk.map((p) => ['HSET', `${LK}e1:v`, p.email, variantOf(p.email)]));
-    sent += chunk.length;
     await new Promise((r) => setTimeout(r, 600)); // Resend: 2 requests a second
+    if (res.ok) {
+      if (m.id === 'e1') await pipe(chunk.map((p) => ['HSET', `${LK}e1:v`, p.email, variantOf(p.email)]));
+      sent += chunk.length;
+      return true;
+    }
+    const err = (await res.text()).slice(0, 300);
+    if (res.status === 422 && chunk.length > 1) { // a bad address inside: the two halves on their own
+      await redis('SREM', sentKey, ...chunk.map((p) => p.email));
+      const half = Math.ceil(chunk.length / 2);
+      return (await post(chunk.slice(0, half))) && post(chunk.slice(half));
+    }
+    if (res.status === 422) { skipped++; await redis('SADD', `${LK}bad`, chunk[0].email); console.error('[launch] bad address skipped', m.id, err); return true; } // stays in "sent": never retried
+    await redis('SREM', sentKey, ...chunk.map((p) => p.email));
+    console.error('[launch]', m.id, res.status, err);
+    await redis('SET', `${LK}${m.id}:error`, `${res.status} ${err}`, 'EX', 20 * 86400);
+    return false;
+  };
+  for (let i = 0; i < todo.length && Date.now() - t0 < 35_000; i += 100) {
+    if (!(await post(todo.slice(i, i + 100)))) return { sent, skipped, error: 'resend' };
   }
-  return { sent, left: todo.length - sent };
+  await redis('DEL', `${LK}${m.id}:error`);
+  const left = todo.length - sent - skipped;
+  return { sent, skipped, left: Math.max(0, left) };
 }
 
 // the people kept for the day after (they had a note of the series on the launch day), sent 24 hours later
@@ -258,6 +274,7 @@ async function launchTick(now) {
     const r = await sendLaunch(m, people.filter((p) => !mailedToday.has(p.email)), seatsLeft);
     if (r.error) return { launch: m.id, ...r };
     const sent = r.sent, todo = { length: r.sent + r.left };
+    if (r.skipped) console.log('[launch] skipped bad addresses', r.skipped);
     const left = todo.length - sent;
     if (!left) await redis('SET', `${LK}${m.id}:done`, String(Date.now()), 'EX', 40 * 86400);
     return { launch: m.id, sent, left };
