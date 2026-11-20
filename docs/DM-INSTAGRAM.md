@@ -55,3 +55,16 @@ Here you go 👇🏻 The Stadium Blueprint is free on this page, and right after
 Due reel (normale e trial) dove Claude Code costruisce Miami dalla mappa vera, parola GTA (anche MIAMI e VICE: sotto il reel il bot risponde a ogni commento). Pagina: https://www.omnyalab.com/the-miami-blueprint (corti: omnyalab.com/gta, /miami e /vice), copia esatta del funnel dello stadio nei colori della notte di Miami: card nome + mail (niente mail, il PDF gratis si scarica nella pagina dopo), poi /the-miami-blueprint/watch col video, Full Guide + Claude Skill a 9,99 €, Full Miami a 5,99 € (29 € barrato) e il Black Friday. Solo in inglese. Un solo DM col link della pagina, mai il PDF allegato. Il link in bio il 17/11 va messo su omnyalab.com/gta.
 
 Here you go 👇🏻 The Miami Blueprint is free on this page, and right after it there's the full method behind the Miami we built from the real map: https://www.omnyalab.com/the-miami-blueprint
+
+## Reel Plane, parola PLANE (dal 18/11) <!-- funnel:plane -->
+
+Instant DM (app.instantdm.com, Chrome di Nico), copiata dall'ultima automazione buona. Pagina: https://www.omnyalab.com/the-plane-blueprint · letta da Instant DM il 20/11 (reel «We built the future of booking flights», post 18388076119233560)
+
+- dove: Quick Automation → Posts (o Next Post Automation se il reel non è ancora uscito) → il reel → Send Link or PDF
+- trigger: All comments
+- risposte: Sent ✈️ check your DMs (even in Requests or General) | Check your DMs ✈️ (even in Requests or General) or tap the link in our bio | Just sent it ✈️ look in your DMs (even in Requests or General)
+- benvenuto: Hey 🙌🏻 your free Plane Guide is ready, tap below and I'll send it right away!
+- bottone: Send me the guide
+- messaggio: Here's your free Plane Guide ✈️ https://www.omnyalab.com/plane
+Follow @omnyalab so you catch the next one 🙌🏻
+- ritardo: 10 sec
