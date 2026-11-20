@@ -1,0 +1,77 @@
+// THE 3D FUTURE (20/11): the price decision of api/_lib/club.js in every case, plus the token, the receipt number,
+// the welcome email text and the X2 date of the delivery email. Nothing leaves the computer (no Stripe, no Redis, no mail).
+// Usage (repo root): node scripts/club-test.mjs
+process.env.CLUB_SECRET ||= 'test-secret-only-here';
+const { decide, phaseAt, EARLY, OPEN, CLOSE, signToken, readToken, cleanReceipt, welcomeText } = await import('../api/_lib/club.js');
+
+let fail = 0, n = 0;
+const eq = (got, want, what) => { n++; if (JSON.stringify(got) !== JSON.stringify(want)) { fail++; console.log('FAIL', what, '\n  got ', JSON.stringify(got), '\n  want', JSON.stringify(want)); } };
+
+const at = { before: EARLY - 1, early: EARLY, open: OPEN, closed: CLOSE };
+eq(phaseAt(Date.parse('2026-11-28T08:59:59+01:00')), 'before', '08:59:59 Rome is before');
+eq(phaseAt(Date.parse('2026-11-28T09:00:00+01:00')), 'early', '09:00 Rome is early');
+eq(phaseAt(Date.parse('2026-11-28T17:59:59+01:00')), 'early', '17:59:59 Rome is early');
+eq(phaseAt(Date.parse('2026-11-28T18:00:00+01:00')), 'open', '18:00 Rome is open');
+eq(phaseAt(Date.parse('2026-12-04T23:59:59+01:00')), 'open', 'Fri 4/12 23:59:59 Rome is open');
+eq(phaseAt(Date.parse('2026-12-05T00:00:00+01:00')), 'closed', 'Sat 5/12 00:00 Rome is closed');
+
+// every phase × buyer or not × seats 0 / 99 / 100 × month or year (waitlist: false, then true in the early hours)
+const rows = [];
+for (const phase of Object.keys(at)) for (const buyer of [false, true]) for (const waitlisted of [false, true]) for (const taken of [0, 99, 100]) for (const plan of ['month', 'year']) {
+  const d = decide({ now: at[phase], taken, buyer, waitlisted, plan });
+  let want;
+  if (phase === 'before' || phase === 'closed') want = { ok: false, phase, error: 'closed' };
+  else if (phase === 'early' && !buyer && !waitlisted) want = { ok: false, phase, error: 'early' };
+  else {
+    const low = buyer || taken < 100;
+    want = { ok: true, phase, key: plan === 'year' ? (low ? 'Y90' : 'Y190') : low ? 'M9' : 'M19', eur: plan === 'year' ? (low ? 90 : 190) : low ? 9 : 19 };
+  }
+  eq(d, want, `${phase} buyer=${buyer} waitlist=${waitlisted} seats=${taken} ${plan}`);
+  rows.push([phase, buyer ? 'buyer' : '-', waitlisted ? 'list' : '-', taken, plan, d.ok ? `€${d.eur} (${d.key})` : `refused: ${d.error}`]);
+}
+// the table the report quotes (month only, waitlist off unless early)
+for (const r of rows.filter((r) => r[4] === 'month' && (r[2] === '-' || r[0] === 'early'))) console.log(r.map(String).map((s, i) => s.padEnd([7, 6, 5, 4, 6][i] || 0)).join(' '));
+
+// the hand-written cases of Nico's decisions, said in words
+eq(decide({ now: at.open, taken: 99, plan: 'month' }).eur, 9, 'seat 100 still €9');
+eq(decide({ now: at.open, taken: 100, plan: 'month' }).eur, 19, 'seat 101 is €19');
+eq(decide({ now: at.open, taken: 250, buyer: true, plan: 'month' }).eur, 9, 'a guide buyer is €9 after the first 100');
+eq(decide({ now: at.open, taken: 100, buyer: true, plan: 'year' }).eur, 90, 'a guide buyer pays €90 a year');
+eq(decide({ now: at.open, taken: 100, plan: 'year' }).eur, 190, '€190 a year after the first 100');
+eq(decide({ now: at.early, taken: 0, waitlisted: true, plan: 'month' }).eur, 9, 'the waitlist gets in at 09:00');
+
+// the buyer token
+const tok = signToken('r:1415-7362');
+eq(readToken(tok), 'r:1415-7362', 'token reads back');
+eq(readToken(tok.slice(0, -1) + (tok.endsWith('A') ? 'B' : 'A')), null, 'a changed token is refused');
+eq(readToken('nonsense'), null, 'garbage is refused');
+eq(readToken(signToken('e:a@b.co', -10)), null, 'an expired token is refused');
+eq(tok.length < 60, true, 'the token is short');
+
+// the receipt number as people type it
+eq(['#1415-7362', ' 1415-7362 ', '1415 7362', '# 1415-7362', '14157362', 'abcd-efgh', ''].map(cleanReceipt), ['1415-7362', '1415-7362', '1415-7362', '1415-7362', '', '', ''], 'receipt numbers');
+
+// W1 word for word (20/11), with the withdrawal line
+eq(welcomeText({ name: 'Marco', skool: 'S', skill: 'K', portal: 'P' }),
+  "You're in, Marco.\n\nFirst, join the room on Skool with the email you paid with:\nS\n\nYour House Builder skill is yours to keep, here:\nK\n\nThen start the first video course inside, your own stadium step by step, and when it's done post it in Show your build: I look at every first build myself.\n\nIf you ever want to cancel, it's one tap here: P\n\nTo withdraw within 14 days: omnyalab.com/withdraw\n\nNico",
+  'W1 text');
+
+// without the portal link the cancel line asks to reply (20/11)
+eq(welcomeText({ name: 'Marco', skool: 'S', skill: 'K', portal: '' }).split('\n\n')[4], 'Reply to this email to cancel.', 'W1 cancel line without the portal');
+
+// the four live prices are the base, the env variable wins when set
+const { priceId } = await import('../api/_lib/club.js');
+eq(['M9', 'M19', 'Y90', 'Y190'].map(priceId), ['price_1UdoXdATIF7pxfqf6XDiZBM9', 'price_1UdoXdATIF7pxfqfuAmUNY34', 'price_1UdoXdATIF7pxfqfrq5TEnf9', 'price_1UdoXdATIF7pxfqfa6wu7qpT'], 'live price ids');
+process.env.CLUB_PRICE_M9 = 'price_from_env'; eq(priceId('M9'), 'price_from_env', 'env price wins'); delete process.env.CLUB_PRICE_M9;
+eq(priceId('nope'), '', 'unknown price key');
+
+// X2: the delivery email stops offering "Everything we teach · upgrade" from Sat 28/11 00:00 Rome
+try {
+  const { upgradeFor } = await import('../api/stripe-webhook.js');
+  const one = [{ name: 'How to build a tower that sells with AI', en: 'en/full-tower-blueprint.pdf' }];
+  eq(upgradeFor(['The Full Tower Blueprint'], one, Date.parse('2026-11-27T23:59:59+01:00')), true, 'upgrade line on Fri 27/11 23:59:59');
+  eq(upgradeFor(['The Full Tower Blueprint'], one, Date.parse('2026-11-28T00:00:00+01:00')), false, 'no upgrade line from Sat 28/11 00:00');
+} catch (e) { fail++; console.log('FAIL could not load the webhook:', e.message); }
+
+console.log(fail ? `\n${fail} of ${n} checks FAILED` : `\nall ${n} checks passed`);
+process.exit(fail ? 1 : 0);

@@ -11,6 +11,7 @@
 <meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script is:inline>/* 20/11 (Nico, X2): from Sat 28/11/2026 00:00 Rome "Everything we teach" leaves the choices; ?at=<ISO date> previews another moment */try{var x2=Date.parse((new URLSearchParams(location.search).get("at")||"").replace(" ","+"));if((isNaN(x2)?Date.now():x2)>=Date.parse("2026-11-28T00:00:00+01:00"))document.documentElement.classList.add("x2")}catch(e){}</script>
 <script is:inline>try{var oe=sessionStorage.getItem("omnya-enter"),h=document.documentElement;if(oe){h.classList.add("enter");sessionStorage.removeItem("omnya-enter");var L=JSON.parse(sessionStorage.getItem("omnya-land")||"null");sessionStorage.removeItem("omnya-land");if(oe==="d"&&L){h.classList.add("land");h.style.setProperty("--lx",L.x+"px");h.style.setProperty("--ly",L.y+"px");h.style.setProperty("--ls",L.s+"px")}}}catch(e){}</script>
 <style is:inline>/* 15/11 (Nico, board D): coming from the card, the dark veil and the green check of the "sent" screen are still here, then the check flies onto step 1 */
 html.land body::after{content:"";position:fixed;inset:0;z-index:200;background:#0b0d10;pointer-events:none}
@@ -447,6 +448,8 @@ html.bf .bfw{display:block}
 /* Nico 16/11 15:45: the Everything row stays hidden while the Black Friday runs, the card at the top is enough;
    "Get everything" still picks it behind the scenes, so Pay says €59 */
 html.bf .opt[data-o="all"]{display:none}
+/* 20/11 (Nico, X2): from Sat 28/11/2026 00:00 Rome the Everything row stays hidden for good, also after the Black Friday (html.x2, set in the head) */
+html.x2 .opt[data-o="all"]{display:none}
 /* the "1M views" title must not peek under the first screen: it starts well below the video */
 .big.c1{padding-top:230px!important}
 .reels2 .rsub{margin:8px 0 0;color:#a1a1aa;font-size:14px}

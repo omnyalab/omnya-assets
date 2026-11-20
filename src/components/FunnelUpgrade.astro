@@ -44,6 +44,13 @@ const covers = lang === 'it'
   <ul class="fup__list">{x.items.map((it) => <li><span>{it}</span></li>)}</ul>
   <a class="fup__no" href="#download">{X.upgradeNo}</a>
 </article>
+<script is:inline>
+  // 20/11 (Nico, X2): from Sat 28/11/2026 00:00 Rome "Everything we teach · upgrade" leaves the thanks pages for good (the
+  // card of The 3D Future club is there instead), so it does not come back when the Black Friday card ends. The card is
+  // taken out of the page before scripts/learn.ts could show it. ?at=<ISO date> previews another moment.
+  { const pv = Date.parse((new URLSearchParams(location.search).get('at') || '').replace(' ', '+'))
+    if ((isNaN(pv) ? Date.now() : pv) >= Date.parse('2026-11-28T00:00:00+01:00')) document.querySelectorAll('[data-upgrade]').forEach(el => el.remove()) }
+</script>
 
 <style is:global>
   @font-face { font-family: Montserrat; src: url(/fonts/montserrat-latin.woff2) format('woff2'); font-weight: 500 900; font-display: swap; }

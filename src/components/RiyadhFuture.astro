@@ -9,32 +9,70 @@
 // of one of our projects that is barely seen (bg: towers, burj or stadium; Nico chose B2, the Burj at night).
 // kind="build" only changes the words. The pop-up opens only on a tap of "Save my spot", never by itself, and
 // says what the community is (18/11, Nico: "the pop-up a bit explained").
-const { kind = 'riyadh', bg = 'burj' } = Astro.props as { kind?: 'riyadh' | 'build' | 'stadium' | 'plane'; bg?: 'towers' | 'burj' | 'stadium' };
+// 20/11 (Nico): the card changes with the date (Europe/Rome), three states, same look in all three:
+// 1. "soon"   until Sat 28/11/2026 09:00: the card and the pop-up of today, the tag now says "Opens Saturday 28 November"
+//    (the success text keeps "We'll email you on 27 November": that email is real)
+// 2. "open"   from 28/11 09:00 to Fri 4/12/2026 23:59: the join card, €9 a month, with the seats left
+// 3. "closed" from Sat 5/12 00:00: doors closed for this round, the same name/email pop-up for the next one
+// The page is static, so the script below picks the state in the visitor's browser (the HTML starts with the state of
+// the build time, for who has no JavaScript). Preview of any state: ?at=<ISO date>, e.g.
+// /learn/thanks/full-stadium?at=2026-11-28T10:00:00%2B01:00&seats=63
+// panel: on the light thanks pages (full-tower, full-towers, full-3d, everything) the card sits on its own night ground.
+const { kind = 'riyadh', bg = 'burj', panel = false } = Astro.props as { kind?: 'riyadh' | 'build' | 'stadium' | 'plane'; bg?: 'towers' | 'burj' | 'stadium'; panel?: boolean };
 const what = kind === 'build' ? 'these 3D houses' : kind === 'stadium' ? 'these 3D stadiums' : kind === 'plane' ? 'these 3D planes' : 'these 3D towers';
+// Rome is on +01:00 for the whole window (CET), so the two instants are fixed
+const OPEN = '2026-11-28T09:00:00+01:00', CLOSE = '2026-12-05T00:00:00+01:00';
+const at = Date.now();
+const state = at < Date.parse(OPEN) ? 'soon' : at < Date.parse(CLOSE) ? 'open' : 'closed';
 ---
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@500;600;700&display=swap" rel="stylesheet">
-<section class="ryfw" data-fade>
+<section class:list={['ryfw', { 'ryfw--panel': panel }]} data-fade data-ryf data-open={OPEN} data-close={CLOSE}>
   <img class="ryfw__bg" src={`/learn/3df_bg_${bg}.webp`} alt="" aria-hidden="true" loading="lazy">
   <span class="ryfw__glow" aria-hidden="true"></span>
-  <article class="ryf">
+  {/* 1. soon: until Sat 28/11 09:00 */}
+  <article class="ryf" data-ryf-state="soon" hidden={state !== 'soon'}>
     <img class="ryf__logo" src="/learn/3df_knot.webp" alt="" width="120" height="120">
-    <p class="ryf__tag"><i></i>Opens Friday 27 November</p>
+    <p class="ryf__tag"><i></i>Opens Saturday 28 November</p>
     <h2 class="ryf__t">The <span>3D</span> Future</h2>
     <p class="ryf__sub">Our community, where we show you how we build {what} from the first prompt to the client who pays</p>
     <ul class="ryfm__li ryf__chk"><li>Every reel taken apart, step by step</li><li>The project files we use</li><li>Live calls with us</li></ul>
     <p class="ryfm__k">Save your spot, it's free</p>
     <button type="button" class="ryf__btn ryf__btn--card" data-ryf-open>Save my spot →</button>
   </article>
+  {/* 2. open: 28/11 09:00 to 4/12 23:59, the join card */}
+  <article class="ryf" data-ryf-state="open" hidden={state !== 'open'}>
+    <img class="ryf__logo" src="/learn/3df_knot.webp" alt="" width="120" height="120">
+    <h2 class="ryf__t">The <span>3D</span> Future</h2>
+    <p class="ryf__sub">The club where you learn to build the 3D that sells</p>
+    <ul class="ryfm__li ryf__chk"><li>Step-by-step video courses on our builds</li><li>Six builds from our reels, with files, prompts and Claude skills</li><li>My comments on your builds every Monday</li></ul>
+    <p class="ryf__lock">You bought this guide, so your price stays €9 a month, even after the first 100</p>
+    {/* 20/11 (Nico: only the real number): the seats left come from /api/club/seats (Stripe, 60 s); until it answers, or
+        if it cannot count, the counter stays hidden. ?seats=<n> previews a number */}
+    <div class="ryf__seats" data-ryf-seats-box hidden>
+      <p><b data-ryf-seats></b> of 100 seats left</p>
+      <span class="ryf__bar" aria-hidden="true"><i data-ryf-bar style="width:0%"></i></span>
+    </div>
+    {/* TODO: the Stripe subscription link (€9/month) goes here */}
+    <a class="ryf__btn ryf__btn--card ryf__btn--join" href="#join">Join for €9/month</a>
+    <p class="ryf__note">Cancel in one tap</p>
+  </article>
+  {/* 3. closed: from Sat 5/12 00:00, the list for the next round (same pop-up, same free 'waitlist-3d-future') */}
+  <article class="ryf" data-ryf-state="closed" hidden={state !== 'closed'}>
+    <img class="ryf__logo" src="/learn/3df_knot.webp" alt="" width="120" height="120">
+    <p class="ryf__tag ryf__tag--off"><i></i>Doors closed for this round</p>
+    <h2 class="ryf__t">The <span>3D</span> Future</h2>
+    <button type="button" class="ryf__btn ryf__btn--card ryf__btn--next" data-ryf-open>Get on the list for the next one</button>
+  </article>
 </section>
 <div class="ryfm" data-ryf-modal hidden>
   <form class="ryfm__box" data-ryf-form novalidate>
     <button type="button" class="ryfm__x" aria-label="Close" data-ryf-close>×</button>
     <img class="ryf__logo ryf__logo--s" src="/learn/3df_knot.webp" alt="" width="64" height="64">
-    <p class="ryf__tag"><i></i>Opens Friday 27 November</p>
+    <p class="ryf__tag" data-ryf-mtag data-closed="Doors closed for this round"><i></i><span>Opens Saturday 28 November</span></p>
     <h3 class="ryfm__t">The <span>3D</span> Future</h3>
     <p class="ryfm__sub">Our community, where we show you how we build {what} from the first prompt to the client who pays</p>
     <ul class="ryfm__li"><li>Every reel taken apart, step by step</li><li>The project files we use</li><li>Live calls with us</li></ul>
-    <p class="ryfm__k">Save your spot, it's free</p>
+    <p class="ryfm__k" data-ryf-mk data-closed="Get on the list for the next one">Save your spot, it's free</p>
     <input class="ryfm__in" name="name" placeholder="Your first name" autocomplete="given-name" maxlength="60" required>
     <input class="ryfm__in" name="email" type="email" placeholder="Your best email" autocomplete="email" maxlength="120" required>
     <input name="company" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
@@ -81,10 +119,48 @@ const what = kind === 'build' ? 'these 3D houses' : kind === 'stadium' ? 'these 
 .ryfm .ryf__btn{margin-top:8px}
 .ryfm__err{min-height:18px;margin:8px 0 0;font:500 13px Geist,Inter,sans-serif;color:#ff8f8f}
 .ryfm__ok{margin:6px 0 0;font:600 17px/1.4 Geist,Inter,sans-serif;color:#fff}
+/* 20/11: the join card (state 2), the closed tag (state 3), the night ground on the light pages */
+.ryf[hidden]{display:none}
+/* the checklist of the card centred under the title (.ryfm__li, written later, took its margin: list off to the left on desktop) */
+.ryf .ryf__chk{margin:18px auto 0}
+.ryf__lock{max-width:420px;margin:18px auto 0;padding:12px 14px;text-wrap:balance;border-radius:14px;background:#2f8bff1f;border:1px solid #6fb2ff55;font:600 14.5px/1.4 Geist,Inter,sans-serif;color:#e4f0ff}
+.ryf__seats{max-width:420px;margin:18px auto 0}
+.ryf__seats p{margin:0;font:600 15px Geist,Inter,sans-serif;color:#fff}
+.ryf__seats b{font-weight:700;color:#8fd0ff}
+.ryf__bar{display:block;height:6px;margin:9px auto 0;border-radius:999px;background:#ffffff1a;overflow:hidden}
+.ryf__bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#5ab8ff,#0071e3)}
+.ryf .ryf__btn--join{margin-top:16px;text-decoration:none}
+.ryf .ryf__btn--next{margin-top:20px}
+.ryf .ryf__note{margin-top:10px}
+.ryf__tag--off{background:#ffffff14;border-color:#ffffff33;color:#d5e3f5}
+.ryf__tag--off i{background:#9fb6d3;box-shadow:0 0 0 3px #9fb6d333}
+.ryfw--panel{overflow:hidden;border-radius:36px;background:radial-gradient(120% 80% at 50% 0%,#10254a,#060c1a 72%);box-shadow:0 40px 80px -40px #0b3d8a99}
+.ryfw--panel .ryfw__bg{opacity:.45}
+@media (max-width:620px){.ryfw--panel{border-radius:28px}.ryfw--panel .ryfw__bg{border-radius:28px}}
 @media (max-width:620px){.ryfw{padding:40px 10px}.ryf{padding:26px 18px 22px}.ryf__logo{width:84px;height:84px}}
 </style>
 <script is:inline>
-{ const m = document.querySelector('[data-ryf-modal]'), f = document.querySelector('[data-ryf-form]')
+{ const box = document.querySelector('[data-ryf]'), m = document.querySelector('[data-ryf-modal]'), f = document.querySelector('[data-ryf-form]')
+  // the state by the date (Europe/Rome instants in data-open / data-close); ?at=<ISO date> previews another moment
+  let state = 'soon'
+  if (box) {
+    const q = new URLSearchParams(location.search)
+    let now = Date.now()
+    const at = Date.parse((q.get('at') || '').replace(' ', '+'))
+    if (!isNaN(at)) now = at
+    state = now < Date.parse(box.dataset.open) ? 'soon' : now < Date.parse(box.dataset.close) ? 'open' : 'closed'
+    box.querySelectorAll('[data-ryf-state]').forEach(a => { a.hidden = a.dataset.ryfState !== state })
+    // 20/11: the real counter (api/club.js, seats of round 1 read from Stripe); ?seats=<n> is the preview
+    const sb = box.querySelector('[data-ryf-seats-box]'), sn = box.querySelector('[data-ryf-seats]'), bar = box.querySelector('[data-ryf-bar]')
+    const seats = n => { n = Math.max(0, Math.min(100, n)); if (sn) sn.textContent = String(n); if (bar) bar.style.width = (100 - n) + '%'; if (sb) sb.hidden = false } // the bar fills with the seats taken
+    const raw = q.get('seats')
+    if (raw !== null) seats(parseInt(raw, 10) || 0)
+    else if (state === 'open') fetch('/api/club/seats').then(r => r.ok ? r.json() : null).then(d => { if (d && typeof d.left === 'number') seats(d.left) }).catch(() => {})
+    if (state === 'closed' && m) {
+      m.querySelectorAll('[data-ryf-mtag] span, [data-ryf-mk]').forEach(el => { el.textContent = el.closest('[data-closed]').dataset.closed })
+      m.querySelector('[data-ryf-mtag]').classList.add('ryf__tag--off')
+    }
+  }
   if (m && f) {
     const open = () => { m.hidden = false; setTimeout(() => f.name.focus(), 50) }, close = () => { m.hidden = true }
     document.querySelectorAll('[data-ryf-open]').forEach(b => b.addEventListener('click', open))
@@ -101,7 +177,7 @@ const what = kind === 'build' ? 'these 3D houses' : kind === 'stadium' ? 'these 
         const r = await fetch('/api/optin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ free: 'waitlist-3d-future', name, email, page: 'thanks-' + location.pathname.split('/').pop(), company: f.company.value }) })
         if (!r.ok) throw new Error()
         f.querySelectorAll('input,[data-ryf-send]').forEach(x => x.hidden = true)
-        ok.hidden = false; ok.textContent = 'You’re on the list, ' + name + '. We’ll email you on 27 November.'
+        ok.hidden = false; ok.textContent = 'You’re on the list, ' + name + (state === 'closed' ? '. We’ll email you when the doors open again.' : '. We’ll email you on 27 November.')
         document.querySelectorAll('[data-ryf-open]').forEach(b => { b.textContent = '✓ You’re on the list'; b.disabled = true })
       } catch (_) { btn.disabled = false; btn.textContent = 'Put me on the list →'; err.textContent = 'Something went wrong, try again' }
     })

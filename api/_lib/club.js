@@ -1,0 +1,351 @@
+// THE 3D FUTURE, the paid monthly club of Omnya Lab (20/11, Nico). Everything api/club.js and the Stripe webhook share:
+// the dates of the round, the price decision, the buyer token, the small Redis indexes and what happens when someone
+// joins or leaves. Decisions of Nico on 20/11:
+// - €9 a month for the first 100 members of the round, then €19. Who bought one of our guides pays €9 even after the
+//   first 100. A year: €90 (for the €9 members) or €190 (for the €19 ones). Euro only.
+// - Round 1 (Europe/Rome): Sat 28/11/2026 09:00 the doors open only for the waitlist (/api/optin 'waitlist-3d-future')
+//   and the guide buyers, at 18:00 for everyone, they close Fri 4/12/2026 23:59. Before and after: closed.
+// - The seats are the club subscriptions of round 1 that are active, trialing or past_due, read from Stripe and kept
+//   60 s. Only the real number, never one written by hand.
+// - The proof of a guide purchase is the Stripe receipt number (1415-7362) or the email paid with, checked here against
+//   what Stripe says was paid (never an Omnya City house).
+import { createHmac, timingSafeEqual } from 'node:crypto';
+import { kv } from './store.js';
+import { sendMail } from './mail.js';
+import { host } from './config.js';
+import { fixEmail } from './mail-fix.js';
+import { signedHref, isGuideProduct, HOUSE_SKILL_FILE, DAY } from './learn-files.js';
+
+export const ROUND = '1';
+export const CLUB = '3d-future';
+// Rome is on +01:00 for the whole round (CET), so the instants are fixed. CLOSE is the first moment after Fri 4/12 23:59.
+export const EARLY = Date.parse('2026-11-28T09:00:00+01:00');
+export const OPEN = Date.parse('2026-11-28T18:00:00+01:00');
+export const CLOSE = Date.parse('2026-12-05T00:00:00+01:00');
+export const CHEAP_SEATS = 100;
+const LIVE = new Set(['active', 'trialing', 'past_due']);
+
+/** The four live Stripe prices of the product "THE 3D FUTURE" (prod_Vf8pJEQunN0guK, 20/11), written here like the funnel
+    prices of api/embed-checkout.js; the env variable, when it is set on Vercel, takes its place. Never from the page. */
+export const PRICES = {
+  M9: { eur: 9, env: 'CLUB_PRICE_M9', id: 'price_1UdoXdATIF7pxfqf6XDiZBM9', plan: 'month' }, // €9 a month
+  M19: { eur: 19, env: 'CLUB_PRICE_M19', id: 'price_1UdoXdATIF7pxfqfuAmUNY34', plan: 'month' }, // €19 a month
+  Y90: { eur: 90, env: 'CLUB_PRICE_Y90', id: 'price_1UdoXdATIF7pxfqfrq5TEnf9', plan: 'year' }, // €90 a year
+  Y190: { eur: 190, env: 'CLUB_PRICE_Y190', id: 'price_1UdoXdATIF7pxfqfa6wu7qpT', plan: 'year' }, // €190 a year
+};
+export const priceId = (key) => (PRICES[key] ? process.env[PRICES[key].env] || PRICES[key].id : '');
+export const priceIds = () => Object.keys(PRICES).map(priceId).filter(Boolean);
+
+/** before · early (waitlist and buyers only) · open (everyone) · closed */
+export function phaseAt(now = Date.now()) {
+  return now < EARLY ? 'before' : now < OPEN ? 'early' : now < CLOSE ? 'open' : 'closed';
+}
+
+/**
+ * The price decision, with nothing around it (no Stripe, no Redis), so it can be tested on its own (scripts/club-test.mjs).
+ * taken = seats already taken in this round, buyer = a proven guide buyer, waitlisted = the email is on the club waitlist.
+ * → { ok: true, phase, key: 'M9'|'M19'|'Y90'|'Y190', eur } or { ok: false, phase, error: 'closed'|'early' }
+ */
+export function decide({ now = Date.now(), taken = 0, buyer = false, waitlisted = false, plan = 'month' } = {}) {
+  const phase = phaseAt(now);
+  if (phase === 'before' || phase === 'closed') return { ok: false, phase, error: 'closed' };
+  if (phase === 'early' && !buyer && !waitlisted) return { ok: false, phase, error: 'early' };
+  const low = buyer || taken < CHEAP_SEATS;
+  const key = plan === 'year' ? (low ? 'Y90' : 'Y190') : low ? 'M9' : 'M19';
+  return { ok: true, phase, key, eur: PRICES[key].eur };
+}
+
+// ---- small helpers ----
+export const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+export const cleanEmail = (e) => String(fixEmail(String(e || '').trim()) || '').toLowerCase().slice(0, 120);
+/** "#1415-7362", " 1415 7362 " → "1415-7362"; anything else → '' */
+export function cleanReceipt(r) {
+  const s = String(r || '').trim().replace(/^#\s*/, '').replace(/\s+/g, '-');
+  return /^\d{3,5}(-\d{3,5}){1,2}$/.test(s) ? s : '';
+}
+export const firstName = (n) => String(n || '').trim().split(/\s+/)[0].slice(0, 40) || 'there';
+
+// ---- Redis keys ----
+const K = {
+  members: 'omnya:club:members', // hash email → member (JSON)
+  todo: 'omnya:club:skool:todo', // list: to approve on Skool (Nico)
+  remove: 'omnya:club:skool:remove', // list: to take off Skool (Nico)
+  withdrawals: 'omnya:club:withdrawals', // list: withdrawals from a contract (Nico handles the refund)
+  buyers: 'omnya:club:buyers', // set: emails that paid for a guide
+  receipts: 'omnya:club:receipts', // hash: Stripe receipt number → email
+  proofs: 'omnya:club:proofs', // hash: proof of purchase → the first member email it got the €9 price for
+  waitlist: 'omnya:club:waitlist', // set: emails on the club waitlist
+  waitFilled: 'omnya:club:waitlist:filled', // set once the old opt-in rows have been read into the set
+  seats: 'omnya:club:seats', // the count of the seats, kept 60 s
+  pi: (pi) => `omnya:club:pi:${pi}`, // a guide payment whose receipt number was not there yet → email
+  once: (what, id) => `omnya:club:once:${what}:${id}`,
+};
+export { K as KEYS };
+
+// ---- the buyer token: a short signed proof that verify said yes, used by checkout (24 hours) ----
+// CLUB_SECRET if it is set on Vercel; otherwise one made from the Stripe webhook secret (as api/_lib/learn-files.js does)
+const tokenKey = () => {
+  if (process.env.CLUB_SECRET) return process.env.CLUB_SECRET;
+  const base = process.env.STRIPE_WEBHOOK_SECRET || '';
+  return base ? createHmac('sha256', base).update('omnya-club-token').digest('hex') : '';
+};
+const mac = (key, s) => createHmac('sha256', key).update(s).digest('base64url').slice(0, 22);
+/** proof = 'r:<receipt>' or 'e:<email>'. '' when there is no key to sign with. */
+export function signToken(proof, ttl = DAY) {
+  const key = tokenKey();
+  if (!key) return '';
+  const exp = Math.floor(Date.now() / 1000) + ttl;
+  return `${exp.toString(36)}.${Buffer.from(proof).toString('base64url')}.${mac(key, `${exp}|${proof}`)}`;
+}
+/** The proof inside a token that is ours and not expired, or null. */
+export function readToken(token) {
+  const key = tokenKey();
+  const m = /^([0-9a-z]{4,8})\.([A-Za-z0-9_-]{4,200})\.([A-Za-z0-9_-]{22})$/.exec(String(token || ''));
+  if (!key || !m) return null;
+  const exp = parseInt(m[1], 36);
+  if (!exp || exp * 1000 < Date.now()) return null;
+  const proof = Buffer.from(m[2], 'base64url').toString();
+  const a = Buffer.from(mac(key, `${exp}|${proof}`)), b = Buffer.from(m[3]);
+  return a.length === b.length && timingSafeEqual(a, b) && /^[re]:/.test(proof) ? proof : null;
+}
+
+// ---- rate limit: the INCR + EXPIRE of the other routes (api/contract.js), per address ----
+export const ipOf = (req) => (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || req.headers.get('x-real-ip') || 'local';
+/** true when this address has asked `action` more than max times in the last `secs` seconds */
+export async function limited(req, action, max, secs) {
+  try {
+    const key = `omnya:club:rl:${action}:${ipOf(req)}`;
+    const n = Number(await kv('INCR', key));
+    if (n === 1) await kv('EXPIRE', key, secs);
+    return n > max;
+  } catch (e) {
+    console.error('[club] rate', e.message);
+    return false; // the store is down: better a few more tries than nobody getting in
+  }
+}
+
+// ---- seats: the subscriptions of round 1, from Stripe, kept 60 s: one of the four prices, created from Sat 28/11/2026
+// 09:00 Rome (EARLY), active, trialing or past_due (20/11, Nico) ----
+let memo = null;
+export async function seats(stripe) {
+  if (memo && Date.now() - memo.at < 60_000) return memo.taken;
+  try {
+    const c = JSON.parse((await kv('GET', K.seats)) || 'null');
+    if (c && Date.now() - c.at < 60_000) return (memo = c).taken;
+  } catch {}
+  if (!stripe) throw Object.assign(new Error('not configured'), { code: 'not_configured' });
+  const subs = new Set(); // by id: a subscription with two of the prices is one seat
+  for (const price of new Set(priceIds())) {
+    // status 'all' and the filter here: active, trialing and past_due are the three that hold a seat
+    for await (const s of stripe.subscriptions.list({ price, status: 'all', limit: 100, created: { gte: Math.floor(EARLY / 1000) } })) {
+      if (LIVE.has(s.status)) subs.add(s.id);
+    }
+  }
+  memo = { taken: subs.size, at: Date.now() };
+  await kv('SET', K.seats, JSON.stringify(memo), 'EX', 60).catch(() => {});
+  return memo.taken;
+}
+const forgetSeats = () => { memo = null; return kv('DEL', K.seats).catch(() => {}); };
+
+// ---- who is a guide buyer ----
+/** A paid one-time Checkout Session of ours with at least one guide in it (line item descriptions are the product names). */
+const guideSession = (s) =>
+  s && s.mode === 'payment' && s.payment_status === 'paid' && (s.amount_total || 0) > 0 && !s.metadata?.club && !s.metadata?.buy && !s.metadata?.auction &&
+  (s.line_items?.data || []).some((it) => isGuideProduct(it.price?.product?.name || it.description || ''));
+
+/** The email on the receipt index, or '' */
+export async function receiptEmail(receipt) {
+  return receipt ? (await kv('HGET', K.receipts, receipt)) || '' : '';
+}
+
+/** Is this email a guide buyer? The index first, then Stripe itself (the email as typed and in small letters: Stripe
+    keeps it as the buyer wrote it). */
+export async function isBuyerEmail(stripe, email) {
+  if (!email) return false;
+  if (Number(await kv('SISMEMBER', K.buyers, cleanEmail(email))) === 1) return true;
+  if (!stripe) throw Object.assign(new Error('not configured'), { code: 'not_configured' });
+  for (const e of new Set([email, email.toLowerCase()])) {
+    const page = await stripe.checkout.sessions.list({ customer_details: { email: e }, status: 'complete', limit: 30, expand: ['data.line_items'] });
+    if (page.data.some(guideSession)) {
+      await kv('SADD', K.buyers, cleanEmail(email)).catch(() => {});
+      return true;
+    }
+  }
+  return false;
+}
+
+/** Is this email on the club waitlist? The set first; the first time, the old opt-in rows are read into the set. */
+export async function isWaitlisted(email) {
+  if (!email) return false;
+  if (Number(await kv('SISMEMBER', K.waitlist, email)) === 1) return true;
+  if (!(await kv('GET', K.waitFilled))) {
+    await fillWaitlist();
+    return Number(await kv('SISMEMBER', K.waitlist, email)) === 1;
+  }
+  return false;
+}
+
+/** Reads every 'waitlist-3d-future' row of the opt-in list (api/optin.js, omnya:optin) into the set. Safe to run again. */
+export async function fillWaitlist() {
+  let n = 0;
+  for (let i = 0; ; i += 500) {
+    const rows = await kv('LRANGE', 'omnya:optin', i, i + 499);
+    if (!rows || !rows.length) break;
+    const emails = rows.map((r) => { try { const o = JSON.parse(r); return o.free === 'waitlist-3d-future' ? String(o.email || '').toLowerCase() : ''; } catch { return ''; } }).filter(Boolean);
+    if (emails.length) n += Number(await kv('SADD', K.waitlist, ...emails));
+    if (rows.length < 500) break;
+  }
+  await kv('SET', K.waitFilled, String(Date.now()));
+  return n;
+}
+
+/** The webhook, after a guide is paid: the email into the buyers, and the receipt number when Stripe has it already. */
+export async function noteBuyer(stripe, session, productNames) {
+  if (!productNames.some(isGuideProduct) || (session.amount_total || 0) <= 0) return;
+  const email = cleanEmail(session.customer_details?.email);
+  if (!email) return;
+  await kv('SADD', K.buyers, email);
+  const pi = typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id;
+  if (!pi || !stripe) return;
+  const intent = await stripe.paymentIntents.retrieve(pi, { expand: ['latest_charge'] });
+  const receipt = cleanReceipt(intent.latest_charge?.receipt_number);
+  if (receipt) await kv('HSET', K.receipts, receipt, email);
+  else await kv('SET', K.pi(pi), email, 'EX', 7 * DAY); // the number comes with the receipt email: charge.updated
+}
+
+/** The webhook, charge.updated / charge.succeeded: a receipt number that came after the checkout. */
+export async function noteReceipt(charge) {
+  const receipt = cleanReceipt(charge?.receipt_number);
+  const pi = typeof charge?.payment_intent === 'string' ? charge.payment_intent : charge?.payment_intent?.id;
+  if (!receipt || !pi) return;
+  const email = await kv('GET', K.pi(pi));
+  if (email) { await kv('HSET', K.receipts, receipt, email); await kv('DEL', K.pi(pi)); }
+}
+
+/**
+ * The admin backfill: the checkout sessions already paid, one page of 100 after another, until about 40 s have gone.
+ * Returns where to start next time (after), so a loop can call it until done. The upsell charges (one tap on the
+ * thanks page, api/upsell.js, no checkout session) are read on the first call only.
+ */
+export async function backfill(stripe, after = '') {
+  const t0 = Date.now();
+  let sessions = 0, buyers = 0, receipts = 0, next = after || '';
+  if (!next) {
+    for await (const ch of stripe.charges.search({ query: "metadata['from']:'thanks-upsell' AND status:'succeeded'", limit: 100 })) {
+      const email = cleanEmail(ch.billing_details?.email || ch.receipt_email), receipt = cleanReceipt(ch.receipt_number);
+      if (!email || ch.refunded) continue;
+      buyers += Number(await kv('SADD', K.buyers, email));
+      if (receipt) { await kv('HSET', K.receipts, receipt, email); receipts++; }
+    }
+  }
+  for (;;) {
+    const page = await stripe.checkout.sessions.list({ status: 'complete', limit: 100, expand: ['data.line_items', 'data.payment_intent.latest_charge'], ...(next ? { starting_after: next } : {}) });
+    for (const s of page.data) {
+      sessions++;
+      const ch = s.payment_intent?.latest_charge;
+      if (!guideSession(s) || ch?.refunded) continue;
+      const email = cleanEmail(s.customer_details?.email);
+      if (!email) continue;
+      buyers += Number(await kv('SADD', K.buyers, email));
+      const receipt = cleanReceipt(ch?.receipt_number);
+      if (receipt) { await kv('HSET', K.receipts, receipt, email); receipts++; }
+    }
+    next = page.data.length ? page.data[page.data.length - 1].id : next;
+    if (!page.has_more) return { done: true, sessions, buyers, receipts };
+    if (Date.now() - t0 > 40_000) return { done: false, next, sessions, buyers, receipts };
+  }
+}
+
+// ---- joining and leaving (the webhook) ----
+const SKILL_TTL = 5 * 365 * DAY; // the skill is a bonus they keep: a link good for five years
+const WITHDRAW = 'omnyalab.com/withdraw';
+
+/** W1, the welcome email: the text approved by Nico on 20/11, word for word, with the withdrawal line added. While the
+    customer portal link (CLUB_PORTAL_URL) is not there, the cancel line says to reply (the reply goes to info@). */
+export const CANCEL_REPLY = 'Reply to this email to cancel.';
+export function welcomeText({ name, skool, skill, portal }) {
+  const cancel = portal ? `If you ever want to cancel, it's one tap here: ${portal}` : CANCEL_REPLY;
+  return `You're in, ${name}.\n\nFirst, join the room on Skool with the email you paid with:\n${skool}\n\nYour House Builder skill is yours to keep, here:\n${skill}\n\nThen start the first video course inside, your own stadium step by step, and when it's done post it in Show your build: I look at every first build myself.\n\n${cancel}\n\nTo withdraw within 14 days: ${WITHDRAW}\n\nNico`;
+}
+const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+/** The same words as a plain note (no design, links written out), like the free blueprint email. */
+export function welcomeHtml(v) {
+  const link = (u) => `<a href="${esc(u)}">${esc(u)}</a>`;
+  const p = welcomeText({ name: esc(v.name), skool: link(v.skool), skill: link(v.skill), portal: v.portal ? link(v.portal) : '' })
+    .replace(WITHDRAW, `<a href="https://www.${WITHDRAW}">${WITHDRAW}</a>`)
+    .split('\n\n').map((x) => `<p>${x.replace(/\n/g, '<br>')}</p>`).join('\n');
+  return `<!doctype html><html><body><div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#222">\n${p}\n</div></body></html>`;
+}
+
+/** SET NX: true only the first time this (what, id) is seen, so a retry of the webhook does nothing twice. */
+const first = async (what, id) => (await kv('SET', K.once(what, id), '1', 'NX', 'EX', 30 * DAY)) === 'OK';
+
+/** checkout.session.completed with metadata.club: the member, the Skool list for Nico, the welcome email. Throws to
+    make Stripe retry (missing links, mail down): every step is safe to run again. */
+export async function clubJoined(stripe, session) {
+  const md = session.metadata || {};
+  const email = cleanEmail(session.customer_details?.email || session.customer_email);
+  const name = firstName(md.name || session.customer_details?.name);
+  const skool = process.env.CLUB_SKOOL_URL || '', portal = process.env.CLUB_PORTAL_URL || '';
+  if (!email) throw new Error('club: no email on the session');
+  const member = {
+    email, name, ig: md.ig || '', v: md.v || '', buyer: md.buyer === 'yes', plan: md.plan || '', price: Number(md.price) || null, round: md.round || ROUND,
+    customer: typeof session.customer === 'string' ? session.customer : session.customer?.id || '',
+    subscription: typeof session.subscription === 'string' ? session.subscription : session.subscription?.id || '',
+    session: session.id, at: new Date((session.created || Date.now() / 1000) * 1000).toISOString(), status: 'active',
+  };
+  await kv('HSET', K.members, email, JSON.stringify(member));
+  if (md.proof && !(await kv('HGET', K.proofs, md.proof))) await kv('HSET', K.proofs, md.proof, email);
+  if (await first('todo', session.id)) await kv('RPUSH', K.todo, JSON.stringify({ at: member.at, email, name, ig: member.ig, plan: member.plan, price: member.price }));
+  await forgetSeats();
+  // without the Skool link the email would have a hole: Nico is told once, and Stripe tries again (for up to three days)
+  // until CLUB_SKOOL_URL is on Vercel. Without the portal link the email asks to reply to cancel (welcomeText)
+  if (!skool) {
+    if (await first('nolinks', 'w1')) await sendMail({ to: host.email, subject: '[club] welcome email NOT sent: CLUB_SKOOL_URL missing', text: `${name} <${email}> joined THE 3D FUTURE. Add CLUB_SKOOL_URL on Vercel: Stripe sends the payment again and the email leaves then.` }).catch(() => {});
+    throw new Error('club: CLUB_SKOOL_URL missing');
+  }
+  if (!(await first('w1', session.id))) return member;
+  const v = { name, skool, portal, skill: `https://www.omnyalab.com${signedHref(HOUSE_SKILL_FILE, SKILL_TTL)}` };
+  try {
+    await sendMail({ to: `${name} <${email}>`, bcc: host.email, replyTo: host.email, subject: "you're in", text: welcomeText(v), html: welcomeHtml(v) });
+  } catch (e) {
+    await kv('DEL', K.once('w1', session.id)).catch(() => {});
+    throw e;
+  }
+  return member;
+}
+
+/** customer.subscription.deleted of a club subscription (our metadata, or one of the four prices): the member goes on
+    the list to take off Skool. */
+export async function clubLeft(stripe, sub) {
+  const ours = sub?.metadata?.club === CLUB || (sub?.items?.data || []).some((it) => priceIds().includes(it.price?.id));
+  if (!ours || !(await first('left', sub.id))) return;
+  let email = '';
+  try { email = cleanEmail((await stripe.customers.retrieve(sub.customer))?.email); } catch {}
+  let member = null;
+  if (email) try { member = JSON.parse((await kv('HGET', K.members, email)) || 'null'); } catch {}
+  if (!member) {
+    // the customer has no email any more: the member with this subscription
+    const all = await kv('HGETALL', K.members);
+    for (let i = 1; i < all.length; i += 2) { try { const m = JSON.parse(all[i]); if (m.subscription === sub.id) { member = m; email = m.email; break; } } catch {} }
+  }
+  const at = new Date().toISOString();
+  if (member) await kv('HSET', K.members, email, JSON.stringify({ ...member, status: 'canceled', left: at }));
+  await kv('RPUSH', K.remove, JSON.stringify({ at, email, name: member?.name || '', ig: member?.ig || sub.metadata?.ig || '', subscription: sub.id }));
+  await forgetSeats();
+}
+
+/** The withdrawals and the two Skool lists, newest last, for Nico (GET /api/club/admin). */
+export async function lists() {
+  const parse = (rows) => (rows || []).map((r) => { try { return JSON.parse(r); } catch { return null; } }).filter(Boolean);
+  const all = await kv('HGETALL', K.members);
+  const members = [];
+  for (let i = 1; i < all.length; i += 2) { try { members.push(JSON.parse(all[i])); } catch {} }
+  return {
+    members,
+    skoolTodo: parse(await kv('LRANGE', K.todo, 0, -1)),
+    skoolRemove: parse(await kv('LRANGE', K.remove, 0, -1)),
+    withdrawals: parse(await kv('LRANGE', K.withdrawals, 0, -1)),
+    counts: { buyers: Number(await kv('SCARD', K.buyers)), receipts: Number(await kv('HLEN', K.receipts)), waitlist: Number(await kv('SCARD', K.waitlist)) },
+  };
+}

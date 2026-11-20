@@ -18,8 +18,8 @@ const devApi = () => ({
       next();
     });
     server.middlewares.use('/api', async (req, res, next) => {
-      // /api/city/link → api/city.js (the function reads the action from the path)
-      const name = (req.url || '').split('?')[0].replace(/^\/+|\/+$/g, '').replace(/^city\/[a-z]+$/, 'city');
+      // /api/city/link → api/city.js (the function reads the action from the path); 20/11: /api/club/seats → api/club.js
+      const name = (req.url || '').split('?')[0].replace(/^\/+|\/+$/g, '').replace(/^(city|club)\/[a-z]+$/, '$1');
       if (!/^[a-z]+$/.test(name)) return next();
       try {
         const mod = await server.ssrLoadModule(`/api/${name}.js`);

@@ -10,6 +10,7 @@
 <meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script is:inline>/* 20/11 (Nico, X2): from Sat 28/11/2026 00:00 Rome "Everything we teach" leaves the choices; ?at=<ISO date> previews another moment */try{var x2=Date.parse((new URLSearchParams(location.search).get("at")||"").replace(" ","+"));if((isNaN(x2)?Date.now():x2)>=Date.parse("2026-11-28T00:00:00+01:00"))document.documentElement.classList.add("x2")}catch(e){}</script>
 <script is:inline>try{var oe=sessionStorage.getItem("omnya-enter"),h=document.documentElement;if(oe){h.classList.add("enter");sessionStorage.removeItem("omnya-enter");var L=JSON.parse(sessionStorage.getItem("omnya-land")||"null");sessionStorage.removeItem("omnya-land");if(oe==="d"&&L){h.classList.add("land");h.style.setProperty("--lx",L.x+"px");h.style.setProperty("--ly",L.y+"px");h.style.setProperty("--ls",L.s+"px")}}}catch(e){}</script>
 <style is:inline>/* 15/11 (Nico, board D): coming from the card, the dark veil and the green check of the "sent" screen are still here, then the check flies onto step 1 */
 html.land body::after{content:"";position:fixed;inset:0;z-index:200;background:#0d0e12;pointer-events:none}
@@ -388,6 +389,8 @@ body.rv .hero .cbtn .px{display:inline}
 .bfc{display:none}
 html.bf .bfc{display:block}
 html.bf .opt[data-o="all"]{display:none}
+/* 20/11 (Nico, X2): from Sat 28/11/2026 00:00 Rome the Everything row stays hidden for good, also after the Black Friday (html.x2, set in the head) */
+html.x2 .opt[data-o="all"]{display:none}
 html.bf .offer{background:linear-gradient(180deg,var(--bg) 0,#0d0e12cc 40px,#0000 150px),linear-gradient(0deg,var(--bg),#0000 140px),radial-gradient(110% 34% at 50% 13%,#ffd60a77,transparent 70%),radial-gradient(80% 30% at 0% 60%,#ff7a0055,transparent 70%),radial-gradient(80% 30% at 100% 85%,#ff3b3044,transparent 70%),#0b0905;margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px}
 html.bf .offer .box{background:#120f07d9;border-color:#ffd60a55}
 .opt.bfc{position:relative;margin:14px 0 16px;padding:16px 14px 14px;border-radius:18px;background:radial-gradient(120% 90% at 50% 0%,#3a2c00 0%,#0b0a06 62%);border:1.5px solid #ffd60a;box-shadow:0 0 0 5px #ffd60a1a,0 24px 60px -24px #ffd60a99;text-align:center;overflow:hidden;cursor:pointer}

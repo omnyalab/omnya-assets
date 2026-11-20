@@ -92,6 +92,10 @@ function memRedis([c, ...a]) {
     case 'HSET': { const h = hash(k); let n = 0; for (let i = 1; i < a.length; i += 2) { if (!h.has(String(a[i]))) n++; h.set(String(a[i]), String(a[i + 1])); } return n; }
     case 'HINCRBY': { const h = hash(k); const n = Number(h.get(String(a[1])) || 0) + Number(a[2]); h.set(String(a[1]), String(n)); return n; }
     case 'HGETALL': return [...hash(k)].flat();
+    case 'HGET': { const v = hash(k).get(String(a[1])); return v == null ? null : v; }
+    case 'HDEL': { const h = hash(k); let n = 0; for (const f of a.slice(1)) if (h.delete(String(f))) n++; return n; }
+    case 'HLEN': return hash(k).size;
+    case 'SCARD': return set(k).size;
     case 'ZADD': {
       const z = zset(k); let i = 1, nx = false;
       while (i < a.length && /^(NX|XX|GT|LT|CH)$/i.test(String(a[i]))) { if (/^NX$/i.test(String(a[i]))) nx = true; i++; }
@@ -119,6 +123,10 @@ function memRedis([c, ...a]) {
 }
 
 export const hasStore = () => Boolean(URL_ && TOKEN);
+
+/** 20/11 (THE 3D FUTURE): Redis when Upstash is there, the memory copy above when it is not (local preview), so a
+    function can be tried on the computer with no keys. Same commands, same answers, always a promise. */
+export const kv = async (...cmd) => (hasStore() ? redis(...cmd) : memRedis(cmd));
 
 /** Bookings made on the site that touch [from, to], as [startMs, endMs]. */
 export async function siteBusy(from, to) {

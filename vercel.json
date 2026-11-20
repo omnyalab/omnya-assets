@@ -577,6 +577,9 @@
     },
     "api/file.js": {
       "includeFiles": "private/learn/**"
+    },
+    "api/club.js": {
+      "maxDuration": 60
     }
   },
   "rewrites": [
@@ -587,6 +590,10 @@
     {
       "source": "/api/city/:action",
       "destination": "/api/city?action=:action"
+    },
+    {
+      "source": "/api/club/:action",
+      "destination": "/api/club?action=:action"
     },
     {
       "source": "/city/:item(yacht|island)",

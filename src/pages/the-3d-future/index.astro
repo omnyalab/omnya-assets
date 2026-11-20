@@ -1,0 +1,244 @@
+---
+// /the-3d-future (20/11, Nico): the public page of THE 3D FUTURE, Omnya Lab's paid club, ported from board A "Giro 3"
+// (https://claude.ai/artifact/E9JsJzy1K8P1B4ceYPQaJK): A1 with the hero H6 (title and blue glass knot, wordmark W1),
+// A2 pre-registration in three steps on P1, B2 badges, Burtville photos under glass, the Vault with six open builds and
+// the locked next one, the numbers with their source, the value stack before the price, the questions after.
+// The page is static: the phase of the round is picked in the visitor's browser before the first paint (Europe/Rome):
+//   before (until Sat 28/11 09:00)  "Get in first", the pre-registration → /api/optin 'waitlist-3d-future'
+//   early (09:00-18:00) and open (until Fri 4/12 23:59)  "Join for €9/month", seats from /api/club/seats, the receipt
+//     check /api/club/verify, the Stripe checkout of /api/club/checkout inside the page
+//   closed  "Doors closed for this round", the same pre-registration for the next one
+// Previews: ?at=<ISO date> moves the clock (e.g. ?at=2026-11-29T12:00:00%2B01:00), ?seats=<n> = seats taken (the number
+// the page shows), ?v=a|b picks the name (a THE 3D FUTURE, b 3D THAT SELLS; otherwise 50/50, kept 30 days in t3f_v).
+// The behaviour is in components/club/club-client.js, the look in components/club/club.css.
+import '../../components/club/club.css';
+import Icon from '../../components/club/Icon.astro';
+import ClubPanels from '../../components/club/ClubPanels.astro';
+import { badgeB2 } from '../../components/club/badges';
+import { EARLY, OPEN, CLOSE, SUB, PROOF, SOURCE, proofTxt, DROPS, INSIDE, VALUE, FAQ, bv, bvSet, vImg, vSet } from '../../components/club/data';
+import client from '../../components/club/club-client.js?raw';
+
+const title = 'THE 3D FUTURE · Omnya Lab';
+const description = 'The club where you learn to build the 3D that sells: step-by-step video courses on our builds, six builds from our reels with files, prompts and Claude skills, a new build every Friday.';
+const canonical = new URL('/the-3d-future', Astro.site);
+const og = new URL('/og/omnya-lab.jpg', Astro.site);
+const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
+---
+<!doctype html>
+<html lang="en" data-phase="before" data-v="a" data-t-early={Date.parse(EARLY)} data-t-open={Date.parse(OPEN)} data-t-close={Date.parse(CLOSE)}>
+<head>
+<meta charset="utf-8">
+<title>{title}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script is:inline>
+/* before the first paint: the phase of the round (?at= previews another moment), the name test (?v= or 50/50 kept
+   30 days in the cookie t3f_v) and the reel that brought the visit (?ig=, the same as layouts/Base.astro) */
+(function () {
+  var h = document.documentElement, q = new URLSearchParams(location.search), off = 0;
+  var at = Date.parse((q.get('at') || '').replace(' ', '+')); if (!isNaN(at)) off = at - Date.now();
+  var t = Date.now() + off;
+  h.setAttribute('data-phase', t < +h.dataset.tEarly ? 'before' : t < +h.dataset.tOpen ? 'early' : t < +h.dataset.tClose ? 'open' : 'closed');
+  var v = q.get('v');
+  if (v !== 'a' && v !== 'b') { var m = document.cookie.match(/(?:^|;\s*)t3f_v=([ab])/); v = m ? m[1] : (Math.random() < 0.5 ? 'a' : 'b'); }
+  try { document.cookie = 't3f_v=' + v + '; Max-Age=2592000; Path=/; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : ''); } catch (e) {}
+  h.setAttribute('data-v', v);
+  if (v === 'b') document.title = document.title.replace('THE 3D FUTURE', '3D THAT SELLS');
+  window.__t3f = { off: off, v: v };
+  try { var c = q.get('ig') || q.get('reel') || (location.hash.match(/[#&]ig=([^&]+)/) || [])[1] || ''; c = c.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 60); if (c) { localStorage.setItem('omnya-ig', c); localStorage.setItem('omnya-ig-at', String(Date.now())); } } catch (e) {}
+})();
+</script>
+<meta name="description" content={description}>
+<link rel="canonical" href={canonical}>
+<meta name="theme-color" content="#0b1534">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Omnya Lab">
+<meta property="og:title" content={title}>
+<meta property="og:description" content={description}>
+<meta property="og:url" content={canonical}>
+<meta property="og:image" content={og}>
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://js.stripe.com">
+<link rel="preload" as="image" href="/club/burj-phone.webp" media="(max-width: 899px)" fetchpriority="high">
+<link rel="preload" as="image" href="/club/burj-1080.webp" media="(min-width: 900px)" fetchpriority="high">
+{import.meta.env.PROD && <script is:inline defer src="/_vercel/insights/script.js"></script>}
+<script is:inline defer src="/consent.js"></script>
+</head>
+<body class="club" style="--tint:#1e2a4a">
+<main>
+  {/* ---------- A1 · H6 ---------- */}
+  <section class="hero" data-tint="#1e2a4a">
+    <div class="stick">
+      <picture><source media="(min-width: 900px)" srcset="/club/burj-1080.webp"><img src="/club/burj-phone.webp" alt="" fetchpriority="high" decoding="async"></picture>
+      <video class="hv" muted playsinline loop preload="metadata" aria-hidden="true" tabindex="-1" data-hv></video>
+      <script is:inline>
+        (function () { var v = document.querySelector('[data-hv]'); if (!v) return;
+          if (matchMedia('(prefers-reduced-motion: reduce)').matches || (navigator.connection && navigator.connection.saveData)) return;
+          var d = matchMedia('(min-width: 900px)').matches;
+          v.poster = d ? '/club/burj-1080.webp' : '/club/burj-phone.webp'; v.src = d ? '/club/burj-1080.mp4' : '/club/burj-phone.mp4';
+          v.addEventListener('playing', function () { v.classList.add('on'); }, { once: true });
+          var p = v.play(); if (p && p.catch) p.catch(function () {}); })();
+      </script>
+      <span class="hfade" aria-hidden="true"></span>
+      <div class="hx">
+        <div class="h6l">
+          <h1>
+            <span data-vv="a">THE <span class="g">3D</span></span><span data-vv="a">FUTURE</span>
+            <span data-vv="b"><span class="g">3D</span> THAT</span><span data-vv="b">SELLS</span>
+          </h1>
+          <p class="hsub">{SUB}</p>
+          <div class="ctas">
+            <button type="button" class="btn cta" data-join>
+              <span data-when="before">Get in first</span><span data-when="early open">Join for <span data-eur>€9</span>/month</span><span data-when="closed">Get on the list for the next one</span>
+            </button>
+            <a class="btn glassbtn" href="#vault" data-see>See inside<span class="chev" aria-hidden="true">›</span></a>
+          </div>
+          <div class="hwhen">
+            <span class="tag" data-when="before"><i></i>Doors open Saturday 28 November</span>
+            <span class="tag" data-when="early"><i></i>Open now for the list, for everyone at 18:00</span>
+            <span class="tag" data-when="open"><i></i>Doors close Friday 4 December</span>
+            <span class="tag off" data-when="closed"><i></i>Doors closed for this round</span>
+            <div class="cdn" role="timer" aria-label="Time until the doors open" data-cd="early" data-when="before">
+              {cdParts.map(([p, t], i) => <>{i > 0 && <i aria-hidden="true">:</i>}<span><b data-part={p}>{p === 'd' ? '0' : '00'}</b><small>{t}</small></span></>)}
+            </div>
+            <div class="cdn" role="timer" aria-label="Time until the doors close" data-cd="close" data-when="early open">
+              {cdParts.map(([p, t], i) => <>{i > 0 && <i aria-hidden="true">:</i>}<span><b data-part={p}>{p === 'd' ? '0' : '00'}</b><small>{t}</small></span></>)}
+            </div>
+          </div>
+        </div>
+        <div class="h6r"><span class="hmk"><img src="/club/knot-360.webp" srcset="/club/knot-360.webp 360w, /club/knot-760.webp 760w" sizes="(min-width: 900px) clamp(220px, 30vw, 380px), 180px" width="380" height="380" alt="" fetchpriority="high"></span></div>
+      </div>
+    </div>
+  </section>
+
+  {/* ---------- the numbers ---------- */}
+  <section class="sec" id="results" data-tint="#2c3a63">
+    <div class="secbg soft" aria-hidden="true"><img src="/club/bg-towers-top.webp" alt="" loading="lazy" decoding="async"></div>
+    <div class="wrap">
+      <div class="head center"><h2>The numbers this method made us</h2></div>
+      <div class="stats">
+        {PROOF.map((s) => (
+          <div class:list={['stat', { big1: s.big }]}>
+            <img src={bv(s.bv, 800)} srcset={bvSet(s.bv)} sizes={s.big ? '(min-width: 900px) 576px, 100vw' : '(min-width: 900px) 288px, 50vw'} alt="" loading="lazy" decoding="async">
+            <span class="gz"></span>
+            <span class:list={['n', { long: proofTxt(s).length >= 6 }]} data-count={s.n} data-dec={s.dec || 0} data-pre={s.pre || ''} data-suf={s.suf || ''}>{proofTxt(s)}</span>
+            <span class="l">{s.l.split('|').map((x, i) => <>{i > 0 && <br />}{x}</>)}</span>
+          </div>
+        ))}
+      </div>
+      <p class="src">{SOURCE}</p>
+    </div>
+  </section>
+
+  {/* ---------- the Vault ---------- */}
+  <section class="sec" id="vault" data-tint="#2b3d5e">
+    <div class="secbg soft" aria-hidden="true"><img src="/club/bg-burj-fog.webp" alt="" loading="lazy" decoding="async"></div>
+    <div class="wrap">
+      <div class="head"><h2>Six builds on day one, then a new one every Friday</h2></div>
+      <ul class="deck" data-deck>
+        {DROPS.map((d, i) => (
+          <li class:list={['vcard', { open: i === 0 }]} role="button" tabindex="0" aria-label={`${d.t}, ${d.type}`} data-card>
+            <img src={vImg(d.img)} srcset={vSet(d.img)} sizes="(min-width: 900px) 420px, 100vw" alt="" loading="lazy" decoding="async">
+            <div class="vt"><span class="pill"><Icon name="doc" />{d.type}</span><span class="go ctr"><Icon name="chev" /></span></div>
+            <span class="word" aria-hidden="true">{d.w}</span>
+          </li>
+        ))}
+        <li class="vcard soon" role="button" tabindex="0" aria-label="Next build, Friday 4 December" data-card data-soon>
+          <span class="mystery"></span>
+          <div class="vt"><span class="pill"><Icon name="lock" />Fri 4 Dec</span><span class="go ctr"><Icon name="lock" /></span></div>
+          <span class="word" aria-hidden="true">Next build</span><span class="sub2">Friday 4 December</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  {/* ---------- what's inside, the courses first ---------- */}
+  <section class="sec" id="inside" data-tint="#2a3354">
+    <div class="wrap">
+      <div class="head center"><h2>What's inside</h2></div>
+      <ul class="steps3">
+        {INSIDE.map((s) => (
+          <li class="glass step"><span class="sn2" set:html={badgeB2(s.k)} /><span class="st"><b>{s.t}</b><small>{s.d}</small></span></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {/* ---------- the offer: one card with everything (Nico, 20/11: "bella bella, alla Hormozi") ---------- */}
+  <section class="sec" id="price" data-tint="#5a4030">
+    <div class="secbg soft" aria-hidden="true"><img src="/club/bg-mesa-dusk.webp" alt="" loading="lazy" decoding="async"></div>
+    <div class="wrap">
+      <div class="offer">
+        <div class="ofl">
+          <h2 class="oft">Join <span data-vv="a">THE <span class="g">3D</span> FUTURE</span><span data-vv="b"><span class="g">3D</span> THAT SELLS</span></h2>
+          <ul class="vrows">
+            {VALUE.map(([t, v]) => <li><span class="vk ctr"><Icon name="check" /></span><span>{t}</span>{v && <span class="vv">{v}</span>}</li>)}
+          </ul>
+        </div>
+        <div class="ofr">
+          <p class="was"><s>€150+ on our site</s></p>
+          <div class="oprice"><b data-eur>€9</b><span>a month</span></div>
+          <p class="olock">locked for as long as you stay</p>
+          <p class="bonus"><Icon name="gift" /><span><b>Bonus</b> · the House Builder skill is yours to keep</span></p>
+          <div class="seats">
+            <p class="sline" data-when="before">100 seats at €9, then €19</p>
+            <div class="seatbox" data-when="early open" data-seatbox hidden>
+              <p class="sline"><b data-left>100</b> of 100 seats left at €9</p>
+              <div class="seatbar" aria-hidden="true" data-seatbar>{Array.from({ length: 20 }, () => <i></i>)}</div>
+            </div>
+          </div>
+          <div class="ocd">
+            <span class="tag" data-when="before"><i></i>Doors open Saturday 28 November</span>
+            <span class="tag" data-when="early"><i></i>Open now for the list, for everyone at 18:00</span>
+            <span class="tag" data-when="open"><i></i>Doors close Friday 4 December</span>
+            <span class="tag off" data-when="closed"><i></i>Doors closed for this round</span>
+            <div class="cdn" role="timer" aria-label="Time until the doors open" data-cd="early" data-when="before">
+              {cdParts.map(([p, t], i) => <>{i > 0 && <i aria-hidden="true">:</i>}<span><b data-part={p}>{p === 'd' ? '0' : '00'}</b><small>{t}</small></span></>)}
+            </div>
+            <div class="cdn" role="timer" aria-label="Time until the doors close" data-cd="close" data-when="early open">
+              {cdParts.map(([p, t], i) => <>{i > 0 && <i aria-hidden="true">:</i>}<span><b data-part={p}>{p === 'd' ? '0' : '00'}</b><small>{t}</small></span></>)}
+            </div>
+          </div>
+          <button type="button" class="btn cta wide ojoin" data-join>
+            <span data-when="before">Get in first →</span><span data-when="early open">Join for <span data-eur>€9</span>/month →</span><span data-when="closed">Get on the list for the next one →</span>
+          </button>
+          <p class="fine" data-when="before early open">Cancel in one tap · Secure payment by Stripe</p>
+          <form class="rcpt" data-rcpt data-when="before early open" novalidate>
+            <p class="rq" data-mode="r"><b>Bought one of our guides?</b> Enter your receipt number</p>
+            <p class="rq" data-mode="e" hidden><b>Bought one of our guides?</b> Enter the email you paid with</p>
+            <div class="rrow">
+              <label class="rin" data-rin><span aria-hidden="true" data-mode="r">#</span><span aria-hidden="true" data-mode="e" hidden><Icon name="mail" /></span><input name="proof" inputmode="numeric" autocomplete="off" placeholder="1415-7362" maxlength="120" aria-label="Receipt number" data-rinput></label>
+              <button class="btn rbtn" type="submit">Check</button>
+            </div>
+            <p class="rok" data-rok role="status" hidden><Icon name="check" /><span>Guide found · €9 a month for you, even after the first 100</span></p>
+            <p class="rno" data-rno role="alert" hidden></p>
+            <button type="button" class="rsm" data-rswitch><span data-mode="r">No receipt? Use the email you paid with</span><span data-mode="e" hidden>Have the receipt? Use the receipt number</span></button>
+          </form>
+          <div class="host2"><img src="/club/nico-128.webp" alt="Nico" width="32" height="32" loading="lazy" decoding="async"><p><b>Taught by Nico</b> · Omnya Lab</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ---------- questions ---------- */}
+  <section class="sec" id="faq" data-tint="#26304f">
+    <div class="wrap">
+      <div class="head center"><h2>Questions</h2></div>
+      <div class="acc">
+        {FAQ.map(([qq, a], i) => <details class="qa" open={i === 0}><summary><h3>{qq}</h3><span class="pm" aria-hidden="true"></span></summary><p>{a}</p></details>)}
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="foot">
+  <span class="lockup"><img src="/club/knot-96.webp" width="24" height="24" alt="" loading="lazy"><span class="wm"><span data-vv="a">THE <b>3D</b> FUTURE</span><span data-vv="b"><b>3D</b> THAT SELLS</span></span></span>
+  <nav aria-label="Club links"><a href="/the-3d-future/terms">Terms</a><a href="/withdraw">Withdraw from contract</a></nav>
+</footer>
+<ClubPanels />
+<script is:inline set:html={client}></script>
+</body>
+</html>

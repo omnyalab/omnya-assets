@@ -187,6 +187,14 @@ const RULES = [
   [/playbook\s*03|sell it before it exists|launch kit/i, [BEFORE_IT_EXISTS]],
 ];
 
+/** 20/11 (THE 3D FUTURE): true for a product that is one of our guides, the products with files above (the Full guides,
+    the playbooks, the pack, the skills and kits), whatever its price. The Omnya City products are houses, not guides
+    ("Omnya City · …", "Move downtown · Omnya City"): /city/ would match them, so they are left out first. A lesson
+    matches no rule, so it is not a guide either. Who bought one keeps the €9 price of the club (api/_lib/club.js). */
+export const isGuideProduct = (name) => !!name && !/omnya city/i.test(name) && RULES.some(([re]) => re.test(name));
+/** The House Builder skill, the bonus every member of the club keeps (api/_lib/club.js signs its link). */
+export const HOUSE_SKILL_FILE = HOUSE_SKILL.file;
+
 /** names = every line item's product name on one Checkout Session. Returns the files to deliver, deduped,
     as { name, file, href }: href is the signed link, good for ttl seconds. lang 'it' gives the Italian
     file where one exists (the playbooks), the English one otherwise (the Full blueprints). The scene file

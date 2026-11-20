@@ -58,9 +58,13 @@ html.ry-bf [data-upgrade]{display:none!important}
 </style>
 <script is:inline>
 { const end = Date.parse('2026-11-27T23:59:59+01:00'), box = document.querySelector('[data-rybf]')
-  if (box && Date.now() < end) { box.hidden = false; document.documentElement.classList.add('ry-bf')
+  // 20/11: preview only. With ?at=<ISO date> in the URL (the previews of the thanks page, as in components/RiyadhFuture)
+  // the card lives at that moment: after 27/11 23:59 Rome it is gone. Without ?at= now() is Date.now(), nothing changes.
+  const pv = Date.parse((new URLSearchParams(location.search).get('at') || '').replace(' ', '+')), t0 = Date.now()
+  const now = () => isNaN(pv) ? Date.now() : pv + (Date.now() - t0)
+  if (box && now() < end) { box.hidden = false; document.documentElement.classList.add('ry-bf')
     const card = box.querySelector('[data-bft]'), p2 = n => String(n).padStart(2, '0'), q = a => card.querySelector('[data-' + a + ']')
-    const bt = () => { const x = Math.max(0, Math.floor((end - Date.now()) / 1000)); if (!x) { box.hidden = true; document.documentElement.classList.remove('ry-bf'); return } q('bd').textContent = Math.floor(x / 86400); q('bh').textContent = p2(Math.floor(x % 86400 / 3600)); q('bm').textContent = p2(Math.floor(x % 3600 / 60)); q('bs').textContent = p2(x % 60) }
+    const bt = () => { const x = Math.max(0, Math.floor((end - now()) / 1000)); if (!x) { box.hidden = true; document.documentElement.classList.remove('ry-bf'); return } q('bd').textContent = Math.floor(x / 86400); q('bh').textContent = p2(Math.floor(x % 86400 / 3600)); q('bm').textContent = p2(Math.floor(x % 3600 / 60)); q('bs').textContent = p2(x % 60) }
     bt(); setInterval(bt, 1000)
     // 18/11 (Nico): the offer counts what the buyer has just paid. €59 minus the guide (or guide + kit) of this payment,
     // read from Stripe through api/files.js (paid = amount_total in cents), never for who already holds the pack.

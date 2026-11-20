@@ -14,6 +14,7 @@ import RiyadhFuture from '../components/RiyadhFuture.astro';
 import BuildThanksColors from '../components/BuildThanksColors.astro';
 import StadiumThanksColors from '../components/StadiumThanksColors.astro';
 import PlaneThanksColors from '../components/PlaneThanksColors.astro';
+import FunnelThanksColors from '../components/FunnelThanksColors.astro';
 import { goHref, thanks, booking, everythingUpgrade, type ProductId } from '../lib/learn';
 import { t, langFromPath, localize } from '../i18n';
 
@@ -77,6 +78,15 @@ const bought = (() => {
   if (id === 'everything') return 'Everything we teach';
   return `${it ? 'il' : 'the'} ${fulls[id] || 'PDF'}`;
 })();
+// 20/11 (Nico): every funnel thanks page is black with the colour of its funnel (like the stadium one: black with red).
+// accent = the --blue of the funnel's own watch page: the site blue of Tower, Towers, 3D, City and Floors (where the three
+// playbooks are sold), the pink of Miami. The pack is bought from every funnel: the site blue of the funnel template.
+// head: true where an offer card still follows the "only here" title (the club card pages hide it, like Riyadh).
+const dark: Record<string, { accent: string; head?: boolean }> = {
+  'full-tower': { accent: '#0a84ff' }, 'full-towers': { accent: '#0a84ff' }, 'full-3d': { accent: '#0a84ff' },
+  'full-city': { accent: '#0a84ff', head: true }, 'full-miami': { accent: '#ff3d8b', head: true },
+  bundle: { accent: '#0a84ff', head: true }, everything: { accent: '#0a84ff', head: true },
+};
 const ask = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'it' ? `Ciao Nico, ho appena comprato ${bought} e ho una domanda: ` : `Hi Nico, I just bought ${bought} and I have a question: `);
 const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'it' ? 'Ciao Nico, ho pagato ma non trovo i miei PDF. La mail che ho usato è: ' : 'Hi Nico, I paid but I can’t find my PDFs. The email I used is: ');
 ---
@@ -134,7 +144,9 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
 
     {up && <FunnelUpgrade id={Astro.props.id} lang={lang} />}
 
-    {Astro.props.id === 'full-riyadh' ? <RiyadhFuture /> : Astro.props.id === 'full-build' ? <RiyadhFuture kind="build" /> : Astro.props.id === 'full-stadium' ? <RiyadhFuture kind="stadium" /> : Astro.props.id === 'full-plane' ? <RiyadhFuture kind="plane" /> : (
+    {/* 20/11 (Nico): The 3D Future card also on the light thanks pages of the Tower, Towers and 3D guides, where it takes the
+        place of the old Skool card of the same community (oto 'community'), on its own night ground (panel) */}
+    {Astro.props.id === 'full-riyadh' ? <RiyadhFuture /> : Astro.props.id === 'full-build' ? <RiyadhFuture kind="build" /> : Astro.props.id === 'full-stadium' ? <RiyadhFuture kind="stadium" /> : Astro.props.id === 'full-plane' ? <RiyadhFuture kind="plane" /> : ['full-tower', 'full-towers', 'full-3d'].includes(Astro.props.id) ? <RiyadhFuture panel /> : (
     <article class:list={['oto__card', { 'oto__card--skool': v.kind === 'skool' }]} data-fade>
       <div class="oto__visual">
         {
@@ -165,6 +177,8 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
       </div>
     </article>
     )}
+    {/* 20/11: after "Everything we teach" the lesson offer stays where it is and The 3D Future card comes under it */}
+    {Astro.props.id === 'everything' && <RiyadhFuture panel />}
   </section>
 
   {
@@ -222,6 +236,7 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
 {Astro.props.id === 'full-build' && <BuildThanksColors />}
 {Astro.props.id === 'full-stadium' && <StadiumThanksColors />}
 {Astro.props.id === 'full-plane' && <PlaneThanksColors />}
+{dark[Astro.props.id] && <FunnelThanksColors {...dark[Astro.props.id]} />}
 {Astro.props.id === 'full-riyadh' && (
 <style is:global>
   /* 17/11 (Nico): after paying for the Riyadh guide the page is in the colours of that funnel (violet night, white text) */

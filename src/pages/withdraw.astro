@@ -1,0 +1,92 @@
+---
+// /withdraw (20/11, Nico): the withdrawal function of art. 54-bis Codice del consumo (in force from 19/6/2026), for the
+// club and for any purchase on omnyalab.com. A function clearly labelled "Withdraw from contract here": the person writes
+// name, email and which purchase, then a confirmation screen with the "Confirm withdrawal" button. POST /api/club/withdraw
+// saves it with the time, sends the receipt by email (the durable medium) and lists it for Nico. No refund is made by
+// itself: Nico handles it.
+import Club from '../layouts/Club.astro';
+---
+<Club title="Withdraw from contract here" description="Withdraw from a purchase made on omnyalab.com within 14 days.">
+  <h1>Withdraw from contract here</h1>
+  <p class="lead">To withdraw from a purchase made on omnyalab.com, for example THE 3D FUTURE, within 14 days.</p>
+
+  <!-- 1. the form -->
+  <form class="box" data-wd-form novalidate>
+    <label for="wd-name">Your name</label>
+    <input class="in" id="wd-name" name="name" autocomplete="name" maxlength="80" required>
+    <label for="wd-email">The email you paid with</label>
+    <input class="in" id="wd-email" name="email" type="email" autocomplete="email" maxlength="120" required>
+    <label for="wd-purchase">Which purchase</label>
+    <input class="in" id="wd-purchase" name="purchase" maxlength="200" placeholder="e.g. THE 3D FUTURE, monthly, or the receipt number" required>
+    <input name="company" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+    <button class="btn" type="submit">Continue</button>
+    <p class="err" data-wd-err role="alert"></p>
+  </form>
+
+  <!-- 2. the confirmation screen -->
+  <section class="box" data-wd-check hidden aria-labelledby="wd-check-t">
+    <h2 id="wd-check-t">Check and confirm</h2>
+    <dl class="wd-dl">
+      <dt>Name</dt><dd data-wd-v="name"></dd>
+      <dt>Email</dt><dd data-wd-v="email"></dd>
+      <dt>Purchase</dt><dd data-wd-v="purchase"></dd>
+    </dl>
+    <p>With the button below you withdraw from this contract. We send the receipt to your email at once.</p>
+    <div class="wd-row">
+      <button class="btn" type="button" data-wd-confirm>Confirm withdrawal</button>
+      <button class="btn btn--line" type="button" data-wd-back>Change</button>
+    </div>
+    <p class="err" data-wd-err2 role="alert"></p>
+  </section>
+
+  <!-- 3. done -->
+  <section class="box" data-wd-done hidden aria-live="polite">
+    <h2>Your withdrawal is recorded</h2>
+    <dl class="wd-dl">
+      <dt>Number</dt><dd data-wd-id></dd>
+      <dt>Received on</dt><dd data-wd-when></dd>
+    </dl>
+    <p data-wd-mail></p>
+    <p class="mute">We write to you by email about the refund. Questions: <a href="mailto:info@omnyalab.com">info@omnyalab.com</a>.</p>
+  </section>
+
+  <p class="mute small">The 14 days and what they cover are in the <a href="/the-3d-future/terms">club terms</a> and in our <a href="/terms">terms of sale</a>.</p>
+</Club>
+
+<style>
+  .wd-dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0 0 16px}
+  .wd-dl dt{color:var(--mute)}
+  .wd-dl dd{margin:0;overflow-wrap:anywhere;font-weight:600;color:#fff}
+  .wd-row{display:flex;flex-wrap:wrap;gap:10px}
+  .small{font-size:14.5px}
+</style>
+
+<script is:inline>
+{ const f = document.querySelector('[data-wd-form]'), ck = document.querySelector('[data-wd-check]'), dn = document.querySelector('[data-wd-done]')
+  const err = document.querySelector('[data-wd-err]'), err2 = document.querySelector('[data-wd-err2]'), ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+  let v = {}
+  f.addEventListener('submit', e => {
+    e.preventDefault(); err.textContent = ''
+    v = { name: f.name.value.trim(), email: f.email.value.trim(), purchase: f.purchase.value.trim(), company: f.company.value }
+    if (!v.name) { err.textContent = 'Write your name'; f.name.focus(); return }
+    if (!ok.test(v.email)) { err.textContent = 'Write the email you paid with'; f.email.focus(); return }
+    if (!v.purchase) { err.textContent = 'Write which purchase'; f.purchase.focus(); return }
+    ck.querySelectorAll('[data-wd-v]').forEach(d => { d.textContent = v[d.dataset.wdV] })
+    f.hidden = true; ck.hidden = false; ck.querySelector('[data-wd-confirm]').focus()
+  })
+  ck.querySelector('[data-wd-back]').addEventListener('click', () => { ck.hidden = true; f.hidden = false })
+  const btn = ck.querySelector('[data-wd-confirm]')
+  btn.addEventListener('click', async () => {
+    btn.disabled = true; err2.textContent = ''
+    try {
+      const r = await fetch('/api/club/withdraw', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...v, confirm: true }) })
+      const d = await r.json().catch(() => ({}))
+      if (!r.ok || !d.ok) throw new Error(d.error || 'error')
+      dn.querySelector('[data-wd-id]').textContent = d.id || ''
+      dn.querySelector('[data-wd-when]').textContent = d.when || ''
+      dn.querySelector('[data-wd-mail]').textContent = d.mailed === false ? 'We could not send the receipt email: keep this page, and write to info@omnyalab.com with the number above.' : 'The receipt is in your inbox (' + v.email + '), keep it.'
+      ck.hidden = true; dn.hidden = false
+    } catch (x) { btn.disabled = false; err2.textContent = 'It did not go through. Try again, or write to info@omnyalab.com: ' + x.message }
+  })
+}
+</script>

@@ -1,0 +1,57 @@
+---
+// /the-3d-future/welcome?session_id=cs_… (20/11, Nico): where the club checkout comes back (api/club.js, return_url).
+// "You're in" and the same three steps as the welcome email W1 (api/_lib/club.js). The links come from
+// /api/club/welcome only once Stripe says this session is a paid club checkout; otherwise the steps are written without
+// links and the page says they are in the email. Simple, dark, the club's blue: the visual designer restyles it later.
+import Club from '../../layouts/Club.astro';
+---
+<Club title="You're in" noindex>
+  <h1 data-hi>You're in.</h1>
+  <p class="lead" data-state data-checking="Checking your payment…" data-fail="Your welcome email is on its way, with every link in it (subject: you're in)." data-ok="Three steps, and you're building.">Your welcome email is on its way, with every link in it (subject: you're in).</p>
+
+  <ol class="steps">
+    <li class="box">
+      <h2>First, join the room on Skool</h2>
+      <p>Join with the email you paid with<span data-email></span>, so we can let you in.</p>
+      <a class="btn" data-skool hidden target="_blank" rel="noopener">Join on Skool →</a>
+    </li>
+    <li class="box">
+      <h2>Your House Builder skill is yours to keep</h2>
+      <p>A skill for Claude: the README inside the zip has every step.</p>
+      <a class="btn" data-skill hidden>Download the skill · zip</a>
+    </li>
+    <li class="box">
+      <h2>Then start the first video course</h2>
+      <p>Your own stadium step by step, and when it's done post it in <b>Show your build</b>: I look at every first build myself.</p>
+    </li>
+  </ol>
+
+  {/* the one-tap link once CLUB_PORTAL_URL is on Vercel; until then, as in the email: reply to cancel */}
+  <p class="mute small"><span data-cancel>To cancel, reply to the welcome email.</span> To withdraw within 14 days: <a href="/withdraw">omnyalab.com/withdraw</a>.</p>
+  <p class="mute">Nico</p>
+</Club>
+
+<style>
+  .steps{list-style:none;margin:26px 0 30px;padding:0;counter-reset:s}
+  .steps li{position:relative;padding-left:66px;counter-increment:s}
+  .steps li::before{content:counter(s);position:absolute;left:18px;top:22px;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--blue);font:700 15px Geist,sans-serif;color:#fff}
+  .steps h2{margin:4px 0 6px;font-size:18px}
+  .steps p{margin:0 0 14px}
+  .steps li > :last-child{margin-bottom:0}
+  .small{font-size:14.5px}
+</style>
+
+<script is:inline>
+{ const id = new URLSearchParams(location.search).get('session_id') || '', st = document.querySelector('[data-state]')
+  const show = (sel, href) => { const a = document.querySelector(sel); if (a && href) { a.href = href; a.hidden = false } }
+  if (/^cs_(live|test)_[A-Za-z0-9]{8,200}$/.test(id)) {
+    st.textContent = st.dataset.checking
+    fetch('/api/club/welcome?session_id=' + encodeURIComponent(id)).then(r => r.ok ? r.json() : Promise.reject()).then(d => {
+      if (d.name && d.name !== 'there') document.querySelector('[data-hi]').textContent = 'You’re in, ' + d.name + '.'
+      if (d.email) document.querySelector('[data-email]').textContent = ' (' + d.email + ')'
+      show('[data-skool]', d.skool); show('[data-skill]', d.skill)
+      if (d.portal) { const c = document.querySelector('[data-cancel]'), a = document.createElement('a'); a.href = d.portal; a.textContent = 'here'; c.textContent = 'If you ever want to cancel, it’s one tap '; c.append(a, '.') }
+      st.textContent = d.skool ? st.dataset.ok : st.dataset.fail
+    }).catch(() => { st.textContent = st.dataset.fail })
+  } }
+</script>

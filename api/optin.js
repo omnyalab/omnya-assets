@@ -70,6 +70,8 @@ export async function POST(request) {
     try {
       await redis('LPUSH', KEY, JSON.stringify(row));
       if (consent.newsletter) await redis('SREM', OFF_KEY, email); // signed up again: back in
+      // 20/11: the club waitlist also in its own set, so the early doors of THE 3D FUTURE (28/11 09:00) find it at once (api/_lib/club.js)
+      if (b.free === 'waitlist-3d-future') await redis('SADD', 'omnya:club:waitlist', email);
     } catch (e) { console.error('[optin] store', e); }
   }
   if (b.ads === true && /^[a-z0-9_-]{6,60}$/i.test(String(b.eid || ''))) {

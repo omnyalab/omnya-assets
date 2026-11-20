@@ -13,6 +13,7 @@ import { metaEvent } from './_lib/meta.js';
 import { fixEmail } from './_lib/mail-fix.js';
 import { noteSale } from './_lib/centrale-sales.js';
 import { markMailed } from './_lib/drip.js';
+import { clubJoined, clubLeft, noteBuyer, noteReceipt } from './_lib/club.js';
 
 // Omnya City upsell (6/11/2026): these products move the buyer (client_reference_id = username, dots sent as dashes).
 const CITY = { 'Omnya City · The penthouse': 'penthouse', 'Omnya City · The best villa in Omnyawood': 'villa', 'Omnya City · A house by the fountain': 'fountain',
@@ -25,7 +26,10 @@ const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SEC
 // Stripe link (while it is empty the email is exactly as before) and never to who paid for the pack or for anything else.
 const UPGRADE_URL = 'https://www.omnyalab.com/go/everything-upgrade';
 const UPGRADE_LINE = ['You already paid €5.99, so for you ', 'Everything we teach', ' is €53 instead of €59, with the four Full guides, the three playbooks, the prompt files and the checklist, and '];
-const upgradeFor = (productNames, files) => !!everythingUpgrade && oneFullGuide(files) && !productNames.some(isPack);
+// 20/11 (Nico, X2): from Sat 28/11/2026 00:00 Rome the email no longer offers it (the club card takes its place on the
+// thanks pages, components/FunnelUpgrade.astro removes the card there from the same moment)
+const UPGRADE_UNTIL = Date.parse('2026-11-28T00:00:00+01:00');
+export const upgradeFor = (productNames, files, now = Date.now()) => !!everythingUpgrade && now < UPGRADE_UNTIL && oneFullGuide(files) && !productNames.some(isPack);
 
 // The Towers Scene File by email (10/11, Nico): when the cart of the Full Towers Blueprint also holds the scene (a
 // recommended product of that payment link, €12), its zip comes under the PDF with one line that says what it is: the
@@ -40,6 +44,10 @@ export const subjectFor = (files) => {
   return `Your ${pdfs[0].name}` + (zips.length ? ` and ${zips.map((z) => z.name.replace(/^The /, 'the ')).join(' and ')}` : '');
 };
 
+// 20/11 (Nico): a P.S. at the end of every delivery email: who bought a guide keeps The 3D Future at €9 a month
+const CLUB_URL = 'https://www.omnyalab.com/the-3d-future';
+const CLUB_PS = ['P.S. You bought this guide, so your seat in THE 3D FUTURE stays €9 a month, even after the first 100 · ', 'omnyalab.com/the-3d-future'];
+
 export function filesEmail(name, files, upgrade = false) {
   const { zips } = split(files); // files come with the PDFs first and the zips after them (filesForProduct)
   const btn = (f) =>
@@ -52,6 +60,7 @@ export function filesEmail(name, files, upgrade = false) {
 <p style="margin:28px 0${zips.length ? ' 14px' : ''}">${files.map(btn).join('')}</p>${zips.filter((z) => z.note).map((z) => `
 <p style="margin:0 0 28px;font-size:15px;color:#3a3936"><b>${z.name}</b> ${z.note}</p>`).join('')}${upgrade ? `
 <p style="margin:0;padding-top:22px;border-top:1px solid #d6d1c8;font-size:15px;color:#3a3936">${UPGRADE_LINE[0]}<b>${UPGRADE_LINE[1]}</b>${UPGRADE_LINE[2]}<a href="${UPGRADE_URL}" style="color:#b8613c;font-weight:600">you can upgrade here</a>.</p>` : ''}
+<p style="margin:28px 0 0;font-size:15px;color:#3a3936">${CLUB_PS[0]}<a href="${CLUB_URL}" style="color:#b8613c;font-weight:600">${CLUB_PS[1]}</a></p>
 </div></body></html>`;
 }
 
@@ -71,8 +80,34 @@ export async function POST(request) {
     return new Response('bad signature', { status: 400 });
   }
 
-  if (event.type !== 'checkout.session.completed') return new Response('ok');
+  // 20/11 (Nico): THE 3D FUTURE. A member who leaves goes on the list to take off Skool; a receipt number that Stripe
+  // gives after the checkout goes into the index of the guide buyers (api/_lib/club.js). Both need these events on the
+  // webhook in Stripe: customer.subscription.deleted, charge.updated
+  if (event.type === 'customer.subscription.deleted') {
+    try { await clubLeft(stripe, event.data.object); } catch (e) { console.error('[stripe-webhook] club left', e); return new Response('club failed', { status: 502 }); }
+    return new Response('ok');
+  }
+  if (event.type === 'charge.updated' || event.type === 'charge.succeeded') {
+    await noteReceipt(event.data.object).catch((e) => console.error('[stripe-webhook] receipt', e.message));
+    return new Response('ok');
+  }
+  const clubPaid = event.type === 'checkout.session.async_payment_succeeded' && event.data.object?.metadata?.club;
+  if (event.type !== 'checkout.session.completed' && !clubPaid) return new Response('ok');
   const session = event.data.object;
+
+  // 20/11 (Nico): someone joined THE 3D FUTURE (our club checkout, api/club.js): the member in Redis, the Skool list for
+  // Nico, the welcome email W1 with the House Builder skill. Nothing of the guide delivery below runs for them.
+  // A bank debit that is still on its way ('unpaid') waits for checkout.session.async_payment_succeeded.
+  if (session.metadata?.club) {
+    if (session.payment_status !== 'paid' && session.payment_status !== 'no_payment_required') return new Response('ok');
+    try {
+      await clubJoined(stripe, session);
+    } catch (e) {
+      console.error('[stripe-webhook] club', e.message);
+      return new Response('club failed', { status: 502 }); // Stripe tries again; every step is safe to repeat
+    }
+    return new Response('ok');
+  }
 
   // 7/11 Omnya City: a bid on the yacht or the island (the money is only held: capture_method 'manual', so not 'paid' yet)
   if (session.metadata?.auction) {
@@ -163,6 +198,10 @@ export async function POST(request) {
       return new Response('ok');
     }
 
+    // 20/11: the email of a guide buyer goes into the index of THE 3D FUTURE (who bought a guide keeps €9 a month), with
+    // the receipt number when Stripe has it. Nothing in it can stop the delivery
+    await noteBuyer(stripe, session, productNames).catch((e) => console.error('[stripe-webhook] club buyer', e.message));
+
     const upgrade = upgradeFor(productNames, files);
     const { pdfs, zips } = split(files);
     await sendMail({
@@ -181,6 +220,8 @@ export async function POST(request) {
         '',
         ...(upgrade ? [`${UPGRADE_LINE.join('')}you can upgrade here: ${UPGRADE_URL}`, ''] : []),
         'Nico · Omnya Lab',
+        '',
+        CLUB_PS[0] + CLUB_URL,
       ].join('\n'),
     });
     // 20/11: the follow-up series sends this buyer nothing more today (one email from us a day)
