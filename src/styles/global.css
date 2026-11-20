@@ -3161,5 +3161,12 @@ html.px-xmas .pbf > * { position: relative; z-index: 2; }
 /* 20/11 (Nico): every price card opens its info card, which ends with a WhatsApp button and a message for that card */
 .pband .ptable tbody tr.has-info { cursor: pointer; }
 .pinfo-pop__wa { margin: 14px 10px 6px; }
-/* on phones the info card sits above the cookie bar while that bar is up, so its WhatsApp button is never hidden */
-@media (max-width: 899px) { html.ocb-on .pinfo-pop { bottom: calc(var(--ocb, 0px) + 12px + env(safe-area-inset-bottom, 0px)); } }
+/* 20/11 (Nico): the info card opens in the middle of the screen, on phones and desktop, over the page blurred and darker,
+   so you only read the card. --pd-a is how dark, --pd-b how blurred (board: B1 light, B2 medium, B3 dark) */
+.pinfo-dim { position: fixed; inset: 0; z-index: 999; background: rgba(12, 12, 12, var(--pd-a, 0.5)); -webkit-backdrop-filter: blur(var(--pd-b, 14px)); backdrop-filter: blur(var(--pd-b, 14px)); opacity: 0; visibility: hidden; transition: opacity 0.35s var(--ease), visibility 0s linear 0.35s; }
+.pinfo-dim.is-open { opacity: 1; visibility: visible; transition: opacity 0.35s var(--ease); }
+html[data-pd="B1"] { --pd-a: 0.28; --pd-b: 8px; } html[data-pd="B2"] { --pd-a: 0.5; --pd-b: 14px; } html[data-pd="B3"] { --pd-a: 0.72; --pd-b: 24px; }
+html.pinfo-lock, html.pinfo-lock body { overflow: hidden; }
+.pinfo-pop { left: 50% !important; top: 50% !important; right: auto !important; bottom: auto !important; width: min(440px, calc(100vw - 32px)) !important; max-height: calc(100dvh - 40px); overflow: auto; transform: translate(-50%, calc(-50% + 18px)) scale(0.97) !important; transform-origin: center !important; }
+.pinfo-pop.is-open { transform: translate(-50%, -50%) !important; }
+.pinfo-pop { background: rgba(255, 255, 255, 0.97); }

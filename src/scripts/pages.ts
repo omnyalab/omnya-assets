@@ -311,9 +311,12 @@ export function priceInfo() {
   const btns = document.querySelectorAll<HTMLButtonElement>('[data-info]');
   if (!pop || !btns.length) return;
   const body = pop.querySelector<HTMLElement>('[data-info-body]')!;
+  // 20/11 (Nico): the card opens in the middle of the screen over the page blurred and darker; only a tap opens it
+  let dim = document.querySelector<HTMLElement>('.pinfo-dim');
+  if (!dim) { dim = document.createElement('div'); dim.className = 'pinfo-dim'; dim.setAttribute('aria-hidden', 'true'); document.body.appendChild(dim); }
+  const veil = dim;
   let open: HTMLButtonElement | null = null;
   let timer = 0;
-  let leave = 0;
   // 9/11: each preview is made once and kept, so opening it again is instant, and only the open one plays;
   // the clips start loading (just their first part) as soon as the price tables come into view
   const cache = new Map<string, Node[]>();
@@ -333,24 +336,15 @@ export function priceInfo() {
     btns.forEach((b) => nodes(b.dataset.info!).forEach((n) => { if (n instanceof HTMLElement) n.querySelectorAll('video').forEach((v) => { v.preload = fine ? 'auto' : 'metadata'; v.load(); }); }));
   }, { rootMargin: '300px 0px' });
   if (band) warm.observe(band);
-  if (fine) {
-    pop.addEventListener('mouseenter', () => window.clearTimeout(leave));
-    pop.addEventListener('mouseleave', () => { leave = window.setTimeout(close, 280); });
-  }
-  const place = (b: HTMLButtonElement) => {
-    if (!window.matchMedia('(min-width: 900px)').matches) { pop.style.left = ''; pop.style.top = ''; return; }
-    const r = b.getBoundingClientRect();
-    const w = pop.offsetWidth, h = pop.offsetHeight;
-    const left = Math.min(Math.max(16, r.left - 12), window.innerWidth - w - 16);
-    const below = r.bottom + 12;
-    const top = below + h < window.innerHeight - 16 ? below : Math.max(16, r.top - h - 12);
-    pop.style.left = `${left}px`; pop.style.top = `${top}px`;
-  };
+  const place = (_b: HTMLButtonElement) => { pop.style.left = ''; pop.style.top = ''; };
   const close = () => {
     if (!open) return;
     open.setAttribute('aria-expanded', 'false');
     open = null;
     pop.classList.remove('is-open');
+    veil.classList.remove('is-open');
+    document.documentElement.classList.remove('pinfo-lock');
+    lenis?.start();
     window.clearTimeout(timer);
     stopAll();
     timer = window.setTimeout(() => { if (!open) { pop.hidden = true; body.replaceChildren(); } }, 350);
@@ -377,7 +371,9 @@ export function priceInfo() {
     b.setAttribute('aria-expanded', 'true');
     place(b);
     body.querySelector('video')?.play().catch(() => {});
-    requestAnimationFrame(() => pop.classList.add('is-open'));
+    lenis?.stop();
+    document.documentElement.classList.add('pinfo-lock');
+    requestAnimationFrame(() => { pop.classList.add('is-open'); veil.classList.add('is-open'); });
   };
   btns.forEach((b) => {
     b.setAttribute('aria-expanded', 'false');
@@ -387,10 +383,6 @@ export function priceInfo() {
     if (row) {
       row.classList.add('has-info');
       row.addEventListener('click', (e) => { if ((e.target as Element).closest('a, button')) return; e.stopPropagation(); open === b ? close() : show(b); });
-    }
-    if (fine) {
-      b.addEventListener('mouseenter', () => { window.clearTimeout(leave); show(b); });
-      b.addEventListener('mouseleave', () => { leave = window.setTimeout(close, 280); });
     }
   });
   pop.querySelector('[data-info-close]')?.addEventListener('click', close);
@@ -406,6 +398,8 @@ export function priceInfo() {
     warm.disconnect();
     stopAll();
     pop.hidden = true;
+    veil.classList.remove('is-open');
+    document.documentElement.classList.remove('pinfo-lock');
   });
 }
 
