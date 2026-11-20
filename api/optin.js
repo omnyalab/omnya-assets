@@ -47,7 +47,10 @@ function mailHtml(name, f) {
 }
 
 // 18/11 (Nico, board M1): the Build free PDF too, it is downloaded from the watch page
-const NO_MAIL = new Set(['free-stadium', 'free-miami', 'free-riyadh', 'free-build', 'free-plane', 'waitlist-3d-future']);
+// 20/11 (Nico: «they already have the PDF from the page, the email should be a follow-up»): Tower, Floors, Fable, Towers,
+// 3D and City too. The guide is step 1 of their watch page; the follow-up series (api/drip.js) writes from the day after.
+const NO_MAIL = new Set(['free-stadium', 'free-miami', 'free-riyadh', 'free-build', 'free-plane', 'waitlist-3d-future',
+  'free-tower', 'free-towers', 'free-3d', 'free-city']);
 
 export async function POST(request) {
   let b;
