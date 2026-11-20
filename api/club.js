@@ -24,7 +24,7 @@ import { host } from './_lib/config.js';
 import { signedHref, PAGE_TTL, HOUSE_SKILL_FILE } from './_lib/learn-files.js';
 import {
   CLUB, ROUND, CHEAP_SEATS, phaseAt, decide, priceId, seats, EMAIL, cleanEmail, cleanReceipt, firstName, signToken, readToken,
-  limited, ipOf, receiptEmail, isBuyerEmail, isWaitlisted, fillWaitlist, backfill, lists, KEYS,
+  limited, ipOf, receiptEmail, isBuyerEmail, isWaitlisted, fillWaitlist, backfill, lists, KEYS, PORTAL_URL,
 } from './_lib/club.js';
 
 const SITE = 'https://www.omnyalab.com';
@@ -183,7 +183,7 @@ async function welcome(req) {
     if (!paid || s.metadata?.club !== CLUB) return fail(402, 'not_paid', 'not paid');
     let skill = '';
     try { skill = SITE + signedHref(HOUSE_SKILL_FILE, PAGE_TTL); } catch {}
-    return json({ name: firstName(s.metadata?.name || s.customer_details?.name), email: cleanEmail(s.customer_details?.email || s.customer_email), skool: process.env.CLUB_SKOOL_URL || '', skill, portal: process.env.CLUB_PORTAL_URL || '' });
+    return json({ name: firstName(s.metadata?.name || s.customer_details?.name), email: cleanEmail(s.customer_details?.email || s.customer_email), skool: process.env.CLUB_SKOOL_URL || '', skill, portal: PORTAL_URL });
   } catch (e) {
     console.error('[club] welcome', e.message);
     return e.statusCode === 404 ? fail(404, 'not_found', 'no such payment') : fail(502, 'stripe', 'could not check');

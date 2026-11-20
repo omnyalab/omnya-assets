@@ -20,6 +20,8 @@ export const ROUND = '1';
 export const CLUB = '3d-future';
 // Rome is on +01:00 for the whole round (CET), so the instants are fixed. CLOSE is the first moment after Fri 4/12 23:59.
 export const EARLY = Date.parse('2026-11-28T09:00:00+01:00');
+// 20/11 (Nico): the Stripe customer portal is on (cancel at the end of the paid period, with the reason asked); its login link
+export const PORTAL_URL = process.env.CLUB_PORTAL_URL || 'https://billing.stripe.com/p/login/9B66oGet7bIs3hAeyN8so00';
 export const OPEN = Date.parse('2026-11-28T18:00:00+01:00');
 export const CLOSE = Date.parse('2026-12-05T00:00:00+01:00');
 export const CHEAP_SEATS = 100;
@@ -308,7 +310,7 @@ export async function clubJoined(stripe, session) {
   const md = session.metadata || {};
   const email = cleanEmail(session.customer_details?.email || session.customer_email);
   const name = firstName(md.name || session.customer_details?.name);
-  const skool = process.env.CLUB_SKOOL_URL || '', portal = process.env.CLUB_PORTAL_URL || '';
+  const skool = process.env.CLUB_SKOOL_URL || '', portal = PORTAL_URL;
   if (!email) throw new Error('club: no email on the session');
   const member = {
     email, name, ig: md.ig || '', v: md.v || '', buyer: md.buyer === 'yes', plan: md.plan || '', price: Number(md.price) || null, round: md.round || ROUND,
