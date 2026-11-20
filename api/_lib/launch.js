@@ -16,19 +16,18 @@ export const LAUNCH = [
 
 const PAGE = 'omnyalab.com/the-3d-future';
 
+// 20/11 evening (Nico): «testi più fluidi e umani», subjects with a capital first letter and the club's name in capitals.
+// Same facts as the approved brief, written as one person talking, no bullet lists.
 const TEXTS = {
   e1: {
-    subject: { a: 'the 3d future opens saturday', b: '3d that sells opens saturday' },
+    subject: { a: 'THE 3D FUTURE opens Saturday', b: '3D THAT SELLS opens Saturday' },
     body: `Hey {name},
 
-Our stadium reel did 2.36M views, and what we learned from it is simple: people scroll past a 3D, but they stop for a choice. So we didn't show a stadium, we let them pick their seat. Try it on your next project: give people one thing to choose (a seat, a floor, a view) and watch the comments.
+Our stadium reel did 2.36M views, and the one thing it taught us is simple: people scroll past a 3D, but they stop when you give them a choice, so instead of showing a stadium we let them pick their seat. Try it on your next project, give people one thing to choose (a seat, a floor, a view) and then watch the comments.
 
-That's the kind of thing we teach inside THE 3D FUTURE, the club where you learn to build the 3D that sells. It opens on Saturday 28 November at 9:00 (Rome), and inside you'll find:
-• video courses that walk you step by step through our builds, so you make them exactly the way we do: the first one, your own stadium in your colours where people pick their seat, is ready on day one, and a new one comes every Friday
-• the files of six builds from our reels (three towers, the Riyadh tower, the stadium, the house that builds itself, the plane, Miami), with the prompts we used and the Claude skill or the code that builds each one again for you
-• my comments on your builds every Monday
+That's exactly what we teach inside THE 3D FUTURE, our new club where you learn to build the 3D that sells, and it opens on Saturday 28 November at 9:00 (Rome). Inside there's a video course that walks you step by step through your own stadium in your colours, the one where people pick their seat, and a new course every Friday after that, plus the files, the prompts and the Claude skills behind six builds from our reels, and my comments on your builds every Monday.
 
-Get on the list and you're in nine hours before everyone else:
+If you get on the list now, you're in nine hours before everyone else:
 {link}
 
 Nico
@@ -36,48 +35,40 @@ Nico
 P.S. There are only 100 seats, because I look at everyone's first build myself.`,
   },
   e2: {
-    subject: 'the mistake that ruins 3D photos',
+    subject: 'The mistake that ruins 3D photos',
     body: `Hey {name},
 
-The most common mistake with 3D photos is making the next picture from the last one that came out, because every round drifts a little further from the real building. We start every single round from the 3D again, with the brief and photos of the real materials, and that's why our towers look the same in every shot.
+The most common mistake with 3D photos is making the next picture from the last one that came out, because every round drifts a little further away from the real building. We start every single round from the 3D again, with the brief and photos of the real materials, and that's why our towers look the same in every shot.
 
-That method, with the exact prompts, is one of the things inside THE 3D FUTURE when the doors open on Saturday:
-• step-by-step video courses on our builds, the first one ready on day one and a new one every Friday
-• six builds from our reels with their files, prompts and Claude skills
-• my comments on your work every Monday
+That method, with the exact prompts, is inside THE 3D FUTURE when the doors open on Saturday, together with the step-by-step video courses on our builds (the first one is ready on day one and a new one comes every Friday), six builds from our reels with their files and Claude skills, and my comments on your work every Monday.
 
 The list gets in first, on Saturday at 9:00 (Rome):
 {link}
 
 Nico
 
-P.S. 100 seats, and the doors close on Friday 4 December at 23:59.`,
+P.S. There are 100 seats, and the doors close on Friday 4 December at 23:59.`,
   },
   e3: {
-    subject: "you're first tomorrow",
+    subject: "You're first tomorrow",
     body: `Hey {name}, we said we'd email you today, so here it is.
 
 One thing first: before we build a real place in 3D, we look up the real heights of the buildings around it, because a tower that's even a little too short looks fake next to its neighbours.
 
-Tomorrow at 9:00 (Rome) the doors of THE 3D FUTURE open for the list only, nine hours before everyone else, and you're on the list. Your link works from 9:00:
+Tomorrow at 9:00 (Rome) the doors of THE 3D FUTURE open for the list only, nine hours before everyone else, and you're on the list, so your link works from 9:00:
 {link}
 
 Nico`,
   },
   e4: {
-    subject: 'doors are open',
+    subject: 'Doors are open',
     body: `Hey {name},
 
 When you turn a 3D into a photo, give the model pictures of the real materials, the actual stone and the actual wood, and never a nice photo of someone else's house, or it copies that house and forgets yours.
 
-THE 3D FUTURE is open, and right now {seats_left} of the 100 seats at €9 are left. The counter on the page is the real one. The moment you join you get:
-• the first step-by-step video course, your own stadium in your colours where people pick their seat, and a new course every Friday
-• six builds from our reels with their files, prompts and Claude skills
-• the House Builder skill (€14.99 on our site), yours to keep even if you leave
-• my comments on your work every Monday
+THE 3D FUTURE is open now and {seats_left} of the 100 seats at €9 are left (the counter on the page is the real one). The moment you join you get the first step-by-step video course, your own stadium in your colours where people pick their seat, then a new course every Friday, six builds from our reels with their files, prompts and Claude skills, the House Builder skill (€14.99 on our site), which stays yours even if you leave, and my comments on your work every Monday.
 
-€9 a month for the first 100, locked for as long as you stay. After that, or after Friday 4 December at 23:59 (Rome), it's €19.
-
+It's €9 a month for the first 100, locked for as long as you stay, and after that, or after Friday 4 December at 23:59 (Rome), it's €19:
 {link}
 
 Nico
@@ -85,39 +76,34 @@ Nico
 P.S. You can cancel in one tap whenever you want.`,
   },
   e5: {
-    subject: "why our 3D videos don't wobble",
+    subject: "Why our 3D videos don't wobble",
     body: `Hey {name},
 
-When we turn a 3D into a video we make one clip at a time, each one a single straight move into the building with the fog moving, and every new clip starts from the real last frame of the one before. That's why the camera never jumps between shots.
+When we turn a 3D into a video we make one clip at a time, each one a single straight move into the building with the fog moving, and every new clip starts from the real last frame of the one before, which is why the camera never jumps between shots.
 
-All our clips are made like this, and the files of the stadium that did 2.36M views are inside THE 3D FUTURE with the prompts and the skill that builds it again in your own colours.
-
-{seats_left} of the 100 seats at €9 are left, and the doors close on Friday at 23:59 (Rome).
-
+All our clips are made like this, and the files of the stadium that did 2.36M views are inside THE 3D FUTURE, with the prompts and the skill that builds it again in your own colours. {seats_left} of the 100 seats at €9 are left, and the doors close on Friday at 23:59 (Rome):
 {link}
 
 Nico`,
   },
   e6: {
-    subject: 'closes tomorrow',
+    subject: 'Closes tomorrow',
     body: `Hey {name},
 
 If you put people in an architecture shot, keep them as a blur, a silhouette against the light or out of focus, because a sharp face is the first thing that makes a render look fake.
 
-THE 3D FUTURE closes tomorrow, Friday 4 December, at 23:59 (Rome). {seats_left} of the 100 seats at €9 are left, and when the doors close they stay closed until the next round, where it's €19.
-
+THE 3D FUTURE closes tomorrow, Friday 4 December, at 23:59 (Rome), and {seats_left} of the 100 seats at €9 are left. Once the doors close they stay closed until the next round, where it's €19:
 {link}
 
 Nico`,
   },
   e7: {
-    subject: 'tonight at 23:59',
+    subject: 'Tonight at 23:59',
     body: `Hey {name},
 
-If you need the camera to move out instead of in, don't make a new clip: play the one you have backwards. Same light, same building, and it costs nothing.
+If you need the camera to move out instead of in, don't make a new clip, just play the one you have backwards: same light, same building, and it costs nothing.
 
-The doors of THE 3D FUTURE close tonight at 23:59 (Rome), and {seats_left} seats at €9 are left.
-
+The doors of THE 3D FUTURE close tonight at 23:59 (Rome), and {seats_left} seats at €9 are still left:
 {link}
 
 Nico`,

@@ -78,7 +78,7 @@ const door = (club, link) =>
 // only while the club page is online (live); mail 4 is the invitation itself and waits for the page.
 const NOTES = [
   {
-    subject: 'why our videos look like one shot',
+    subject: 'Why our videos look like one shot',
     body: ({ guide, ago }) => [
       `you grabbed ${guide} ${ago}, so here's a small thing that makes a big difference. Our stadium video looks like one camera flying through the whole stadium, but it's six short clips put together, and the reason you can't see where one ends and the next one starts is simple: every new clip starts from the very last picture of the clip before it, not from the photo we had planned.`,
       `The video tool (we use Kling) rarely stops exactly on the photo you asked for, it usually ends a tiny bit off, so if you start the next clip from your planned photo you see a little jump. Save the last frame of the clip as a picture instead, start the next clip from that, and the jump is gone.`,
@@ -88,7 +88,7 @@ const NOTES = [
     ps: ({ link, club }) => `If you'd rather build our stadium yourself, step by step, the one where people pick their seat, it's the first video course inside THE 3D FUTURE, our new club, ${door(club, link)}`,
   },
   {
-    subject: 'why we threw away our first two clips',
+    subject: 'Why we threw away our first two clips',
     link: 'v',
     body: ({ link }) => [
       `on one of our towers, the Burj, we threw away the first two clips we made, and what we learned there is the most useful thing I can tell you about turning a 3D into a video.`,
@@ -99,7 +99,7 @@ const NOTES = [
     ps: ({ link, club }) => `Inside THE 3D FUTURE, our new club, you get the files, the prompts and the Claude skills behind builds like these, plus my comments on your own builds every Monday, ${door(club, link)}`,
   },
   {
-    subject: 'never pay for the same clip twice',
+    subject: 'Never pay for the same clip twice',
     body: () => [
       `here's one that has saved us a lot of credits: if your video goes from night to day and later from day back to night, you only need to make the first clip, because the second one is the same clip played backwards. You don't generate it again, you just flip it (any video editor can play a clip in reverse, we do it with one line of ffmpeg).`,
       `The same trick works when the camera flies in close, and it's my favourite: I ask Kling for the opposite, a clip that starts close and flies out, and then I flip it. When I tested it, that one clip took me from the first photo straight to the third, so I didn't even need the one in the middle.`,
@@ -108,7 +108,7 @@ const NOTES = [
     ps: ({ link, club }) => `If you want to learn all of this properly instead of one trick at a time, that's what THE 3D FUTURE, our new club, is for, ${door(club, link)}`,
   },
   {
-    subject: "where we're taking all this",
+    subject: "Where we're taking all this",
     link: 'f',
     body: ({ link, club }) => [
       `one last tip before I tell you where we're taking all this: when you turn a 3D into a realistic photo, give the image tool your 3D and nothing else. The moment you add a nice photo "for the look", it starts redesigning the room or the building its own way and the view you worked on is gone, while with the 3D alone, and a prompt that describes only what you can see in that exact view, the photo comes out matching your 3D.`,
