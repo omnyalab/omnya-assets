@@ -42,6 +42,7 @@ const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packPa
 // 20/11 Black Friday (Nico, style S3) and the same prices in December with a Christmas look: what comes off the full
 // price, in money (interactive 3D) or as a round percentage rounded down to the 5 (films: 42% shows −40%, never more)
 const bfCut = (was: string, now: string) => `−${money(num(was) - num(now))}`;
+const bfPctN = (was: number, now: number) => `−${Math.floor(((1 - now / was) * 100) / 5) * 5}%`;
 const bfPct = (was: string, now: string) => `−${Math.floor(((1 - num(now) / num(was)) * 100) / 5) * 5}%`;
 const single190 = 190;
 const zImg = (q: string, price: string) => ({ was: money(perUnit(q) * single190), save: /^\d+$/.test(q) && Number(q) > 1 ? `${P.save} ${money(Number(q) * single190 - num(price))}` : '' });
@@ -63,7 +64,7 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
   ...P.i3Rows.map(([name, was, price, text], i) => ({ id: `i3-${i}`, name, price, text, media: i3Media[i], gulf: gulfRows.includes(i) ? was : undefined, bf: P.bf.rows[i], bfGulf: P.bf.gulf[i] || undefined })),
   ...P.i3Extras.map(([name, price, text], i) => ({ id: `i3x-${i}`, name, price, text })),
   ...P.filmsRows.map(([len, price, use], i) => ({ id: `film-${i}`, name: `${len} ${P.filmsUnit}`, price, text: `${use}. ${P.filmsNoteShort}`, media: filmMedia[i], bf: P.bf.films[i] })),
-  ...P.launchRows.map(([name, price, what], i) => ({ id: `pack-${i}`, name, price, text: what, media: packMedia[i] })),
+  ...P.launchRows.map(([name, price, what], i) => ({ id: `pack-${i}`, name, price, text: what, media: packMedia[i], bf: P.bf.packs[i] })),
 ];
 ---
 
@@ -183,15 +184,17 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
       <tbody>
         {
           P.launchRows.map(([name, price], i) => (
-            <tr class:list={{ 'is-best': i === P.launchBest }}>
+            <tr class:list={{ 'is-best': i === P.launchBest, 'bf-row': true }}>
               <th scope="row" class="ptable__q">
                 {i === P.launchBest && <span class="ptable__pill">{P.recommended}</span>}
                 <span class="ptable__qn">{name}<button type="button" class="pinfo" data-info={`pack-${i}`} aria-label={`${P.info} ${name}`}><span aria-hidden="true">i</span></button></span>
               </th>
               <td class="ptable__price">
                 <s class="ptable__was" data-geo-190={money(packWas190(i))}>{money(packWas(i))}</s>
-                <span class="ptable__now">{price}</span>
-                <span class="ptable__save" data-geo-190={`${P.save} ${money(packWas190(i) - num(price))}`}>{P.save} {money(packWas(i) - num(price))}</span>
+                <span class="ptable__now bf-off">{price}</span>
+                <span class="ptable__save bf-off" data-geo-190={`${P.save} ${money(packWas190(i) - num(price))}`}>{P.save} {money(packWas(i) - num(price))}</span>
+                <span class="ptable__now bf-on">{P.bf.packs[i]}</span>
+                <span class="ptable__save ptable__bfs bf-on"><span class="t-bf">{P.bf.tag}</span><span class="t-xm">{P.xm.tag}</span>&nbsp;<span data-geo-190={bfPctN(packWas190(i), num(P.bf.packs[i]))}>{bfPctN(packWas(i), num(P.bf.packs[i]))}</span></span>
               </td>
             </tr>
           ))
@@ -212,17 +215,20 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
       <tbody>
         {
           P.imagesRows.map(([q, price, each], i) => (
-            <tr class:list={{ 'is-best': i === bestRow }}>
+            <tr class:list={{ 'is-best': i === bestRow, 'bf-row': !!P.bf.images[i] }}>
               <th scope="row" class="ptable__q">
                 {i === bestRow && <span class="ptable__pill">{P.best}</span>}
                 <span class="ptable__qn">{q}{/^\d+$/.test(q) && <span class="ptable__unit">{q === '1' ? P.imagesUnit[0] : P.imagesUnit[1]}</span>}</span>
               </th>
               <td class="ptable__price">
                 {perUnit(q) > 1 && <s class="ptable__was" data-geo-190={zImg(q, price).was}>{money(perUnit(q) * single)}</s>}
-                <span class="ptable__now" data-geo-190={q === '1' ? money(single190) : undefined}>{price}</span>
-                {saving(q, price) > 0 && <span class="ptable__save" data-geo-190={zImg(q, price).save}>{P.save} {money(saving(q, price))}</span>}
+                <span class:list={['ptable__now', P.bf.images[i] && 'bf-off']} data-geo-190={q === '1' ? money(single190) : undefined}>{price}</span>
+                {saving(q, price) > 0 && <span class:list={['ptable__save', P.bf.images[i] && 'bf-off']} data-geo-190={zImg(q, price).save}>{P.save} {money(saving(q, price))}</span>}
+                {/* 20/11 (Nico): images on sale too, the label with how much comes off the price of the views bought one by one */}
+                {P.bf.images[i] && <span class="ptable__now bf-on">{P.bf.images[i]}</span>}
+                {P.bf.images[i] && <span class="ptable__save ptable__bfs bf-on"><span class="t-bf">{P.bf.tag}</span><span class="t-xm">{P.xm.tag}</span>&nbsp;<span data-geo-190={bfPctN(perUnit(q) * single190, num(P.bf.images[i]))}>{bfPctN(perUnit(q) * single, num(P.bf.images[i]))}</span></span>}
               </td>
-              <td class="ptable__each" data-label={P.imagesCols[2]} data-geo-190={q === '1' ? money(single190) : undefined}>{each}</td>
+              <td class="ptable__each" data-label={P.imagesCols[2]} data-geo-190={q === '1' ? money(single190) : undefined}>{P.bf.images[i] ? <><span class="bf-off">{each}</span><span class="bf-on">{money(Math.round(num(P.bf.images[i]) / perUnit(q)))}</span></> : each}</td>
             </tr>
           ))
         }

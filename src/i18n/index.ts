@@ -279,9 +279,9 @@ const en = {
     // 20/11 (Nico): Black Friday week, until Sunday 29/11 at 23:59 (Rome): the discount counted from the full price struck
     // (€4,900 → €2,900, €7,900 → €4,900, €2,490 → €1,490; Gulf €3,900 and €6,900) and on the films too. Shown only while html.px-bf is on (Base.astro and
     // app.ts), then the page goes back by itself to the launch prices above.
-    bf: { tag: 'Black Friday', line: 'Interactive 3D and films, up to €3,000 off', left: 'Ends in', units: ['d', 'h', 'm', 's'], rows: ['€1,490', '€2,900', '€4,900'], gulf: ['', '€3,900', '€6,900'], films: ['€690', '€1,050', '€1,790'], pilot: '€390' },
+    bf: { tag: 'Black Friday', line: 'Interactive 3D, films, images and packages, up to €3,000 off', left: 'Ends in', units: ['d', 'h', 'm', 's'], rows: ['€1,490', '€2,900', '€4,900'], gulf: ['', '€3,900', '€6,900'], films: ['€690', '€1,050', '€1,790'], pilot: '€390', images: ['', '€490', '€890', '€1,090', '€449 / month'], packs: ['€990', '€1,690', '€2,690'] },
     // December (Nico 20/11): the same prices with a Christmas look, from 1/12 to 31/12
-    xm: { tag: 'Christmas', line: 'Christmas prices on interactive 3D and films, up to €3,000 off' },
+    xm: { tag: 'Christmas', line: 'Christmas prices on everything, up to €3,000 off' },
     pilotMsg: 'hi nico, i saw the prices and i want to try one floor of my building',
     // 20/11 (Nico): every card opens its info, with a WhatsApp button and a message already written for that card
     askCta: 'Ask about it on WhatsApp',
@@ -930,8 +930,8 @@ const it: Dict = {
     i3Best: 1,
     i3Pilot: ['Prova un piano', '490 €', 'Incluso in ogni progetto', 'Il tuo edificio con un piano cliccabile, in un link che funziona su qualsiasi telefono, in 7 giorni. Prima paghi questo, poi decidi: se entro 30 giorni vai avanti con un progetto completo, quello che hai pagato vale come parte del primo pagamento.'],
     pilotCta: 'Prova prima un piano',
-    bf: { tag: 'Black Friday', line: '3D interattivi e video, fino a 3.000 € in meno', left: 'Finisce tra', units: ['g', 'h', 'm', 's'], rows: ['1.490 €', '2.900 €', '4.900 €'], gulf: ['', '3.900 €', '6.900 €'], films: ['690 €', '1.050 €', '1.790 €'], pilot: '390 €' },
-    xm: { tag: 'Natale', line: 'Prezzi di Natale su 3D interattivi e video, fino a 3.000 € in meno' },
+    bf: { tag: 'Black Friday', line: '3D interattivi, video, immagini e pacchetti, fino a 3.000 € in meno', left: 'Finisce tra', units: ['g', 'h', 'm', 's'], rows: ['1.490 €', '2.900 €', '4.900 €'], gulf: ['', '3.900 €', '6.900 €'], films: ['690 €', '1.050 €', '1.790 €'], pilot: '390 €', images: ['', '490 €', '890 €', '1.090 €', '449 € / mese'], packs: ['990 €', '1.690 €', '2.690 €'] },
+    xm: { tag: 'Natale', line: 'Prezzi di Natale su tutto, fino a 3.000 € in meno' },
     pilotMsg: 'ciao nico, ho visto i prezzi e voglio provare un piano del mio edificio',
     askCta: 'Chiedi info su WhatsApp',
     askMsg: 'ciao nico, ho visto {name} a {price} nel listino, mi dai più info per il mio progetto?',
