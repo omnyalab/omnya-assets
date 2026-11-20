@@ -12,6 +12,7 @@ import { upgrade, placeBid } from './_lib/city.js';
 import { metaEvent } from './_lib/meta.js';
 import { fixEmail } from './_lib/mail-fix.js';
 import { noteSale } from './_lib/centrale-sales.js';
+import { markMailed } from './_lib/drip.js';
 
 // Omnya City upsell (6/11/2026): these products move the buyer (client_reference_id = username, dots sent as dashes).
 const CITY = { 'Omnya City · The penthouse': 'penthouse', 'Omnya City · The best villa in Omnyawood': 'villa', 'Omnya City · A house by the fountain': 'fountain',
@@ -182,6 +183,8 @@ export async function POST(request) {
         'Nico · Omnya Lab',
       ].join('\n'),
     });
+    // 20/11: the follow-up series sends this buyer nothing more today (one email from us a day)
+    await markMailed(email).catch(() => {});
     // the buyer is served: one row on the short list the mirror of Nico's app reads when his Mac is off (api/centrale.js).
     // Not waited for, and nothing in it can fail the delivery
     try {

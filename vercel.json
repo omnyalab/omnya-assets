@@ -3,6 +3,10 @@
     {
       "path": "/api/igtick",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/drip",
+      "schedule": "*/15 * * * *"
     }
   ],
   "redirects": [
@@ -569,6 +573,10 @@
     }
   },
   "rewrites": [
+    {
+      "source": "/m/:t",
+      "destination": "/api/drip?c=:t"
+    },
     {
       "source": "/api/city/:action",
       "destination": "/api/city?action=:action"

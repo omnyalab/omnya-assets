@@ -163,6 +163,10 @@ export async function sendMail(m) {
   catch (e) { if (!m365) throw e; console.error('[mail] resend failed, via m365:', e.message); return viaM365(m); }
 }
 
+/** Resend only, never Microsoft 365 (20/11, the follow-up series: mail to many people must not leave from info@'s box). */
+export const hasResend = () => !!process.env.RESEND_API_KEY;
+export const sendResend = (m) => transport.sendMail({ from: FROM, ...m });
+
 /** The free blueprints: Microsoft 365 first (no daily cap that matters), Resend if 365 fails. */
 export async function sendFreeMail(m) {
   if (!m365) { const { fromName, ...r } = m; return transport.sendMail({ from: FROM, ...r }); }
