@@ -242,7 +242,7 @@ const en = {
     description: 'Interactive 3D, images, films and launch packages, with prices that are clear from the start.',
     titleA: 'Our',
     titleB: 'prices',
-    pill: 'Pilot from €490',
+    pill: 'Try one floor from €490',
     lead: 'The more you commission, the less you pay, on images and films and on interactive 3D too, where three projects together cost you less.',
     imagesA: 'Images',
     imagesB: 'new views from your plans',
@@ -272,13 +272,16 @@ const en = {
     ],
     i3Best: 1,
     // 10/11 (Nico): the first paid step, between the €59 pack of guides and the projects from €1,990
-    i3Pilot: ['Pilot', '€490', 'Credited if you go ahead', 'Your building with one floor you can click, on a link that works on any phone, in 7 days. If you go ahead with a full project within 30 days, the €490 comes off its price.'],
-    pilotCta: 'Start with the pilot',
-    // 20/11 (Nico): Black Friday week, until Friday 27/11 at 23:59 (Rome): the discount counted from the full price struck
+    // 20/11 (Nico): the pilot is called by what it is, so people get it at once
+    i3Pilot: ['Try one floor', '€490', 'Credited if you go ahead', 'Your building with one floor you can click, on a link that works on any phone, in 7 days. If you go ahead with a full project within 30 days, the €490 comes off its price.'],
+    pilotCta: 'Try one floor first',
+    // 20/11 (Nico): Black Friday week, until Sunday 29/11 at 23:59 (Rome): the discount counted from the full price struck
     // (€4,900 → €2,900, €7,900 → €4,900, €2,490 → €1,490; Gulf €3,900 and €6,900) and on the films too. Shown only while html.px-bf is on (Base.astro and
     // app.ts), then the page goes back by itself to the launch prices above.
-    bf: { tag: 'Black Friday', bar: 'Black Friday week', line: 'Interactive 3D and films, up to €3,000 off', left: 'Ends in', end: 'Ends Friday 27/11 at 23:59', units: ['d', 'h', 'm', 's'], rows: ['€1,490', '€2,900', '€4,900'], gulf: ['', '€3,900', '€6,900'], films: ['€690', '€1,090', '€1,790'] },
-    pilotMsg: 'hi nico, i saw the prices and i want the €490 pilot for my building',
+    bf: { tag: 'Black Friday', line: 'Interactive 3D and films, up to €3,000 off', left: 'Ends in', units: ['d', 'h', 'm', 's'], rows: ['€1,490', '€2,900', '€4,900'], gulf: ['', '€3,900', '€6,900'], films: ['€690', '€1,050', '€1,790'] },
+    // December (Nico 20/11): the same prices with a Christmas look, from 1/12 to 31/12
+    xm: { tag: 'Christmas', line: 'Christmas prices on interactive 3D and films, up to €3,000 off' },
+    pilotMsg: 'hi nico, i saw the prices and i want to try one floor of my building for €490',
     from: 'From',
     tryLive: 'Try it',
     info: 'More about',
@@ -891,7 +894,7 @@ const it: Dict = {
     description: '3D interattivi, immagini, video e pacchetti di lancio, con prezzi chiari dall’inizio.',
     titleA: 'I nostri',
     titleB: 'prezzi',
-    pill: 'Pilota da 490 €',
+    pill: 'Prova un piano da 490 €',
     lead: 'Più ci commissioni, meno paghi, su immagini e video e anche sui 3D interattivi, dove tre progetti insieme ti costano meno.',
     imagesA: 'Immagini',
     imagesB: 'viste nuove dalle tue planimetrie',
@@ -920,10 +923,11 @@ const it: Dict = {
       ['Versione offline', '+490 €', 'Una versione che gira sullo schermo dell’ufficio vendite senza internet, su richiesta.'],
     ],
     i3Best: 1,
-    i3Pilot: ['Pilota', '490 €', 'Scalati se vai avanti', 'Il tuo edificio con un piano cliccabile, in un link che funziona su qualsiasi telefono, in 7 giorni. Se entro 30 giorni vai avanti con un progetto completo, i 490 € vengono scalati dal prezzo.'],
-    pilotCta: 'Parti dal pilota',
-    bf: { tag: 'Black Friday', bar: 'Settimana del Black Friday', line: '3D interattivi e video, fino a 3.000 € in meno', left: 'Finisce tra', end: 'Finisce venerdì 27/11 alle 23:59', units: ['g', 'h', 'm', 's'], rows: ['1.490 €', '2.900 €', '4.900 €'], gulf: ['', '3.900 €', '6.900 €'], films: ['690 €', '1.090 €', '1.790 €'] },
-    pilotMsg: 'ciao nico, ho visto i prezzi e voglio il pilota da 490 € per il mio edificio',
+    i3Pilot: ['Prova un piano', '490 €', 'Scalati se vai avanti', 'Il tuo edificio con un piano cliccabile, in un link che funziona su qualsiasi telefono, in 7 giorni. Se entro 30 giorni vai avanti con un progetto completo, i 490 € vengono scalati dal prezzo.'],
+    pilotCta: 'Prova prima un piano',
+    bf: { tag: 'Black Friday', line: '3D interattivi e video, fino a 3.000 € in meno', left: 'Finisce tra', units: ['g', 'h', 'm', 's'], rows: ['1.490 €', '2.900 €', '4.900 €'], gulf: ['', '3.900 €', '6.900 €'], films: ['690 €', '1.050 €', '1.790 €'] },
+    xm: { tag: 'Natale', line: 'Prezzi di Natale su 3D interattivi e video, fino a 3.000 € in meno' },
+    pilotMsg: 'ciao nico, ho visto i prezzi e voglio provare un piano del mio edificio a 490 €',
     from: 'Da',
     tryLive: 'Provalo',
     info: 'Dettagli su',

@@ -126,10 +126,10 @@ const schema = {
       // with the day in omnya-ig-at) and /go/<product> adds it to the Stripe link as client_reference_id=ig_<code>.
       (function () { try { var q = new URLSearchParams(location.search), c = q.get('ig') || q.get('reel') || (location.hash.match(/[#&]ig=([^&]+)/) || [])[1] || ''; c = c.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 60); if (c) { localStorage.setItem('omnya-ig', c); localStorage.setItem('omnya-ig-at', String(Date.now())); } } catch (e) {} })();
       document.documentElement.classList.add('js');
-      // 20/11 (Nico): Black Friday on the prices page until Friday 27/11 at 23:59 Rome (pages.ts bfClock, Pricing.astro)
-      if (Date.now() < Date.parse('2026-11-27T23:59:59+01:00')) document.documentElement.classList.add('px-bf');
-      // board 20/11: ?bfs=S1…S6 shows one Black Friday style (kept for the visit), to be removed once Nico picks
-      try { var bs = new URLSearchParams(location.search).get('bfs'); if (bs) sessionStorage.setItem('omnya-bfs', bs); bs = bs || sessionStorage.getItem('omnya-bfs'); if (bs) document.documentElement.setAttribute('data-bfs', bs); } catch (e) {}
+      // 20/11 (Nico): sale prices on the prices page. Black Friday until Sunday 29/11 23:59 Rome (html.px-bf), normal on
+      // Monday 30/11, Christmas look with the same prices from 1/12 to 31/12 (html.px-bf.px-xmas). ?xs=X1…X6 previews a
+      // Christmas style for the board (kept for the visit). Same rules in pages.ts (saleMode) for the page swaps.
+      (function () { try { var h = document.documentElement, n = Date.now(), xs = new URLSearchParams(location.search).get('xs'); if (xs) sessionStorage.setItem('omnya-xs', xs); xs = xs || sessionStorage.getItem('omnya-xs'); var xm = !!xs || (n >= Date.parse('2026-12-01T00:00:00+01:00') && n < Date.parse('2026-12-31T23:59:59+01:00')); if (xm || n < Date.parse('2026-11-29T23:59:59+01:00')) h.classList.add('px-bf'); if (xm) h.classList.add('px-xmas'); if (xs) h.setAttribute('data-xs', xs); } catch (e) {} })();
       // Safety net: never leave content hidden if the app script fails.
       setTimeout(function () { if (!window.__omApp) document.documentElement.classList.remove('js'); }, 5000);
     </script>

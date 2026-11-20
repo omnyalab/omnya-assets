@@ -39,10 +39,10 @@ const packWas = (i: number) => packParts[i][0] * single + num(P.filmsRows[packPa
 // where the single image is €190 (so the "bought one by one" prices struck through next to the packs grow with it);
 // data-geo-gulf = the six Gulf countries, where Choose your floor and Full tower launch are at their full price,
 // €4,900 and €7,900, with no launch offer (data-geo-off hides the struck price and "You save" there).
-// 20/11 Black Friday (board S1-S6): what comes off the full price, as money and as a percentage
-const bfOff = (was: string, now: string) => `${P.bf.tag} −${money(num(was) - num(now))}`;
+// 20/11 Black Friday (Nico, style S3) and the same prices in December with a Christmas look: what comes off the full
+// price, in money (interactive 3D) or as a round percentage rounded down to the 5 (films: 42% shows −40%, never more)
 const bfCut = (was: string, now: string) => `−${money(num(was) - num(now))}`;
-const bfPct = (was: string, now: string) => `−${Math.round((1 - num(now) / num(was)) * 100)}%`;
+const bfPct = (was: string, now: string) => `−${Math.floor(((1 - num(now) / num(was)) * 100) / 5) * 5}%`;
 const single190 = 190;
 const zImg = (q: string, price: string) => ({ was: money(perUnit(q) * single190), save: /^\d+$/.test(q) && Number(q) > 1 ? `${P.save} ${money(Number(q) * single190 - num(price))}` : '' });
 const packWas190 = (i: number) => packParts[i][0] * single190 + num(P.filmsRows[packParts[i][1]][1]);
@@ -76,12 +76,12 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
   </section>
 
   <!-- The price tables on a warm light band, each row a sheet of white glass; the best one in colour -->
-  <p class="bf-bar bf-on"><b>{P.bf.bar}</b><span>{P.bf.line}</span><span>{P.bf.left} <b data-bf-clock data-u={P.bf.units.join(',')}>&nbsp;</b></span></p>
   <div class="pband">
   <!-- Interactive 3D (8/11): first, launch offer with the full price struck through -->
   <section class="prices wrap" aria-labelledby="i3-title">
     <h2 class="t-h3 prices__title" id="i3-title" data-split>{P.i3A}{' '}<span class="mute">{P.i3B}</span></h2>
-    <p class="pbf bf-on" data-fade><span class="pbf__tag">{P.bf.tag}</span><span class="pbf__line">{P.bf.line}</span><span class="pbf__left">{P.bf.left} <b data-bf-clock data-u={P.bf.units.join(',')}>&nbsp;</b></span></p>
+    <span class="xm-snow" aria-hidden="true"></span>
+    <p class="pbf bf-on" data-fade><span class="pbf__tag"><span class="t-bf">{P.bf.tag}</span><span class="t-xm">{P.xm.tag}</span></span><span class="pbf__line"><span class="t-bf">{P.bf.line}</span><span class="t-xm">{P.xm.line}</span></span><span class="pbf__left">{P.bf.left} <b data-bf-clock data-u={P.bf.units.join(',')}>&nbsp;</b></span></p>
     <table class="ptable ptable--films ptable--i3" data-fade>
       <caption class="sr-only">{P.i3A}, {P.i3B}</caption>
       <thead>
@@ -108,14 +108,10 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
                 <s class="ptable__was bf-off" data-geo-off={gulfRows.includes(i) ? 'gulf' : undefined}>{was}</s>
                 <span class="ptable__now bf-off" data-geo-gulf={gulfRows.includes(i) ? was : undefined}>{price}</span>
                 <span class="ptable__save bf-off" data-geo-off={gulfRows.includes(i) ? 'gulf' : undefined}>{P.save} {money(num(was) - num(price))}</span>
-                {/* 20/11 Black Friday (Nico): the full price struck, the new price, and how much comes off it. One block per
-                    style of the board (S1 label, S2 sticker, S3 black card, S4 percentage, S5 highlighter, S6 coupon) */}
+                {/* 20/11 Black Friday (Nico, S3) and Christmas: the full price struck, the new price, the label with what comes off */}
                 <s class="ptable__was bf-on">{was}</s>
                 <span class="ptable__now bf-on" data-geo-gulf={gulfRows.includes(i) ? P.bf.gulf[i] : undefined}>{P.bf.rows[i]}</span>
-                <span class="ptable__save ptable__bfs bf-on" data-geo-gulf={gulfRows.includes(i) ? bfOff(was, P.bf.gulf[i]) : undefined}>{bfOff(was, P.bf.rows[i])}</span>
-                <span class="bf-pct bf-on" data-geo-gulf={gulfRows.includes(i) ? bfPct(was, P.bf.gulf[i]) : undefined}>{bfPct(was, P.bf.rows[i])}</span>
-                <span class="bf-stk bf-on" aria-hidden="true"><i>{P.bf.tag}</i><b data-geo-gulf={gulfRows.includes(i) ? bfCut(was, P.bf.gulf[i]) : undefined}>{bfCut(was, P.bf.rows[i])}</b></span>
-                <span class="bf-end bf-on">{P.bf.end}</span>
+                <span class="ptable__save ptable__bfs bf-on"><span class="t-bf">{P.bf.tag}</span><span class="t-xm">{P.xm.tag}</span>&nbsp;<span data-geo-gulf={gulfRows.includes(i) ? bfCut(was, P.bf.gulf[i]) : undefined}>{bfCut(was, P.bf.rows[i])}</span></span>
               </td>
             </tr>
           ))
@@ -141,6 +137,7 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
 
   <!-- Films -->
   <section class="prices wrap" aria-labelledby="films-title">
+    <span class="xm-snow" aria-hidden="true"></span>
     <h2 class="t-h3 prices__title" id="films-title" data-split>{P.filmsA}{' '}<span class="mute">{P.filmsB}</span></h2>
     <table class="ptable ptable--films" data-fade>
       <caption class="sr-only">{P.filmsA}, {P.filmsB}</caption>
@@ -161,10 +158,7 @@ const infos: { id: string; name: string; price: string; text: string; media?: Me
                 <span class="ptable__save bf-off">{P.save} {money(filmWas(i) - num(price))}</span>
                 <s class="ptable__was bf-on">{money(filmWas(i))}</s>
                 <span class="ptable__now bf-on">{P.bf.films[i]}</span>
-                <span class="ptable__save ptable__bfs bf-on">{P.bf.tag} {bfPct(money(filmWas(i)), P.bf.films[i])}</span>
-                <span class="bf-pct bf-on">{bfPct(money(filmWas(i)), P.bf.films[i])}</span>
-                <span class="bf-stk bf-on" aria-hidden="true"><i>{P.bf.tag}</i><b>{bfPct(money(filmWas(i)), P.bf.films[i])}</b></span>
-                <span class="bf-end bf-on">{P.bf.end}</span>
+                <span class="ptable__save ptable__bfs bf-on"><span class="t-bf">{P.bf.tag}</span><span class="t-xm">{P.xm.tag}</span>&nbsp;{bfPct(money(filmWas(i)), P.bf.films[i])}</span>
               </td>
               <td class="ptable__each">{use}</td>
             </tr>

@@ -269,19 +269,35 @@ export function priceZone() {
     .catch(() => {});
 }
 
-/* ---------- Black Friday on the prices page (20/11, Nico): until Friday 27/11 at 23:59 Rome. html.px-bf is set in
-   Base.astro and after every swap in app.ts; this keeps "Ends in" moving and turns the offer off at the deadline,
-   so the page goes back to the launch prices without a new deploy. ---------- */
-export const BF_END = Date.parse('2026-11-27T23:59:59+01:00');
+/* ---------- Sale prices on the prices page (20/11, Nico): Black Friday until Sunday 29/11 at 23:59 Rome, normal on
+   Monday 30/11, the same prices with a Christmas look from 1/12 to 31/12. Base.astro sets the classes on the first load,
+   app.ts calls applySale after every swap, bfClock keeps "Ends in" moving and turns the sale off at its end, so the
+   page goes back to the launch prices without a new deploy. ?xs=X1…X6 (sessionStorage omnya-xs) previews Christmas. ---------- */
+export const BF_END = Date.parse('2026-11-29T23:59:59+01:00');
+export const XM_START = Date.parse('2026-12-01T00:00:00+01:00');
+export const XM_END = Date.parse('2026-12-31T23:59:59+01:00');
+const xsPreview = () => { try { return sessionStorage.getItem('omnya-xs') || ''; } catch { return ''; } };
+export function saleMode(): '' | 'bf' | 'xmas' {
+  const n = Date.now();
+  if (xsPreview() || (n >= XM_START && n < XM_END)) return 'xmas';
+  return n < BF_END ? 'bf' : '';
+}
+export function applySale(h: HTMLElement) {
+  const m = saleMode(), xs = xsPreview();
+  h.classList.toggle('px-bf', !!m);
+  h.classList.toggle('px-xmas', m === 'xmas');
+  if (xs) h.setAttribute('data-xs', xs);
+}
 export function bfClock() {
   const els = document.querySelectorAll<HTMLElement>('[data-bf-clock]');
   if (!els.length) return;
   const u = (els[0].dataset.u || 'd,h,m,s').split(',');
   const p2 = (n: number) => String(n).padStart(2, '0');
+  const end = saleMode() === 'xmas' ? XM_END : BF_END;
   let id = 0;
   const tick = () => {
-    const x = Math.max(0, Math.floor((BF_END - Date.now()) / 1000));
-    if (!x) { document.documentElement.classList.remove('px-bf'); clearInterval(id); return; }
+    const x = Math.max(0, Math.floor((end - Date.now()) / 1000));
+    if (!x) { document.documentElement.classList.remove('px-bf', 'px-xmas'); clearInterval(id); return; }
     const t = `${Math.floor(x / 86400)}${u[0]} ${p2(Math.floor((x % 86400) / 3600))}${u[1]} ${p2(Math.floor((x % 3600) / 60))}${u[2]} ${p2(x % 60)}${u[3]}`;
     els.forEach((el) => (el.textContent = t));
   };
