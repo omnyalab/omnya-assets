@@ -240,14 +240,14 @@ async function tick() {
   }
 
   // c) the people we already had (20/11, Nico: «send the new emails to the ones we already have, a few a day»):
-  // omnya:drip:oldday a day from pool:old (loaded with &loadold=1), newest first, spread over the day, and only while
+  // omnya:drip:oldday a day from pool:old (loaded with &loadold=1), oldest first, spread over the day, and only while
   // every day of their four notes stays under the cap, so they never take the place of the new ones
   if (oldDay > 0 && room > 0) {
     let wantOld = Math.min(room, Math.ceil(oldDay * Math.min(1, elapsed)) - Number((await redis('GET', `${K}so:${d}`)) || 0));
     if (wantOld > 0) {
       const loads = await Promise.all(OFFSETS.map(async (o) => Number((await redis('GET', `${K}load:${dayOf(now + o * DAY)}`)) || 0)));
       wantOld = Math.min(wantOld, ...loads.map((l) => cap - l));
-      const cands = wantOld > 0 ? (await redis('ZREVRANGE', `${K}pool:old`, 0, wantOld * 2)) || [] : [];
+      const cands = wantOld > 0 ? (await redis('ZRANGE', `${K}pool:old`, 0, wantOld * 2)) || [] : []; // oldest first: THE 3D FUTURE's launch mails go to the most recent ones, so until 4/12 the two lists hardly meet
       for (const email of cands) {
         if (wantOld <= 0) break;
         await redis('ZREM', `${K}pool:old`, email);
