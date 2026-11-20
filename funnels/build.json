@@ -1,0 +1,104 @@
+{
+  "_nota": "Il funnel BUILD (casa che si costruisce, parola BUILD), online dal 9/11, nel formato Riyadh dal 18/11 (be387ef, 7b34ed4). Qui serve come RIFERIMENTO: la sua pagina video è la copia pulita in verde del formato Riyadh, da cui sono nati stadio e plane. Valori letti dalle pagine online il 20/11.",
+  "id": "build",
+  "slug": "the-build-blueprint",
+  "format": "riyadh",
+  "date": "18/11",
+  "name": "Build",
+  "word": "BUILD",
+  "prefix": "bd",
+  "theme": "c1",
+  "free": {
+    "name": "The Build Blueprint",
+    "pdf": "omnya-lab-build-blueprint.pdf"
+  },
+  "full": {
+    "title": "How to build a house that builds itself",
+    "pdf": "full-build-blueprint.pdf"
+  },
+  "watch": {
+    "title": "Step 2: see how the free blueprint becomes a <u class=\"hb2\">€1,990</u> client",
+    "vsl": "vsl_build.mp4?v=1",
+    "vsl_poster": "/learn/watch/vsl_poster.jpg",
+    "hook": "<b class=\"hb\">Stop selling renders</b>clients pay for this now",
+    "reel": "r_house2.mp4",
+    "reel_poster": "p_house2.jpg",
+    "reel_label": "Our reel",
+    "join": "the same house",
+    "book_alt": "The Full Build Guide",
+    "full_list": [
+      "Every prompt for the nine build phases, word for word",
+      "The 3D house code",
+      "The hold to build page",
+      "The clips between the phases",
+      "How we hand it to a client",
+      "What to charge for it"
+    ],
+    "launch_end": "2026-11-22T23:59:59+01:00",
+    "day2": "Monday"
+  },
+  "kit": {
+    "short": "Claude Skill",
+    "row": "Full Guide + Claude Skill",
+    "small": "The guide + the <strong class=\"sk\">skill</strong> that builds the house page for you, ready to use",
+    "image": "/learn/bd_3d_04.webp",
+    "list": [
+      "Everything in the Full Guide",
+      "The Claude skill that builds the house page for you",
+      "Drop in your photos, it writes the code",
+      "The hold to build page, ready to run",
+      "Your own phases in one file",
+      "Ready to show a client"
+    ]
+  },
+  "kit_file": {
+    "const": "HOUSE_SKILL",
+    "name": "The House Builder skill",
+    "zip": "house-builder-skill.zip",
+    "note": "(già nel sito: HOUSE_SKILL in learn-files.js)"
+  },
+  "products": {
+    "full": {
+      "pid": "full-build",
+      "stripe_name": "The Full Build Blueprint",
+      "eur": "5.99",
+      "price": "price_1UZs1KATIF7pxfqfhu30zYy6",
+      "link": "https://buy.stripe.com/5kQ3cuacR3bW2dwgGV8so0D"
+    },
+    "kit": {
+      "pid": "skill-build",
+      "stripe_name": "House Builder Skill + The Full Build Blueprint",
+      "eur": "14.99",
+      "prod": "prod_VePTIwRibU3htw",
+      "price": "price_1Ud6ezATIF7pxfqf4fuX14NZ",
+      "link": "https://buy.stripe.com/8x2fZg84J3bW4lEgGV8so0Z"
+    },
+    "full9": {
+      "pid": "full-build-9",
+      "stripe_name": "The Full Build Blueprint",
+      "eur": "9.99",
+      "prod": "prod_VeP1v5W4TvpNi7",
+      "price": "price_1Ud6DgATIF7pxfqfyM7lgRQA",
+      "link": "https://buy.stripe.com/6oUdR83Ot3bW9FY4Yd8so0V"
+    },
+    "kit19": {
+      "pid": "skill-build-19",
+      "stripe_name": "House Builder Skill + The Full Build Blueprint",
+      "eur": "19.99",
+      "prod": "prod_VePVCZgL2xXNDY",
+      "price": "price_1Ud6gFATIF7pxfqfXU504pqH",
+      "link": "https://buy.stripe.com/3cI28q2Kp9Ak6tMfCR8so10"
+    }
+  },
+  "colors": {
+    "watch": null
+  },
+  "own_words": [
+    "house",
+    "hold to build"
+  ],
+  "allow": [
+    "<img src=\"/learn/bd_book_tight.webp\" alt=\"The Full Build Guide\"><img src=\"/learn/tt_book_tight.webp\"",
+    "<li>The Full Build Guide</li>"
+  ]
+}

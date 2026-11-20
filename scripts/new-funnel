@@ -1,0 +1,164 @@
+#!/usr/bin/env python3
+# scripts/new-funnel (20/11/2026, Nico: "uno strumento fisso" for the reel funnels): one file funnels/<id>.json and the
+# whole funnel comes out a copy of the one it is made from, with only words, pictures, links and colours changed.
+# The words of Nico are in the skill ~/.claude/skills/omnya-funnel/SKILL.md; this is only the machine.
+#
+#   scripts/new-funnel make <id> [--dry] [--site DIR]   pages + colours + the funnel in every shared file (nothing written with --dry)
+#   scripts/new-funnel check <id>                       what is missing (pictures, PDFs, zips, Stripe) before going online
+#   scripts/new-funnel stripe <id>                      the Stripe products to create (names, prices, return page), for Nico's ok
+#   scripts/new-funnel judge <id> --base REV --vs REV   rebuild a funnel that exists on the repo as it was at REV and compare
+#   scripts/new-funnel test <id> --url URL [--live]     opt-in → watch → checkout → thanks, Chromium and WebKit, phone and computer
+#   scripts/new-funnel controllo <id>                   the funnel pages in the funnel check (~/Omnya Automazioni), after the push
+#   scripts/new-funnel dm <id>                          the Instant DM texts of the funnel
+import argparse
+import os
+import subprocess
+import sys
+
+sys.dont_write_bytecode = True   # no __pycache__ in the repo
+HERE = os.path.dirname(os.path.abspath(__file__))
+REPO = os.path.dirname(HERE)
+sys.path.insert(0, HERE)
+from funnel import make as M  # noqa: E402
+
+
+def say(*a):
+    print(*a, flush=True)
+
+
+def write(site, files):
+    for rel, text, why in files:
+        p = os.path.join(site, rel)
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        old = open(p, encoding='utf-8').read() if os.path.exists(p) else None
+        if old == text:
+            say(f'  = {rel} (uguale)')
+            continue
+        with open(p, 'w', encoding='utf-8') as f:
+            f.write(text)
+        say(f"  {'+' if old is None else '~'} {rel} · {why}")
+
+
+def cfg(site, ident):
+    M.CONF = os.path.join(REPO, 'funnels')
+    return M.load(site, ident)
+
+
+def cmd_make(a):
+    site = os.path.abspath(a.site or REPO)
+    c = cfg(site, a.id)
+    files, notes = M.build_all(site, c, shared=not a.pages_only)
+    say(f"Funnel {c['id']} → /{c['slug']} (copia di {c.get('from', {}).get('watch', 'build')} per la pagina video, "
+        f"{c.get('from', {}).get('optin', 'stadium')} per l'opt-in)")
+    if a.dry:
+        for rel, _, why in files:
+            say(f'  · {rel} · {why}')
+    else:
+        write(site, files)
+    for n in notes:
+        say('  nota:', n)
+    miss = [p for p in M.assets(c) if not os.path.exists(os.path.join(site, p))]
+    if miss:
+        say('  mancano ancora questi file (la pagina li mostra rotti finché non ci sono):')
+        for p in miss:
+            say('    -', p)
+    todo = [k for k, p in (c.get('products') or {}).items() if not (p.get('price') and p.get('link'))]
+    if todo:
+        say('  Stripe da creare (dopo l\'ok di Nico): ' + ', '.join(f"{k} = {c['products'][k]['pid']}" for k in todo) + '  →  scripts/new-funnel stripe ' + c['id'])
+
+
+def cmd_check(a):
+    site = os.path.abspath(a.site or REPO)
+    c = cfg(site, a.id)
+    bad = 0
+    for p in M.assets(c):
+        ok = os.path.exists(os.path.join(site, p))
+        bad += not ok
+        say(('  ok  ' if ok else '  NO  ') + p)
+    for k, p in (c.get('products') or {}).items():
+        ok = bool(p.get('price') and p.get('link'))
+        bad += not ok
+        say(('  ok  ' if ok else '  NO  ') + f"Stripe {k}: {p.get('stripe_name')} €{p.get('eur')} {p.get('link', '')}")
+    try:
+        files, notes = M.build_all(site, c)
+        same = all(os.path.exists(os.path.join(site, r)) and M.code(open(os.path.join(site, r), encoding='utf-8').read()) == M.code(t) for r, t, _ in files)
+        say(('  ok  ' if same else '  NO  ') + ('pagine e file comuni già aggiornati' if same else 'manca un giro di make (pagine o file comuni diversi)'))
+        bad += not same
+    except M.Stop as e:
+        bad += 1
+        say('  NO  ', e)
+    # what each Stripe product delivers, read from the real learn-files.js
+    names = sorted(set(p['stripe_name'] for p in (c.get('products') or {}).values()))
+    js = ("import('%s').then(m=>{for(const n of %r){const f=m.filesForProduct([n],{ttl:60});"
+          "console.log(n+' → '+(f.map(x=>x.file).join(', ')||'NIENTE'))}}).catch(e=>console.log('errore '+e.message))") % (
+        os.path.join(site, 'api/_lib/learn-files.js'), names)
+    env = dict(os.environ, FILES_SECRET='prova-locale')
+    r = subprocess.run([node(), '--input-type=module', '-e', js], capture_output=True, text=True, env=env)
+    for line in (r.stdout + r.stderr).strip().splitlines():
+        say('  file', line)
+        bad += 'NIENTE' in line or 'errore' in line
+    say('Pronto per andare online.' if not bad else f'{bad} cose da sistemare prima di andare online.')
+    return 1 if bad else 0
+
+
+def node():
+    for p in (os.path.expanduser('~/.local/node/bin/node'), '/usr/local/bin/node', '/opt/homebrew/bin/node'):
+        if os.path.exists(p):
+            return p
+    return 'node'
+
+
+def cmd_stripe(a):
+    c = cfg(REPO, a.id)
+    say(f"Prodotti Stripe del funnel {c['name']} (da creare dal Chrome di Nico SOLO dopo il suo ok, una tantum, EUR):")
+    for k, p in (c.get('products') or {}).items():
+        state = 'GIÀ FATTO ' + p['link'] if p.get('link') else 'DA CREARE'
+        say(f"  {k:6} «{p['stripe_name']}» €{p['eur']} · dopo il pagamento: https://www.omnyalab.com/learn/thanks/full-{c['id']}?session_id={{CHECKOUT_SESSION_ID}} · {state}")
+    say('Poi scrivi prod_, price_ e il link buy.stripe.com in funnels/%s.json → products, e rilancia make.' % c['id'])
+
+
+def cmd_dm(a):
+    c = cfg(REPO, a.id)
+    d = c.get('dm')
+    if not d:
+        say('Nel file non ci sono i testi di Instant DM (chiave "dm").')
+        return
+    for k, v in d.items():
+        say(f'{k}: {v}')
+
+
+def cmd_judge(a):
+    from funnel import judge
+    return judge.run(REPO, a.id, a.base, a.vs, a.pages_vs, cfg)
+
+
+def cmd_test(a):
+    from funnel import test
+    return test.run(REPO, cfg(REPO, a.id), a.url, a.live, a.only)
+
+
+def cmd_controllo(a):
+    from funnel import controllo
+    return controllo.run(cfg(REPO, a.id), a.dry)
+
+
+def main():
+    ap = argparse.ArgumentParser(prog='new-funnel')
+    sp = ap.add_subparsers(dest='cmd', required=True)
+    p = sp.add_parser('make'); p.add_argument('id'); p.add_argument('--dry', action='store_true'); p.add_argument('--site'); p.add_argument('--pages-only', action='store_true'); p.set_defaults(f=cmd_make)
+    p = sp.add_parser('check'); p.add_argument('id'); p.add_argument('--site'); p.set_defaults(f=cmd_check)
+    p = sp.add_parser('stripe'); p.add_argument('id'); p.set_defaults(f=cmd_stripe)
+    p = sp.add_parser('dm'); p.add_argument('id'); p.set_defaults(f=cmd_dm)
+    p = sp.add_parser('judge'); p.add_argument('id'); p.add_argument('--base', required=True); p.add_argument('--vs', required=True); p.add_argument('--pages-vs', default='HEAD'); p.set_defaults(f=cmd_judge)
+    p = sp.add_parser('test'); p.add_argument('id'); p.add_argument('--url', required=True); p.add_argument('--live', action='store_true'); p.add_argument('--only', default=''); p.set_defaults(f=cmd_test)
+    p = sp.add_parser('controllo'); p.add_argument('id'); p.add_argument('--dry', action='store_true'); p.set_defaults(f=cmd_controllo)
+    a = ap.parse_args()
+    try:
+        sys.exit(a.f(a) or 0)
+    except M.Stop as e:
+        say('FERMO:', e)
+        sys.exit(2)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,168 @@
+{
+  "_nota": "Il funnel STADIO (parola TICKET), nel formato Riyadh rosso dal 18/11 (467c2ae). Qui serve come RIFERIMENTO per la pagina opt-in del formato Riyadh (plane l'ha copiata da qui) e per il giudice. Valori letti dalle pagine online e da scripts/make-stadium-ry.py il 20/11.",
+  "id": "stadium",
+  "slug": "the-stadium-blueprint",
+  "format": "riyadh",
+  "date": "18/11",
+  "name": "Stadium",
+  "word": "TICKET",
+  "prefix": "sd",
+  "theme": "sd",
+  "what": "the stadium reel where you pick your own seat",
+  "optin": {
+    "title": "How to build a stadium where you pick your own seat",
+    "description": "Steal our stadium method: the free blueprint in five steps, and the Full Stadium Blueprint with every prompt, the 3D stadium code and the page where you pick your seat.",
+    "word": "Stadium",
+    "proof": "Steal it before your competitors do",
+    "noMail": true
+  },
+  "free": {
+    "name": "The Stadium Blueprint",
+    "pdf": "omnya-lab-stadium-blueprint.pdf"
+  },
+  "full": {
+    "title": "How to build a stadium where you pick your own seat",
+    "pdf": "full-stadium-blueprint.pdf"
+  },
+  "watch": {
+    "title": "Step 2: see how we sell it to teams for <u class=\"hb2\">$50,000</u>",
+    "vsl": "vsl_stadium.mp4?v=1",
+    "vsl_poster": "/learn/watch/vsl_poster.jpg",
+    "hook": "<b class=\"hb\">1M views</b>in less than 24 hours",
+    "reel": "r_stadio.mp4",
+    "reel_poster": "p_stadio.jpg",
+    "reel_label": "1M views",
+    "join": "the same stadium",
+    "book_alt": "The Full Stadium Guide",
+    "full_list": [
+      "The 3D stadium code, every seat in it",
+      "Pick a stand, a block, then your seat",
+      "Every photo prompt, view by view",
+      "The clip prompts that fly you down",
+      "The ticket with the view from your seat",
+      "What to charge a club for it"
+    ],
+    "launch_end": "2026-11-22T23:59:59+01:00",
+    "day2": "Monday"
+  },
+  "kit": {
+    "short": "Claude Skill",
+    "row": "Full Guide + Claude Skill",
+    "small": "The guide + the <strong class=\"sk\">skill</strong> that builds this for you + how we made this video viral",
+    "image": "/learn/sd_scene_preview.webp",
+    "list": [
+      "Everything in the Full Guide",
+      "The Claude skill that builds the stadium for you",
+      "Your club, colours and prices in one file",
+      "Every seat with the view from it",
+      "How we made this video viral",
+      "Ready to show a club"
+    ]
+  },
+  "kit_file": {
+    "const": "SKILL",
+    "name": "The Stadium Builder skill",
+    "zip": "stadium-builder-skill.zip",
+    "note": "(già nel sito: SKILL in learn-files.js)"
+  },
+  "products": {
+    "full": {
+      "pid": "full-stadium",
+      "stripe_name": "The Full Stadium Blueprint",
+      "eur": "5.99",
+      "prod": "prod_VdO4h1RXKJKsew",
+      "price": "price_1Uc7IMATIF7pxfqfXY17WvAy",
+      "link": "https://buy.stripe.com/28EaEW3Ot7scdWeeyN8so0M"
+    },
+    "kit": {
+      "pid": "skill-stadium-14",
+      "stripe_name": "Stadium Builder Skill + The Full Stadium Blueprint",
+      "eur": "14.99",
+      "prod": "prod_VeQHZIee69GDhH",
+      "price": "price_1Ud7QjATIF7pxfqfU2jLZPH5",
+      "link": "https://buy.stripe.com/8x2fZg84J13O2dw3U98so11"
+    },
+    "full9": {
+      "pid": "full-stadium-9",
+      "stripe_name": "The Full Stadium Blueprint",
+      "eur": "9.99",
+      "prod": "prod_VeQJxGyXdnjAw3",
+      "price": "price_1Ud7StATIF7pxfqfTwB2zdvG",
+      "link": "https://buy.stripe.com/00w4gyckZfYI8BU76l8so13"
+    },
+    "kit19": {
+      "pid": "skill-stadium-19",
+      "stripe_name": "Stadium Builder Skill + The Full Stadium Blueprint",
+      "eur": "19.99",
+      "prod": "prod_VeQIx4axTYyjFg",
+      "price": "price_1Ud7S3ATIF7pxfqfAfOHsZxB",
+      "link": "https://buy.stripe.com/4gMcN44SxdQA5pI3U98so12"
+    }
+  },
+  "thanks": {
+    "bf": {
+      "name": "Stadium",
+      "book": "/learn/sd_book_tight.webp"
+    },
+    "future": "these 3D stadiums"
+  },
+  "colors": {
+    "name": "red",
+    "watch": {
+      "bright": [
+        0.995,
+        1.0,
+        0
+      ],
+      "dark": [
+        0.995,
+        1.0
+      ],
+      "map": {
+        "#d4ff5a": "#ffb066"
+      }
+    },
+    "free_card": "blue",
+    "optin": {
+      "main": "#ff3b30",
+      "deep": "#d81f26",
+      "light": "#ffb066",
+      "mid": "#ff7a6e",
+      "dh": 356,
+      "ds": 1.0,
+      "bg": "#0a0505"
+    },
+    "optin_uncolor": [
+      [
+        "#ff3b30",
+        "#2997ff"
+      ],
+      [
+        "#d81f26",
+        "#0a84ff"
+      ],
+      [
+        "255,59,48",
+        "41,151,255"
+      ],
+      [
+        "#0a0505",
+        "#05070a"
+      ],
+      [
+        "#170d0e",
+        "#0d1117"
+      ]
+    ],
+    "thanks": {
+      "hue": 0.995,
+      "main": "#ff3b30",
+      "name": "stadium red"
+    }
+  },
+  "own_words": [
+    "stadium",
+    "ticket",
+    "club"
+  ]
+}

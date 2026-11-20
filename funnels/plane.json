@@ -1,0 +1,178 @@
+{
+  "_nota": "Il funnel PLANE (aereo dove scegli il posto, parola PLANE), online dal 18/11 (e43bc69, 6a8ee57, 3189bb5). È il funnel del giudice: rigenerato con lo strumento deve uscire uguale a quello online. Valori letti dalle pagine online, da scripts/make-plane-ry.py e recolor-plane.py il 20/11.",
+  "id": "plane",
+  "slug": "the-plane-blueprint",
+  "format": "riyadh",
+  "date": "18/11",
+  "from": {
+    "watch": "build",
+    "optin": "stadium"
+  },
+  "name": "Plane",
+  "word": "PLANE",
+  "prefix": "pl",
+  "theme": "pl",
+  "what": "the plane reels where you book your own seat",
+  "links": {
+    "/plane": true,
+    "/flight": true
+  },
+  "pack": true,
+  "optin": {
+    "title": "How to build a plane where you pick your own seat",
+    "description": "Steal our plane method: the free blueprint in five steps, and the Full Plane Blueprint with every prompt, the 3D plane code and the page where you pick your seat.",
+    "word": "Plane",
+    "proof": "Steal it before your competitors do",
+    "noMail": true
+  },
+  "free": {
+    "name": "The Plane Blueprint",
+    "pdf": "omnya-lab-plane-blueprint.pdf"
+  },
+  "full": {
+    "title": "How to build a plane where you pick your own seat",
+    "pdf": "full-plane-blueprint.pdf"
+  },
+  "watch": {
+    "title": "Step 2: see how we built a <u class=\"hb2\">$100,000</u> booking site with Claude",
+    "vsl": "vsl_plane.mp4?v=1",
+    "vsl_poster": "/learn/watch/vsl_poster_plane.jpg",
+    "hook": "<b class=\"hb\">Stop selling renders</b>clients pay for this now",
+    "reel": "r_plane.mp4",
+    "reel_poster": "p_plane.jpg",
+    "reel_label": "Our reel",
+    "join": "the same booking site",
+    "book_alt": "The Full Plane Guide",
+    "full_list": [
+      "The 3D plane code, all 334 seats",
+      "Pick a class, then your seat",
+      "The window view from every seat",
+      "Every photo prompt, view by view",
+      "The clip prompts, from the clouds to the suite",
+      "What to charge an airline for it"
+    ],
+    "launch_end": "2026-11-22T23:59:59+01:00",
+    "day2": "Monday",
+    "about": "the face video with the plane, our reel"
+  },
+  "kit": {
+    "short": "3D Plane",
+    "row": "Full Guide + 3D Plane",
+    "small": "The guide + the <strong class=\"sk\">3D plane</strong> where you pick any seat, ready to run",
+    "image": "/learn/pl_scene_preview.webp",
+    "list": [
+      "Everything in the Full Guide",
+      "The 3D plane where you pick any seat",
+      "Every seat clickable, with its view",
+      "The real clips and photos inside",
+      "Your flight, classes and prices in one file",
+      "Ready to show an airline"
+    ]
+  },
+  "kit_file": {
+    "const": "PLANE_KIT",
+    "name": "The 3D Plane Kit",
+    "zip": "plane-3d-kit.zip",
+    "note": "is the interactive plane where you pick your seat: unzip it, double click Start (Mac) or Start (Windows), and it opens in your browser. Your flight, cities and prices are in config.js, and the README inside has every step."
+  },
+  "products": {
+    "full": {
+      "pid": "full-plane",
+      "stripe_name": "The Full Plane Blueprint",
+      "eur": "5.99",
+      "prod": "prod_VeVeI4G7W68ojp",
+      "price": "price_1UdCdPATIF7pxfqfXgy7kpAj",
+      "link": "https://buy.stripe.com/14AaEWgBfdQAg4maix8so14"
+    },
+    "kit": {
+      "pid": "kit-plane",
+      "stripe_name": "3D Plane Kit + The Full Plane Blueprint",
+      "eur": "14.99",
+      "prod": "prod_VeVfllW3fiwvGq",
+      "price": "price_1UdCePATIF7pxfqfeNtWSkX1",
+      "link": "https://buy.stripe.com/cNi4gyacReUE4lEfCR8so15"
+    },
+    "full9": {
+      "pid": "full-plane-9",
+      "stripe_name": "The Full Plane Blueprint",
+      "eur": "9.99",
+      "prod": "prod_VeVgfL013AsZV5",
+      "price": "price_1UdCfWATIF7pxfqfGqJ241Bn",
+      "link": "https://buy.stripe.com/dRm00i5WBdQA9FY0HX8so16"
+    },
+    "kit19": {
+      "pid": "kit-plane-19",
+      "stripe_name": "3D Plane Kit + The Full Plane Blueprint",
+      "eur": "19.99",
+      "prod": "prod_VeVh5vcebmiJU4",
+      "price": "price_1UdCgEATIF7pxfqfby6001RM",
+      "link": "https://buy.stripe.com/6oUdR83OtcMw3hAeyN8so17"
+    }
+  },
+  "thanks": {
+    "bf": {
+      "name": "Plane",
+      "book": "/learn/pk_pb02.webp",
+      "side": "/learn/pl_book_tight.webp",
+      "h": "Right now, don’t miss this one",
+      "p": "Our Black Friday offer comes once a year, and what you just paid comes off the price"
+    },
+    "future": "these 3D planes"
+  },
+  "colors": {
+    "name": "sky blue",
+    "watch": {
+      "bright": [
+        0.555,
+        1.0,
+        0.03
+      ],
+      "dark": [
+        0.58,
+        1.0
+      ],
+      "map": {
+        "#d4ff5a": "#d9f1ff"
+      }
+    },
+    "free_card": "green",
+    "optin": {
+      "main": "#38b6ff",
+      "deep": "#1a8fe0",
+      "light": "#c4e8ff",
+      "mid": "#80d0ff",
+      "dh": 208,
+      "ds": 1.0,
+      "bg": "#04101e"
+    },
+    "optin_uncolor": [
+      [
+        "#38b6ff",
+        "#2997ff"
+      ],
+      [
+        "56,182,255",
+        "41,151,255"
+      ],
+      [
+        "#05080a",
+        "#05070a"
+      ],
+      [
+        "#0d1217",
+        "#0d1117"
+      ]
+    ],
+    "thanks": {
+      "hue": 0.555,
+      "main": "#38b6ff",
+      "name": "plane sky blue"
+    }
+  },
+  "own_words": [
+    "plane",
+    "airline",
+    "flight",
+    "booking site"
+  ]
+}
