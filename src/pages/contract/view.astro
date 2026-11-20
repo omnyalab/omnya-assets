@@ -80,6 +80,9 @@ import '../../styles/global.css';
   <script is:inline>
   (function () {
     var slug = location.pathname.replace(/\/+$/, '').split('/').pop();
+    // ?p=<peek>: Omnya Lab's preview link, it doesn't count as the client opening the agreement
+    var peek = (new URLSearchParams(location.search).get('p') || '').replace(/[^a-f0-9]/g, '');
+    var START = 'Your signature makes the whole project official, and we start as soon as it’s signed and the first payment is in.';
     var app = document.getElementById('app');
     var C = null;
     var AGREE = 'I have read this agreement and I accept it on behalf of the client named in it.';
@@ -87,14 +90,14 @@ import '../../styles/global.css';
     function when(iso) { try { return new Date(iso).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' }); } catch (e) { return iso; } }
     function api(body) { return fetch('/api/contract', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json().then(function (j) { j._status = r.status; return j; }); }); }
 
-    fetch('/api/contract?slug=' + encodeURIComponent(slug)).then(function (r) { return r.ok ? r.json() : null; }).then(function (c) {
+    fetch('/api/contract?slug=' + encodeURIComponent(slug) + (peek ? '&p=' + peek : '')).then(function (r) { return r.ok ? r.json() : null; }).then(function (c) {
       if (!c) { app.innerHTML = '<div class="ct-missing">This link is not active. Please ask Omnya Lab for a new one.</div>'; return; }
       C = c; render();
     }).catch(function () { app.innerHTML = '<div class="ct-missing">Something went wrong, please reload the page.</div>'; });
 
     function render() {
       app.innerHTML =
-        '<section class="ct-hero"><small>' + esc(C.client) + '</small><h1>' + esc(C.title) + '</h1><p>Read it through, then sign at the bottom. It takes a minute.</p></section>' +
+        '<section class="ct-hero"><small>' + esc(C.client) + '</small><h1>' + esc(C.title) + '</h1><p>Read it through and sign at the bottom, it takes a minute.</p></section>' +
         '<div class="ct-doc"><iframe id="doc" title="Agreement" sandbox="allow-same-origin"></iframe></div>' +
         '<section class="ct-sign" id="sign"></section>';
       var f = document.getElementById('doc');
@@ -111,7 +114,7 @@ import '../../styles/global.css';
         } catch (e) {}
       });
       window.addEventListener('resize', function () { try { f.style.height = (f.contentDocument.documentElement.scrollHeight + 10) + 'px'; } catch (e) {} });
-      C.signed ? renderDone(C.signed) : renderSign();
+      C.signed ? renderDone(C.signed) : C.preview ? renderPreview() : renderSign();
     }
 
     function stamp(s) {
@@ -131,17 +134,22 @@ import '../../styles/global.css';
       if (f.contentDocument && f.contentDocument.readyState === 'complete' && f.contentDocument.querySelector('.firma')) put(); else f.addEventListener('load', put);
     }
 
+    function renderPreview() {
+      document.getElementById('sign').innerHTML =
+        '<div class="ct-done"><h2>Preview</h2><p class="ct-sub">This is Omnya Lab’s preview link: opening it here doesn’t count as the client opening it, and the client signs on the normal link.</p></div>';
+    }
+
     function renderDone(s) {
       stamp(s);
       document.getElementById('sign').innerHTML =
         '<div class="ct-done"><div class="ct-tick">✓</div><h2>Signed</h2>' + (s.signature ? '<img src="' + s.signature + '" alt="signature">' : '') + '<p class="ct-sub">by ' + esc(s.name) + (s.role ? ', ' + esc(s.role) : '') + '<br>' + esc(when(s.at)) + '</p>' +
-        '<p class="ct-legal">A confirmation has been sent by email. The countersigned PDF follows from Omnya Lab.</p></div>';
+        '<p class="ct-legal">The agreement now carries both signatures and a copy has been sent to you by email. We start as soon as the first payment is in.</p></div>';
     }
 
     function renderSign() {
       var box = document.getElementById('sign');
       box.innerHTML =
-        '<h2>Sign the agreement</h2><p class="ct-sub">Signing for ' + esc(C.client) + '.</p>' +
+        '<h2>Sign the agreement</h2><p class="ct-sub">Signing for ' + esc(C.client) + '. ' + esc(START) + '</p>' +
         '<div class="ct-grid"><div><label for="nm">Full name</label><input id="nm" type="text" autocomplete="name" placeholder="Your full name"></div>' +
         '<div><label for="rl">Role</label><input id="rl" type="text" autocomplete="organization-title" placeholder="e.g. Partner, Director"></div></div>' +
         '<div class="ct-pad-wrap"><label>Signature</label><div class="ct-tabs" id="tabs"><button type="button" data-m="draw" class="ct-on">Draw</button><button type="button" data-m="type">Type</button></div><input id="ty" class="ct-ty" type="text" autocomplete="name" placeholder="Type your name"><div class="ct-pad"><canvas id="pad"></canvas><div class="ct-line"></div><div class="ct-hint" id="hint">Sign here with your finger or mouse</div></div>' +
