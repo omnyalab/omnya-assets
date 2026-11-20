@@ -35,6 +35,21 @@ const GIF = Buffer.from('R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==', 'bas
 
 const loadAdd = async (ms, n) => { const k = `${K}load:${dayOf(ms)}`; await redis('INCRBY', k, n); await redis('EXPIRE', k, 15 * 86400); };
 
+// Upstash's pipeline: many commands in one request (20/11: one request per row made the first tick, a thousand rows, run out
+// of time). The tick never runs on the memory copy, so this goes straight to Upstash.
+const RURL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+const RTOK = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+async function pipe(cmds) {
+  const out = [];
+  for (let i = 0; i < cmds.length; i += 400) {
+    const res = await fetch(`${RURL}/pipeline`, { method: 'POST', headers: { Authorization: `Bearer ${RTOK}`, 'Content-Type': 'application/json' }, body: JSON.stringify(cmds.slice(i, i + 400)) });
+    const j = await res.json();
+    if (!Array.isArray(j)) throw new Error(`redis pipeline: ${JSON.stringify(j).slice(0, 200)}`);
+    for (const r of j) { if (r.error) throw new Error(`redis: ${r.error}`); out.push(r.result); }
+  }
+  return out;
+}
+
 // ---- 1. the new opt-ins since the last tick (the list is newest first) ----
 async function ingest(now) {
   const cursor = Number(await redis('GET', `${K}cursor`)) || now - 2 * DAY;
@@ -51,34 +66,45 @@ async function ingest(now) {
     if (older || raw.length < 200) break;
   }
   if (!fresh.length) return 0;
-  await redis('SET', `${K}cursor`, String(Math.max(...fresh.map((o) => o.at))));
-  for (const o of fresh.reverse()) { // oldest first, so the latest sign-up of a person wins
+  // the latest sign-up of each person wins (the list is newest first)
+  const last = new Map();
+  for (const o of fresh) {
     const email = String(o.email || '').trim().toLowerCase();
-    if (!email || !GUIDES[o.free]) continue; // the 3D Future waitlist is not a guide: the club mails them itself
-    if (await redis('HEXISTS', `${K}people`, email)) {
-      // already in the series: a new opt-in today may have brought a delivery email, so no note today
-      if (dayOf(o.at) === dayOf(now)) await markMailed(email, now);
-      continue;
+    if (email && GUIDES[o.free] && !last.has(email)) last.set(email, o); // the 3D Future waitlist is not a guide: the club mails them itself
+  }
+  const emails = [...last.keys()];
+  const inSeries = emails.length ? await pipe(emails.map((e) => ['HEXISTS', `${K}people`, e])) : [];
+  const cmds = [];
+  const today = `omnya:mail:day:${dayOf(now)}`;
+  emails.forEach((email, i) => {
+    const o = last.get(email);
+    if (Number(inSeries[i]) === 1) { // already in the series: a new opt-in today may have brought an email, so no note today
+      if (dayOf(o.at) === dayOf(now)) cmds.push(['SADD', today, email], ['EXPIRE', today, 3 * 86400]);
+      return;
     }
     const nl = !!o.consent?.newsletter;
-    await redis('HSET', `${K}who`, email, JSON.stringify({ n: o.name, f: o.free, at: o.at, nl }));
-    await redis('ZADD', `${K}pool:${nl ? 'yes' : 'no'}`, o.at, email);
-    await redis('ZREM', `${K}pool:${nl ? 'no' : 'yes'}`, email);
-  }
+    cmds.push(['HSET', `${K}who`, email, JSON.stringify({ n: o.name, f: o.free, at: o.at, nl })],
+      ['ZADD', `${K}pool:${nl ? 'yes' : 'no'}`, o.at, email], ['ZREM', `${K}pool:${nl ? 'no' : 'yes'}`, email]);
+  });
+  if (cmds.length) await pipe(cmds);
+  await redis('SET', `${K}cursor`, String(Math.max(...fresh.map((o) => o.at)))); // only once everything is in
   return fresh.length;
 }
 
 // who is past the window without being picked becomes the comparison group
 async function prune(now) {
+  const edge = now - 28 * 3600_000;
   for (const p of ['yes', 'no']) {
-    const old = await redis('ZRANGEBYSCORE', `${K}pool:${p}`, '-inf', now - 28 * 3600_000);
+    const old = await redis('ZRANGEBYSCORE', `${K}pool:${p}`, '-inf', edge);
     if (!old?.length) continue;
-    for (const email of old) {
-      const w = await redis('HGET', `${K}who`, email);
-      if (w) await redis('HSET', `${K}ctrl`, email, JSON.stringify({ ...JSON.parse(w), ref: JSON.parse(w).at + DAY }));
-      await redis('HDEL', `${K}who`, email);
-    }
-    await redis('ZREMRANGEBYSCORE', `${K}pool:${p}`, '-inf', now - 28 * 3600_000);
+    const ws = await pipe(old.map((e) => ['HGET', `${K}who`, e]));
+    const cmds = [];
+    old.forEach((email, i) => {
+      if (ws[i]) { const w = JSON.parse(ws[i]); cmds.push(['HSET', `${K}ctrl`, email, JSON.stringify({ ...w, ref: w.at + DAY })]); }
+      cmds.push(['HDEL', `${K}who`, email]);
+    });
+    cmds.push(['ZREMRANGEBYSCORE', `${K}pool:${p}`, '-inf', edge]);
+    await pipe(cmds);
   }
 }
 
@@ -220,6 +246,7 @@ export async function GET(request) {
   }
   if (q.get('on') === '1' || q.get('on') === '0') await redis('SET', `${K}on`, q.get('on'));
   if (q.get('cap')) await redis('SET', `${K}cap`, String(Math.max(0, Math.min(1000, Number(q.get('cap')) || 0))));
+  if (Number(q.get('cursor')) > 0) await redis('SET', `${K}cursor`, String(Date.now() - Number(q.get('cursor')) * 3600_000)); // read the opt-ins of the last N hours again
   if (q.get('resetstat') === '1') { await redis('DEL', `${K}stat`); await redis('DEL', `${K}ev`); } // the counts of the test mails
   if (q.get('future') === '1' || q.get('future') === '0') await redis('SET', `${K}future`, q.get('future'));
   for (const x of String(q.get('quiet') || '').split(',').filter((x) => /^\d{4}-\d{2}-\d{2}$/.test(x))) await redis('SADD', `${K}quiet`, x);

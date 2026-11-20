@@ -568,6 +568,9 @@
     "api/igtick.js": {
       "maxDuration": 60
     },
+    "api/drip.js": {
+      "maxDuration": 60
+    },
     "api/file.js": {
       "includeFiles": "private/learn/**"
     }

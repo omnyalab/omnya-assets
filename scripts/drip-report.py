@@ -86,6 +86,8 @@ for i in range(1, 5):
     print(f"  {i}   {sent[i]:>5}  {o:>5} ({100 * o / sent[i] if sent[i] else 0:.0f}%)  {c:>4} ({100 * c / sent[i] if sent[i] else 0:.1f}%)")
 print()
 a = judge(people, 'start', 'Got the series')
+first = min([p['start'] for p in people] or [now]) - 4 * 3600000
+comp = [c for c in comp if c['ref'] >= first]  # only the days the series ran (the first tick found older sign-ups too)
 b = judge([c for c in comp if c.get('nl')], 'ref', 'Comparison, ticked the box')
 judge([c for c in comp if not c.get('nl')], 'ref', 'Comparison, box left empty')
 if a or b:
