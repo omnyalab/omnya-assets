@@ -52,6 +52,9 @@ def post(text, C):
       "// structure online since 20/11: Full €5.99 Black Friday until 27/11 then €9.99, the €59 card with the 3 playbooks + the\n"
       "// course under it, THE 3D FUTURE at the end, words for people who start from zero): change the words there, not here.\n"
       "import RiyadhFuture from '../../components/RiyadhFuture.astro';\n")
+  # 22/11 (Nico: «metti bella quella di 3D mastery»): the link preview of the course, the same as the opt-in page
+  rep('<meta name="robots" content="noindex">\n', '<meta name="robots" content="noindex">\n'
+      '<meta property="og:title" content="How to build any 3D with Claude, step by step | Omnya Lab"><meta property="og:image" content="https://www.omnyalab.com/og/mastery.jpg"><meta property="og:image:secure_url" content="https://www.omnyalab.com/og/mastery.jpg"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="3D AI Mastery, the free guide: how to build any 3D with Claude, step by step"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://www.omnyalab.com/og/mastery.jpg">\n')
   # the bar, the hero, the steps
   rep('<span class="lbl">Launch price ends in</span>', '<span class="lbl">Black Friday price ends in</span>')
   rep('<a class="go cbtn" href="#offer">Get the full guide<i class="dot"></i>', '<a class="go cbtn" href="#offer">Get the full course<i class="dot"></i>')

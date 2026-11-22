@@ -185,6 +185,9 @@ def make_optin(repo, c, ref):
         f"// Images {c['prefix']}_* and PDFs: {c.get('kit_folder', '~/Desktop/Studio Assets/06 Documents/Blueprint/Omnya ' + c['name'] + ' Blueprint')}. Made by scripts/new-funnel from funnels/{c['id']}.json.\n"),
         head, count=1)
     head = re.sub(r'title="[^"]*" description="[^"]*"', lambda m: f'title="{o["title"]}" description="{o["description"]}"', head, count=1)
+    # 22/11 (Nico, 3D AI Mastery): the funnel's own link preview (1200x630 in public/og/) instead of the site's general one
+    if o.get('og'):
+        head = head.replace(f'description="{o["description"]}"', f'description="{o["description"]}" og="{o["og"]}" ogAlt="{o.get("og_alt", o["title"])}"', 1)
     if not re.search(r'<OptIn [^>]*/>', head):
         raise Stop(f"opt-in di {ref['id']}: non trovo <OptIn …/>")
     head = re.sub(r'<OptIn [^>]*/>', lambda m: optin_tag(c), head, count=1)
