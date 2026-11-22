@@ -136,7 +136,9 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
     {Astro.props.id === 'full-build' && <RiyadhBlackFriday name="Build" book="/learn/bd_book_tight.webp" />}
     {Astro.props.id === 'full-stadium' && <RiyadhBlackFriday name="Stadium" book="/learn/sd_book_tight.webp" />}
     {Astro.props.id === 'full-plane' && <RiyadhBlackFriday name="Plane" book="/learn/pk_pb02.webp" side="/learn/pl_book_tight.webp" h="Right now, don’t miss this one" p="Our Black Friday offer comes once a year, and what you just paid comes off the price" />}
-    {Astro.props.id === 'full-mastery' && <RiyadhBlackFriday name="Stadium" book="/learn/pk_pb02.webp" side="/learn/sd_book_tight.webp" h="Right now, don’t miss this one" p="Our Black Friday offer comes once a year, and what you just paid comes off the price" />}
+    {/* 22/11 (Nico): who bought 3D AI Mastery is offered its own pack, «The 3 playbooks + 3D AI Mastery», not Everything: the course in the
+        middle, €59 minus what they paid. The €53 Stripe link is not there yet, so for now the card stays at €59 (never a price it cannot charge) */}
+    {Astro.props.id === 'full-mastery' && <RiyadhBlackFriday book="/learn/mx_book_tight.webp" h="Right now, don’t miss this one" p="Our Black Friday offer comes once a year, and what you just paid comes off the price" offer={{ books: ['/learn/pk_pb01.webp', '/learn/pk_pb02.webp', '/learn/mx_book_tight.webp', '/learn/pk_pb03.webp'], title: 'The course + 3 playbooks', inc: 'Our 3 playbooks with the course: photos clients pay for, going viral and the launch kit', was: 244, link: 'https://buy.stripe.com/cNieVcgBf13OcSa4Yd8so1c', label: 'Get all four', credit: { 599: [53, '', 'You already have the course, so you only pay the rest'] } }} />}
 
     <header class="oto__head">
       <p class="oto__done" data-fade>{X.headA}</p>

@@ -90,6 +90,15 @@ def post(text, C):
   rep("Write your email so we can send you the guide", "Write your email so we can send you the course")
   # the club card at the end (Riyadh C1)
   rep('  </section>\n</main>', '  </section>\n  <div class="clubw" data-clubw><RiyadhFuture kind="mastery" bg="stadium" href="/the-3d-future?ig=mastery" /></div>\n</main>')
+  # 22/11 (Nico: «fallo blu bello, non verde… blu accattivante non spento»): electric blue like the Æther cover on a
+  # black-navy ground: buttons in a blue gradient with a light-blue halo, key words in the light-blue → blue gradient of
+  # MASTERY on the cover, a thin blue light on the cards
+  rep('</style></head>', ':root{--bg:#050914;--bg2:#0b1226}html,body{background:#050914}'
+      '.cbtn,.getnow,.pay{background:linear-gradient(180deg,#3d8bff,#1f5bff)!important;color:#fff!important;box-shadow:inset 0 0 0 1px #9fd8ff40,0 0 0 4px #5fb4ff1f,0 12px 34px -10px #5fb4ffcc,0 0 42px -8px #5fb4ff99!important}'
+      '.hb{background:linear-gradient(180deg,#ffffff 0%,#9fd8ff 42%,#2f7bff 100%)!important;-webkit-background-clip:text!important;background-clip:text!important}'
+      '.hb2{background:linear-gradient(90deg,#9fd8ff,#2f7bff)!important;-webkit-background-clip:text!important;background-clip:text!important}'
+      'a.fg,[data-vsl],#offer .box,.igv,.right .opt.opt-fu{box-shadow:0 0 0 1px #5fb4ff59,0 0 36px -10px #2f7bffaa!important}'
+      '</style></head>')
   # the script: no timer after 27/11, prices and links of the course and the bundle
   rep("  const r = document.querySelector('.rvl span:last-child'); if (r) r.innerHTML = 'The launch price is over'",
       "  const r = document.querySelector('.rvl span:last-child'); if (r) r.innerHTML = 'The Black Friday price is over'\n"

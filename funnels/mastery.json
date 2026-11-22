@@ -24,7 +24,7 @@
     "proof": "Steal it before your competitors do",
     "noMail": true,
     "extra": "btn=\"Send me the free guide →\"",
-    "css": ".oi--mx .oiw-bg--g{background:radial-gradient(900px 560px at 50% -12%,#2f7bff3a,#0000 70%),#0d0f12}"
+    "css": ".oi--mx .oiw-bg--g{background:radial-gradient(900px 560px at 50% -12%,#2f7bff3a,#0000 70%),#0d0f12}\n/* 22/11 (Nico: «blu accattivante non spento»): electric blue like the Æther cover on a black-navy ground */\n.oi--mx .x3-btn{background:linear-gradient(180deg,#3d8bff,#1f5bff)!important;color:#fff!important;box-shadow:inset 0 0 0 1px #9fd8ff40,0 0 0 4px #5fb4ff1f,0 12px 34px -10px #5fb4ffcc,0 0 42px -8px #5fb4ff99!important}\n.oi--mx .oist .c,.oi--mx .x3-kick{background:linear-gradient(90deg,#9fd8ff,#2f7bff);-webkit-background-clip:text;background-clip:text;color:transparent!important}\n.oi--mx .oisheet{box-shadow:0 0 0 1px #5fb4ff59,0 0 60px -14px #2f7bffcc!important}"
   },
   "free": {
     "name": "The 3D AI Mastery Guide",
@@ -99,7 +99,9 @@
       ],
       "map": {
         "#22d35e": "#2f7bff",
-        "#d4ff5a": "#cfe0ff"
+        "#d4ff5a": "#cfe0ff",
+        "#141a16": "#0b1226",
+        "#0d120f": "#050914"
       }
     },
     "free_card": "blue",

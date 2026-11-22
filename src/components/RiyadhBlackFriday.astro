@@ -7,7 +7,9 @@
 // 18/11: the Build thanks page uses it too (name="Build", the Build book in the fan).
 // 19/11 (Nico): on the plane thanks page Playbook 02 "How to go viral" is the book in the middle; `side` is the last book of the fan
 // 19/11 (Nico): the plane thanks page has its own bridge (h, p): don't miss it, and what they just paid comes off
-const { name = 'Riyadh', book = '/learn/ry_book_tight.webp', side = '/learn/pk_pb02.webp', h = 'One more thing before you go', p = 'Right now there’s a Black Friday offer on everything we teach' } = Astro.props as { name?: string; book?: string; side?: string; h?: string; p?: string };
+const { name = 'Riyadh', book = '/learn/ry_book_tight.webp', side = '/learn/pk_pb02.webp', h = 'One more thing before you go', p = 'Right now there’s a Black Friday offer on everything we teach', offer } = Astro.props as { name?: string; book?: string; side?: string; h?: string; p?: string; offer?: { books: string[]; title: string; inc: string; was: number; link: string; label: string; credit: Record<string, [number, string, string]> } };
+// 22/11 (Nico, 3D AI Mastery): `offer` turns the card into another Black Friday pack (its books, title, line, struck price, Stripe
+// link, button and what each payment just made comes off, {cents: [price, link, line]}). Without it the card is Everything as before.
 // 22/11 (Nico: «occhio che qua esce doppio»): the five books of the fan never repeat. `book` is always the one in the middle;
 // the others are the 3D, Towers, Stadium books and `side`, and one that is already in the fan is replaced by another real book
 // of the pack (Plane, Build, Tower, the playbooks), so the stadium thanks page (book = the stadium) no longer shows it twice.
@@ -20,11 +22,13 @@ want.forEach((src, i) => {
   const pick = used.has(src) ? SPARE.find((x) => !used.has(x) && !want.includes(x)) || SPARE.find((x) => !used.has(x)) || src : src;
   used.add(pick); fan.push(pick);
 });
+const books = offer ? offer.books : fan;
+const was = offer ? offer.was : 260;
 ---
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
-<section class="rybf" data-rybf hidden>
+<section class="rybf" data-rybf data-was={was} data-label={offer ? offer.label : undefined} data-credit={offer ? JSON.stringify(offer.credit) : undefined} hidden>
 <div class="bfw"><div class="bridge"><h3>{h}</h3><p>{p}</p><span class="ar">↓</span></div>
-      <div class="bfc bft" data-bft><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan">{fan.map((src) => <img src={src} alt="" />)}</span><span class="bh">Get everything</span><span class="inc">Every Full guide, {name} too, the 3 playbooks, the skills and every new guide</span><span class="pz"><s>€260</s><b data-bfp>€59</b><span data-bfo>-77%</span></span><span class="pd" data-bfpaid hidden></span><div class="bcd"><small>Black Friday ends in</small><div class="bx"><span><b data-bd>11</b><i>DAYS</i></span><span><b data-bh>00</b><i>HRS</i></span><span><b data-bm>00</b><i>MIN</i></span><span class="sc"><b data-bs>00</b><i>SEC</i></span></div></div><a class="go" href="https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C" data-bfgo>Get everything · €59 →</a></div></div>
+      <div class="bfc bft" data-bft><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan">{books.map((src) => <img src={src} alt="" />)}</span><span class="bh">{offer ? offer.title : 'Get everything'}</span><span class="inc">{offer ? offer.inc : `Every Full guide, ${name} too, the 3 playbooks, the skills and every new guide`}</span><span class="pz"><s>€{was}</s><b data-bfp>€59</b><span data-bfo>{offer ? '-' + Math.round((1 - 59 / was) * 100) + '%' : '-77%'}</span></span><span class="pd" data-bfpaid hidden></span><div class="bcd"><small>Black Friday ends in</small><div class="bx"><span><b data-bd>11</b><i>DAYS</i></span><span><b data-bh>00</b><i>HRS</i></span><span><b data-bm>00</b><i>MIN</i></span><span class="sc"><b data-bs>00</b><i>SEC</i></span></div></div><a class="go" href={offer ? offer.link : 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C'} data-bfgo>{offer ? offer.label : 'Get everything'} · €59 →</a></div></div>
 </section>
 <style is:global>
 .rybf{padding:8px 16px 40px;text-align:center;color:#fff;font-family:Inter,-apple-system,sans-serif}
@@ -84,12 +88,13 @@ html.ry-bf [data-upgrade]{display:none!important}
     // A price without its link keeps the card at €59, so the page never shows a price it cannot charge.
     // 20/11 (Nico): who bought the Plane Builder Skill at €1.99 gets a super discount, Everything at €44 (the €44 upgrade link
     // that already exists), with its own line: it is more than "what you paid comes off"
-    const CREDIT = { 199: [44, 'https://buy.stripe.com/fZu6oGbgVfYIg4meyN8so0X', 'You just got the skill, so for you it’s €44 instead of €59'], 599: [53, 'https://buy.stripe.com/bJedR8acRbIs3hAbmB8so0F'], 999: [49, 'https://buy.stripe.com/8x2eVcckZ5k43hAbmB8so0W'], 1499: [44, 'https://buy.stripe.com/fZu6oGbgVfYIg4meyN8so0X'], 1999: [39, 'https://buy.stripe.com/bJeeVc84J7sccSafCR8so0Y'] }
+    const CREDIT0 = { 199: [44, 'https://buy.stripe.com/fZu6oGbgVfYIg4meyN8so0X', 'You just got the skill, so for you it’s €44 instead of €59'], 599: [53, 'https://buy.stripe.com/bJedR8acRbIs3hAbmB8so0F'], 999: [49, 'https://buy.stripe.com/8x2eVcckZ5k43hAbmB8so0W'], 1499: [44, 'https://buy.stripe.com/fZu6oGbgVfYIg4meyN8so0X'], 1999: [39, 'https://buy.stripe.com/bJeeVc84J7sccSafCR8so0Y'] }
+    const CREDIT = box.dataset.credit ? JSON.parse(box.dataset.credit) : CREDIT0, LABEL = box.dataset.label || 'Get everything', WAS = +box.dataset.was || 260
     window.__bfCredit = cents => { const c = CREDIT[cents]; if (!c || !c[1]) return
       const paid = '€' + (cents / 100).toFixed(2)
-      q('bfp').textContent = '€' + c[0]; q('bfo').textContent = '-' + Math.round((1 - c[0] / 260) * 100) + '%'
+      q('bfp').textContent = '€' + c[0]; q('bfo').textContent = '-' + Math.round((1 - c[0] / WAS) * 100) + '%'
       const pd = q('bfpaid'); pd.textContent = c[2] || 'You already paid ' + paid + ', so you only pay the rest'; pd.hidden = false
-      const go = q('bfgo'); go.href = c[1]; go.textContent = 'Get everything · €' + c[0] + ' →' }
+      const go = q('bfgo'); go.href = c[1]; go.textContent = LABEL + ' · €' + c[0] + ' →' }
     const sid = new URLSearchParams(location.search).get('session_id')
     // 22/11: who paid €59 or more on this payment (the 3D AI Mastery bundle, €59) is not offered Everything for €59 again
     if (sid) fetch('/api/files?session_id=' + encodeURIComponent(sid)).then(r => r.ok ? r.json() : null).then(d => { if (d && !d.pack && d.paid >= 5900) { box.hidden = true; return } if (d && !d.pack && d.paid) window.__bfCredit(d.paid) }).catch(() => {}) } }
