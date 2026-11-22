@@ -133,6 +133,7 @@ export const products: { id: ProductId; checkout: string }[] = [
   // the Full 3D AI Mastery Blueprint at €5.99 (€29 struck), Stripe product "3D AI Mastery", back to /learn/thanks/full-mastery (22/11)
   // prod_Vg0y0Aac4ALpZI; from Saturday €9.99 https://buy.stripe.com/00w7sK84J8wg2dw62h8so1b, used on the watch page
   // its Black Friday bundle (only on this funnel, until 27/11): "The 3 playbooks + 3D AI Mastery" €59, prod_Vg117C0bAq1lGQ, https://buy.stripe.com/cNieVcgBf13OcSa4Yd8so1c
+  // and €53 on the thanks page for who bought the course at €5.99: prod_Vg1NqsE8ogNXai, https://buy.stripe.com/9B628qbgV7sc3hA8ap8so1d
   { id: 'full-mastery', checkout: 'https://buy.stripe.com/4gM5kCckZ3bW7xQ8ap8so1a' },
 ];
 
