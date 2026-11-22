@@ -100,6 +100,8 @@ def shots(c, url, out, repo):
     X, slug = c['id'], c['slug']
     prods = c.get('products') or {}
     files = files_for(repo, [prods['kit']['stripe_name']]) if prods.get('kit') else files_for(repo, [prods['full']['stripe_name']])
+    # 22/11: what the simulated buyer paid, the kit or (a funnel without kit) the Full: the Black Friday card of the thanks page counts it
+    paid = round(float((prods.get('kit') or prods['full'])['eur']) * 100)
     got = {}
     with sync_playwright() as pw:
         b = pw.chromium.launch(channel='chrome')
@@ -109,7 +111,7 @@ def shots(c, url, out, repo):
             pg.route('**/api/optin', lambda r: r.fulfill(status=200, content_type='application/json', body='{"ok":true,"mail":false}'))
             pg.route('**/api/embed-checkout', real_checkout)
             pg.route('**/api/files?**', lambda r: r.fulfill(status=200, content_type='application/json',
-                                                            body=json.dumps({'files': files, 'pack': False, 'paid': 1499, 'skill': False, 'email': f'check+{X}@omnyalab.com'})))
+                                                            body=json.dumps({'files': files, 'pack': False, 'paid': paid, 'skill': False, 'email': f'check+{X}@omnyalab.com'})))
             pg.goto(f'{url}/{slug}', wait_until='load')
             pg.wait_for_selector('[data-optin] form')
             time.sleep(2.5)
@@ -225,11 +227,11 @@ def page(c, got, files, checks, extra=''):
 <details><summary>Le pagine intere (B3 telefono, B4 computer)</summary><div class="row wide" style="margin-top:12px">{fig('B3', 'watch-full-telefono', 'Telefono, tutta la pagina (prezzi già visibili)', True)}{fig('B4', 'watch-full-computer', 'Computer, tutta la pagina', True)}</div></details></section>
 <section><h2><b>C</b>La scelta e il pagamento</h2><div class="row">{fig('C1', 'full-telefono', 'Full già scelto, telefono')}{fig('C2', 'kit-telefono', 'Tocco il kit, telefono')}{fig('C3', 'full-computer', 'Full già scelto, computer')}</div>
 <p class="lead">La carta è quella vera di Stripe (numero, scadenza, codice di sicurezza, nome): la board non si fa se non si carica.</p></section>
-<section><h2><b>D</b>La pagina grazie</h2><div class="row wide">{fig('D1', 'thanks-telefono', 'Telefono, con i file di chi ha preso il kit', True)}{fig('D2', 'thanks-computer', 'Computer', True)}</div></section>
+<section><h2><b>D</b>La pagina grazie</h2><div class="row wide">{fig('D1', 'thanks-telefono', 'Telefono, con i file di chi ha preso il kit' if c.get('kit') else 'Telefono, con i file di chi ha preso il Full', True)}{fig('D2', 'thanks-computer', 'Computer', True)}</div></section>
 <section><h2><b>E</b>Instant DM</h2>{chat}</section>
 <section><h2><b>F</b>Stripe</h2><div class="tbl"><table><tr><th></th><th>Prodotto (nome esatto)</th><th>Prezzo</th><th>Link</th></tr>{rows}</table></div>
 <p class="lead">Dopo il pagamento tutti tornano su /learn/thanks/full-{e(c['id'])}. Il prezzo del giorno dopo parte da solo alla fine del lancio.</p></section>
-<section><h2><b>G</b>Cosa riceve chi paga il kit</h2><ul class="checks">{fl}</ul></section>
+<section><h2><b>G</b>Cosa riceve chi paga {'il kit' if c.get('kit') else 'il Full'}</h2><ul class="checks">{fl}</ul></section>
 <section><h2><b>H</b>Prove</h2><ul class="checks">{ck}</ul></section>
 {extra}
 <div class="ask"><h2>Va bene così? Cosa cambieresti?</h2><p class="lead">Scrivimi i codici con la correzione, per esempio «B1: gancio più corto» o «E: risposta con un'altra emoji». Quando mi dici che va bene, pubblico.</p></div>
