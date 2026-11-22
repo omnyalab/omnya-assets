@@ -225,7 +225,9 @@ def code(text):
 
 
 def comp(c):
-    return c['name'].replace(' ', '') + 'ThanksColors'
+    # 22/11: a name that starts with a digit (3D AI Mastery) is not a JavaScript name: the component gets the id instead
+    n = re.sub(r'[^A-Za-z0-9]', '', c['name'])
+    return (n if n[:1].isalpha() else c['id'].capitalize()) + 'ThanksColors'
 
 
 # ---------- the shared files: the funnel added next to the others ----------
@@ -280,7 +282,8 @@ def patches(repo, c):
     if f"'free-{X}':" not in s:
         s = before_line(s, "  free: { name: 'The Blueprint'", f"  'free-{X}': {{ name: '{c['free']['name']}', file: '/learn/free/{c['free']['pdf']}' }},\n", 'api/optin.js')
     if c['optin'].get('noMail', True) and f"'free-{X}', 'waitlist-3d-future'" not in s and re.search(r"NO_MAIL = new Set\(\[[^\]]*'free-%s'" % re.escape(X), s) is None:
-        s = at(s, "'waitlist-3d-future']);", f"'free-{X}', ", 'api/optin.js NO_MAIL')
+        # 20/11 (d93d185) the list goes on a second line after 'waitlist-3d-future': the new free PDF goes right before it
+        s = at(s, "'waitlist-3d-future']);" if "'waitlist-3d-future']);" in s else "'waitlist-3d-future',\n", f"'free-{X}', ", 'api/optin.js NO_MAIL')
     if s != s0:
         out.append(('api/optin.js', s, 'free PDF + NO_MAIL'))
 
@@ -546,6 +549,14 @@ def build_all(repo, c, out_root=None, shared=True):
     build_text = rd(repo, 'src/pages/the-build-blueprint/watch.astro')
     files = []
     w, kept = make_watch(repo, c, refw, build_text)
+    # 22/11: a funnel can name a script that turns the generated video page into its own variant (scripts/mastery-post.py:
+    # the Riyadh structure with the €59 bundle under the Full and THE 3D FUTURE at the end). It gets the text and the file.
+    if c.get('post_script'):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('post_' + c['id'], os.path.join(repo, c['post_script']))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        w = mod.post(w, c)
     files.append((f"src/pages/{c['slug']}/watch.astro", w, f"pagina video (copia di {refw['slug']}/watch)"))
     files.append((f"src/pages/{c['slug']}.astro", make_optin(repo, c, refo), f"opt-in (copia di /{refo['slug']})"))
     files.append((f"src/styles/optin-{c['id']}.css", make_optin_css(repo, c), 'colori della card'))

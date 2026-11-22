@@ -79,5 +79,6 @@ html.ry-bf [data-upgrade]{display:none!important}
       const pd = q('bfpaid'); pd.textContent = c[2] || 'You already paid ' + paid + ', so you only pay the rest'; pd.hidden = false
       const go = q('bfgo'); go.href = c[1]; go.textContent = 'Get everything · €' + c[0] + ' →' }
     const sid = new URLSearchParams(location.search).get('session_id')
-    if (sid) fetch('/api/files?session_id=' + encodeURIComponent(sid)).then(r => r.ok ? r.json() : null).then(d => { if (d && !d.pack && d.paid) window.__bfCredit(d.paid) }).catch(() => {}) } }
+    // 22/11: who paid €59 or more on this payment (the 3D AI Mastery bundle, €59) is not offered Everything for €59 again
+    if (sid) fetch('/api/files?session_id=' + encodeURIComponent(sid)).then(r => r.ok ? r.json() : null).then(d => { if (d && !d.pack && d.paid >= 5900) { box.hidden = true; return } if (d && !d.pack && d.paid) window.__bfCredit(d.paid) }).catch(() => {}) } }
 </script>

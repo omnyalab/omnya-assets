@@ -52,6 +52,11 @@ const P = {
   'kit-plane': { items: ['price_1UdCePATIF7pxfqfeNtWSkX1'], back: 'full-plane' },
   'full-plane-9': { items: ['price_1UdCfWATIF7pxfqfGqJ241Bn'], back: 'full-plane' },
   'kit-plane-19': { items: ['price_1UdCgEATIF7pxfqfby6001RM'], back: 'full-plane' },
+  // 22/11 (Nico, 3D AI Mastery funnel, made by scripts/new-funnel): 3D AI Mastery €5.99, 3D AI Mastery €9.99
+  'full-mastery': { items: ['price_1UeewgATIF7pxfqfUirsouDT'], back: 'full-mastery' }, // 4gM5kCckZ3bW7xQ8ap8so1a · 5,99
+  'full-mastery-9': { items: ['price_1Ueey2ATIF7pxfqfzouZDTb6'], back: 'full-mastery' }, // 00w7sK84J8wg2dw62h8so1b · 9,99
+  // 22/11 (Nico): the Black Friday bundle of the 3D AI Mastery funnel only, "The 3 playbooks + 3D AI Mastery" €59 (prod_Vg117C0bAq1lGQ), until 27/11
+  'pack-mastery': { items: ['price_1Ueez6ATIF7pxfqfgnssWzyu'], back: 'full-mastery', until: Date.parse('2026-11-27T23:59:59+01:00') }, // cNieVcgBf13OcSa4Yd8so1c · 59
   // 16/11 (Nico): Black Friday, Everything we teach for €39 until Friday 27 November (prod_Vdaact6ADqm1W3), same delivery as the pack
   'black-friday': { items: ['price_1UcJPLATIF7pxfqf6pLZSXoy'], back: 'everything', until: Date.parse('2026-11-27T23:59:59+01:00') },
 };

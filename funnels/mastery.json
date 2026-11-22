@@ -1,0 +1,119 @@
+{
+  "_nota": "Il funnel 3D AI MASTERY (22/11, reel trial stadio 2034, parola STADIUM, link omnyalab.com/mastery). Nico: la guida e il corso insegnano a costruire QUALSIASI 3D con Claude, per chi parte da zero; lo stadio è solo l'esempio del reel. Formato Riyadh, verde del film 2034. Solo il Full (5,99 Black Friday fino al 27/11, poi 9,99), niente kit: sotto il Full la card gialla 59 coi 3 playbook + il corso e in fondo THE 3D FUTURE (fatti a mano dopo make, come il Riyadh c987ff4 + 212e052). Il funnel stadio vecchio (/stadium) resta com'è.",
+  "id": "mastery",
+  "slug": "the-3d-ai-mastery",
+  "format": "riyadh",
+  "date": "22/11",
+  "from": {
+    "watch": "build",
+    "optin": "stadium"
+  },
+  "name": "3D AI Mastery",
+  "word": "STADIUM",
+  "prefix": "mx",
+  "theme": "mx",
+  "what": "the 2034 World Cup stadium trial reel, the course on building any 3D with Claude",
+  "links": {
+    "/mastery": true
+  },
+  "pack": false,
+  "optin": {
+    "title": "How to build any 3D with Claude, step by step",
+    "description": "Steal our 3D method: the free 3D AI Mastery guide, and the full course that shows you how to build any interactive 3D with Claude, step by step.",
+    "word": "3D",
+    "proof": "Steal it before your competitors do",
+    "noMail": true,
+    "extra": "btn=\"Send me the free guide →\""
+  },
+  "free": {
+    "name": "The 3D AI Mastery Guide",
+    "pdf": "omnya-lab-3d-ai-mastery-free-guide.pdf"
+  },
+  "full": {
+    "title": "3D AI Mastery, how to build any 3D with Claude",
+    "pdf": "3d-ai-mastery.pdf"
+  },
+  "watch": {
+    "title": "Step 2: see how we build any 3D <u class=\"hb2\">with Claude</u>",
+    "vsl": "vsl_corso.mp4?v=1",
+    "vsl_poster": "/learn/watch/vsl_poster_corso.jpg",
+    "hook": "<b class=\"hb\">Any 3D you want</b>built with Claude, step by step",
+    "reel": "r_2034.mp4",
+    "reel_poster": "p_2034.jpg",
+    "reel_label": "Our reel",
+    "join": "any 3D like this",
+    "book_alt": "3D AI Mastery",
+    "full_list": [
+      "Build any 3D with Claude, step by step, even if you've never opened a 3D program",
+      "Your subject in real measures: a building, an interior, a product, a vehicle or a whole place",
+      "Turn it into a choice people stop for: pick a seat, a floor, a room or a colour",
+      "Make every 3D frame a real photo and every move a seamless clip",
+      "Record your page as a reel at 24 fps, frame by frame",
+      "Every prompt, every check, and what each photo and clip really costs"
+    ],
+    "launch_end": "2026-11-27T23:59:59+01:00",
+    "day2": "Saturday",
+    "about": "the face video with our 3Ds, the 2034 stadium reel"
+  },
+  "kit": null,
+  "products": {
+    "full": {
+      "pid": "full-mastery",
+      "stripe_name": "3D AI Mastery",
+      "eur": "5.99",
+      "prod": "prod_Vg0y0Aac4ALpZI",
+      "price": "price_1UeewgATIF7pxfqfUirsouDT",
+      "link": "https://buy.stripe.com/4gM5kCckZ3bW7xQ8ap8so1a"
+    },
+    "full9": {
+      "pid": "full-mastery-9",
+      "stripe_name": "3D AI Mastery",
+      "eur": "9.99",
+      "prod": "prod_Vg10gf87IZEytz",
+      "price": "price_1Ueey2ATIF7pxfqfzouZDTb6",
+      "link": "https://buy.stripe.com/00w7sK84J8wg2dw62h8so1b"
+    }
+  },
+  "thanks": {
+    "bf": {
+      "name": "Stadium",
+      "book": "/learn/pk_pb02.webp",
+      "side": "/learn/sd_book_tight.webp",
+      "h": "Right now, don’t miss this one",
+      "p": "Our Black Friday offer comes once a year, and what you just paid comes off the price"
+    },
+    "future": "any 3D like this"
+  },
+  "colors": {
+    "name": "2034 green",
+    "watch": null,
+    "free_card": "blue",
+    "optin": {
+      "main": "#30d158",
+      "deep": "#1fa848",
+      "light": "#b6f2c6",
+      "mid": "#6ee08e",
+      "dh": 140,
+      "ds": 1.0,
+      "bg": "#04100a"
+    },
+    "thanks": {
+      "hue": 0.375,
+      "main": "#30d158",
+      "name": "2034 green"
+    }
+  },
+  "post": {
+    "pack_link": "https://buy.stripe.com/cNieVcgBf13OcSa4Yd8so1c",
+    "pack": {
+      "pid": "pack-mastery",
+      "stripe_name": "The 3 playbooks + 3D AI Mastery",
+      "eur": "59",
+      "prod": "prod_Vg117C0bAq1lGQ",
+      "price": "price_1Ueez6ATIF7pxfqfgnssWzyu",
+      "link": "https://buy.stripe.com/cNieVcgBf13OcSa4Yd8so1c"
+    },
+    "_nota": "Il pacco Black Friday solo di questo funnel (creato 22/11 dal Chrome di Nico): lo usa scripts/mastery-post.py, la riga di embed-checkout e la regola di learn-files sono scritte a mano."
+  },
+  "post_script": "scripts/mastery-post.py"
+}

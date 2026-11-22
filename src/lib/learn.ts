@@ -47,7 +47,10 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'full-riyadh'
   // the free and the paid Plane PDFs, on /the-plane-blueprint (18/11, the flight booking reels, word PLANE on Instant DM)
   | 'free-plane'
-  | 'full-plane';
+  | 'full-plane'
+  // the free and the paid 3D AI Mastery PDFs, on /the-3d-ai-mastery (22/11, word STADIUM on Instant DM)
+  | 'free-mastery'
+  | 'full-mastery';
 
 /**
  * Step 2 (10/11, Nico): after a Full guide (€5.99) the page /learn/thanks/full-* offers "Everything we teach" for the
@@ -126,6 +129,11 @@ export const products: { id: ProductId; checkout: string }[] = [
   // the Full Plane Blueprint at €5.99 (€29 struck), Stripe product "The Full Plane Blueprint", back to /learn/thanks/full-plane (18/11)
   // prod_VeVeI4G7W68ojp, plink_1UdCdoATIF7pxfqfA86TnibF; "3D Plane Kit + The Full Plane Blueprint" €14.99 is prod_VeVfllW3fiwvGq, https://buy.stripe.com/cNi4gyacReUE4lEfCR8so15; from Monday 23/11 €9.99 https://buy.stripe.com/dRm00i5WBdQA9FY0HX8so16 and €19.99 https://buy.stripe.com/6oUdR83OtcMw3hAeyN8so17, used on the watch page
   { id: 'full-plane', checkout: 'https://buy.stripe.com/14AaEWgBfdQAg4maix8so14' },
+  { id: 'free-mastery', checkout: '/learn/free/omnya-lab-3d-ai-mastery-free-guide.pdf' },
+  // the Full 3D AI Mastery Blueprint at €5.99 (€29 struck), Stripe product "3D AI Mastery", back to /learn/thanks/full-mastery (22/11)
+  // prod_Vg0y0Aac4ALpZI; from Saturday €9.99 https://buy.stripe.com/00w7sK84J8wg2dw62h8so1b, used on the watch page
+  // its Black Friday bundle (only on this funnel, until 27/11): "The 3 playbooks + 3D AI Mastery" €59, prod_Vg117C0bAq1lGQ, https://buy.stripe.com/cNieVcgBf13OcSa4Yd8so1c
+  { id: 'full-mastery', checkout: 'https://buy.stripe.com/4gM5kCckZ3bW7xQ8ap8so1a' },
 ];
 
 // 10/11 (site check 2 and 21): the launch prices are gone from the code. fullTowerDeal, full3dDeal and fullCityDeal (the Full
@@ -164,6 +172,7 @@ export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: Pr
   'full-miami': { kind: 'pdf', oto: 'community' },
   'full-riyadh': { kind: 'pdf', oto: 'community' },
   'full-plane': { kind: 'pdf', oto: 'community' },
+  'full-mastery': { kind: 'pdf', oto: 'community' },
 };
 
 /** The words used in the reels ("Comment 3D"). Each one has its own page, /learn/<word>, and leads with one playbook. */

@@ -55,6 +55,8 @@ const FULL_MIAMI = pdf('How to build Miami from the real map', 'full-miami-bluep
 const FULL_RIYADH = pdf('How to build a Riyadh mega tower you drive from your phone', 'full-riyadh-blueprint.pdf');
 // 18/11: the plane where you pick your own seat (plane reels, word PLANE), and its 3D Plane Kit sold with it at €14.99
 const FULL_PLANE = pdf('How to build a plane where you pick your own seat', 'full-plane-blueprint.pdf');
+// 22/11: 3D AI Mastery, how to build any 3D with Claude (3D AI Mastery reels, word STADIUM)
+const FULL_MASTERY = pdf('3D AI Mastery, how to build any 3D with Claude', '3d-ai-mastery.pdf');
 // 10/11 (Nico): "The Towers Scene File" (€12), the one file that is not a PDF. It is sold in the same Stripe cart as the
 // Full Towers Blueprint (a recommended product of that payment link): the base three.js scene of the three towers as a
 // zip that opens in the browser, with the panel for views, light, height, fog and video recording. It is the base 3D
@@ -101,7 +103,7 @@ const PLANE_SKILL = {
   note: 'is a skill for Claude: unzip it into ~/.claude/skills for Claude Code (or on claude.ai open Settings, Capabilities, Skills and upload the zip), then ask "build me the plane booking site for my airline". The README inside has every step.',
 };
 
-const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE, SCENE, SKILL, MIAMI_SKILL, HOUSE_SKILL, RIYADH_KIT, PLANE_KIT, PLANE_SKILL];
+const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE, FULL_MASTERY, SCENE, SKILL, MIAMI_SKILL, HOUSE_SKILL, RIYADH_KIT, PLANE_KIT, PLANE_SKILL];
 // 13/11: the playbooks got new names. The one-year links already in buyers' emails still carry the old file names, so
 // the old names stay valid and point to the new files (who bought the old playbook 02 now gets the new one).
 const OLD = {
@@ -134,7 +136,7 @@ export const isPack = (name) => /everything we teach/i.test(String(name || ''));
     alone is not a guide. */
 export const oneFullGuide = (files) => {
   const pdfs = files.filter((f) => !f.kind);
-  return pdfs.length === 1 && [FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE].some((g) => g.file === pdfs[0].en);
+  return pdfs.length === 1 && [FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE, FULL_MASTERY].some((g) => g.file === pdfs[0].en);
 };
 
 /** One Stripe product name → the files it should deliver. Checked in order, first match wins. */
@@ -160,6 +162,11 @@ const RULES = [
   // 18/11: "3D Plane Kit + The Full Plane Blueprint" (€14.99 / €19.99) before the plain plane rule
   [/3d plane kit/i, [FULL_PLANE, PLANE_KIT]],
   [/full plane blueprint/i, [FULL_PLANE]],
+  // 22/11 (Nico): the Black Friday bundle of the 3D AI Mastery funnel only, "The 3 playbooks + 3D AI Mastery" (€59): the course
+  // and the three playbooks, BEFORE the plain course rule (which would match it too). Not Everything: that pack stays as it is.
+  [/the 3 playbooks \+ 3D AI Mastery/i, [FULL_MASTERY, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS]],
+  // 22/11: "3D AI Mastery" (€5.99 / €9.99), exact Stripe name
+  [/3D\s+AI\s+Mastery/i, [FULL_MASTERY]],
   // 10/11: "The Towers Scene File" BEFORE every rule with "tower" in it. It delivers the zip and nothing else: without
   // this line /tower/ below would send the Full Tower PDF to who bought the scene. "The Full Towers Blueprint" has no
   // "towers scene" in its name, so it still reaches its own rule and its own PDF.

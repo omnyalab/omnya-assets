@@ -1,0 +1,26 @@
+---
+// 22/11 (Nico): the 3D AI Mastery thanks page (/learn/thanks/full-mastery) in the colours of its funnel.
+// Made by scripts/new-funnel from the Riyadh violet block of views/Thanks.astro. is:inline: only on that page.
+---
+<style is:inline>
+  /* 17/11 (Nico): after paying for the 3D AI Mastery guide the page is in the colours of that funnel (2034 green, white text) */
+  :root{--bg:#061309;--ink:#ffffff;--mute:#9ccda8;--mute-lg:#84b190;--line:#203c27}
+  html,body{background:radial-gradient(900px 600px at 50% -8%,#30d15833,#0000 70%),#061309!important;color:#fff}
+  .oto .btn--fill,.oto-dl .btn--fill{background:#30d158!important;border-color:#30d158!important;color:#fff!important}
+  .oto__steps .is-done span,.oto__steps .is-now span{background:#30d158!important;color:#fff!important;border-color:#30d158!important}
+  .hdr .logo__img--dark{filter:invert(1)}
+  .hdr::before{background:#061309e6!important;border-bottom-color:#203c27!important}
+  .hdr{color:#fff!important}
+  .wa-fab{background:#30d158!important;color:#fff!important}
+  html[data-page='thanks'] .oto-dl{background:linear-gradient(160deg,#ffffff1a,#ffffff08)!important;border:1px solid #ffffff26!important;-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);color:#fff!important;box-shadow:0 40px 80px -40px #30d158aa,inset 0 1px #ffffff33!important}
+  html[data-page='thanks'] .oto-dl *{color:#fff}
+  html[data-page='thanks'] .oto-dl .t-sub{color:#fff!important;-webkit-text-fill-color:#fff!important}
+  html[data-page='thanks'] .oto-dl .oto-dl__note,html[data-page='thanks'] .oto-dl .oto-dl__note *{color:#9ccda8!important}
+  html[data-page='thanks'] .oto-dl .btn:not(.btn--fill){background:#ffffff14!important;border-color:#ffffff33!important;color:#fff!important}
+  html[data-page='thanks'] .oto__down{background:#30d158!important}
+  html[data-page='thanks'] .oto__head{display:none}
+  html[data-page='thanks'] .oto__card{background:#0a2410!important;border:1px solid #203c27;box-shadow:0 40px 70px -40px #30d15888!important;color:#fff}
+  html[data-page='thanks'] .oto__card *{color:#fff}
+  html[data-page='thanks'] .oto__card .t-sub,html[data-page='thanks'] .oto__card p{color:#b5dfbf}
+
+</style>
