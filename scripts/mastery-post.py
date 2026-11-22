@@ -79,9 +79,10 @@ def post(text, C):
   nfu = fu.replace('<b>The Full Guide</b><small>Every prompt, word for word</small>', '<b>3D AI Mastery</b><small>The full course, step by step</small>')
   if nfu == fu:
       sys.exit('FERMO: riga del Full cambiata')
-  # 22/11 (Nico: «deve stare al centro del pack da 59»): the course book in the middle of the fan, two playbooks on the left, one on the right
-  bfc = ('<label class="opt bfc" data-o="bf"><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan"><img src="/learn/pk_pb01.webp" alt="">'
-         '<img src="/learn/pk_pb02.webp" alt=""><img src="/learn/mx_book_tight.webp" alt=""><img src="/learn/pk_pb03.webp" alt=""></span>'
+  # 22/11 (Nico: «mettilo come primo… e ben centrati»): the course book in front, bigger, with the light on its edge; behind it
+  # the 3 playbooks in a symmetric half circle (left, middle higher, right), the whole group in the middle of the card
+  bfc = ('<label class="opt bfc" data-o="bf"><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan fan--front"><img src="/learn/pk_pb01.webp" alt="">'
+         '<img src="/learn/pk_pb02.webp" alt=""><img src="/learn/pk_pb03.webp" alt=""><img src="/learn/mx_book_tight.webp" alt=""></span>'
          '<span class="bh">The course + 3 playbooks</span><span class="inc">The full course and our 3 playbooks: photos clients pay for, going viral and the launch kit, until 27 November</span>'
          f'<span class="pz"><s>€{PACK_STRUCK}</s><b>€59</b><span>{OFF}</span></span><span class="go" data-bfgo>Get all four · €59</span><span class="end">Ends Friday 27 November at 23:59</span></label>')
   rep(fu, nfu + bfc)
@@ -97,7 +98,13 @@ def post(text, C):
       '.cbtn,.getnow,.pay{background:linear-gradient(180deg,#3d8bff,#1f5bff)!important;color:#fff!important;box-shadow:inset 0 0 0 1px #9fd8ff40,0 0 0 4px #5fb4ff1f,0 12px 34px -10px #5fb4ffcc,0 0 42px -8px #5fb4ff99!important}'
       '.hb{background:linear-gradient(180deg,#ffffff 0%,#9fd8ff 42%,#2f7bff 100%)!important;-webkit-background-clip:text!important;background-clip:text!important}'
       '.hb2{background:linear-gradient(90deg,#9fd8ff,#2f7bff)!important;-webkit-background-clip:text!important;background-clip:text!important}'
-      'a.fg,[data-vsl],#offer .box,.igv,.right .opt.opt-fu{box-shadow:0 0 0 1px #5fb4ff59,0 0 36px -10px #2f7bffaa!important}'
+      '.bfc .fan.fan--front{height:146px;width:250px;margin:8px auto 6px}'
+      '.bfc .fan.fan--front img{bottom:6px;filter:brightness(.72)!important;box-shadow:0 10px 20px #000c,0 0 0 1px #ffffff14!important}'
+      '.bfc .fan.fan--front img:nth-child(1){left:30px;width:54px;transform:rotate(-18deg) translateY(2px);z-index:1}'
+      '.bfc .fan.fan--front img:nth-child(2){left:98px;width:54px;transform:translateY(-52px);z-index:0}'
+      '.bfc .fan.fan--front img:nth-child(3){left:166px;width:54px;transform:rotate(18deg) translateY(2px);z-index:1}'
+      '.bfc .fan.fan--front img:nth-child(4){left:89px;width:72px;bottom:0;z-index:3;filter:none!important;transform:none;box-shadow:0 0 0 1.5px #ffd60a,0 0 30px #ffd60a99,0 14px 26px #000c!important}'
+      '[data-vsl],#offer .box,.igv,.right .opt.opt-fu{box-shadow:0 0 0 1px #5fb4ff59,0 0 36px -10px #2f7bffaa!important}'
       '</style></head>')
   # the script: no timer after 27/11, prices and links of the course and the bundle
   rep("  const r = document.querySelector('.rvl span:last-child'); if (r) r.innerHTML = 'The launch price is over'",

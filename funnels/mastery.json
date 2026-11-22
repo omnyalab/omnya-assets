@@ -36,8 +36,8 @@
   },
   "watch": {
     "title": "Step 2: see how we build any 3D <u class=\"hb2\">with Claude</u>",
-    "vsl": "vsl_corso.mp4?v=1",
-    "vsl_poster": "/learn/watch/vsl_poster_corso.jpg",
+    "vsl": "vsl_stadium.mp4?v=1",
+    "vsl_poster": "/learn/watch/vsl_poster.jpg",
     "hook": "<b class=\"hb\">Any 3D you want</b>built with Claude, step by step",
     "reel": "r_2034.mp4",
     "reel_poster": "p_2034.jpg",
@@ -54,7 +54,7 @@
     ],
     "launch_end": "2026-11-27T23:59:59+01:00",
     "day2": "Saturday",
-    "about": "the face video with our 3Ds, the 2034 stadium reel"
+    "about": "the face video of the stadium funnel (Nico, 22/11: the general one when he asks for it), the 2034 stadium reel"
   },
   "kit": null,
   "products": {
@@ -104,7 +104,7 @@
         "#0d120f": "#050914"
       }
     },
-    "free_card": "blue",
+    "free_card": "green",
     "optin": {
       "main": "#2f7bff",
       "deep": "#1f5fe0",

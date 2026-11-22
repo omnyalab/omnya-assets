@@ -28,7 +28,7 @@ const was = offer ? offer.was : 260;
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
 <section class="rybf" data-rybf data-was={was} data-label={offer ? offer.label : undefined} data-credit={offer ? JSON.stringify(offer.credit) : undefined} hidden>
 <div class="bfw"><div class="bridge"><h3>{h}</h3><p>{p}</p><span class="ar">↓</span></div>
-      <div class="bfc bft" data-bft><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan">{books.map((src) => <img src={src} alt="" />)}</span><span class="bh">{offer ? offer.title : 'Get everything'}</span><span class="inc">{offer ? offer.inc : `Every Full guide, ${name} too, the 3 playbooks, the skills and every new guide`}</span><span class="pz"><s>€{was}</s><b data-bfp>€59</b><span data-bfo>{offer ? '-' + Math.round((1 - 59 / was) * 100) + '%' : '-77%'}</span></span><span class="pd" data-bfpaid hidden></span><div class="bcd"><small>Black Friday ends in</small><div class="bx"><span><b data-bd>11</b><i>DAYS</i></span><span><b data-bh>00</b><i>HRS</i></span><span><b data-bm>00</b><i>MIN</i></span><span class="sc"><b data-bs>00</b><i>SEC</i></span></div></div><a class="go" href={offer ? offer.link : 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C'} data-bfgo>{offer ? offer.label : 'Get everything'} · €59 →</a></div></div>
+      <div class="bfc bft" data-bft><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class={offer ? 'fan fan--front' : 'fan'}>{books.map((src) => <img src={src} alt="" />)}</span><span class="bh">{offer ? offer.title : 'Get everything'}</span><span class="inc">{offer ? offer.inc : `Every Full guide, ${name} too, the 3 playbooks, the skills and every new guide`}</span><span class="pz"><s>€{was}</s><b data-bfp>€59</b><span data-bfo>{offer ? '-' + Math.round((1 - 59 / was) * 100) + '%' : '-77%'}</span></span><span class="pd" data-bfpaid hidden></span><div class="bcd"><small>Black Friday ends in</small><div class="bx"><span><b data-bd>11</b><i>DAYS</i></span><span><b data-bh>00</b><i>HRS</i></span><span><b data-bm>00</b><i>MIN</i></span><span class="sc"><b data-bs>00</b><i>SEC</i></span></div></div><a class="go" href={offer ? offer.link : 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C'} data-bfgo>{offer ? offer.label : 'Get everything'} · €59 →</a></div></div>
 </section>
 <style is:global>
 .rybf{padding:8px 16px 40px;text-align:center;color:#fff;font-family:Inter,-apple-system,sans-serif}
@@ -71,6 +71,14 @@ const was = offer ? offer.was : 260;
 .rybf .bfc .pz s+b{transition:transform .3s}
 .rybf .bfc .go{background:linear-gradient(180deg,#ffe24a,#ffc400);color:#111;text-decoration:none}
 html.ry-bf [data-upgrade]{display:none!important}
+/* 22/11 (Nico, 3D AI Mastery): an offer's own book in front, bigger, with the light on its edge, the other three in a symmetric
+   half circle behind it (left, middle higher, right): offer.books = [left, middle, right, the one in front] */
+.bfc .fan.fan--front{height:146px;width:250px;margin:8px auto 6px}
+.bfc .fan.fan--front img{bottom:6px;filter:brightness(.72)!important;box-shadow:0 10px 20px #000c,0 0 0 1px #ffffff14!important}
+.bfc .fan.fan--front img:nth-child(1){left:30px;width:54px;transform:rotate(-18deg) translateY(2px);z-index:1}
+.bfc .fan.fan--front img:nth-child(2){left:98px;width:54px;transform:translateY(-52px);z-index:0}
+.bfc .fan.fan--front img:nth-child(3){left:166px;width:54px;transform:rotate(18deg) translateY(2px);z-index:1}
+.bfc .fan.fan--front img:nth-child(4){left:89px;width:72px;bottom:0;z-index:3;filter:none!important;transform:none;box-shadow:0 0 0 1.5px #ffd60a,0 0 30px #ffd60a99,0 14px 26px #000c!important}
 </style>
 <script is:inline>
 { const end = Date.parse('2026-11-27T23:59:59+01:00'), box = document.querySelector('[data-rybf]')
