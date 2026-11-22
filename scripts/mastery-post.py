@@ -57,6 +57,7 @@ def post(text, C):
   rep('<a class="go cbtn" href="#offer">Get the full guide<i class="dot"></i>', '<a class="go cbtn" href="#offer">Get the full course<i class="dot"></i>')
   rep('<p class="csub">Then the Full Guide goes back to €29</p>', '<p class="csub">Then the course goes up to €9.99</p>')
   rep('<span>Your <b>FREE</b> blueprint is ready below</span>', '<span>Your <b>FREE</b> guide is ready below</span>')
+  rep('<img src="/learn/mx_cover_book.webp" alt="" width="44" height="60">', '<img src="/learn/mx_free_book_tight.webp" alt="" width="44" height="63">')
   rep('<span class="ok"><em>✓</em>Free blueprint</span>', '<span class="ok"><em>✓</em>Free guide</span>')
   rep('<span><em>3</em>Full guide</span>', '<span><em>3</em>Full course</span>')
   rep('<div class="cta"><a class="cbtn" href="#offer">Get the full guide<i class="dot"></i>', '<div class="cta"><a class="cbtn" href="#offer">Get the full course<i class="dot"></i>')
@@ -78,7 +79,8 @@ def post(text, C):
   nfu = fu.replace('<b>The Full Guide</b><small>Every prompt, word for word</small>', '<b>3D AI Mastery</b><small>The full course, step by step</small>')
   if nfu == fu:
       sys.exit('FERMO: riga del Full cambiata')
-  bfc = ('<label class="opt bfc" data-o="bf"><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan f4"><img src="/learn/pk_pb01.webp" alt="">'
+  # 22/11 (Nico: «deve stare al centro del pack da 59»): the course book in the middle of the fan, two playbooks on the left, one on the right
+  bfc = ('<label class="opt bfc" data-o="bf"><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan"><img src="/learn/pk_pb01.webp" alt="">'
          '<img src="/learn/pk_pb02.webp" alt=""><img src="/learn/mx_book_tight.webp" alt=""><img src="/learn/pk_pb03.webp" alt=""></span>'
          '<span class="bh">The course + 3 playbooks</span><span class="inc">The full course and our 3 playbooks: photos clients pay for, going viral and the launch kit, until 27 November</span>'
          f'<span class="pz"><s>€{PACK_STRUCK}</s><b>€59</b><span>{OFF}</span></span><span class="go" data-bfgo>Get all four · €59</span><span class="end">Ends Friday 27 November at 23:59</span></label>')
@@ -88,8 +90,6 @@ def post(text, C):
   rep("Write your email so we can send you the guide", "Write your email so we can send you the course")
   # the club card at the end (Riyadh C1)
   rep('  </section>\n</main>', '  </section>\n  <div class="clubw" data-clubw><RiyadhFuture kind="mastery" bg="stadium" href="/the-3d-future?ig=mastery" /></div>\n</main>')
-  # the fan of four covers (3 playbooks, the course in the middle)
-  rep('</style></head>', '.bfc .fan.f4 img:nth-child(1){left:20px;transform:rotate(-14deg) translateY(8px);filter:brightness(.78)}.bfc .fan.f4 img:nth-child(2){left:66px;transform:rotate(-6deg) translateY(2px);filter:brightness(.9)}.bfc .fan.f4 img:nth-child(3){left:116px;width:64px;z-index:3;transform:translateY(-6px);box-shadow:0 0 0 1.5px #ffd60a,0 0 26px #ffd60a88;filter:none}.bfc .fan.f4 img:nth-child(4){left:170px;transform:rotate(10deg) translateY(4px);filter:brightness(.85);z-index:2}</style></head>')
   # the script: no timer after 27/11, prices and links of the course and the bundle
   rep("  const r = document.querySelector('.rvl span:last-child'); if (r) r.innerHTML = 'The launch price is over'",
       "  const r = document.querySelector('.rvl span:last-child'); if (r) r.innerHTML = 'The Black Friday price is over'\n"

@@ -1,5 +1,5 @@
 {
-  "_nota": "Il funnel 3D AI MASTERY (22/11, reel trial stadio 2034, parola STADIUM, link omnyalab.com/mastery). Nico: la guida e il corso insegnano a costruire QUALSIASI 3D con Claude, per chi parte da zero; lo stadio è solo l'esempio del reel. Formato Riyadh, verde del film 2034. Solo il Full (5,99 Black Friday fino al 27/11, poi 9,99), niente kit: sotto il Full la card gialla 59 coi 3 playbook + il corso e in fondo THE 3D FUTURE (fatti a mano dopo make, come il Riyadh c987ff4 + 212e052). Il funnel stadio vecchio (/stadium) resta com'è.",
+  "_nota": "Il funnel 3D AI MASTERY (22/11, reel trial stadio 2034, parola STADIUM, link omnyalab.com/mastery). Nico: la guida e il corso insegnano a costruire QUALSIASI 3D con Claude, per chi parte da zero; lo stadio è solo l'esempio del reel. Formato Riyadh, blu #2f7bff della copertina Æther (Nico 22/11: «fa cagare così verde», tutto blu come copertine e PDF). Solo il Full (5,99 Black Friday fino al 27/11, poi 9,99), niente kit: sotto il Full la card gialla 59 coi 3 playbook + il corso e in fondo THE 3D FUTURE (fatti a mano dopo make, come il Riyadh c987ff4 + 212e052). Il funnel stadio vecchio (/stadium) resta com'è.",
   "id": "mastery",
   "slug": "the-3d-ai-mastery",
   "format": "riyadh",
@@ -23,7 +23,8 @@
     "word": "3D",
     "proof": "Steal it before your competitors do",
     "noMail": true,
-    "extra": "btn=\"Send me the free guide →\""
+    "extra": "btn=\"Send me the free guide →\"",
+    "css": ".oi--mx .oiw-bg--g{background:radial-gradient(900px 560px at 50% -12%,#2f7bff3a,#0000 70%),#0d0f12}"
   },
   "free": {
     "name": "The 3D AI Mastery Guide",
@@ -85,22 +86,36 @@
     "future": "any 3D like this"
   },
   "colors": {
-    "name": "2034 green",
-    "watch": null,
+    "name": "Æther blue",
+    "watch": {
+      "bright": [
+        0.606,
+        1.4,
+        0.1
+      ],
+      "dark": [
+        0.62,
+        1.0
+      ],
+      "map": {
+        "#22d35e": "#2f7bff",
+        "#d4ff5a": "#cfe0ff"
+      }
+    },
     "free_card": "blue",
     "optin": {
-      "main": "#30d158",
-      "deep": "#1fa848",
-      "light": "#b6f2c6",
-      "mid": "#6ee08e",
-      "dh": 140,
+      "main": "#2f7bff",
+      "deep": "#1f5fe0",
+      "light": "#c3d8ff",
+      "mid": "#7aa9ff",
+      "dh": 218,
       "ds": 1.0,
-      "bg": "#04100a"
+      "bg": "#040914"
     },
     "thanks": {
-      "hue": 0.375,
-      "main": "#30d158",
-      "name": "2034 green"
+      "hue": 0.606,
+      "main": "#2f7bff",
+      "name": "Æther blue"
     }
   },
   "post": {

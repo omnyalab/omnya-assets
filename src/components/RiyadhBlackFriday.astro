@@ -8,11 +8,23 @@
 // 19/11 (Nico): on the plane thanks page Playbook 02 "How to go viral" is the book in the middle; `side` is the last book of the fan
 // 19/11 (Nico): the plane thanks page has its own bridge (h, p): don't miss it, and what they just paid comes off
 const { name = 'Riyadh', book = '/learn/ry_book_tight.webp', side = '/learn/pk_pb02.webp', h = 'One more thing before you go', p = 'Right now there’s a Black Friday offer on everything we teach' } = Astro.props as { name?: string; book?: string; side?: string; h?: string; p?: string };
+// 22/11 (Nico: «occhio che qua esce doppio»): the five books of the fan never repeat. `book` is always the one in the middle;
+// the others are the 3D, Towers, Stadium books and `side`, and one that is already in the fan is replaced by another real book
+// of the pack (Plane, Build, Tower, the playbooks), so the stadium thanks page (book = the stadium) no longer shows it twice.
+const SPARE = ['/learn/pl_book_tight.webp', '/learn/bd_book_tight.webp', '/learn/tw_book.webp', '/learn/pk_pb01.webp', '/learn/pk_pb03.webp', '/learn/pk_pb02.webp'];
+const want = ['/learn/3d_book.webp', '/learn/tt_book_tight.webp', book, '/learn/sd_book_tight.webp', side];
+const fan: string[] = [];
+const used = new Set([book]);
+want.forEach((src, i) => {
+  if (i === 2) { fan.push(book); return; }
+  const pick = used.has(src) ? SPARE.find((x) => !used.has(x) && !want.includes(x)) || SPARE.find((x) => !used.has(x)) || src : src;
+  used.add(pick); fan.push(pick);
+});
 ---
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
 <section class="rybf" data-rybf hidden>
 <div class="bfw"><div class="bridge"><h3>{h}</h3><p>{p}</p><span class="ar">↓</span></div>
-      <div class="bfc bft" data-bft><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan"><img src="/learn/3d_book.webp" alt=""><img src="/learn/tt_book_tight.webp" alt=""><img src={book} alt=""><img src="/learn/sd_book_tight.webp" alt=""><img src={side} alt=""></span><span class="bh">Get everything</span><span class="inc">Every Full guide, {name} too, the 3 playbooks, the skills and every new guide</span><span class="pz"><s>€260</s><b data-bfp>€59</b><span data-bfo>-77%</span></span><span class="pd" data-bfpaid hidden></span><div class="bcd"><small>Black Friday ends in</small><div class="bx"><span><b data-bd>11</b><i>DAYS</i></span><span><b data-bh>00</b><i>HRS</i></span><span><b data-bm>00</b><i>MIN</i></span><span class="sc"><b data-bs>00</b><i>SEC</i></span></div></div><a class="go" href="https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C" data-bfgo>Get everything · €59 →</a></div></div>
+      <div class="bfc bft" data-bft><span class="rib"><i></i>BLACK FRIDAY OFFER</span><span class="fan">{fan.map((src) => <img src={src} alt="" />)}</span><span class="bh">Get everything</span><span class="inc">Every Full guide, {name} too, the 3 playbooks, the skills and every new guide</span><span class="pz"><s>€260</s><b data-bfp>€59</b><span data-bfo>-77%</span></span><span class="pd" data-bfpaid hidden></span><div class="bcd"><small>Black Friday ends in</small><div class="bx"><span><b data-bd>11</b><i>DAYS</i></span><span><b data-bh>00</b><i>HRS</i></span><span><b data-bm>00</b><i>MIN</i></span><span class="sc"><b data-bs>00</b><i>SEC</i></span></div></div><a class="go" href="https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C" data-bfgo>Get everything · €59 →</a></div></div>
 </section>
 <style is:global>
 .rybf{padding:8px 16px 40px;text-align:center;color:#fff;font-family:Inter,-apple-system,sans-serif}
