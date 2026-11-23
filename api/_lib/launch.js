@@ -37,10 +37,10 @@ P.S. There are only 100 seats, because I look at everyone's first build myself.`
   },
   e1b: {
     subject: 'Why developers pay more than €6,000 for a single 3D',
-    img: { src: '/club/mail/founders-v2.jpg', alt: "THE 3D FUTURE founders' deal: 100 founders' seats, €9 a month locked if you join by Friday 4 December, 3 playbooks and the 3D AI Mastery course as a gift for the first 100" },
+    img: { src: '/club/mail/founders-v3.jpg', alt: "THE 3D FUTURE founders' deal: 100 founders' seats, 230+ people already have early access, €9 a month locked if you join by Friday 4 December, 3 playbooks and the 3D AI Mastery course as a gift for the first 100" },
     body: `Hey {name},
 
-Developers pay more than €6,000 for a single interactive 3D of their project, and last week one of them signed one with us. Not a website and not a video: one 3D where their buyers explore the building and choose.
+Every week, developers around the world sign contracts like this: more than €6,000, often much more, for a single interactive 3D of their project. Not a website and not a video: one 3D where their buyers explore the building and choose.
 
 Here's the part that matters to you: you can build the same thing. Every 3D you've seen from us, the stadium where you pick your seat, the tower where you choose your floor, the house that builds itself, is built with Claude, from an empty scene to a page you can show a client, without writing code. And every week developers write to us asking for one.
 
@@ -50,7 +50,7 @@ On Saturday 28 November I'm opening the whole method inside THE 3D FUTURE.
 
 In your first week you build your own tower, in your colours, where buyers choose their floor, following a step-by-step video course where you see every click. Then every Friday a new build arrives with its own course, files and prompts, and every Monday I look at your work and tell you what to fix before you show it to a client.
 
-It opens in Black Friday week, so if you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay. If you're one of the first 100, you also get our three playbooks and the full 3D AI Mastery course as a gift that stays yours: more than €240 of files at our site's prices. Sell one 3D like the one I just told you about and the club pays for itself many times over.
+It opens in Black Friday week, so if you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay. If you're one of the first 100, you also get our three playbooks and the full 3D AI Mastery course as a gift that stays yours: more than €240 of files at our site's prices. Sell one 3D like that and the club pays for itself many times over.
 
 And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us.
 
