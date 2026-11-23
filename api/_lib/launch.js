@@ -6,6 +6,7 @@ import { unsubUrl } from './newsletter.js';
 
 export const LAUNCH = [
   { id: 'e1', at: '2026-11-20T17:00:00Z', list: 'consent' }, // 20/11 Nico: «oggi si inizia, mai domani» (was Monday 23/11)
+  { id: 'e1b', at: '2026-11-23T17:00:00Z', list: 'consent', hold: true }, // 23/11 Nico: «si inizia DA OGGI»; goes only after &lgo=e1b
   { id: 'e2', at: '2026-11-25T17:00:00Z', list: 'consent' },
   { id: 'e3', at: '2026-11-27T17:00:00Z', list: 'club' },
   { id: 'e4', at: '2026-11-28T17:00:00Z', list: 'consent', seats: true },
@@ -34,20 +35,51 @@ Nico
 
 P.S. There are only 100 seats, because I look at everyone's first build myself.`,
   },
-  e2: {
-    subject: 'The mistake that ruins 3D photos',
+  e1b: {
+    subject: 'Why a developer signed €6,200 for one 3D',
+    img: { src: '/club/mail/founders.jpg', alt: "THE 3D FUTURE founders' deal: 100 seats, €9 a month, 3 playbooks and the 3D AI Mastery course as a gift" },
     body: `Hey {name},
 
-The most common mistake with 3D photos is making the next picture from the last one that came out, because every round drifts a little further away from the real building. We start every single round from the 3D again, with the brief and photos of the real materials, and that's why our towers look the same in every shot.
+Last week a property developer signed a €6,200 project with us. Not for a website and not for a video: for one interactive 3D of his new project.
 
-That method, with the exact prompts, is inside THE 3D FUTURE when the doors open on Saturday, together with the step-by-step video courses on our builds (the first one is ready on day one and a new one comes every Friday), six builds from our reels with their files and Claude skills, and my comments on your work every Monday.
+That's the skill behind everything you've seen from us, and it's what developers pay for. The stadium where you pick your seat, the tower where you choose your floor, the house that builds itself: every one of them is built with Claude, from an empty scene to a page you can show a client, and you don't need to know how to code.
 
-The list gets in first, on Saturday at 9:00 (Rome):
+On Saturday I'm opening the whole method to 100 people, inside THE 3D FUTURE.
+
+{img}
+
+In your first week you build your own stadium, in your colours, where people tap a stand and pick their seat, following a step-by-step video course where you see every click. Then every Friday a new build arrives with its own course, files and prompts, and every Monday I look at your work and tell you what to fix before you show it to a client.
+
+Because it opens in Black Friday week, the first 100 get a founders' deal I won't run again. If you're one of them, you pay €9 a month instead of €19, locked for as long as you stay, and you get our three playbooks and the full 3D AI Mastery course as a gift that stays yours: more than €240 of files at our site's prices. Sell one 3D like the one I just told you about and the club pays for itself many times over. When the 100 seats are gone, or on Friday 4 December at the latest, the deal goes with them.
+
+And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us.
+
+Thank you to everyone who already got on the list: you're in on Saturday at 9:00 (Rome), nine hours before everyone else, so some of the 100 seats may be gone before the doors open for the rest. If you want to be one of the first, get on the list now:
 {link}
 
 Nico
 
-P.S. There are 100 seats, and the doors close on Friday 4 December at 23:59.`,
+P.S. It's 100 seats because I look at every first build myself, and I can't do that for a thousand people.`,
+  },
+  e2: {
+    subject: 'The mistake that ruins 3D photos',
+    img: { src: '/club/mail/vault.jpg', alt: 'The six builds inside THE 3D FUTURE: The Towers, Riyadh Tower, Stadium, House that builds itself, Plane, Miami' },
+    body: `Hey {name},
+
+The most common mistake with 3D photos is making the next picture from the last one that came out, because every round drifts a little further from the real building. We start every round from the 3D again, with photos of the real materials, and that's why our towers look the same in every shot.
+
+{img}
+
+These are the six builds you'll find inside THE 3D FUTURE in 3 days, each with its files, prompts and Claude skill, next to the step-by-step video courses (the first one, your stadium, is ready on day one, and a new one comes every Friday), every Full guide, the House Builder skill and my comments on your work every Monday.
+
+If you're one of the first 100 to join, you pay €9 a month instead of €19, locked for as long as you stay, and you get our three playbooks and the full 3D AI Mastery course as a gift: more than €240 of files at our site's prices, for €9. The deal ends when the 100 seats are gone, or on Friday 4 December at the latest.
+
+The list gets in on Saturday at 9:00 (Rome), nine hours before everyone else:
+{link}
+
+Nico
+
+P.S. If you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us.`,
   },
   e3: {
     subject: "You're first tomorrow",
@@ -130,7 +162,9 @@ export function renderLaunch(id, p, { seatsLeft } = {}) {
     ? `You're getting this because you joined the list of ${v === 'b' ? '3D THAT SELLS' : 'THE 3D FUTURE'}. Omnya Lab, Venice, Italy.`
     : "You're getting this because you asked for one of our guides on omnyalab.com and said yes to updates. Omnya Lab, Venice, Italy.";
   const paras = body.split('\n\n');
-  const html = paras.map((para) => `<p>${esc(para).replace(/\n/g, '<br>').replace('{link}', `<a href="${url}">${PAGE}</a>`)}</p>`).join('\n');
+  const pic = t.img ? `<p><img src="https://www.omnyalab.com${t.img.src}" alt="${esc(t.img.alt)}" width="560" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:12px"></p>` : '';
+  const html = paras.map((para) => (para.trim() === '{img}' ? pic : `<p>${esc(para).replace(/\n/g, '<br>').replace('{link}', `<a href="${url}">${PAGE}</a>`)}</p>`)).filter(Boolean).join('\n');
+  body = body.replace(/\n\n\{img\}(?=\n\n)/, '');
   return {
     subject,
     variant: v,

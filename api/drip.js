@@ -245,6 +245,7 @@ async function launchTick(now) {
   const d = dayOf(now);
   const m = LAUNCH.find((x) => x.at.slice(0, 10) === d);
   if (!m || (await redis('GET', `${LK}${m.id}:done`))) return null;
+  if (m.hold && (await redis('GET', `${LK}${m.id}:go`)) !== '1') return { launch: m.id, held: true }; // waits for Nico's go (&lgo=<id>)
   if (Number(await redis('SET', `${LK}lock`, String(now), 'NX', 'EX', 55)) !== 1 && (await redis('GET', `${LK}lock`)) !== String(now)) return { launch: m.id, busy: true };
   try {
     const marked = await redis('GET', `${LK}${m.id}:marked`);
@@ -457,6 +458,7 @@ export async function GET(request) {
   if (q.get('clubextra')) { // email:Name,email:Name — the club list people who asked on WhatsApp
     for (const pair of String(q.get('clubextra')).split(',')) { const [e, n] = pair.split(':'); if (/@/.test(e || '')) await redis('HSET', `${LK}club:extra`, e.trim().toLowerCase(), (n || '').trim()); }
   }
+  if (q.get('lgo')) await redis('SET', `${LK}${q.get('lgo')}:go`, '1', 'EX', 30 * 86400); // Nico's go for a held launch mail
   if (q.get('ltest')) { // one launch mail to one address (Nico's), outside the counts
     const m = LAUNCH.find((x) => x.id === q.get('ltest'));
     if (!m) return json({ error: 'ltest = e1..e7' }, 400);
@@ -467,7 +469,7 @@ export async function GET(request) {
   }
   if (q.get('launch') === '1') { // who would get each mail today, and what went
     const out = { on: (await redis('GET', `${LK}on`)) === '1', mails: [] };
-    for (const m of LAUNCH) out.mails.push({ ...m, people: (await launchList(m)).length, sent: Number(await redis('SCARD', `${LK}${m.id}:sent`)), done: !!(await redis('GET', `${LK}${m.id}:done`)), error: await redis('GET', `${LK}${m.id}:error`) });
+    for (const m of LAUNCH) out.mails.push({ ...m, people: (await launchList(m)).length, sent: Number(await redis('SCARD', `${LK}${m.id}:sent`)), go: m.hold ? (await redis('GET', `${LK}${m.id}:go`)) === '1' : undefined, done: !!(await redis('GET', `${LK}${m.id}:done`)), error: await redis('GET', `${LK}${m.id}:error`) });
     return json(out);
   }
   if (q.get('loadold') === '1') return json({ ok: true, old: await loadOld(Date.now()) });
