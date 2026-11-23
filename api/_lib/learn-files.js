@@ -66,23 +66,28 @@ const SCENE = {
   name: 'The Towers Scene File', file: 'en/the-towers-scene.zip', kind: 'zip',
   note: 'is the base 3D scene of the three towers, a zip to unzip and open in your browser on a computer (the file is index.html), where you change the views, the light, the height of the towers and the fog and record a video, and it is the 3D scene behind the reel, not the photorealistic film you see in it.',
 };
+// 23/11: how a skill goes into claude.ai, the same words for every skill zip. claude.ai moved skills from Settings,
+// Capabilities, Skills to the Plugins page (Add, Upload plugin), and Safari on a Mac unzips downloads by itself and
+// deletes the zip, so the buyer would have nothing to upload: the line says Chrome, or Compress the folder again.
+const ON_CLAUDE_AI = 'on claude.ai click Plugins in the menu on the left, then Add, Upload plugin, and choose the zip as it is (on a Mac download it with Chrome, because Safari unzips it: if you only have the folder, right-click it and Compress it)';
+
 // 16/11 (Nico): the Stadium Builder skill, a zip for Claude: sold with the Full Stadium Blueprint at €9.99, and inside
 // Everything we teach. note = the line under the buttons, in the email and on the page after the payment.
 const SKILL = {
   name: 'The Stadium Builder skill', file: 'en/stadium-builder-skill.zip', kind: 'zip',
-  note: 'is a skill for Claude: on claude.ai open Settings, Capabilities, Skills and upload the zip, or unzip it into ~/.claude/skills for Claude Code, then ask "build me a stadium for…". It needs Claude Pro or Claude Code, and the README inside has every step.',
+  note: `is a skill for Claude: ${ON_CLAUDE_AI}, or unzip it into ~/.claude/skills for Claude Code, then ask "build me a stadium for…". It needs Claude Pro or Claude Code, and the README inside has every step.`,
 };
 
 const MIAMI_SKILL = {
   name: 'The Miami Builder skill', file: 'en/miami-builder-skill.zip', kind: 'zip',
-  note: 'is a skill for Claude: on claude.ai open Settings, Capabilities, Skills and upload the zip, or unzip it into ~/.claude/skills for Claude Code, then ask "build me Lisbon like Build Miami". It needs Claude Pro or Claude Code, and the README inside has every step.',
+  note: `is a skill for Claude: ${ON_CLAUDE_AI}, or unzip it into ~/.claude/skills for Claude Code, then ask "build me Lisbon like Build Miami". It needs Claude Pro or Claude Code, and the README inside has every step.`,
 };
 
 // 18/11 (Nico, K2 of the Build funnel): the House Builder skill, a zip for Claude: the hold to build page from the
 // buyer's phase photos or clips, sold with the Full Build Blueprint at €14.99 (€19.99 from Monday 23/11)
 const HOUSE_SKILL = {
   name: 'The House Builder skill', file: 'en/house-builder-skill.zip', kind: 'zip',
-  note: 'is a skill for Claude: on claude.ai open Settings, Capabilities, Skills and upload the zip, or unzip it into ~/.claude/skills for Claude Code, then ask "build me a hold to build page with these photos". It needs Claude Pro or Claude Code, and the README inside has every step.',
+  note: `is a skill for Claude: ${ON_CLAUDE_AI}, or unzip it into ~/.claude/skills for Claude Code, then ask "build me a hold to build page with these photos". It needs Claude Pro or Claude Code, and the README inside has every step.`,
 };
 
 const RIYADH_KIT = {
@@ -100,7 +105,7 @@ const PLANE_KIT = {
 // guide + kit stay €14.99 on the other funnel)
 const PLANE_SKILL = {
   name: 'The Plane Builder skill', file: 'en/plane-builder-skill.zip', kind: 'zip',
-  note: 'is a skill for Claude: unzip it into ~/.claude/skills for Claude Code (or on claude.ai open Settings, Capabilities, Skills and upload the zip), then ask "build me the plane booking site for my airline". The README inside has every step.',
+  note: `is a skill for Claude: unzip it into ~/.claude/skills for Claude Code, or ${ON_CLAUDE_AI}, then ask "build me the plane booking site for my airline". The README inside has every step.`,
 };
 
 const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE, FULL_MASTERY, SCENE, SKILL, MIAMI_SKILL, HOUSE_SKILL, RIYADH_KIT, PLANE_KIT, PLANE_SKILL];
