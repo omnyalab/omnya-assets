@@ -22,7 +22,7 @@ export function seatsOk(m, n, s) {
 
 /** the words under "100 founders' seats", the same ones the mail says in text (for alt and for people with pictures off) */
 export function seatsWords(m, n) {
-  if (m === 'taken') { const left = Math.max(0, 100 - n); return { b: `${left} left`, rest: `${Math.min(100, n)} of 100 already taken` }; }
+  if (m === 'taken') { const left = Math.max(0, 100 - n); return { b: `${left} left`, rest: n ? `${Math.min(100, n)} of 100 already taken` : 'all still free' }; }
   return { b: `${n} ${n === 1 ? 'person' : 'people'}`, rest: 'already on the list' };
 }
 

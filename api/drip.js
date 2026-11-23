@@ -463,6 +463,7 @@ export async function GET(request) {
     for (const pair of String(q.get('clubextra')).split(',')) { const [e, n] = pair.split(':'); if (/@/.test(e || '')) await redis('HSET', `${LK}club:extra`, e.trim().toLowerCase(), (n || '').trim()); }
   }
   if (q.get('lgo')) await redis('SET', `${LK}${q.get('lgo')}:go`, '1', 'EX', 30 * 86400); // Nico's go for a held launch mail
+  if (q.get('lhold')) await redis('DEL', `${LK}${q.get('lhold')}:go`); // 23/11: a launch mail rewritten after the go waits again for Nico
   if (q.get('ltest')) { // one launch mail to one address (Nico's), outside the counts
     const m = LAUNCH.find((x) => x.id === q.get('ltest'));
     if (!m) return json({ error: 'ltest = e1..e7' }, 400);

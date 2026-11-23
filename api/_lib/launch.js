@@ -161,6 +161,10 @@ Inside you start with the step-by-step course where you build your own tower, wh
 
 Nico`,
   },
+  // 23/11 night (Nico: «più ci avviciniamo più sono per farti entrare»): from Saturday every mail pushes harder to join than the one
+  // before. Saturday what you get and what it's worth, Monday what one project pays for and the guarantee, Thursday the usual doubts
+  // answered, Friday the last call. Every number is real: the €150+ is the page's VALUE list (€85+ builds, €53+ guides, €14.99 skill),
+  // the five lessons are under 20 minutes of video, the €6,000 is the market line Nico approved on 23/11.
   e4: {
     subject: 'Doors are open',
     bar: 'taken',
@@ -173,27 +177,28 @@ THE 3D FUTURE is open, and right now {seats_left} of the 100 founders' gifts are
 
 {img}
 
-When you turn a 3D into a photo, give the model pictures of the real materials, the actual stone and the actual wood, and never a nice photo of someone else's house, or it copies that house and forgets yours. That's the level of detail of the courses inside.
+The moment you join you get the first step-by-step video course: five short lessons where you see every click and build your own tower in your colours, the kind where buyers choose their floor. Then a new course every Friday with the build of the week, six builds from our reels with their files, prompts and Claude skills, every Full guide, the House Builder skill and my comments on your work every Monday.
 
-The moment you join you get the first step-by-step video course, your own tower in your colours where buyers choose their floor, then a new course every Friday, six builds from our reels with their files, prompts and Claude skills, every Full guide, the House Builder skill and my comments on your work every Monday. If you join by Friday 4 December you pay €9 a month, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. After Friday it's €19.
+Bought one by one on our site, the builds, the guides and the skill alone cost more than €150. If you join by Friday 4 December you get all of it for €9 a month, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. After Friday it's €19.
 
-And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us. You can cancel in one tap whenever you want.
-
+And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us. You can cancel in one tap whenever you want:
 {link}
 
 Nico`,
   },
   e5: {
-    subject: "Why our 3D videos don't wobble",
+    subject: 'What a single 3D pays for',
     bar: 'taken',
     img: { src: '/club/mail/inside-v2.jpg', alt: 'Inside THE 3D FUTURE: the step-by-step course to build your own tower where buyers choose their floor, and a new build every Friday' },
     body: `Hey {name},
 
-When a video made from a 3D comes out crooked, most people make it again and pay again. We measured our own clips and found the real cause: the video copies the camera of the 3D underneath, wobble included. Fix the camera move in the 3D, one straight move into the building, and the video comes out straight, at no cost.
+Every week, developers around the world sign contracts for 3D like the tower in our first course: more than €6,000, often much more. If you join THE 3D FUTURE by Friday it costs you €9 a month, €108 a year, so one project like that pays for more than fifty years of it.
+
+What stops most people isn't talent, it's not knowing the steps. That's exactly what the first course fixes: five short lessons where you see every click, and at the end your own tower, where buyers choose their floor, is online in your colours.
 
 {img}
 
-That's the kind of thing the step-by-step courses inside THE 3D FUTURE show you on real builds, starting with your own tower where buyers choose their floor. {seats_left} of the 100 founders' gifts are left, and the €9 price ends on Friday:
+If you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us, so the risk is ours, not yours. {seats_left} of the 100 founders' gifts are left, and the €9 price ends on Friday:
 
 {bar}
 
@@ -207,14 +212,15 @@ Nico`,
     img: { src: '/club/mail/vault-files.jpg', alt: 'One build from the Vault of THE 3D FUTURE: the build kit, the exact prompts, the 3D scene and the Full guide' },
     body: `Hey {name},
 
-If you put people in an architecture shot, keep them as a blur, a silhouette against the light or out of focus, because a sharp face is the first thing that makes a render look fake.
-
-{img}
-
-THE 3D FUTURE closes tomorrow, Friday 4 December, and {seats_left} of the 100 founders' gifts are left. If you join by tomorrow you pay €9 a month, locked for as long as you stay; once the doors close they stay closed until the next round, where it's €19:
+THE 3D FUTURE closes tomorrow, Friday 4 December, and {seats_left} of the 100 founders' gifts are left:
 
 {bar}
 
+If you're still deciding, these are the usual doubts, with the honest answer to each. You don't need to code: the Claude skills and the prompts do the building, and the course shows you each step. You don't need much time: the first course is five short lessons, under 20 minutes of video in all. And if it doesn't work for you, follow the five lessons, post your build in the group, and if it still isn't live within 7 days your first month is on us.
+
+{img}
+
+Join by tomorrow and you pay €9 a month, locked for as long as you stay, for the courses, the six builds from our reels with their files and Claude skills, every Full guide, the House Builder skill and my comments every Monday. Once the doors close they stay closed until the next round, where it's €19:
 {link}
 
 Nico`,
@@ -224,11 +230,13 @@ Nico`,
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name},
 
-If you need the camera to move out instead of in, don't make a new clip: play the one you have backwards. Same light, same building, and it costs nothing.
+Tonight the doors of THE 3D FUTURE close, and the €9 price goes with them. {seats_left} of the 100 founders' gifts are still left.
 
 {img}
 
-The doors of THE 3D FUTURE close tonight, and the €9 price goes with them ({seats_left} of the 100 founders' gifts are still left):
+If you join today, this is what's waiting for you: the course where you build your own tower step by step, the kind where buyers choose their floor, then a new course every Friday, six builds from our reels with their files, prompts and Claude skills, every Full guide, the House Builder skill and my comments on your work every Monday, all for €9 a month, locked for as long as you stay. If you're one of the first 100, our three playbooks and the full 3D AI Mastery course are yours too.
+
+The guarantee covers you: follow the five lessons, post your build in the group, and if it still isn't live within 7 days your first month is on us. After tonight it's €19, and only when the next round opens:
 {link}
 
 Nico`,
