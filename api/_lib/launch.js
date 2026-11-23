@@ -67,7 +67,6 @@ Nico`,
   e2: {
     subject: 'The mistake that ruins 3D photos',
     img: { src: '/club/mail/inside-v2.jpg', alt: 'Inside THE 3D FUTURE: the step-by-step course to build your own tower where buyers choose their floor, and a new build every Friday' },
-    bar: 'list',
     body: `Hey {name},
 
 The most common mistake with 3D photos is making the next picture from the last one that came out. Every round drifts a little further from the real building, until the client looks at it and says "that's not my tower".
@@ -80,11 +79,7 @@ This is what you'll find inside from Saturday: step-by-step video courses where 
 
 If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us.
 
-{list_count} people are already on the list, first in line for the 100 founders' gifts:
-
-{bar}
-
-The doors open in 3 days:
+Every day more people get on the list, and the people on it get in before everyone else, first in line for the 100 founders' gifts. The doors open in 3 days:
 {link}
 
 Nico`,
@@ -92,7 +87,6 @@ Nico`,
   e2b: {
     subject: 'What stops the scroll in the first second',
     img: { src: '/club/mail/vault-files.jpg', alt: 'One build from the Vault of THE 3D FUTURE: the build kit, the exact prompts, the 3D scene and the Full guide' },
-    bar: 'list',
     body: `Hey {name},
 
 This week we measured our own reels, and one thing stood out: when the first second shows a price or a result, far fewer people swipe away than when it only shows the building. It's tempting to save the best part for the end, and that's exactly where most viewers are already gone.
@@ -103,18 +97,13 @@ The fix is to plan the video backwards: the result first, then how you got there
 
 This is one build from the Vault: the kit that builds it again in your colours, the exact prompts we used, the 3D scene and the Full guide that explains every step. On Saturday you get six of them, and a new one every Friday, next to the step-by-step video courses, starting with your own tower where buyers choose their floor.
 
-If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. {list_count} people are already on the list, first in line for those 100 gifts:
-
-{bar}
-
-The doors open in 2 days:
+If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. The list grows every day, and the people on it get in first, so every day there are more people ahead of you for those 100 gifts. The doors open in 2 days:
 {link}
 
 Nico`,
   },
   e3b: {
     subject: 'Black Friday ends tonight',
-    bar: 'list',
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name},
 
@@ -127,9 +116,7 @@ One last tip before the doors open: before we build a real place in 3D, we look 
 
 If you join by Friday 4 December you pay €9 a month, locked for as long as you stay, and if you're one of the first 100 you also get these as a gift: our three playbooks and the full 3D AI Mastery course. After Friday it's €19.
 
-{list_count} people are already on the list tonight, first in line for the 100 gifts:
-
-{bar}
+The list has kept growing all week, and tomorrow the people on it get in before everyone else, so some of the 100 gifts may be gone before the doors open for everyone.
 
 Nico`,
   },
@@ -138,7 +125,7 @@ Nico`,
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name}, we said we'd email you today, so here it is.
 
-Tomorrow the doors of THE 3D FUTURE open, and you're one of the {list_count} people on the list, so you get in before everyone else: first in line for the 100 founders' gifts, our three playbooks and the full 3D AI Mastery course, with €9 a month locked for as long as you stay.
+Tomorrow the doors of THE 3D FUTURE open, and you're on the list, so you get in before everyone else: first in line for the 100 founders' gifts, our three playbooks and the full 3D AI Mastery course, with €9 a month locked for as long as you stay.
 
 {img}
 
@@ -152,7 +139,7 @@ Nico`,
     img: { src: '/club/mail/doors.jpg', alt: 'THE 3D FUTURE: doors are open, your first course is your own tower, floor by floor' },
     body: `Hey {name},
 
-THE 3D FUTURE is open, and you're on the list, so you're in before everyone else. Right now {seats_left} of the 100 founders' gifts are still there: our three playbooks and the full 3D AI Mastery course go to the first 100 who join.
+THE 3D FUTURE is open, and you're on the list, so you're in before everyone else. The founders' gifts, our three playbooks and the full 3D AI Mastery course, go to the first 100 who join, so this is the moment to take yours.
 
 {img}
 
@@ -167,13 +154,10 @@ Nico`,
   // the five lessons are under 20 minutes of video, the €6,000 is the market line Nico approved on 23/11.
   e4: {
     subject: 'Doors are open',
-    bar: 'taken',
     img: { src: '/club/mail/doors.jpg', alt: 'THE 3D FUTURE: doors are open, your first course is your own tower, floor by floor' },
     body: `Hey {name},
 
-THE 3D FUTURE is open, and right now {seats_left} of the 100 founders' gifts are left (the counter on the page is the real one).
-
-{bar}
+THE 3D FUTURE is open, and the 100 founders' gifts go to the first who join.
 
 {img}
 
@@ -188,7 +172,6 @@ Nico`,
   },
   e5: {
     subject: 'What a single 3D pays for',
-    bar: 'taken',
     img: { src: '/club/mail/inside-v2.jpg', alt: 'Inside THE 3D FUTURE: the step-by-step course to build your own tower where buyers choose their floor, and a new build every Friday' },
     body: `Hey {name},
 
@@ -198,23 +181,17 @@ What stops most people isn't talent, it's not knowing the steps. That's exactly 
 
 {img}
 
-If you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us, so the risk is ours, not yours. {seats_left} of the 100 founders' gifts are left, and the €9 price ends on Friday:
-
-{bar}
-
+If you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us, so the risk is ours, not yours. {Seats_words}, and the €9 price ends on Friday:
 {link}
 
 Nico`,
   },
   e6: {
     subject: 'Closes tomorrow',
-    bar: 'taken',
     img: { src: '/club/mail/vault-files.jpg', alt: 'One build from the Vault of THE 3D FUTURE: the build kit, the exact prompts, the 3D scene and the Full guide' },
     body: `Hey {name},
 
-THE 3D FUTURE closes tomorrow, Friday 4 December, and {seats_left} of the 100 founders' gifts are left:
-
-{bar}
+THE 3D FUTURE closes tomorrow, Friday 4 December, and {seats_words}.
 
 If you're still deciding, these are the usual doubts, with the honest answer to each. You don't need to code: the Claude skills and the prompts do the building, and the course shows you each step. You don't need much time: the first course is five short lessons, under 20 minutes of video in all. And if it doesn't work for you, follow the five lessons, post your build in the group, and if it still isn't live within 7 days your first month is on us.
 
@@ -230,7 +207,7 @@ Nico`,
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name},
 
-Tonight the doors of THE 3D FUTURE close, and the €9 price goes with them. {seats_left} of the 100 founders' gifts are still left.
+Tonight the doors of THE 3D FUTURE close, and the €9 price goes with them. {Seats_words}.
 
 {img}
 
@@ -242,6 +219,19 @@ The guarantee covers you: follow the five lessons, post your build in the group,
 Nico`,
   },
 };
+
+// 23/11 night (Nico: «non mettere più quanti posti, ma dire sempre meno… quasi stanno per terminare»): no number in the mails any
+// more. The words follow the real counter, so "almost gone" only appears when it's true. Before Saturday nobody has a seat yet, so
+// those mails speak of the list that grows and gets in first.
+export function seatsWords(left) {
+  const n = Number(left);
+  if (left == null || left === '' || !Number.isFinite(n) || n >= 100) return "the 100 founders' gifts go to the first who join";
+  if (n >= 50) return "fewer of the 100 founders' gifts are left every day";
+  if (n > 20) return "more than half of the 100 founders' gifts are already gone";
+  if (n > 10) return "only a few of the 100 founders' gifts are left";
+  if (n > 0) return "the 100 founders' gifts are almost gone";
+  return "the 100 founders' gifts are all gone";
+}
 
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 // "Colin" → Colin; "O. Silva" or an empty name → there
@@ -255,7 +245,7 @@ export function renderLaunch(id, p, { seatsLeft, listCount } = {}) {
   const t = TEXTS[id];
   const v = id === 'e1' ? variantOf(p.email) : null;
   const url = `https://${PAGE}?${v ? `v=${v}&` : ''}ig=${id}`;
-  let body = t.body.replace('{name}', first(p.name)).replace(/\{seats_left\}/g, String(seatsLeft ?? '')).replace(/\{list_count\}/g, String(listCount ?? ''));
+  let body = t.body.replace('{name}', first(p.name)).replace(/\{seats_left\}/g, String(seatsLeft ?? '')).replace(/\{seats_words\}/g, seatsWords(seatsLeft)).replace(/\{Seats_words\}/g, seatsWords(seatsLeft).replace(/^./, (c) => c.toUpperCase())).replace(/\{list_count\}/g, String(listCount ?? ''));
   // 23/11: the 100 founders' seats, filled with real numbers only (the list before Saturday, the seats taken after).
   // 23/11 evening (Nico: «sei sicuro che tutti vedano quei pallini? metti na foto bella»): a picture in the style of the founders'
   // card, drawn by /api/seats with this mail's number, instead of the table of squares (566 px wide, too wide for a phone).
