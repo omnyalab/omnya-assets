@@ -37,7 +37,7 @@ P.S. There are only 100 seats, because I look at everyone's first build myself.`
   },
   e1b: {
     subject: 'Why developers pay more than €6,000 for a single 3D',
-    img: { src: '/club/mail/founders-v3.jpg', alt: "THE 3D FUTURE founders' deal: 100 founders' seats, 230+ people already have early access, €9 a month locked if you join by Friday 4 December, 3 playbooks and the 3D AI Mastery course as a gift for the first 100" },
+    img: { src: '/club/mail/founders-v4.jpg', alt: "THE 3D FUTURE founders' deal: 100 founders' seats, 27 people already on the list, €9 a month locked if you join by Friday 4 December, 3 playbooks and the 3D AI Mastery course as a gift for the first 100" },
     body: `Hey {name},
 
 Every week, developers around the world sign contracts like this: more than €6,000, often much more, for a single interactive 3D of their project. Not a website and not a video: one 3D where their buyers explore the building and choose.
