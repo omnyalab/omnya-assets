@@ -181,7 +181,7 @@ const BAD_MAIL = /@(example|test|invalid|localhost)(\.[a-z]+)?$|@[^.]+$|\.(test|
 
 // one launch mail to a list, 100 per Resend batch request, each person once, until the time budget runs out.
 // A batch Resend refuses (422, a bad address inside) is split in two until the bad address is found; that one is skipped.
-async function sendLaunch(m, people, seatsLeft) {
+async function sendLaunch(m, people, seatsLeft, listCount) {
   const sentKey = `${LK}${m.id}:sent`;
   people = people.filter((p) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(p.email) && !BAD_MAIL.test(p.email));
   const already = people.length ? await pipe(people.map((p) => ['SISMEMBER', sentKey, p.email])) : [];
@@ -189,7 +189,7 @@ async function sendLaunch(m, people, seatsLeft) {
   let sent = 0, skipped = 0;
   const t0 = Date.now();
   const post = async (chunk) => {
-    const mails = chunk.map((p) => { const r = renderLaunch(m.id, p, { seatsLeft }); return { from: 'Nico <info@omnyalab.com>', to: [p.email], reply_to: host.email, subject: r.subject, html: r.html, text: r.text, headers: r.headers }; });
+    const mails = chunk.map((p) => { const r = renderLaunch(m.id, p, { seatsLeft, listCount }); return { from: 'Nico <info@omnyalab.com>', to: [p.email], reply_to: host.email, subject: r.subject, html: r.html, text: r.text, headers: r.headers }; });
     await pipe([['SADD', sentKey, ...chunk.map((p) => p.email)], ['EXPIRE', sentKey, 40 * 86400]]); // before the request: never twice
     const res = await fetch('https://api.resend.com/emails/batch', {
       method: 'POST',
@@ -274,7 +274,9 @@ async function launchTick(now) {
       const tomorrow = `omnya:mail:day:${dayOf(now + DAY)}`;
       await pipe([...later.flatMap((p) => [['HSET', `${LK}${m.id}:later`, p.email, p.name || '']]), ...later.map((p) => ['SADD', tomorrow, p.email]), ['EXPIRE', tomorrow, 3 * 86400], ['EXPIRE', `${LK}${m.id}:later`, 20 * 86400]]);
     }
-    const r = await sendLaunch(m, people.filter((p) => !mailedToday.has(p.email)), seatsLeft);
+    // 23/11 (Nico): every mail says how many are really on the club list today, read at send time
+    const listCount = (await launchList({ list: 'club' }).catch(() => [])).length || null;
+    const r = await sendLaunch(m, people.filter((p) => !mailedToday.has(p.email)), seatsLeft, listCount);
     if (r.error) return { launch: m.id, ...r };
     const sent = r.sent, todo = { length: r.sent + r.left };
     if (r.skipped) console.log('[launch] skipped bad addresses', r.skipped);
@@ -465,7 +467,8 @@ export async function GET(request) {
     const m = LAUNCH.find((x) => x.id === q.get('ltest'));
     if (!m) return json({ error: 'ltest = e1..e7' }, 400);
     const to = String(q.get('to') || host.email).trim().toLowerCase();
-    const r = renderLaunch(m.id, { email: q.get('as') || to, name: q.get('name') || 'Nico' }, { seatsLeft: Number(q.get('seats')) || 100 });
+    const listCount = Number(q.get('list')) || (await launchList({ list: 'club' }).catch(() => [])).length || null;
+    const r = renderLaunch(m.id, { email: q.get('as') || to, name: q.get('name') || 'Nico' }, { seatsLeft: Number(q.get('seats')) || 100, listCount });
     await sendResend({ to, from: 'Nico <info@omnyalab.com>', replyTo: host.email, subject: r.subject, html: r.html, text: r.text, headers: r.headers });
     return json({ ok: true, sent: r.subject, variant: r.variant, to });
   }

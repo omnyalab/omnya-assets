@@ -66,6 +66,7 @@ Nico`,
   e2: {
     subject: 'The mistake that ruins 3D photos',
     img: { src: '/club/mail/inside-v2.jpg', alt: 'Inside THE 3D FUTURE: the step-by-step course to build your own tower where buyers choose their floor, and a new build every Friday' },
+    bar: 'list',
     body: `Hey {name},
 
 The most common mistake with 3D photos is making the next picture from the last one that came out. Every round drifts a little further from the real building, until the client looks at it and says "that's not my tower".
@@ -78,6 +79,10 @@ This is what you'll find inside from Saturday: step-by-step video courses where 
 
 If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us.
 
+{list_count} people are already on the list, first in line for the 100 founders' gifts:
+
+{bar}
+
 The doors open in 3 days:
 {link}
 
@@ -86,6 +91,7 @@ Nico`,
   e2b: {
     subject: 'What stops the scroll in the first second',
     img: { src: '/club/mail/vault-files.jpg', alt: 'One build from the Vault of THE 3D FUTURE: the build kit, the exact prompts, the 3D scene and the Full guide' },
+    bar: 'list',
     body: `Hey {name},
 
 This week we measured our own reels, and one thing stood out: when the first second shows a price or a result, far fewer people swipe away than when it only shows the building. It's tempting to save the best part for the end, and that's exactly where most viewers are already gone.
@@ -96,13 +102,18 @@ The fix is to plan the video backwards: the result first, then how you got there
 
 This is one build from the Vault: the kit that builds it again in your colours, the exact prompts we used, the 3D scene and the Full guide that explains every step. On Saturday you get six of them, and a new one every Friday, next to the step-by-step video courses, starting with your own tower where buyers choose their floor.
 
-If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. The doors open in 2 days:
+If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. {list_count} people are already on the list, first in line for those 100 gifts:
+
+{bar}
+
+The doors open in 2 days:
 {link}
 
 Nico`,
   },
   e3b: {
     subject: 'Black Friday ends tonight',
+    bar: 'list',
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name},
 
@@ -115,6 +126,10 @@ One last tip before the doors open: before we build a real place in 3D, we look 
 
 If you join by Friday 4 December you pay €9 a month, locked for as long as you stay, and if you're one of the first 100 you also get these as a gift: our three playbooks and the full 3D AI Mastery course. After Friday it's €19.
 
+{list_count} people are already on the list tonight, first in line for the 100 gifts:
+
+{bar}
+
 Nico`,
   },
   e3: {
@@ -122,7 +137,7 @@ Nico`,
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name}, we said we'd email you today, so here it is.
 
-Tomorrow the doors of THE 3D FUTURE open, and you're on the list, so you get in before everyone else: first in line for the 100 founders' gifts, our three playbooks and the full 3D AI Mastery course, with €9 a month locked for as long as you stay.
+Tomorrow the doors of THE 3D FUTURE open, and you're one of the {list_count} people on the list, so you get in before everyone else: first in line for the 100 founders' gifts, our three playbooks and the full 3D AI Mastery course, with €9 a month locked for as long as you stay.
 
 {img}
 
@@ -147,10 +162,13 @@ Nico`,
   },
   e4: {
     subject: 'Doors are open',
+    bar: 'taken',
     img: { src: '/club/mail/doors.jpg', alt: 'THE 3D FUTURE: doors are open, your first course is your own tower, floor by floor' },
     body: `Hey {name},
 
 THE 3D FUTURE is open, and right now {seats_left} of the 100 founders' gifts are left (the counter on the page is the real one).
+
+{bar}
 
 {img}
 
@@ -166,6 +184,7 @@ Nico`,
   },
   e5: {
     subject: "Why our 3D videos don't wobble",
+    bar: 'taken',
     img: { src: '/club/mail/inside-v2.jpg', alt: 'Inside THE 3D FUTURE: the step-by-step course to build your own tower where buyers choose their floor, and a new build every Friday' },
     body: `Hey {name},
 
@@ -174,12 +193,16 @@ When a video made from a 3D comes out crooked, most people make it again and pay
 {img}
 
 That's the kind of thing the step-by-step courses inside THE 3D FUTURE show you on real builds, starting with your own tower where buyers choose their floor. {seats_left} of the 100 founders' gifts are left, and the €9 price ends on Friday:
+
+{bar}
+
 {link}
 
 Nico`,
   },
   e6: {
     subject: 'Closes tomorrow',
+    bar: 'taken',
     img: { src: '/club/mail/vault-files.jpg', alt: 'One build from the Vault of THE 3D FUTURE: the build kit, the exact prompts, the 3D scene and the Full guide' },
     body: `Hey {name},
 
@@ -188,6 +211,9 @@ If you put people in an architecture shot, keep them as a blur, a silhouette aga
 {img}
 
 THE 3D FUTURE closes tomorrow, Friday 4 December, and {seats_left} of the 100 founders' gifts are left. If you join by tomorrow you pay €9 a month, locked for as long as you stay; once the doors close they stay closed until the next round, where it's €19:
+
+{bar}
+
 {link}
 
 Nico`,
@@ -216,11 +242,15 @@ const first = (n) => { const f = String(n || '').trim().split(/\s+/)[0] || ''; r
 export const variantOf = (email) => { let h = 0; for (const c of String(email)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h % 2 ? 'b' : 'a'; };
 
 /** one launch mail for one person: { subject, text, html, headers } */
-export function renderLaunch(id, p, { seatsLeft } = {}) {
+export function renderLaunch(id, p, { seatsLeft, listCount } = {}) {
   const t = TEXTS[id];
   const v = id === 'e1' ? variantOf(p.email) : null;
   const url = `https://${PAGE}?${v ? `v=${v}&` : ''}ig=${id}`;
-  let body = t.body.replace('{name}', first(p.name)).replace(/\{seats_left\}/g, String(seatsLeft ?? ''));
+  let body = t.body.replace('{name}', first(p.name)).replace(/\{seats_left\}/g, String(seatsLeft ?? '')).replace(/\{list_count\}/g, String(listCount ?? ''));
+  // 23/11: the 100 founders' seats as squares, filled with real numbers only (the list before Saturday, the seats taken after)
+  const filled = t.bar === 'taken' ? Math.max(0, 100 - (Number(seatsLeft) || 100)) : Math.min(100, Number(listCount) || 0);
+  const cell = (on) => `<td width="22" height="22" style="width:22px;height:22px;padding:0;border-radius:5px;${on ? 'background:#0a84ff;' : 'background:#eaf2ff;border:1px solid #9cc4ff;'}"></td>`;
+  const bar = t.bar ? `<table role="presentation" cellspacing="6" cellpadding="0" style="border-collapse:separate;margin:4px 0">${Array.from({ length: 5 }, (_, r) => `<tr>${Array.from({ length: 20 }, (_, c) => cell(r * 20 + c < filled)).join('')}</tr>`).join('')}</table>` : '';
   if (v === 'b') body = body.replace(/THE 3D FUTURE/g, '3D THAT SELLS');
   const subject = typeof t.subject === 'string' ? t.subject : t.subject[v];
   const off = unsubUrl(p.email);
@@ -229,8 +259,9 @@ export function renderLaunch(id, p, { seatsLeft } = {}) {
     : "You're getting this because you asked for one of our guides on omnyalab.com and said yes to updates. Omnya Lab, Venice, Italy.";
   const paras = body.split('\n\n');
   const pic = t.img ? `<p><img src="https://www.omnyalab.com${t.img.src}" alt="${esc(t.img.alt)}" width="560" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:12px"></p>` : '';
-  const html = paras.map((para) => (para.trim() === '{img}' ? pic : `<p>${esc(para).replace(/\n/g, '<br>').replace('{link}', `<a href="${url}">${PAGE}</a>`)}</p>`)).filter(Boolean).join('\n');
+  const html = paras.map((para) => (para.trim() === '{img}' ? pic : para.trim() === '{bar}' ? bar : `<p>${esc(para).replace(/\n/g, '<br>').replace('{link}', `<a href="${url}">${PAGE}</a>`)}</p>`)).filter(Boolean).join('\n');
   body = body.replace(/\n\n\{img\}(?=\n\n)/, '');
+  body = body.replace(/\n\n\{bar\}(?=\n\n)/, '');
   return {
     subject,
     variant: v,
