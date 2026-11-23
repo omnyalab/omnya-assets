@@ -585,6 +585,9 @@
     },
     "api/club.js": {
       "maxDuration": 60
+    },
+    "api/seats.js": {
+      "includeFiles": "private/seats/**"
     }
   },
   "rewrites": [

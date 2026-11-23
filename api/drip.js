@@ -470,7 +470,7 @@ export async function GET(request) {
     const listCount = Number(q.get('list')) || (await launchList({ list: 'club' }).catch(() => [])).length || null;
     const r = renderLaunch(m.id, { email: q.get('as') || to, name: q.get('name') || 'Nico' }, { seatsLeft: Number(q.get('seats')) || 100, listCount });
     await sendResend({ to, from: 'Nico <info@omnyalab.com>', replyTo: host.email, subject: r.subject, html: r.html, text: r.text, headers: r.headers });
-    return json({ ok: true, sent: r.subject, variant: r.variant, to });
+    return json({ ok: true, sent: r.subject, variant: r.variant, to, seatsImg: r.seatsImg });
   }
   if (q.get('launch') === '1') { // who would get each mail today, and what went
     const out = { on: (await redis('GET', `${LK}on`)) === '1', mails: [] };

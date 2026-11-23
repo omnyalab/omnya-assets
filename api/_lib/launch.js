@@ -3,6 +3,7 @@
 // tu», so one engine holds the list, the unsubscribes and the one-email-a-day rule. Times are 18:00 Rome = 17:00 UTC.
 // No email addresses in this file: the repo is public, the extra people of the club list live in Redis.
 import { unsubUrl } from './newsletter.js';
+import { seatsUrl } from './seats-card.js';
 
 export const LAUNCH = [
   { id: 'e1', at: '2026-11-20T17:00:00Z', list: 'consent' }, // 20/11 Nico: «oggi si inizia, mai domani» (was Monday 23/11)
@@ -247,10 +248,14 @@ export function renderLaunch(id, p, { seatsLeft, listCount } = {}) {
   const v = id === 'e1' ? variantOf(p.email) : null;
   const url = `https://${PAGE}?${v ? `v=${v}&` : ''}ig=${id}`;
   let body = t.body.replace('{name}', first(p.name)).replace(/\{seats_left\}/g, String(seatsLeft ?? '')).replace(/\{list_count\}/g, String(listCount ?? ''));
-  // 23/11: the 100 founders' seats as squares, filled with real numbers only (the list before Saturday, the seats taken after)
-  const filled = t.bar === 'taken' ? Math.max(0, 100 - (Number(seatsLeft) || 100)) : Math.min(100, Number(listCount) || 0);
-  const cell = (on) => `<td width="22" height="22" style="width:22px;height:22px;padding:0;border-radius:5px;${on ? 'background:#0a84ff;' : 'background:#eaf2ff;border:1px solid #9cc4ff;'}"></td>`;
-  const bar = t.bar ? `<table role="presentation" cellspacing="6" cellpadding="0" style="border-collapse:separate;margin:4px 0">${Array.from({ length: 5 }, (_, r) => `<tr>${Array.from({ length: 20 }, (_, c) => cell(r * 20 + c < filled)).join('')}</tr>`).join('')}</table>` : '';
+  // 23/11: the 100 founders' seats, filled with real numbers only (the list before Saturday, the seats taken after).
+  // 23/11 evening (Nico: «sei sicuro che tutti vedano quei pallini? metti na foto bella»): a picture in the style of the founders'
+  // card, drawn by /api/seats with this mail's number, instead of the table of squares (566 px wide, too wide for a phone).
+  // People with pictures off still read the number in the sentence above it and in the alt.
+  const nSeats = t.bar === 'taken' ? 100 - Number(seatsLeft) : Number(listCount);
+  const seatsImg = t.bar && Number.isInteger(nSeats) && nSeats >= 0 && (t.bar === 'taken' ? seatsLeft != null : listCount != null) ? seatsUrl(t.bar, nSeats) : null;
+  const seatsAlt = t.bar === 'taken' ? `${100 - nSeats} of the 100 founders' seats left` : `${nSeats} people are already on the list, first in line for the 100 founders' gifts`;
+  const bar = seatsImg ? `<p><img src="${seatsImg}" alt="${esc(seatsAlt)}" width="560" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:12px"></p>` : '';
   if (v === 'b') body = body.replace(/THE 3D FUTURE/g, '3D THAT SELLS');
   const subject = typeof t.subject === 'string' ? t.subject : t.subject[v];
   const off = unsubUrl(p.email);
@@ -261,10 +266,11 @@ export function renderLaunch(id, p, { seatsLeft, listCount } = {}) {
   const pic = t.img ? `<p><img src="https://www.omnyalab.com${t.img.src}" alt="${esc(t.img.alt)}" width="560" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:12px"></p>` : '';
   const html = paras.map((para) => (para.trim() === '{img}' ? pic : para.trim() === '{bar}' ? bar : `<p>${esc(para).replace(/\n/g, '<br>').replace('{link}', `<a href="${url}">${PAGE}</a>`)}</p>`)).filter(Boolean).join('\n');
   body = body.replace(/\n\n\{img\}(?=\n\n)/, '');
-  body = body.replace(/\n\n\{bar\}(?=\n\n)/, '');
+  body = body.replace(/(:?)\n\n\{bar\}(?=\n\n)/, (_, c) => (c ? '.' : '')); // in the text version the sentence before the picture ends with a full stop
   return {
     subject,
     variant: v,
+    seatsImg,
     text: `${body.replace('{link}', url)}\n\n--\n${why}\nUnsubscribe: ${off}`,
     html: `<!doctype html><html><body><div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#222">
 ${html}
