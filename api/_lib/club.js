@@ -14,7 +14,7 @@ import { kv } from './store.js';
 import { sendMail } from './mail.js';
 import { host } from './config.js';
 import { fixEmail } from './mail-fix.js';
-import { signedHref, isGuideProduct, HOUSE_SKILL_FILE, DAY } from './learn-files.js';
+import { signedHref, isGuideProduct, HOUSE_SKILL_FILE, FOUNDERS_GIFTS, DAY } from './learn-files.js';
 
 export const ROUND = '1';
 export const CLUB = '3d-future';
@@ -25,6 +25,9 @@ export const PORTAL_URL = process.env.CLUB_PORTAL_URL || 'https://billing.stripe
 export const OPEN = Date.parse('2026-11-28T18:00:00+01:00');
 export const CLOSE = Date.parse('2026-12-05T00:00:00+01:00');
 export const CHEAP_SEATS = 100;
+// 23/11 Nico: in the founders' round (28/11-4/12) everyone who joins pays €9 (€90 a year), locked; the 100 are now the
+// founders' gifts (three playbooks + the full 3D AI Mastery course) for the first 100. Later rounds go back to 9 → 19.
+export const FOUNDERS_ROUND = true;
 const LIVE = new Set(['active', 'trialing', 'past_due']);
 
 /** The four live Stripe prices of the product "THE 3D FUTURE" (prod_Vf8pJEQunN0guK, 20/11), written here like the funnel
@@ -52,7 +55,7 @@ export function decide({ now = Date.now(), taken = 0, buyer = false, waitlisted 
   const phase = phaseAt(now);
   if (phase === 'before' || phase === 'closed') return { ok: false, phase, error: 'closed' };
   if (phase === 'early' && !buyer && !waitlisted) return { ok: false, phase, error: 'early' };
-  const low = buyer || taken < CHEAP_SEATS;
+  const low = FOUNDERS_ROUND || buyer || taken < CHEAP_SEATS;
   const key = plan === 'year' ? (low ? 'Y90' : 'Y190') : low ? 'M9' : 'M19';
   return { ok: true, phase, key, eur: PRICES[key].eur };
 }
@@ -287,15 +290,17 @@ const WITHDRAW = 'omnyalab.com/withdraw';
 /** W1, the welcome email: the text approved by Nico on 20/11, word for word, with the withdrawal line added. While the
     customer portal link (CLUB_PORTAL_URL) is not there, the cancel line says to reply (the reply goes to info@). */
 export const CANCEL_REPLY = 'Reply to this email to cancel.';
-export function welcomeText({ name, skool, skill, portal }) {
+export function welcomeText({ name, skool, skill, portal, gifts }) {
   const cancel = portal ? `If you ever want to cancel, it's one tap here: ${portal}` : CANCEL_REPLY;
-  return `You're in, ${name}.\n\nFirst, join the room on Skool with the email you paid with:\n${skool}\n\nYour House Builder skill is yours to keep, here:\n${skill}\n\nThen start the first video course inside, your own stadium step by step, and when it's done post it in Show your build: I look at every first build myself.\n\n${cancel}\n\nTo withdraw within 14 days: ${WITHDRAW}\n\nNico`;
+  // 23/11: the first 100 of the founders' round also get the founders' gift, theirs to keep
+  const gift = gifts?.length ? `\n\nYou're one of the first 100, so the founders' gift is yours to keep too:\n${gifts.map((g) => `${g.name}: ${g.href}`).join('\n')}` : '';
+  return `You're in, ${name}.\n\nFirst, join the room on Skool with the email you paid with:\n${skool}\n\nYour House Builder skill is yours to keep, here:\n${skill}${gift}\n\nThen start the first video course inside, your own tower step by step, and when it's done post it in Show your build: I look at every first build myself.\n\n${cancel}\n\nTo withdraw within 14 days: ${WITHDRAW}\n\nNico`;
 }
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 /** The same words as a plain note (no design, links written out), like the free blueprint email. */
 export function welcomeHtml(v) {
   const link = (u) => `<a href="${esc(u)}">${esc(u)}</a>`;
-  const p = welcomeText({ name: esc(v.name), skool: link(v.skool), skill: link(v.skill), portal: v.portal ? link(v.portal) : '' })
+  const p = welcomeText({ name: esc(v.name), skool: link(v.skool), skill: link(v.skill), portal: v.portal ? link(v.portal) : '', gifts: (v.gifts || []).map((g) => ({ name: esc(g.name), href: link(g.href) })) })
     .replace(WITHDRAW, `<a href="https://www.${WITHDRAW}">${WITHDRAW}</a>`)
     .split('\n\n').map((x) => `<p>${x.replace(/\n/g, '<br>')}</p>`).join('\n');
   return `<!doctype html><html><body><div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#222">\n${p}\n</div></body></html>`;
@@ -329,7 +334,14 @@ export async function clubJoined(stripe, session) {
     throw new Error('club: CLUB_SKOOL_URL missing');
   }
   if (!(await first('w1', session.id))) return member;
-  const v = { name, skool, portal, skill: `https://www.omnyalab.com${signedHref(HOUSE_SKILL_FILE, SKILL_TTL)}` };
+  // the founders' gift: this member is one of the first 100 seats of the round (the same count as the page's counter)
+  let gifts = [];
+  if (FOUNDERS_ROUND) {
+    const taken = await seats(stripe).catch(() => null);
+    if (typeof taken === 'number' && taken <= CHEAP_SEATS) gifts = FOUNDERS_GIFTS.map((g) => ({ name: g.name, href: `https://www.omnyalab.com${signedHref(g.file, SKILL_TTL)}` }));
+    if (gifts.length) await kv('HSET', K.members, email, JSON.stringify({ ...member, gift: taken })).catch(() => {});
+  }
+  const v = { name, skool, portal, gifts, skill: `https://www.omnyalab.com${signedHref(HOUSE_SKILL_FILE, SKILL_TTL)}` };
   try {
     await sendMail({ to: `${name} <${email}>`, bcc: host.email, replyTo: host.email, subject: "you're in", text: welcomeText(v), html: welcomeHtml(v) });
   } catch (e) {

@@ -52,7 +52,7 @@
       var n = Math.min(SEATS, taken); box.hidden = false; $('[data-left]').textContent = String(SEATS - n);
       $$('[data-seatbar] i').forEach(function (i, k) { var f = Math.max(0, Math.min(1, (n - k * 5) / 5)); i.className = f >= 1 ? 'on' : f > 0 ? 'part' : ''; i.style.setProperty('--f', Math.round(f * 100) + '%'); });
     }
-    var eur = taken !== null && taken >= SEATS && !proof ? '€19' : '€9';
+    var eur = '€9'; // 23/11: the whole founders' round is €9; the 100 are the gifts
     $$('[data-eur]').forEach(function (e) { if (e.textContent !== eur) e.textContent = eur; });
   }
   var seatsTimer = null;

@@ -201,6 +201,9 @@ const RULES = [
 export const isGuideProduct = (name) => !!name && !/omnya city/i.test(name) && RULES.some(([re]) => re.test(name));
 /** The House Builder skill, the bonus every member of the club keeps (api/_lib/club.js signs its link). */
 export const HOUSE_SKILL_FILE = HOUSE_SKILL.file;
+// 23/11 (Nico): the founders' gift of THE 3D FUTURE, for the first 100 members of the founders' round: the three
+// playbooks and the full 3D AI Mastery course, theirs to keep (links in the welcome email, good for five years)
+export const FOUNDERS_GIFTS = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, FULL_MASTERY].map((x) => ({ name: x.name, file: x.file }));
 
 /** names = every line item's product name on one Checkout Session. Returns the files to deliver, deduped,
     as { name, file, href }: href is the signed link, good for ttl seconds. lang 'it' gives the Italian

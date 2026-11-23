@@ -184,6 +184,8 @@ html[data-v="a"] [data-vv="b"], html[data-v="b"] [data-vv="a"] { display: none !
   background: linear-gradient(90deg, rgba(63,140,255,.30), rgba(63,140,255,.14)); border: 1px solid rgba(166,212,255,.38) }
 .bonus .ic { width: 20px; height: 20px; color: #a6d4ff }
 .bonus b { font-weight: 700 }
+/* 23/11 Nico: the founders' gift in light blue, glowing, so people see what we give them */
+.bonus.fgift { margin-top: 8px; background: linear-gradient(135deg, rgba(90,174,255,.26), rgba(10,132,255,.12)); border: 1px solid rgba(140,200,255,.65); box-shadow: 0 0 28px 2px rgba(59,155,255,.45), 0 0 70px 10px rgba(59,155,255,.16) }
 .seats { display: grid; gap: 8px }
 .sline { margin: 0; font: 500 15px/20px var(--f-sf); color: var(--fg) }
 .sline b { font-weight: 700 }

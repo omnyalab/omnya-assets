@@ -6,7 +6,7 @@
 export const EARLY = '2026-11-28T09:00:00+01:00'; // doors open for the waitlist and the guide buyers
 export const OPEN = '2026-11-28T18:00:00+01:00'; // doors open for everyone
 export const CLOSE = '2026-12-05T00:00:00+01:00'; // the first moment after Fri 4/12 23:59
-export const SEATS = 100; // seats at €9, then €19
+export const SEATS = 100; // the founders' gifts (23/11): the whole round is €9
 
 export const NAME = { a: 'THE 3D FUTURE', b: '3D THAT SELLS' } as const;
 export const SUB = 'The club where you learn to build the 3D that sells';
@@ -39,7 +39,7 @@ export const vSet = (k: string) => `/club/v-${k}-760.webp 760w, /club/v-${k}.web
 
 /** What's inside, the courses first (the badges are the B2 game trophies of the board) */
 export const INSIDE = [
-  { k: 'lesson', t: 'Step-by-step video courses on our builds', d: 'The first one, your own stadium where people pick their seat, is ready on day one, and a new course comes every Friday with the build of the week' },
+  { k: 'lesson', t: 'Step-by-step video courses on our builds', d: 'The first one, your own tower where buyers choose their floor, is ready on day one, and a new course comes every Friday with the build of the week' },
   { k: 'first', t: 'Six builds from our reels', d: 'With the files, the prompts and the Claude skills' },
   { k: 'month', t: 'My comments on your builds', d: 'Every Monday' },
   { k: 'house', t: 'The House Builder skill', d: 'Yours to keep' },
@@ -58,7 +58,8 @@ export const FAQ: [string, string][] = [
   ['Do I need to code?', 'No. The Claude skills and the prompts do the building, the course shows you each step.'],
   ['What do I need?', 'A computer and Claude Pro or Claude Code for the skills. Higgsfield for photos and video.'],
   ['Can I cancel?', 'Yes, in one tap, whenever you want.'],
-  ['I bought a guide, what do I pay?', '€9 a month, even after the first 100: enter your receipt number.'],
+  ['Who gets the founders\' gifts?', 'The first 100 who join: our three playbooks and the full 3D AI Mastery course, yours to keep.'],
+  ['I bought a guide, what do I pay?', '€9 a month, in the next rounds too: enter your receipt number.'],
   ['When do new builds arrive?', 'Every Friday.'],
 ];
 

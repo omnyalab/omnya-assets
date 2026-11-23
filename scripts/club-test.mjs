@@ -23,7 +23,7 @@ for (const phase of Object.keys(at)) for (const buyer of [false, true]) for (con
   if (phase === 'before' || phase === 'closed') want = { ok: false, phase, error: 'closed' };
   else if (phase === 'early' && !buyer && !waitlisted) want = { ok: false, phase, error: 'early' };
   else {
-    const low = buyer || taken < 100;
+    const low = true || buyer || taken < 100; // 23/11: the founders round is €9 for everyone (FOUNDERS_ROUND)
     want = { ok: true, phase, key: plan === 'year' ? (low ? 'Y90' : 'Y190') : low ? 'M9' : 'M19', eur: plan === 'year' ? (low ? 90 : 190) : low ? 9 : 19 };
   }
   eq(d, want, `${phase} buyer=${buyer} waitlist=${waitlisted} seats=${taken} ${plan}`);
@@ -34,10 +34,10 @@ for (const r of rows.filter((r) => r[4] === 'month' && (r[2] === '-' || r[0] ===
 
 // the hand-written cases of Nico's decisions, said in words
 eq(decide({ now: at.open, taken: 99, plan: 'month' }).eur, 9, 'seat 100 still €9');
-eq(decide({ now: at.open, taken: 100, plan: 'month' }).eur, 19, 'seat 101 is €19');
+eq(decide({ now: at.open, taken: 100, plan: 'month' }).eur, 9, 'seat 101 is still €9 in the founders round (23/11)');
 eq(decide({ now: at.open, taken: 250, buyer: true, plan: 'month' }).eur, 9, 'a guide buyer is €9 after the first 100');
 eq(decide({ now: at.open, taken: 100, buyer: true, plan: 'year' }).eur, 90, 'a guide buyer pays €90 a year');
-eq(decide({ now: at.open, taken: 100, plan: 'year' }).eur, 190, '€190 a year after the first 100');
+eq(decide({ now: at.open, taken: 100, plan: 'year' }).eur, 90, 'still €90 a year after the first 100 in the founders round');
 eq(decide({ now: at.early, taken: 0, waitlisted: true, plan: 'month' }).eur, 9, 'the waitlist gets in at 09:00');
 
 // the buyer token
@@ -53,7 +53,7 @@ eq(['#1415-7362', ' 1415-7362 ', '1415 7362', '# 1415-7362', '14157362', 'abcd-e
 
 // W1 word for word (20/11), with the withdrawal line
 eq(welcomeText({ name: 'Marco', skool: 'S', skill: 'K', portal: 'P' }),
-  "You're in, Marco.\n\nFirst, join the room on Skool with the email you paid with:\nS\n\nYour House Builder skill is yours to keep, here:\nK\n\nThen start the first video course inside, your own stadium step by step, and when it's done post it in Show your build: I look at every first build myself.\n\nIf you ever want to cancel, it's one tap here: P\n\nTo withdraw within 14 days: omnyalab.com/withdraw\n\nNico",
+  "You're in, Marco.\n\nFirst, join the room on Skool with the email you paid with:\nS\n\nYour House Builder skill is yours to keep, here:\nK\n\nThen start the first video course inside, your own tower step by step, and when it's done post it in Show your build: I look at every first build myself.\n\nIf you ever want to cancel, it's one tap here: P\n\nTo withdraw within 14 days: omnyalab.com/withdraw\n\nNico",
   'W1 text');
 
 // without the portal link the cancel line asks to reply (20/11)

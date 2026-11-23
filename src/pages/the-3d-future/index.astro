@@ -184,11 +184,13 @@ const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
           <p class="was"><s>€150+ on our site</s></p>
           <div class="oprice"><b data-eur>€9</b><span>a month</span></div>
           <p class="olock">locked for as long as you stay</p>
+          <p class="olock">if you join by Friday 4 December</p>
           <p class="bonus"><Icon name="gift" /><span><b>Bonus</b> · the House Builder skill is yours to keep</span></p>
+          <p class="bonus fgift"><Icon name="gift" /><span><b>Founders' gift · first 100</b> · our 3 playbooks and the full 3D AI Mastery course, yours to keep</span></p>
           <div class="seats">
-            <p class="sline" data-when="before">100 seats at €9, then €19</p>
+            <p class="sline" data-when="before">€9 until Friday 4 December · gifts for the first 100</p>
             <div class="seatbox" data-when="early open" data-seatbox hidden>
-              <p class="sline"><b data-left>100</b> of 100 seats left at €9</p>
+              <p class="sline"><b data-left>100</b> of 100 founders' gifts left</p>
               <div class="seatbar" aria-hidden="true" data-seatbar>{Array.from({ length: 20 }, () => <i></i>)}</div>
             </div>
           </div>
@@ -215,7 +217,7 @@ const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
               <label class="rin" data-rin><span aria-hidden="true" data-mode="r">#</span><span aria-hidden="true" data-mode="e" hidden><Icon name="mail" /></span><input name="proof" inputmode="numeric" autocomplete="off" placeholder="1415-7362" maxlength="120" aria-label="Receipt number" data-rinput></label>
               <button class="btn rbtn" type="submit">Check</button>
             </div>
-            <p class="rok" data-rok role="status" hidden><Icon name="check" /><span>Guide found · €9 a month for you, even after the first 100</span></p>
+            <p class="rok" data-rok role="status" hidden><Icon name="check" /><span>Guide found · €9 a month for you, in the next rounds too</span></p>
             <p class="rno" data-rno role="alert" hidden></p>
             <button type="button" class="rsm" data-rswitch><span data-mode="r">No receipt? Use the email you paid with</span><span data-mode="e" hidden>Have the receipt? Use the receipt number</span></button>
           </form>

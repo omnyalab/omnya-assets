@@ -36,50 +36,48 @@ Nico
 P.S. There are only 100 seats, because I look at everyone's first build myself.`,
   },
   e1b: {
-    subject: 'Why a developer signed €6,200 for one 3D',
-    img: { src: '/club/mail/founders.jpg', alt: "THE 3D FUTURE founders' deal: 100 seats, €9 a month, 3 playbooks and the 3D AI Mastery course as a gift" },
+    subject: 'Why developers pay more than €6,000 for a single 3D',
+    img: { src: '/club/mail/founders-v2.jpg', alt: "THE 3D FUTURE founders' deal: 100 founders' seats, €9 a month locked if you join by Friday 4 December, 3 playbooks and the 3D AI Mastery course as a gift for the first 100" },
     body: `Hey {name},
 
-Last week a property developer signed a €6,200 project with us. Not for a website and not for a video: for one interactive 3D of his new project.
+Developers pay more than €6,000 for a single interactive 3D of their project, and last week one of them signed one with us. Not a website and not a video: one 3D where their buyers explore the building and choose.
 
-That's the skill behind everything you've seen from us, and it's what developers pay for. The stadium where you pick your seat, the tower where you choose your floor, the house that builds itself: every one of them is built with Claude, from an empty scene to a page you can show a client, and you don't need to know how to code.
+Here's the part that matters to you: you can build the same thing. Every 3D you've seen from us, the stadium where you pick your seat, the tower where you choose your floor, the house that builds itself, is built with Claude, from an empty scene to a page you can show a client, without writing code. And every week developers write to us asking for one.
 
-On Saturday I'm opening the whole method to 100 people, inside THE 3D FUTURE.
+On Saturday 28 November I'm opening the whole method inside THE 3D FUTURE.
 
 {img}
 
-In your first week you build your own stadium, in your colours, where people tap a stand and pick their seat, following a step-by-step video course where you see every click. Then every Friday a new build arrives with its own course, files and prompts, and every Monday I look at your work and tell you what to fix before you show it to a client.
+In your first week you build your own tower, in your colours, where buyers choose their floor, following a step-by-step video course where you see every click. Then every Friday a new build arrives with its own course, files and prompts, and every Monday I look at your work and tell you what to fix before you show it to a client.
 
-Because it opens in Black Friday week, the first 100 get a founders' deal I won't run again. If you're one of them, you pay €9 a month instead of €19, locked for as long as you stay, and you get our three playbooks and the full 3D AI Mastery course as a gift that stays yours: more than €240 of files at our site's prices. Sell one 3D like the one I just told you about and the club pays for itself many times over. When the 100 seats are gone, or on Friday 4 December at the latest, the deal goes with them.
+It opens in Black Friday week, so if you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay. If you're one of the first 100, you also get our three playbooks and the full 3D AI Mastery course as a gift that stays yours: more than €240 of files at our site's prices. Sell one 3D like the one I just told you about and the club pays for itself many times over.
 
 And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us.
 
-Thank you to everyone who already got on the list: you're in on Saturday at 9:00 (Rome), nine hours before everyone else, so some of the 100 seats may be gone before the doors open for the rest. If you want to be one of the first, get on the list now:
+Thank you to everyone who already got on the list: you get in before everyone else, first in line for the 100 gifts. If you want to be one of the first, get on the list now:
 {link}
 
-Nico
-
-P.S. It's 100 seats because I look at every first build myself, and I can't do that for a thousand people.`,
+Nico`,
   },
   e2: {
     subject: 'The mistake that ruins 3D photos',
-    img: { src: '/club/mail/vault.jpg', alt: 'The six builds inside THE 3D FUTURE: The Towers, Riyadh Tower, Stadium, House that builds itself, Plane, Miami' },
+    img: { src: '/club/mail/inside-v2.jpg', alt: 'Inside THE 3D FUTURE: the step-by-step course to build your own tower where buyers choose their floor, and a new build every Friday' },
     body: `Hey {name},
 
-The most common mistake with 3D photos is making the next picture from the last one that came out, because every round drifts a little further from the real building. We start every round from the 3D again, with photos of the real materials, and that's why our towers look the same in every shot.
+The most common mistake with 3D photos is making the next picture from the last one that came out. Every round drifts a little further from the real building, until the client looks at it and says "that's not my tower".
+
+The fix isn't a better prompt, it's a method: you start every round from the 3D again, with photos of the real materials, so the building stays the same in every shot. That method, with the exact prompts, is what we teach inside THE 3D FUTURE, step by step, on real builds.
 
 {img}
 
-These are the six builds you'll find inside THE 3D FUTURE in 3 days, each with its files, prompts and Claude skill, next to the step-by-step video courses (the first one, your stadium, is ready on day one, and a new one comes every Friday), every Full guide, the House Builder skill and my comments on your work every Monday.
+This is what you'll find inside from Saturday: step-by-step video courses where you see every click (the first one is your own tower where buyers choose their floor, ready on day one, and a new one comes every Friday with the build of the week), six builds from our reels with their files, prompts and Claude skills, every Full guide, the House Builder skill and my comments on your work every Monday.
 
-If you're one of the first 100 to join, you pay €9 a month instead of €19, locked for as long as you stay, and you get our three playbooks and the full 3D AI Mastery course as a gift: more than €240 of files at our site's prices, for €9. The deal ends when the 100 seats are gone, or on Friday 4 December at the latest.
+If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us.
 
-The list gets in on Saturday at 9:00 (Rome), nine hours before everyone else:
+The doors open in 3 days:
 {link}
 
-Nico
-
-P.S. If you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us.`,
+Nico`,
   },
   e3: {
     subject: "You're first tomorrow",
@@ -98,9 +96,9 @@ Nico`,
 
 When you turn a 3D into a photo, give the model pictures of the real materials, the actual stone and the actual wood, and never a nice photo of someone else's house, or it copies that house and forgets yours.
 
-THE 3D FUTURE is open now and {seats_left} of the 100 seats at €9 are left (the counter on the page is the real one). The moment you join you get the first step-by-step video course, your own stadium in your colours where people pick their seat, then a new course every Friday, six builds from our reels with their files, prompts and Claude skills, the House Builder skill (€14.99 on our site), which stays yours even if you leave, and my comments on your work every Monday.
+THE 3D FUTURE is open now, and {seats_left} of the 100 founders' gifts are left (the counter on the page is the real one). The moment you join you get the first step-by-step video course, your own tower in your colours where buyers choose their floor, then a new course every Friday, six builds from our reels with their files, prompts and Claude skills, the House Builder skill (€14.99 on our site), which stays yours even if you leave, and my comments on your work every Monday.
 
-It's €9 a month for the first 100, locked for as long as you stay, and after that, or after Friday 4 December at 23:59 (Rome), it's €19:
+If you join by Friday 4 December at 23:59 (Rome) you pay €9 a month, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. After Friday it's €19:
 {link}
 
 Nico
@@ -113,7 +111,7 @@ P.S. You can cancel in one tap whenever you want.`,
 
 When we turn a 3D into a video we make one clip at a time, each one a single straight move into the building with the fog moving, and every new clip starts from the real last frame of the one before, which is why the camera never jumps between shots.
 
-All our clips are made like this, and the files of the stadium that did 2.36M views are inside THE 3D FUTURE, with the prompts and the skill that builds it again in your own colours. {seats_left} of the 100 seats at €9 are left, and the doors close on Friday at 23:59 (Rome):
+All our clips are made like this, and the files of the stadium that did 2.36M views are inside THE 3D FUTURE, with the prompts and the skill that builds it again in your own colours. {seats_left} of the 100 founders' gifts are left, and the €9 price ends on Friday at 23:59 (Rome):
 {link}
 
 Nico`,
@@ -124,7 +122,7 @@ Nico`,
 
 If you put people in an architecture shot, keep them as a blur, a silhouette against the light or out of focus, because a sharp face is the first thing that makes a render look fake.
 
-THE 3D FUTURE closes tomorrow, Friday 4 December, at 23:59 (Rome), and {seats_left} of the 100 seats at €9 are left. Once the doors close they stay closed until the next round, where it's €19:
+THE 3D FUTURE closes tomorrow, Friday 4 December, at 23:59 (Rome), and {seats_left} of the 100 founders' gifts are left. Once the doors close they stay closed until the next round, where it's €19:
 {link}
 
 Nico`,
@@ -135,7 +133,7 @@ Nico`,
 
 If you need the camera to move out instead of in, don't make a new clip, just play the one you have backwards: same light, same building, and it costs nothing.
 
-The doors of THE 3D FUTURE close tonight at 23:59 (Rome), and {seats_left} seats at €9 are still left:
+The doors of THE 3D FUTURE close tonight at 23:59 (Rome), and the €9 price goes with them ({seats_left} of the 100 founders' gifts are still left):
 {link}
 
 Nico`,
