@@ -9,7 +9,7 @@ import OptIn from '../components/OptIn.astro';
 
 <Base page="learn" header={false} footer={false} title="How to build any 3D with Claude, step by step" description="Steal our 3D method: the free 3D AI Mastery guide, and the full course that shows you how to build any interactive 3D with Claude, step by step." og="/og/mastery.jpg" ogAlt="3D AI Mastery, the free guide: how to build any 3D with Claude, step by step">
 <div class="x3">
-<OptIn slug="the-3d-ai-mastery" free="free-mastery" noMail word="3D" btn="Send me the free guide →" book noClose fade theme="mx" allset proof="Steal it before your competitors do" watch="/the-3d-ai-mastery/watch" cover="/learn/mx_cover_book.webp" hero="/learn/mx_hero.webp" heroMobile="/learn/mx_hero_mobile.webp" />
+<OptIn slug="the-3d-ai-mastery" free="free-mastery" noMail word="3D" btn="Send me the free guide →" kick="With this free guide, step by step" pill="You saw it in the reel,|now build your own 👇" book noClose fade theme="mx" allset proof="Steal it before your competitors do" watch="/the-3d-ai-mastery/watch" cover="/learn/mx_cover_book.webp" hero="/learn/mx_hero.webp" heroMobile="/learn/mx_hero_mobile.webp" />
 
 
 </div>
@@ -22,6 +22,13 @@ import OptIn from '../components/OptIn.astro';
 .oi--mx .x3-btn{background:linear-gradient(180deg,#3d8bff,#1f5bff)!important;color:#fff!important;box-shadow:inset 0 0 0 1px #9fd8ff40,0 0 0 4px #5fb4ff1f,0 12px 34px -10px #5fb4ffcc,0 0 42px -8px #5fb4ff99!important}
 .oi--mx .oist .c,.oi--mx .x3-kick{background:linear-gradient(90deg,#9fd8ff,#2f7bff);-webkit-background-clip:text;background-clip:text;color:transparent!important}
 .oi--mx .oisheet{box-shadow:0 0 0 1px #5fb4ff59,0 0 60px -14px #2f7bffcc!important}
+/* 23/11 (Nico): the glass pill over the book, two lines, it only floats up and down a little, very slowly */
+.oi--mx .oipill{position:absolute;left:0;right:0;bottom:calc(100% + 168px);width:max-content;max-width:calc(100% - 8px);margin:0 auto;padding:10px 22px;border-radius:22px;font:700 15px/1.38 Montserrat,-apple-system,sans-serif;color:#fff;text-wrap:balance;background:linear-gradient(180deg,#14213dd9,#0b1428d9);box-shadow:inset 0 0 0 1px #5fb4ff66,0 0 26px -6px #2f7bffaa;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);animation:oipill 6s ease-in-out infinite}
+@keyframes oipill{50%{transform:translateY(-4px)}}
+.oi--mx.oi--pill .x3-kick{text-wrap:balance}
+.oidim.oi--mx.oi--pill{padding-top:290px}
+@media (width<=899px){.oi--mx .oipill{bottom:calc(100% + 134px);font-size:14px}.oidim.oi--mx.oi--pill{padding-top:236px}}
+@media (prefers-reduced-motion:reduce){.oi--mx .oipill{animation:none}}
 html,body{background:#040914}
 @font-face{font-family:Montserrat;src:url(/fonts/montserrat-latin.woff2) format("woff2");font-weight:500 900;font-display:swap}
 .x3{--bg:#040914;--bg2:#0d1117;--ink:#fff;--mute:rgba(255,255,255,.66);--line:rgba(255,255,255,.14);--blue:#2f7bff;--blue2:#2f7bff;background:var(--bg);color:var(--ink);font-family:Montserrat,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
