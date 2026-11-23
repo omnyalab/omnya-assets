@@ -8,11 +8,15 @@ export const LAUNCH = [
   { id: 'e1', at: '2026-11-20T17:00:00Z', list: 'consent' }, // 20/11 Nico: «oggi si inizia, mai domani» (was Monday 23/11)
   { id: 'e1b', at: '2026-11-23T17:00:00Z', list: 'consent', hold: true }, // 23/11 Nico: «si inizia DA OGGI»; goes only after &lgo=e1b
   { id: 'e2', at: '2026-11-25T17:00:00Z', list: 'consent' },
-  { id: 'e3', at: '2026-11-27T17:00:00Z', list: 'club' },
-  { id: 'e4', at: '2026-11-28T17:00:00Z', list: 'consent', seats: true },
-  { id: 'e5', at: '2026-11-30T17:00:00Z', list: 'consent', seats: true },
-  { id: 'e6', at: '2026-12-03T17:00:00Z', list: 'consent', seats: true },
-  { id: 'e7', at: '2026-12-04T17:00:00Z', list: 'consent', seats: true },
+  // 23/11 (Nico: «mandami tutto così vediamo»): the rest of the launch, each held until &lgo=<id>
+  { id: 'e2b', at: '2026-11-26T17:00:00Z', list: 'consent', hold: true },
+  { id: 'e3b', at: '2026-11-27T17:00:00Z', list: 'consent', hold: true }, // everyone, before the club list of the same day
+  { id: 'e3', at: '2026-11-27T17:00:00Z', list: 'club', hold: true },
+  { id: 'e4a', at: '2026-11-28T08:00:00Z', list: 'club', seats: true, hold: true }, // 9:00 Rome, when the list gets in
+  { id: 'e4', at: '2026-11-28T17:00:00Z', list: 'consent', seats: true, hold: true },
+  { id: 'e5', at: '2026-11-30T17:00:00Z', list: 'consent', seats: true, hold: true },
+  { id: 'e6', at: '2026-12-03T17:00:00Z', list: 'consent', seats: true, hold: true },
+  { id: 'e7', at: '2026-12-04T17:00:00Z', list: 'consent', seats: true, hold: true },
 ];
 
 const PAGE = 'omnyalab.com/the-3d-future';
@@ -79,61 +83,125 @@ The doors open in 3 days:
 
 Nico`,
   },
+  e2b: {
+    subject: 'What stops the scroll in the first second',
+    img: { src: '/club/mail/vault-files.jpg', alt: 'One build from the Vault of THE 3D FUTURE: the build kit, the exact prompts, the 3D scene and the Full guide' },
+    body: `Hey {name},
+
+This week we measured our own reels, and one thing stood out: when the first second shows a price or a result, far fewer people swipe away than when it only shows the building. It's tempting to save the best part for the end, and that's exactly where most viewers are already gone.
+
+The fix is to plan the video backwards: the result first, then how you got there. It's how we build every reel, and inside THE 3D FUTURE you get the files behind them.
+
+{img}
+
+This is one build from the Vault: the kit that builds it again in your colours, the exact prompts we used, the 3D scene and the Full guide that explains every step. On Saturday you get six of them, and a new one every Friday, next to the step-by-step video courses, starting with your own tower where buyers choose their floor.
+
+If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. The doors open in 2 days:
+{link}
+
+Nico`,
+  },
+  e3b: {
+    subject: 'Black Friday ends tonight',
+    img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
+    body: `Hey {name},
+
+Black Friday ends tonight, and tomorrow THE 3D FUTURE opens. The people on the list get in first, and the list is still open tonight:
+{link}
+
+{img}
+
+One last tip before the doors open: before we build a real place in 3D, we look up the real heights of the buildings around it, because a tower that's even a little too short looks fake next to its neighbours. That's the level of detail of the courses inside.
+
+If you join by Friday 4 December you pay €9 a month, locked for as long as you stay, and if you're one of the first 100 you also get these as a gift: our three playbooks and the full 3D AI Mastery course. After Friday it's €19.
+
+Nico`,
+  },
   e3: {
     subject: "You're first tomorrow",
+    img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name}, we said we'd email you today, so here it is.
 
-One thing first: before we build a real place in 3D, we look up the real heights of the buildings around it, because a tower that's even a little too short looks fake next to its neighbours.
+Tomorrow the doors of THE 3D FUTURE open, and you're on the list, so you get in before everyone else: first in line for the 100 founders' gifts, our three playbooks and the full 3D AI Mastery course, with €9 a month locked for as long as you stay.
 
-Tomorrow at 9:00 (Rome) the doors of THE 3D FUTURE open for the list only, nine hours before everyone else, and you're on the list, so your link works from 9:00:
+{img}
+
+One last thing before you build: before we make a real place in 3D, we look up the real heights of the buildings around it, because a tower that's even a little too short looks fake next to its neighbours. Your link works from tomorrow:
+{link}
+
+Nico`,
+  },
+  e4a: {
+    subject: 'The doors are open for you',
+    img: { src: '/club/mail/doors.jpg', alt: 'THE 3D FUTURE: doors are open, your first course is your own tower, floor by floor' },
+    body: `Hey {name},
+
+THE 3D FUTURE is open, and you're on the list, so you're in before everyone else. Right now {seats_left} of the 100 founders' gifts are still there: our three playbooks and the full 3D AI Mastery course go to the first 100 who join.
+
+{img}
+
+Inside you start with the step-by-step course where you build your own tower, where buyers choose their floor, then a new build every Friday, six builds from our reels with their files and Claude skills, and my comments on your work every Monday. It's €9 a month, locked for as long as you stay:
 {link}
 
 Nico`,
   },
   e4: {
     subject: 'Doors are open',
+    img: { src: '/club/mail/doors.jpg', alt: 'THE 3D FUTURE: doors are open, your first course is your own tower, floor by floor' },
     body: `Hey {name},
 
-When you turn a 3D into a photo, give the model pictures of the real materials, the actual stone and the actual wood, and never a nice photo of someone else's house, or it copies that house and forgets yours.
+THE 3D FUTURE is open, and right now {seats_left} of the 100 founders' gifts are left (the counter on the page is the real one).
 
-THE 3D FUTURE is open now, and {seats_left} of the 100 founders' gifts are left (the counter on the page is the real one). The moment you join you get the first step-by-step video course, your own tower in your colours where buyers choose their floor, then a new course every Friday, six builds from our reels with their files, prompts and Claude skills, the House Builder skill (€14.99 on our site), which stays yours even if you leave, and my comments on your work every Monday.
+{img}
 
-If you join by Friday 4 December at 23:59 (Rome) you pay €9 a month, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. After Friday it's €19:
+When you turn a 3D into a photo, give the model pictures of the real materials, the actual stone and the actual wood, and never a nice photo of someone else's house, or it copies that house and forgets yours. That's the level of detail of the courses inside.
+
+The moment you join you get the first step-by-step video course, your own tower in your colours where buyers choose their floor, then a new course every Friday, six builds from our reels with their files, prompts and Claude skills, every Full guide, the House Builder skill and my comments on your work every Monday. If you join by Friday 4 December you pay €9 a month, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. After Friday it's €19.
+
+And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us. You can cancel in one tap whenever you want.
+
 {link}
 
-Nico
-
-P.S. You can cancel in one tap whenever you want.`,
+Nico`,
   },
   e5: {
     subject: "Why our 3D videos don't wobble",
+    img: { src: '/club/mail/inside-v2.jpg', alt: 'Inside THE 3D FUTURE: the step-by-step course to build your own tower where buyers choose their floor, and a new build every Friday' },
     body: `Hey {name},
 
-When we turn a 3D into a video we make one clip at a time, each one a single straight move into the building with the fog moving, and every new clip starts from the real last frame of the one before, which is why the camera never jumps between shots.
+When a video made from a 3D comes out crooked, most people make it again and pay again. We measured our own clips and found the real cause: the video copies the camera of the 3D underneath, wobble included. Fix the camera move in the 3D, one straight move into the building, and the video comes out straight, at no cost.
 
-All our clips are made like this, and the files of the stadium that did 2.36M views are inside THE 3D FUTURE, with the prompts and the skill that builds it again in your own colours. {seats_left} of the 100 founders' gifts are left, and the €9 price ends on Friday at 23:59 (Rome):
+{img}
+
+That's the kind of thing the step-by-step courses inside THE 3D FUTURE show you on real builds, starting with your own tower where buyers choose their floor. {seats_left} of the 100 founders' gifts are left, and the €9 price ends on Friday:
 {link}
 
 Nico`,
   },
   e6: {
     subject: 'Closes tomorrow',
+    img: { src: '/club/mail/vault-files.jpg', alt: 'One build from the Vault of THE 3D FUTURE: the build kit, the exact prompts, the 3D scene and the Full guide' },
     body: `Hey {name},
 
 If you put people in an architecture shot, keep them as a blur, a silhouette against the light or out of focus, because a sharp face is the first thing that makes a render look fake.
 
-THE 3D FUTURE closes tomorrow, Friday 4 December, at 23:59 (Rome), and {seats_left} of the 100 founders' gifts are left. Once the doors close they stay closed until the next round, where it's €19:
+{img}
+
+THE 3D FUTURE closes tomorrow, Friday 4 December, and {seats_left} of the 100 founders' gifts are left. If you join by tomorrow you pay €9 a month, locked for as long as you stay; once the doors close they stay closed until the next round, where it's €19:
 {link}
 
 Nico`,
   },
   e7: {
-    subject: 'Tonight at 23:59',
+    subject: 'Closes tonight',
+    img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name},
 
-If you need the camera to move out instead of in, don't make a new clip, just play the one you have backwards: same light, same building, and it costs nothing.
+If you need the camera to move out instead of in, don't make a new clip: play the one you have backwards. Same light, same building, and it costs nothing.
 
-The doors of THE 3D FUTURE close tonight at 23:59 (Rome), and the €9 price goes with them ({seats_left} of the 100 founders' gifts are still left):
+{img}
+
+The doors of THE 3D FUTURE close tonight, and the €9 price goes with them ({seats_left} of the 100 founders' gifts are still left):
 {link}
 
 Nico`,
@@ -156,7 +224,7 @@ export function renderLaunch(id, p, { seatsLeft } = {}) {
   if (v === 'b') body = body.replace(/THE 3D FUTURE/g, '3D THAT SELLS');
   const subject = typeof t.subject === 'string' ? t.subject : t.subject[v];
   const off = unsubUrl(p.email);
-  const why = id === 'e3'
+  const why = LAUNCH.find((x) => x.id === id)?.list === 'club' // the club list's own mails (e3, e4a)
     ? `You're getting this because you joined the list of ${v === 'b' ? '3D THAT SELLS' : 'THE 3D FUTURE'}. Omnya Lab, Venice, Italy.`
     : "You're getting this because you asked for one of our guides on omnyalab.com and said yes to updates. Omnya Lab, Venice, Italy.";
   const paras = body.split('\n\n');

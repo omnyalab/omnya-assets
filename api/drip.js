@@ -243,8 +243,10 @@ async function launchTick(now) {
   const late = await launchLater(now).catch((e) => ({ laterError: String(e.message || e) }));
   if (late) console.log('[launch] later', JSON.stringify(late));
   const d = dayOf(now);
-  const m = LAUNCH.find((x) => x.at.slice(0, 10) === d);
-  if (!m || (await redis('GET', `${LK}${m.id}:done`))) return null;
+  // 23/11: a day can have two mails (the club list and everyone): the first one not done yet, in the order of LAUNCH
+  let m = null;
+  for (const x of LAUNCH.filter((y) => y.at.slice(0, 10) === d)) if (!(await redis('GET', `${LK}${x.id}:done`))) { m = x; break; }
+  if (!m) return null;
   if (m.hold && (await redis('GET', `${LK}${m.id}:go`)) !== '1') return { launch: m.id, held: true }; // waits for Nico's go (&lgo=<id>)
   if (Number(await redis('SET', `${LK}lock`, String(now), 'NX', 'EX', 55)) !== 1 && (await redis('GET', `${LK}lock`)) !== String(now)) return { launch: m.id, busy: true };
   try {
