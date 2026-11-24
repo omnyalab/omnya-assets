@@ -96,7 +96,8 @@ html.ry-bf [data-upgrade]{display:none!important}
     // A price without its link keeps the card at €59, so the page never shows a price it cannot charge.
     // 20/11 (Nico): who bought the Plane Builder Skill at €1.99 gets a super discount, Everything at €44 (the €44 upgrade link
     // that already exists), with its own line: it is more than "what you paid comes off"
-    const CREDIT0 = { 199: [44, 'https://buy.stripe.com/fZu6oGbgVfYIg4meyN8so0X', 'You just got the skill, so for you it’s €44 instead of €59'], 599: [53, 'https://buy.stripe.com/bJedR8acRbIs3hAbmB8so0F'], 999: [49, 'https://buy.stripe.com/8x2eVcckZ5k43hAbmB8so0W'], 1499: [44, 'https://buy.stripe.com/fZu6oGbgVfYIg4meyN8so0X'], 1999: [39, 'https://buy.stripe.com/bJeeVc84J7sccSafCR8so0Y'] }
+    // 24/11 (Nico: «mettila anche per chi paga 3,99»): the same €44 for who bought the skill at €3.99
+    const CREDIT0 = { 199: [44, 'https://buy.stripe.com/fZu6oGbgVfYIg4meyN8so0X', 'You just got the skill, so for you it’s €44 instead of €59'], 399: [44, 'https://buy.stripe.com/fZu6oGbgVfYIg4meyN8so0X', 'You just got the skill, so for you it’s €44 instead of €59'], 599: [53, 'https://buy.stripe.com/bJedR8acRbIs3hAbmB8so0F'], 999: [49, 'https://buy.stripe.com/8x2eVcckZ5k43hAbmB8so0W'], 1499: [44, 'https://buy.stripe.com/fZu6oGbgVfYIg4meyN8so0X'], 1999: [39, 'https://buy.stripe.com/bJeeVc84J7sccSafCR8so0Y'] }
     const CREDIT = box.dataset.credit ? JSON.parse(box.dataset.credit) : CREDIT0, LABEL = box.dataset.label || 'Get everything', WAS = +box.dataset.was || 260
     window.__bfCredit = cents => { const c = CREDIT[cents]; if (!c || !c[1]) return
       const paid = '€' + (cents / 100).toFixed(2)
