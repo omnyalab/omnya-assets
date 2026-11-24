@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<base href="/demo/dg-tower-dubai/">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Trump Tower Dubai · Residences · Interactive demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Demo per Sami (Dar Global), 24/11/2026. Foto 1 la torre al tramonto: il piano si accende, un clic, clip 1 dentro fino al divano (foto 2),
+   «Welcome», Continue → clip 2 verso il salotto in fondo (foto 3), Back to the tower → clip al contrario. Stile Concierge (card D5) + welcome W2. */
+:root{ --av:#f4ecdf; --oro1:#f7e9bd; --oro2:#c9a055; --oro3:#f4da93; --oro4:#9a7232; --amb:#ffb648;
+  --serif:"Bodoni Moda", Didot, "Bodoni 72", Georgia, serif; --sans:Inter, -apple-system, "SF Pro Text", "Segoe UI", system-ui, sans-serif; }
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#07060a;overflow:hidden;color:var(--av);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+#wrap{position:fixed;inset:0;overflow:hidden;contain:strict}
+#stage{position:absolute;transform-origin:0 0;overflow:hidden;background:#07060a}
+#stage img,#stage video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none}
+.fade{transition:opacity .35s ease}
+.off{opacity:0;pointer-events:none}
+/* il piano che si accende sulla foto 1 (coordinate in % della foto 3840x2160) */
+#floor{position:absolute;left:46.2%;width:12.8%;top:64.55%;height:2.25%;cursor:pointer}
+#floor .glow{position:absolute;inset:-30% -2%;background:linear-gradient(90deg,rgba(255,182,72,0) 0%,rgba(255,190,90,.95) 14%,rgba(255,206,130,1) 50%,rgba(255,190,90,.95) 86%,rgba(255,182,72,0) 100%);
+  mix-blend-mode:screen;filter:blur(6px);opacity:.6;animation:respiro 2.6s ease-in-out infinite;transition:opacity .25s}
+#floor .riga{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.9) 12%,rgba(255,255,255,.9) 88%,rgba(255,255,255,0));opacity:.55;transition:opacity .25s}
+#floor .riga.su{top:0}#floor .riga.giu{bottom:0}
+#floor .tag{position:absolute;left:103%;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:26px;white-space:nowrap;pointer-events:none;opacity:.9;transition:opacity .25s}
+#floor .tag i{display:block;width:150px;height:3px;background:var(--av);box-shadow:0 2px 10px rgba(0,0,0,.5)}
+#floor .tag span{font:italic 400 76px/1 var(--serif);color:var(--av);text-shadow:0 4px 30px rgba(0,0,0,.7)}
+#floor:hover .glow,#floor.acceso .glow{opacity:1;animation:none}
+#floor:hover .riga,#floor.acceso .riga{opacity:1}
+@keyframes respiro{0%,100%{opacity:.45}50%{opacity:.8}}
+/* firma Omnya al centro, come su tutte le demo (sopra le immagini, sotto le card) */
+.omark{position:fixed;left:50%;top:50%;z-index:2;width:clamp(170px,30vw,560px);aspect-ratio:831/175;transform:translate(-50%,-50%);opacity:.3;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.35)) drop-shadow(0 2px 14px rgba(0,0,0,.4));pointer-events:none;background:url(assets/omnya.svg) center/contain no-repeat}
+/* marchio in alto a sinistra */
+#marchio{position:fixed;z-index:5;left:max(28px,env(safe-area-inset-left));top:max(26px,env(safe-area-inset-top));display:flex;align-items:center;gap:16px;text-shadow:0 1px 2px rgba(0,0,0,.6),0 2px 18px rgba(0,0,0,.65)}
+#marchio::before{content:"";position:absolute;left:-60px;top:-60px;width:620px;height:200px;background:radial-gradient(ellipse at 30% 45%,rgba(0,0,0,.42),rgba(0,0,0,0) 65%);z-index:-1;pointer-events:none}
+#marchio .t{font:500 clamp(17px,1.5vw,24px)/1 var(--serif);letter-spacing:.42em}
+#marchio .s{font:500 10.5px/1 var(--sans);letter-spacing:.32em;opacity:.78;margin-top:9px}
+#marchio .bar{width:1px;height:44px;background:rgba(244,236,223,.6)}
+#marchio .dg{font:600 11px/1 var(--sans);letter-spacing:.34em;opacity:.85}
+/* barra Concierge in basso */
+#card{position:fixed;z-index:5;left:max(48px,env(safe-area-inset-left));right:max(48px,env(safe-area-inset-right));bottom:max(40px,calc(env(safe-area-inset-bottom) + 18px));
+  display:flex;align-items:center;gap:clamp(18px,2.4vw,40px);padding:22px 26px 22px 34px;border-radius:18px;background:rgba(10,9,8,.46);
+  -webkit-backdrop-filter:blur(28px) saturate(1.1) brightness(.75);backdrop-filter:blur(28px) saturate(1.1) brightness(.75);border:1px solid rgba(244,236,223,.26);box-shadow:0 18px 50px rgba(0,0,0,.45)}
+#card .nome{min-width:0}
+#card .nome b{display:block;font:italic 400 clamp(26px,2.4vw,40px)/1.05 var(--serif);font-weight:400}
+#card .nome small{display:block;font:500 10.5px/1 var(--sans);letter-spacing:.3em;opacity:.72;margin-top:10px}
+#card .cols{display:flex;gap:0;flex:1;min-width:0;justify-content:center}
+#card .col{padding:0 clamp(14px,1.6vw,28px);border-left:1px solid rgba(244,236,223,.22)}
+#card .col:first-child{border-left:0}
+#card .col em{display:block;font:500 10px/1 var(--sans);letter-spacing:.28em;opacity:.55;font-style:normal}
+#card .col span{display:block;font:400 clamp(15px,1.2vw,20px)/1.2 var(--serif);letter-spacing:.06em;margin-top:9px;white-space:nowrap}
+.btn{appearance:none;border:0;cursor:pointer;font:600 13px/1 var(--sans);letter-spacing:.22em;text-transform:uppercase;border-radius:999px;padding:20px 30px;white-space:nowrap}
+.btn.pieno{background:var(--av);color:#111;box-shadow:0 10px 26px rgba(0,0,0,.35)}
+.btn.pieno:hover{background:#fff}
+.btn.vetro{background:rgba(14,12,10,.38);color:var(--av);border:1px solid rgba(244,236,223,.8);-webkit-backdrop-filter:blur(20px) brightness(.7);backdrop-filter:blur(20px) brightness(.7)}
+.btn.vetro:hover{background:rgba(244,236,223,.14)}
+.btn:focus-visible{outline:2px solid var(--amb);outline-offset:3px}
+/* welcome W2: invito d'oro */
+#welcome{position:fixed;z-index:4;left:0;right:0;top:0;padding-top:16vh;text-align:center;pointer-events:none;transform:translateY(16px);transition:opacity 1.2s ease,transform 1.4s ease}
+#welcome.on{transform:none}
+#welcome::before{content:"";position:absolute;left:50%;top:0;width:1300px;height:560px;transform:translateX(-50%);background:radial-gradient(ellipse at 50% 45%,rgba(10,8,6,.45),rgba(10,8,6,0) 62%);z-index:-1}
+#welcome .w1{font:500 clamp(12px,1vw,17px)/1 var(--sans);letter-spacing:.62em;color:#f1d99a;text-shadow:0 2px 18px rgba(0,0,0,.5)}
+#welcome .w2{font:400 clamp(26px,3.4vw,58px)/1.1 var(--serif);letter-spacing:.12em;color:#fff8ec;margin-top:22px;text-shadow:0 3px 26px rgba(0,0,0,.55)}
+#welcome .filo{display:flex;align-items:center;justify-content:center;gap:18px;margin:22px auto 0}
+#welcome .filo i{display:block;width:clamp(90px,12vw,205px);height:1px;background:linear-gradient(90deg,var(--oro4),var(--oro1),var(--oro2))}
+#welcome .filo b{display:block;width:8px;height:8px;transform:rotate(45deg);background:linear-gradient(135deg,var(--oro1),var(--oro2) 50%,var(--oro3))}
+#welcome .w3{font:500 clamp(10px,.8vw,12px)/1 var(--sans);letter-spacing:.42em;color:rgba(246,234,210,.85);margin-top:20px;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+#azioni{position:fixed;z-index:5;left:0;right:0;bottom:max(46px,calc(env(safe-area-inset-bottom) + 24px));display:flex;justify-content:center;gap:14px}
+#velo{position:fixed;inset:0;z-index:9;background:#07060a;display:flex;align-items:center;justify-content:center;transition:opacity .8s}
+#velo div{font:500 11px/1 var(--sans);letter-spacing:.4em;opacity:.7}
+@media (max-width:900px),(max-aspect-ratio:1/1){
+  #card{left:14px;right:14px;bottom:max(16px,env(safe-area-inset-bottom));flex-wrap:wrap;padding:18px;gap:14px}
+  #card .cols{order:3;flex-basis:100%;display:grid;grid-template-columns:1fr 1fr;gap:12px 0}
+  #card .col{padding:0 0 0 12px;border-left:1px solid rgba(244,236,223,.22)}
+  #card .col:first-child{border-left:1px solid rgba(244,236,223,.22)}
+  #card .col span{font-size:13.5px;white-space:normal}
+  #card .nome b{font-size:26px}
+  #card .btn{flex-basis:100%;padding:17px 20px}
+  #marchio .bar,#marchio .dg{display:none}
+  #floor .tag{display:none}
+}
+@media (max-width:600px){#card .cols{display:none}#card{padding:16px 16px 14px;gap:12px}#card .nome b{font-size:24px}#card .nome small{margin-top:7px}}
+
+/* ================= PROPOSTE «choose your floor» stile Trump (?ui=U1|U2|U3; U0 = Concierge di prima) ================= */
+:root{--oro:linear-gradient(100deg,#9a7232 0%,#f4da93 32%,#c9a055 58%,#f7e9bd 82%,#9a7232 100%);--orol:#e2c27e}
+.scelta{display:none}
+body.ui-U0 #card{display:flex}
+body.ui-U1 #u1, body.ui-U3 #u3{display:block}
+body.ui-U2 #u2{display:flex}
+body:not(.ui-U0) #marchio{display:none}
+body:not(.ui-U0) #card{display:none}
+body:not(.ui-U0) #welcome::before{width:1500px;height:620px;background:radial-gradient(ellipse at 50% 45%,rgba(8,6,4,.62),rgba(8,6,4,0) 64%)}
+.oro-t{background:var(--oro);-webkit-background-clip:text;background-clip:text;color:transparent}
+.btn.oro{background:var(--oro);color:#1a1208;box-shadow:0 12px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.5)}
+.btn.oro:hover{filter:brightness(1.08)}
+.btn.filo{background:rgba(10,8,6,.35);color:#f3dfa8;border:1px solid #c9a055}
+.btn.filo:hover{background:rgba(201,160,85,.16)}
+.rombo{display:inline-block;width:7px;height:7px;transform:rotate(45deg);background:var(--oro)}
+/* il piano in oro */
+body:not(.ui-U0) #floor .glow{background:linear-gradient(90deg,rgba(201,160,85,0) 0%,rgba(240,205,130,.95) 14%,rgba(255,226,160,1) 50%,rgba(240,205,130,.95) 86%,rgba(201,160,85,0) 100%)}
+body:not(.ui-U0) #floor .riga{background:linear-gradient(90deg,rgba(201,160,85,0),#f4da93 12%,#f7e9bd 50%,#f4da93 88%,rgba(201,160,85,0));height:4px}
+body:not(.ui-U0) #floor .tag span{font:500 58px/1 var(--serif);letter-spacing:.22em;background:var(--oro);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 4px 18px rgba(0,0,0,.7))}
+body:not(.ui-U0) #floor .tag i{background:var(--oro);height:4px}
+body:not(.ui-U0) #welcome .w2{background:var(--oro);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 3px 20px rgba(0,0,0,.6))}
+/* U1 · Gold Standard: card di vetro nero a destra, filo d'oro */
+#u1{position:fixed;z-index:5;right:max(56px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);width:410px;padding:34px 34px 30px;border-radius:20px;
+  background:linear-gradient(160deg,rgba(14,11,8,.78),rgba(14,11,8,.58));-webkit-backdrop-filter:blur(26px) saturate(1.1);backdrop-filter:blur(26px) saturate(1.1);
+  border:1px solid rgba(201,160,85,.55);box-shadow:0 30px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,236,190,.12)}
+#u1 .ey{font:600 10px/1.4 var(--sans);letter-spacing:.34em;color:var(--orol)}
+#u1 h2{margin:16px 0 0;font:italic 400 50px/1 var(--serif)}
+#u1 .sub{margin-top:12px;font:500 10.5px/1 var(--sans);letter-spacing:.3em;color:rgba(244,236,223,.75)}
+#u1 .sep{display:flex;align-items:center;gap:12px;margin:24px 0 18px}#u1 .sep i{flex:1;height:1px;background:linear-gradient(90deg,rgba(201,160,85,.1),#c9a055,rgba(201,160,85,.1))}
+#u1 dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:13px 18px;align-items:baseline}
+#u1 dt{font:600 9.5px/1 var(--sans);letter-spacing:.28em;color:rgba(226,194,126,.85)}
+#u1 dd{margin:0;text-align:right;font:400 19px/1.15 var(--serif);color:#fbf3e4}
+#u1 .btn{width:100%;margin-top:28px;padding:20px}
+/* U2 · Fifth Avenue: fascia nera in basso col marchio TRUMP */
+#u2{position:fixed;z-index:5;left:0;right:0;bottom:0;align-items:center;gap:clamp(20px,3vw,56px);padding:46px max(56px,env(safe-area-inset-right)) max(40px,calc(env(safe-area-inset-bottom) + 24px)) max(56px,env(safe-area-inset-left));
+  background:linear-gradient(to top,rgba(6,5,4,.92),rgba(6,5,4,.72) 62%,rgba(6,5,4,0))}
+#u2::before{content:"";position:absolute;left:56px;right:56px;top:30px;height:1px;background:linear-gradient(90deg,rgba(201,160,85,0),#c9a055 20%,#f4da93 50%,#c9a055 80%,rgba(201,160,85,0))}
+#u2 .wm b{display:block;font:500 60px/1 var(--serif);letter-spacing:.34em}
+#u2 .wm small{display:block;margin-top:10px;font:600 10.5px/1 var(--sans);letter-spacing:.38em;color:var(--orol)}
+#u2 .spec{flex:1;display:flex;justify-content:center;gap:0}
+#u2 .spec div{padding:0 clamp(16px,2vw,34px);border-left:1px solid rgba(201,160,85,.35)}#u2 .spec div:first-child{border-left:0}
+#u2 .spec em{display:block;font:600 9.5px/1 var(--sans);letter-spacing:.3em;color:rgba(226,194,126,.85);font-style:normal}
+#u2 .spec span{display:block;margin-top:10px;font:400 21px/1.1 var(--serif);color:#fbf3e4;white-space:nowrap}
+#u2 .nm{font:italic 400 30px/1 var(--serif);color:#fbf3e4;margin-top:4px}
+/* U3 · Private Elevator: pulsantiera dei livelli a destra (zone vere della brochure, pag. 15) */
+#u3{position:fixed;z-index:5;right:max(48px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);width:400px;padding:28px 26px 24px;border-radius:22px;
+  background:linear-gradient(170deg,rgba(18,14,10,.82),rgba(10,8,6,.66));-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1px solid rgba(201,160,85,.45);box-shadow:0 30px 80px rgba(0,0,0,.55)}
+#u3 .ey{display:flex;justify-content:space-between;align-items:center;font:600 10px/1 var(--sans);letter-spacing:.34em;color:var(--orol)}
+#u3 h3{margin:14px 0 18px;font:400 30px/1.05 var(--serif);letter-spacing:.06em;color:#fbf3e4}
+#u3 ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+#u3 li{display:flex;align-items:center;gap:14px;padding:12px 14px;border-radius:14px;border:1px solid rgba(201,160,85,.18);color:rgba(244,236,223,.5);font:500 11px/1.2 var(--sans);letter-spacing:.2em}
+#u3 li .b{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid rgba(201,160,85,.45);display:grid;place-items:center}
+#u3 li .b::after{content:"";width:7px;height:7px;border-radius:50%;background:rgba(201,160,85,.35)}
+#u3 li small{margin-left:auto;font-size:9px;letter-spacing:.24em;opacity:.7}
+#u3 li.on{color:#1a1208;background:var(--oro);border-color:transparent;font-weight:700;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.4)}
+#u3 li.on .b{border-color:#1a1208}#u3 li.on .b::after{background:#1a1208;box-shadow:0 0 0 4px rgba(26,18,8,.18)}
+#u3 .det{display:flex;justify-content:space-between;margin:18px 4px 0;font:400 16px/1.2 var(--serif);color:#fbf3e4}
+#u3 .det em{display:block;font:600 9px/1 var(--sans);letter-spacing:.28em;color:rgba(226,194,126,.85);font-style:normal;margin-bottom:7px}
+#u3 .btn{width:100%;margin-top:20px;padding:19px}
+@media (max-width:900px),(max-aspect-ratio:1/1){
+  #u1,#u3{left:14px;right:14px;top:auto;bottom:max(14px,env(safe-area-inset-bottom));transform:none;width:auto;padding:20px}
+  #u1 h2{font-size:34px}#u1 dl,#u1 .sep{display:none}#u1 .btn{margin-top:16px}
+  #u3 ul li:not(.on){display:none}#u3 h3{font-size:22px;margin:10px 0 12px}#u3 .det{display:none}
+  #u2{flex-wrap:wrap;padding:30px 18px max(18px,env(safe-area-inset-bottom))}#u2::before{left:18px;right:18px;top:14px}#u2 .wm b{font-size:36px}#u2 .spec{display:none}#u2 .btn{flex-basis:100%}
+}
+
+/* ===== selettore per appartamento (A sinistra, B destra) + fascia Fifth Avenue ===== */
+#units{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#units polygon{fill:url(#oroG);fill-opacity:0;stroke:url(#oroS);stroke-opacity:0;stroke-width:4;mix-blend-mode:screen;cursor:pointer;transition:fill-opacity .22s,stroke-opacity .22s}
+#units polygon.hov{fill-opacity:.55;stroke-opacity:.9}
+#units polygon.sel{fill-opacity:.7;stroke-opacity:1}
+#units polygon.sel.attira{animation:attira 2.4s ease-in-out infinite}
+@keyframes attira{0%,100%{fill-opacity:.38}50%{fill-opacity:.8}}
+#units #tag{transition:opacity .25s;filter:drop-shadow(0 4px 16px rgba(0,0,0,.7));pointer-events:none}
+body.ui-U2 #floor{display:none}
+body:not(.ui-U2) #units #ug{display:none}
+#u2 .sel{flex:1;display:flex;align-items:center;gap:clamp(18px,2vw,34px);min-width:0}
+#u2 .lv{display:flex;align-items:flex-start;gap:6px;line-height:.8}
+#u2 .lv b{font:400 clamp(64px,6vw,96px)/.8 var(--serif);background:var(--oro);-webkit-background-clip:text;background-clip:text;color:transparent}
+#u2 .lv i{font:500 clamp(22px,2vw,32px)/1 var(--serif);color:#f3dfa8;font-style:normal;margin-top:4px}
+#u2 .lv small{display:block;font:600 9.5px/1 var(--sans);letter-spacing:.32em;color:rgba(226,194,126,.85);margin-bottom:12px}
+#u2 .tx{min-width:0;border-left:1px solid rgba(201,160,85,.35);padding-left:clamp(18px,2vw,34px)}
+#u2 .tx .nm{font:italic 400 clamp(26px,2.3vw,38px)/1.05 var(--serif);color:#fbf3e4;margin:0}
+#u2 .tx .fx{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:12px;font:600 10px/1 var(--sans);letter-spacing:.26em;color:rgba(244,236,223,.75)}
+#u2 .tx .fx span{display:flex;align-items:center;gap:10px}#u2 .tx .fx span::before{content:"";width:5px;height:5px;transform:rotate(45deg);background:#c9a055}
+#u2 .dx{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+#u2 .dx .nota{font:600 9.5px/1 var(--sans);letter-spacing:.26em;color:rgba(226,194,126,.75)}
+#u2 .btn.spento{opacity:.55;cursor:default;filter:saturate(.4)}
+#hint{position:fixed;z-index:5;left:0;right:0;bottom:calc(var(--h2,190px) + 6px);text-align:center;font:600 10.5px/1 var(--sans);letter-spacing:.4em;color:rgba(243,223,168,.9);text-shadow:0 2px 12px rgba(0,0,0,.8);pointer-events:none}
+body:not(.ui-U2) #hint{display:none}
+@media (max-width:900px),(max-aspect-ratio:1/1){ #u2 .tx .fx{display:none} #u2 .lv b{font-size:58px} #u2 .sel{flex-basis:100%} #u2 .dx{flex-basis:100%;align-items:stretch} #hint{display:none} }
+@media (prefers-reduced-motion:reduce){#floor .glow{animation:none;opacity:.6}}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage">
+  <img id="f1" src="assets/F1.jpg" alt="Trump International Hotel & Tower Dubai at sunset">
+  <img id="f2" class="fade off" src="assets/F2.jpg" alt="The penthouse living room">
+  <img id="f3" class="fade off" src="assets/F3.jpg" alt="The penthouse lounge">
+  <svg id="units" viewBox="0 0 3840 2160" aria-label="Choose your residence"><defs>
+    <linearGradient id="oroG" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#c9a055" stop-opacity=".25"/><stop offset=".18" stop-color="#f4da93"/><stop offset=".5" stop-color="#fff1c8"/><stop offset=".82" stop-color="#f4da93"/><stop offset="1" stop-color="#c9a055" stop-opacity=".25"/></linearGradient>
+    <linearGradient id="oroS" x1="0" x2="1"><stop offset="0" stop-color="#9a7232"/><stop offset=".35" stop-color="#f4da93"/><stop offset=".6" stop-color="#c9a055"/><stop offset="1" stop-color="#f7e9bd"/></linearGradient></defs>
+    <g id="ug"></g><g id="tag" opacity="0"><line id="tagL" stroke="url(#oroS)" stroke-width="4"/><text id="tagT" font-family="Bodoni Moda, Didot, serif" font-size="72" fill="url(#oroS)" letter-spacing="6"></text></g></svg>
+  <video id="v1" class="off" src="assets/clipA.mp4" muted playsinline preload="auto"></video>
+  <video id="v1b" class="off" src="assets/clipB.mp4" muted playsinline preload="auto"></video>
+  <video id="v2" class="off" preload="none" data-src="assets/clip2.mp4" muted playsinline></video>
+  <video id="r2" class="off" preload="none" data-src="assets/clip2_rev.mp4" muted playsinline></video>
+  <video id="r1b" class="off" preload="none" data-src="assets/clipB_rev.mp4" muted playsinline></video>
+  <video id="r1" class="off" preload="none" data-src="assets/clipA_rev.mp4" muted playsinline></video>
+  <div id="floor" role="button" tabindex="0" aria-label="Enter the penthouse"><div class="glow"></div><div class="riga su"></div><div class="riga giu"></div><div class="tag"><i></i><span>The Penthouse</span></div></div>
+</div></div>
+<div class="omark" aria-hidden="true"></div>
+
+<div id="marchio" class="fade">
+  <div><div class="t">TRUMP TOWER</div><div class="s">DUBAI · SHEIKH ZAYED ROAD</div></div>
+  <div class="bar"></div><div class="dg">DARGLOBAL</div>
+</div>
+
+<div id="card" class="fade scelta">
+  <div class="nome"><b>The Penthouse</b><small>DUPLEX · ONLY TWO</small></div>
+  <div class="cols">
+    <div class="col"><em>AREA</em><span>578.73 M²</span></div>
+    <div class="col"><em>TERRACE</em><span>143.70 M²</span></div>
+    <div class="col"><em>VIEW</em><span>BURJ KHALIFA · SEA</span></div>
+    <div class="col"><em>PRICE</em><span>ON REQUEST</span></div>
+  </div>
+  <button class="btn pieno entra" id="entra">Enter the penthouse</button>
+</div>
+
+
+<div id="u1" class="fade scelta">
+  <div class="ey">TRUMP INTERNATIONAL HOTEL &amp; TOWER · DUBAI</div>
+  <h2 class="oro-t">The Penthouse</h2>
+  <div class="sub">DUPLEX · ONLY TWO IN THE TOWER</div>
+  <div class="sep"><i></i><span class="rombo"></span><i></i></div>
+  <dl>
+    <dt>INTERIOR</dt><dd>578.73 m²</dd>
+    <dt>TERRACE</dt><dd>143.70 m²</dd>
+    <dt>PRIVATE POOL</dt><dd>Facing Burj Khalifa</dd>
+    <dt>VIEWS</dt><dd>180°, Downtown to the sea</dd>
+    <dt>PRICE</dt><dd>On request</dd>
+  </dl>
+  <button class="btn oro entra">Enter the penthouse</button>
+</div>
+
+<div id="u2" class="fade scelta">
+  <div class="wm"><b class="oro-t">TRUMP</b><small>RESIDENCES · DUBAI</small></div>
+  <div class="sel">
+    <div class="lv"><div><small>LEVEL</small><b id="lv">70</b></div><i id="un">A</i></div>
+    <div class="tx"><p class="nm" id="nm">The Sunset Residence</p><div class="fx" id="fx"></div></div>
+  </div>
+  <div class="dx"><button class="btn oro" id="go">Step inside &nbsp;→</button><div class="nota" id="nota">SHOW RESIDENCE · OPEN NOW</div></div>
+</div>
+<div id="hint" class="fade">CHOOSE YOUR RESIDENCE ON THE TOWER</div>
+
+<div id="u3" class="fade scelta">
+  <div class="ey"><span>SELECT YOUR LEVEL</span><span class="rombo"></span></div>
+  <h3>Trump Tower Dubai</h3>
+  <ul>
+    <li><span class="b"></span>ROOFTOP POOL<small>PREVIEW</small></li>
+    <li class="on entra" tabindex="0"><span class="b"></span>THE TRUMP PENTHOUSES<small>OPEN</small></li>
+    <li><span class="b"></span>TRUMP RESIDENCES<small>PREVIEW</small></li>
+    <li><span class="b"></span>MEMBERS-ONLY CLUB<small>PREVIEW</small></li>
+    <li><span class="b"></span>THE HOTEL<small>PREVIEW</small></li>
+  </ul>
+  <div class="det"><div><em>INTERIOR</em>578.73 m²</div><div><em>TERRACE</em>143.70 m²</div><div><em>VIEW</em>Burj Khalifa</div></div>
+  <button class="btn oro entra">Enter the penthouse</button>
+</div>
+
+<div id="welcome" class="fade off" aria-live="polite">
+  <div class="w1">WELCOME TO</div>
+  <div class="w2" id="w2">THE SUNSET RESIDENCE</div>
+  <div class="filo"><i></i><b></b><i></i></div>
+  <div class="w3" id="w3">LEVEL 70 · TRUMP INTERNATIONAL HOTEL &amp; TOWER · DUBAI</div>
+</div>
+<div id="azioni" class="fade off"></div>
+<div id="velo"><div>LOADING</div></div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const stage = $('stage'), IW = 3840, IH = 2160, TOWER_X = 0.527;
+  function fit() {   // la foto copre lo schermo; in verticale resta centrata sulla torre
+    const vw = innerWidth, vh = innerHeight, s = Math.max(vw / IW, vh / IH), w = IW * s, h = IH * s;
+    let left = vw / 2 - w * TOWER_X; left = Math.min(0, Math.max(vw - w, left));
+    Object.assign(stage.style, { width: IW + 'px', height: IH + 'px', left: left + 'px', top: (vh - h) / 2 + 'px', transform: `scale(${s})` });
+  }
+  addEventListener('resize', fit); fit();
+
+  const Q = new URLSearchParams(location.search), TEMA = (Q.get('ui') || 'U2').toUpperCase();
+  document.body.classList.add('ui-' + TEMA);
+  if (TEMA !== 'U0') document.querySelector('#floor .tag span').textContent = 'THE PENTHOUSE';
+  const scelte = [...document.querySelectorAll('.scelta')];
+  const ui = { card: { classList: { toggle: (c, v) => scelte.forEach(e => e.classList.toggle(c, v)) } }, marchio: $('marchio'), floor: $('floor'), welcome: $('welcome'), azioni: $('azioni') };
+  const show = (el, on) => el.classList.toggle('off', !on);
+  let stato = 'torre', busy = false;
+
+  function play(vid, still, done, da = 0, sfuma = 0) {   // fa partire la clip sopra l'immagine ferma, alla fine mostra la foto d'arrivo (da: salta il fotogramma doppio; sfuma: ms di dissolvenza sulla foto d'arrivo)
+    vid.currentTime = da;
+    const p = vid.play(); if (p && p.catch) p.catch(() => {});
+    const on = () => { vid.classList.remove('off'); vid.removeEventListener('playing', on); };
+    vid.addEventListener('playing', on);
+    vid.onended = () => {
+      if (still && sfuma) {   // la foto sale sopra la clip ferma sull'ultimo fotogramma, poi la clip sparisce
+        still.style.zIndex = 3; still.style.transition = `opacity ${sfuma}ms ease`; still.classList.remove('off');
+        setTimeout(() => { still.style.zIndex = ''; still.style.transition = ''; vid.classList.add('off'); vid.pause(); done && done(); }, sfuma + 30); return;
+      }
+      if (still) { still.style.transition = 'none'; still.classList.remove('off'); void still.offsetWidth; still.style.transition = ''; }
+      requestAnimationFrame(() => { vid.classList.add('off'); vid.pause(); done && done(); });
+    };
+  }
+  function azioni(btns) {
+    ui.azioni.innerHTML = '';
+    for (const [t, cls, fn] of btns) { const b = document.createElement('button'); b.className = 'btn ' + cls; b.textContent = t; b.onclick = fn; ui.azioni.appendChild(b); }
+    show(ui.azioni, true);
+  }
+  function hideAll() { [ui.card, ui.marchio, ui.welcome, ui.azioni, $('hint')].forEach(e => show(e, false)); ui.floor.style.visibility = 'hidden'; $('units').style.visibility = 'hidden'; }
+
+  // clip una dopo l'altra SENZA foto ferme in mezzo (niente lampi): la prima entra sfumando sulla foto sotto, alla fine la foto d'arrivo sfuma sopra
+  function avvia(vid, fadeIn, onPlaying) {
+    if (vid.dataset.src && !vid.getAttribute('src')) vid.src = vid.dataset.src;   // se non era ancora caricata
+    vid.currentTime = 0; vid.style.transition = fadeIn ? `opacity ${fadeIn}ms ease` : 'none';
+    const p = vid.play(); if (p && p.catch) p.catch(() => {});
+    const on = () => { vid.removeEventListener('playing', on); vid.classList.remove('off'); onPlaying && onPlaying(); };
+    vid.addEventListener('playing', on);
+  }
+  function catena(vids, still, sfuma, done) {
+    let i = 0;
+    const next = prev => {
+      const v = vids[i];
+      avvia(v, i === 0 ? 320 : 0, () => { if (prev) requestAnimationFrame(() => requestAnimationFrame(() => { prev.classList.add('off'); prev.pause(); })); });
+      v.onended = () => {
+        i++;
+        if (i < vids.length) return next(v);
+        if (still) {
+          still.style.zIndex = 3; still.style.transition = `opacity ${sfuma}ms ease`; still.classList.remove('off');
+          setTimeout(() => { still.style.zIndex = ''; still.style.transition = ''; v.classList.add('off'); v.pause(); done && done(); }, sfuma + 40);
+        } else {
+          v.style.transition = `opacity ${sfuma}ms ease`; v.classList.add('off'); setTimeout(() => { v.pause(); v.style.transition = ''; done && done(); }, sfuma + 40);
+        }
+      };
+    };
+    next(null);
+  }
+  const carica = ids => ids.forEach(id => { const v = $(id); if (v.dataset.src && !v.src) { v.src = v.dataset.src; v.preload = 'auto'; v.load(); } });
+  setTimeout(() => carica(['v2']), 4000); setTimeout(() => carica(['r2', 'r1b', 'r1']), 9000);   // dopo che si è aperta la torre, in sottofondo
+  function entra() {
+    if (busy || stato !== 'torre') return; busy = true; stato = 'volo1';
+    ui.floor.classList.add('acceso'); hideAll();
+    setTimeout(() => catena([$('v1'), $('v1b')], $('f2'), 450, () => {
+      stato = 'divano'; busy = false;
+      show(ui.welcome, true); requestAnimationFrame(() => ui.welcome.classList.add('on'));
+      setTimeout(() => azioni([['Continue', 'vetro', avanti]]), 900);
+    }), 380);
+  }
+  function avanti() {
+    if (busy) return; busy = true; stato = 'volo2';
+    hideAll(); ui.welcome.classList.remove('on');
+    catena([$('v2')], $('f3'), 300, () => { stato = 'salotto'; busy = false; azioni([['Back to the tower', 'vetro', indietro]]); });
+  }
+  function indietro() {
+    if (busy) return; busy = true; hideAll();
+    setTimeout(() => { $('f2').classList.add('off'); $('f3').classList.add('off'); }, 700);   // le clip al contrario le coprono già
+    catena([$('r2'), $('r1b'), $('r1')], null, 420, () => {
+      stato = 'torre'; busy = false; ui.floor.classList.remove('acceso'); ui.floor.style.visibility = '';
+      show(ui.card, true); show(ui.marchio, true); show($('hint'), true); $('units').style.visibility = '';
+    });
+  }
+  ui.floor.addEventListener('click', entra);
+  ui.floor.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); entra(); } });
+  document.querySelectorAll('.entra').forEach(b => { b.addEventListener('click', entra); b.addEventListener('keydown', e => { if (e.key === 'Enter') entra(); });
+    b.addEventListener('mouseenter', () => ui.floor.classList.add('acceso')); b.addEventListener('mouseleave', () => stato === 'torre' && ui.floor.classList.remove('acceso')); });
+  scelte.forEach(p => { p.addEventListener('mouseenter', () => ui.floor.classList.add('acceso')); p.addEventListener('mouseleave', () => stato === 'torre' && ui.floor.classList.remove('acceso')); });
+
+
+  // ---------- appartamenti: A a sinistra, B a destra, misurati sulla foto 1 (penthouse 75-76 dalla brochure, gli altri contati in giù) ----------
+  const UNITS = [{"liv": 76, "lato": "A", "poly": [[1773.6, 1006.4], [2022.0, 1006.4], [2022.0, 1080.8], [1774.1, 1080.8]], "yc": 1043.6, "xr": 2268.8}, {"liv": 76, "lato": "B", "poly": [[2022.0, 1006.4], [2270.4, 1006.4], [2267.2, 1080.8], [2022.0, 1080.8]], "yc": 1043.6, "xr": 2268.8}, {"liv": 75, "lato": "A", "poly": [[1774.1, 1080.8], [2022.0, 1080.8], [2022.0, 1154.0], [1774.7, 1154.0]], "yc": 1117.4, "xr": 2265.6}, {"liv": 75, "lato": "B", "poly": [[2022.0, 1080.8], [2267.2, 1080.8], [2264.0, 1154.0], [2022.0, 1154.0]], "yc": 1117.4, "xr": 2265.6}, {"liv": 74, "lato": "A", "poly": [[1774.7, 1154.0], [1974.0, 1154.0], [1973.6, 1221.2], [1775.1, 1221.2]], "yc": 1187.6, "xr": 2262.6}, {"liv": 74, "lato": "B", "poly": [[2056.8, 1154.0], [2264.0, 1154.0], [2261.1, 1221.2], [2056.0, 1221.2]], "yc": 1187.6, "xr": 2262.6}, {"liv": 73, "lato": "A", "poly": [[1775.1, 1221.2], [1973.6, 1221.2], [1973.3, 1268.0], [1775.5, 1268.0]], "yc": 1244.6, "xr": 2260.1}, {"liv": 73, "lato": "B", "poly": [[2056.0, 1221.2], [2261.1, 1221.2], [2259.1, 1268.0], [2055.4, 1268.0]], "yc": 1244.6, "xr": 2260.1}, {"liv": 72, "lato": "A", "poly": [[1775.5, 1268.0], [1973.3, 1268.0], [1973.1, 1313.6], [1775.8, 1313.6]], "yc": 1290.8, "xr": 2258.1}, {"liv": 72, "lato": "B", "poly": [[2055.4, 1268.0], [2259.1, 1268.0], [2257.1, 1313.6], [2054.9, 1313.6]], "yc": 1290.8, "xr": 2258.1}, {"liv": 71, "lato": "A", "poly": [[1775.8, 1313.6], [1973.1, 1313.6], [1972.8, 1356.8], [1776.3, 1356.8]], "yc": 1335.2, "xr": 2256.2}, {"liv": 71, "lato": "B", "poly": [[2054.9, 1313.6], [2257.1, 1313.6], [2255.2, 1356.8], [2054.4, 1356.8]], "yc": 1335.2, "xr": 2256.2}, {"liv": 70, "lato": "A", "poly": [[1776.3, 1356.8], [1972.8, 1356.8], [1972.5, 1400.0], [1777.1, 1400.0]], "yc": 1378.4, "xr": 2254.1}, {"liv": 70, "lato": "B", "poly": [[2054.4, 1356.8], [2255.2, 1356.8], [2253.0, 1400.0], [2053.9, 1400.0]], "yc": 1378.4, "xr": 2254.1}, {"liv": 69, "lato": "A", "poly": [[1777.1, 1400.0], [1972.5, 1400.0], [1972.3, 1442.0], [1777.8, 1442.0]], "yc": 1421.0, "xr": 2251.9}, {"liv": 69, "lato": "B", "poly": [[2053.9, 1400.0], [2253.0, 1400.0], [2250.9, 1442.0], [2053.4, 1442.0]], "yc": 1421.0, "xr": 2251.9}, {"liv": 68, "lato": "A", "poly": [[1777.8, 1442.0], [1972.3, 1442.0], [1972.0, 1484.0], [1778.5, 1484.0]], "yc": 1463.0, "xr": 2249.8}, {"liv": 68, "lato": "B", "poly": [[2053.4, 1442.0], [2250.9, 1442.0], [2248.8, 1484.0], [2052.9, 1484.0]], "yc": 1463.0, "xr": 2249.8}, {"liv": 67, "lato": "A", "poly": [[1778.5, 1484.0], [1972.0, 1484.0], [1971.8, 1526.0], [1779.3, 1526.0]], "yc": 1505.0, "xr": 2247.8}, {"liv": 67, "lato": "B", "poly": [[2052.9, 1484.0], [2248.8, 1484.0], [2246.7, 1526.0], [2052.4, 1526.0]], "yc": 1505.0, "xr": 2247.8}, {"liv": 66, "lato": "A", "poly": [[1779.3, 1526.0], [1971.8, 1526.0], [1971.5, 1566.8], [1780.0, 1566.8]], "yc": 1546.4, "xr": 2245.7}, {"liv": 66, "lato": "B", "poly": [[2052.4, 1526.0], [2246.7, 1526.0], [2244.7, 1566.8], [2051.9, 1566.8]], "yc": 1546.4, "xr": 2245.7}, {"liv": 65, "lato": "A", "poly": [[1780.0, 1566.8], [1971.5, 1566.8], [1971.3, 1608.8], [1780.7, 1608.8]], "yc": 1587.8, "xr": 2243.6}, {"liv": 65, "lato": "B", "poly": [[2051.9, 1566.8], [2244.7, 1566.8], [2242.6, 1608.8], [2051.4, 1608.8]], "yc": 1587.8, "xr": 2243.6}, {"liv": 64, "lato": "A", "poly": [[1780.7, 1608.8], [1971.3, 1608.8], [1971.1, 1647.2], [1781.4, 1647.2]], "yc": 1628.0, "xr": 2241.6}, {"liv": 64, "lato": "B", "poly": [[2051.4, 1608.8], [2242.6, 1608.8], [2240.6, 1647.2], [2050.9, 1647.2]], "yc": 1628.0, "xr": 2241.6}, {"liv": 63, "lato": "A", "poly": [[1781.4, 1647.2], [1971.1, 1647.2], [1970.8, 1688.0], [1782.1, 1688.0]], "yc": 1667.6, "xr": 2239.6}, {"liv": 63, "lato": "B", "poly": [[2050.9, 1647.2], [2240.6, 1647.2], [2238.6, 1688.0], [2050.4, 1688.0]], "yc": 1667.6, "xr": 2239.6}, {"liv": 62, "lato": "A", "poly": [[1782.1, 1688.0], [1970.8, 1688.0], [1970.6, 1726.4], [1782.8, 1726.4]], "yc": 1707.2, "xr": 2237.6}, {"liv": 62, "lato": "B", "poly": [[2050.4, 1688.0], [2238.6, 1688.0], [2236.7, 1726.4], [2050.0, 1726.4]], "yc": 1707.2, "xr": 2237.6}, {"liv": 61, "lato": "A", "poly": [[1782.8, 1726.4], [1970.6, 1726.4], [1970.3, 1766.0], [1783.5, 1766.0]], "yc": 1746.2, "xr": 2235.6}, {"liv": 61, "lato": "B", "poly": [[2050.0, 1726.4], [2236.7, 1726.4], [2234.6, 1766.0], [2049.5, 1766.0]], "yc": 1746.2, "xr": 2235.6}, {"liv": 60, "lato": "A", "poly": [[1783.5, 1766.0], [1970.3, 1766.0], [1970.1, 1805.0], [1784.2, 1805.0]], "yc": 1785.5, "xr": 2233.6}, {"liv": 60, "lato": "B", "poly": [[2049.5, 1766.0], [2234.6, 1766.0], [2232.5, 1805.0], [2049.0, 1805.0]], "yc": 1785.5, "xr": 2233.6}, {"liv": 59, "lato": "A", "poly": [[1784.2, 1805.0], [1970.1, 1805.0], [1969.9, 1841.0], [1784.8, 1841.0]], "yc": 1823.0, "xr": 2231.6}, {"liv": 59, "lato": "B", "poly": [[2049.0, 1805.0], [2232.5, 1805.0], [2230.6, 1841.0], [2048.6, 1841.0]], "yc": 1823.0, "xr": 2231.6}, {"liv": 58, "lato": "A", "poly": [[1784.8, 1841.0], [1969.9, 1841.0], [1969.6, 1881.2], [1785.6, 1881.2]], "yc": 1861.1, "xr": 2229.6}, {"liv": 58, "lato": "B", "poly": [[2048.6, 1841.0], [2230.6, 1841.0], [2228.5, 1881.2], [2048.1, 1881.2]], "yc": 1861.1, "xr": 2229.6}, {"liv": 57, "lato": "A", "poly": [[1785.6, 1881.2], [1969.6, 1881.2], [1969.3, 1940.0], [1786.6, 1940.0]], "yc": 1910.6, "xr": 2227.0}, {"liv": 57, "lato": "B", "poly": [[2048.1, 1881.2], [2228.5, 1881.2], [2225.4, 1940.0], [2047.4, 1940.0]], "yc": 1910.6, "xr": 2227.0}, {"liv": 56, "lato": "A", "poly": [[1786.6, 1940.0], [1969.3, 1940.0], [1969.0, 1988.0], [1787.4, 1988.0]], "yc": 1964.0, "xr": 2224.1}, {"liv": 56, "lato": "B", "poly": [[2047.4, 1940.0], [2225.4, 1940.0], [2222.9, 1988.0], [2046.8, 1988.0]], "yc": 1964.0, "xr": 2224.1}, {"liv": 55, "lato": "A", "poly": [[1787.4, 1988.0], [1969.0, 1988.0], [1968.8, 2021.0], [1788.0, 2021.0]], "yc": 2004.5, "xr": 2222.0}, {"liv": 55, "lato": "B", "poly": [[2046.8, 1988.0], [2222.9, 1988.0], [2221.1, 2021.0], [2046.4, 2021.0]], "yc": 2004.5, "xr": 2222.0}, {"liv": 54, "lato": "A", "poly": [[1788.0, 2021.0], [1968.8, 2021.0], [1968.6, 2057.0], [1788.7, 2057.0]], "yc": 2039.0, "xr": 2220.2}, {"liv": 54, "lato": "B", "poly": [[2046.4, 2021.0], [2221.1, 2021.0], [2219.2, 2057.0], [2046.0, 2057.0]], "yc": 2039.0, "xr": 2220.2}, {"liv": 53, "lato": "A", "poly": [[1788.7, 2057.0], [1968.6, 2057.0], [1968.4, 2090.0], [1789.2, 2090.0]], "yc": 2073.5, "xr": 2218.4}, {"liv": 53, "lato": "B", "poly": [[2046.0, 2057.0], [2219.2, 2057.0], [2217.5, 2090.0], [2045.6, 2090.0]], "yc": 2073.5, "xr": 2218.4}, {"liv": 52, "lato": "A", "poly": [[1789.2, 2090.0], [1968.4, 2090.0], [1968.2, 2124.8], [1789.8, 2124.8]], "yc": 2107.4, "xr": 2216.6}, {"liv": 52, "lato": "B", "poly": [[2045.6, 2090.0], [2217.5, 2090.0], [2215.6, 2124.8], [2045.2, 2124.8]], "yc": 2107.4, "xr": 2216.6}, {"liv": 51, "lato": "A", "poly": [[1789.8, 2124.8], [1968.2, 2124.8], [1968.0, 2158.4], [1790.4, 2158.4]], "yc": 2141.6, "xr": 2214.8}, {"liv": 51, "lato": "B", "poly": [[2045.2, 2124.8], [2215.6, 2124.8], [2214.0, 2158.4], [2044.8, 2158.4]], "yc": 2141.6, "xr": 2214.8}];
+  const INFO = u => {
+    if (u.liv >= 75) return { nm: u.lato === 'A' ? 'Penthouse 01' : 'Penthouse 02', fx: ['DUPLEX · LEVELS 75–76', '578.73 M² + 143.70 M² TERRACE', 'PRIVATE POOL · BURJ KHALIFA VIEW'], open: false, nota: 'PRIVATE VIEWING ON REQUEST', btn: 'Request a viewing' };
+    if (u.liv === 70 && u.lato === 'A') return { nm: 'The Sunset Residence', fx: ['SUNSET & SEA VIEW', 'DOUBLE-HEIGHT LIVING', 'FULLY FURNISHED'], open: true, nota: 'SHOW RESIDENCE · OPEN NOW', btn: 'Step inside  →' };
+    return { nm: 'Trump Residence ' + u.liv + u.lato, fx: [u.lato === 'A' ? 'SUNSET SIDE' : 'CITY SIDE', 'TRUMP RESIDENCES'], open: false, nota: 'IN THIS DEMO: RESIDENCE 70A', btn: 'Floor plan on request' };
+  };
+  const ug = document.getElementById('ug'), NS = 'http://www.w3.org/2000/svg';
+  const polys = UNITS.map(u => { const p = document.createElementNS(NS, 'polygon'); p.setAttribute('points', u.poly.map(q => q.join(',')).join(' ')); ug.appendChild(p); return p; });
+  const pent = u => u.liv >= 75;
+  const gruppo = i => { const u = UNITS[i]; return pent(u) ? UNITS.map((v, j) => pent(v) && v.lato === u.lato ? j : -1).filter(j => j >= 0) : [i]; };   // la penthouse è un duplex: si accendono i due piani
+  let selI = UNITS.findIndex(u => u.liv === 70 && u.lato === 'A'), hovI = -1;
+  const tag = document.getElementById('tag'), tagL = document.getElementById('tagL'), tagT = document.getElementById('tagT');
+  function mostra(i) {
+    const u = UNITS[i], inf = INFO(u);
+    $('lv').textContent = pent(u) ? '75–76' : u.liv; $('un').textContent = pent(u) ? '' : u.lato; $('nm').textContent = inf.nm;
+    $('fx').innerHTML = inf.fx.map(t => '<span>' + t + '</span>').join(''); $('nota').textContent = inf.nota;
+    $('go').textContent = inf.btn; $('go').classList.toggle('spento', !inf.open);
+    const xr = Math.max(...gruppo(i).map(j => UNITS[j].xr)), yc = gruppo(i).map(j => UNITS[j].yc).reduce((a, b) => a + b) / gruppo(i).length;
+    tagL.setAttribute('x1', xr + 30); tagL.setAttribute('x2', xr + 190); tagL.setAttribute('y1', yc); tagL.setAttribute('y2', yc);
+    tagT.setAttribute('x', xr + 214); tagT.setAttribute('y', yc + 24); tagT.textContent = pent(u) ? 'PH ' + (u.lato === 'A' ? '01' : '02') : u.liv + u.lato; tag.setAttribute('opacity', 1);
+  }
+  function luci() {
+    polys.forEach(p => p.classList.remove('hov', 'sel', 'attira'));
+    gruppo(selI).forEach(j => polys[j].classList.add('sel'));
+    if (hovI < 0 && INFO(UNITS[selI]).open) gruppo(selI).forEach(j => polys[j].classList.add('attira'));
+    if (hovI >= 0) gruppo(hovI).forEach(j => polys[j].classList.add('hov'));
+    mostra(hovI >= 0 ? hovI : selI);
+  }
+  polys.forEach((p, i) => {
+    p.addEventListener('mouseenter', () => { hovI = i; luci(); });
+    p.addEventListener('mouseleave', () => { hovI = -1; luci(); });
+    p.addEventListener('click', () => { const era = selI; selI = i; hovI = -1; luci(); if (INFO(UNITS[i]).open && (era === i || matchMedia('(hover:hover)').matches)) entra(); });
+  });
+  $('go').addEventListener('click', () => { if (INFO(UNITS[selI]).open) entra(); });
+  if (TEMA === 'U2') luci();
+  const qu = Q.get('unita'); if (qu) { hovI = UNITS.findIndex(u => (u.liv + u.lato) === qu.toUpperCase()); luci(); }   // per le schermate: ?unita=72B
+
+  // pronto quando la foto 1 e l'inizio della clip 1 sono arrivati (massimo 6 s di attesa)
+  let fatto = false; const via = () => { if (fatto) return; fatto = true; $('velo').style.opacity = 0; setTimeout(() => { $('velo').remove(); document.body.dataset.pronto = '1'; }, 900);
+    if (Q.get('hover')) ui.floor.classList.add('acceso');
+    if (Q.get('scena') === 'divano') { hideAll(); $('f2').classList.remove('off'); stato = 'divano'; show(ui.welcome, true); ui.welcome.classList.add('on'); azioni([['Continue', 'vetro', avanti]]); } };
+  const f1 = $('f1'), v1 = $('v1');
+  Promise.all([f1.complete ? 0 : new Promise(r => f1.onload = r), new Promise(r => { if (v1.readyState >= 3) r(); v1.addEventListener('canplaythrough', r, { once: true }); })]).then(via);
+  setTimeout(via, 6000);
+  // ?auto: giro da solo (per registrare)
+  if (/[?&]auto/.test(location.search)) setTimeout(() => { ui.floor.classList.add('acceso'); setTimeout(entra, 1600); }, 2500);
+})();
+</script>
+</body>
+</html>
