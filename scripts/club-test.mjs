@@ -2,29 +2,32 @@
 // the welcome email text and the X2 date of the delivery email. Nothing leaves the computer (no Stripe, no Redis, no mail).
 // Usage (repo root): node scripts/club-test.mjs
 process.env.CLUB_SECRET ||= 'test-secret-only-here';
-const { decide, phaseAt, EARLY, OPEN, CLOSE, signToken, readToken, cleanReceipt, welcomeText } = await import('../api/_lib/club.js');
+const { decide, phaseAt, EARLY, OPEN, FOUNDERS_END, signToken, readToken, cleanReceipt, welcomeText } = await import('../api/_lib/club.js');
 
 let fail = 0, n = 0;
 const eq = (got, want, what) => { n++; if (JSON.stringify(got) !== JSON.stringify(want)) { fail++; console.log('FAIL', what, '\n  got ', JSON.stringify(got), '\n  want', JSON.stringify(want)); } };
 
-const at = { before: EARLY - 1, early: EARLY, open: OPEN, closed: CLOSE };
+const at = { before: EARLY - 1, early: EARLY, open: OPEN, after: FOUNDERS_END, later: Date.parse('2027-03-01T12:00:00+01:00') };
 eq(phaseAt(Date.parse('2026-11-28T08:59:59+01:00')), 'before', '08:59:59 Rome is before');
 eq(phaseAt(Date.parse('2026-11-28T09:00:00+01:00')), 'early', '09:00 Rome is early');
 eq(phaseAt(Date.parse('2026-11-28T17:59:59+01:00')), 'early', '17:59:59 Rome is early');
 eq(phaseAt(Date.parse('2026-11-28T18:00:00+01:00')), 'open', '18:00 Rome is open');
 eq(phaseAt(Date.parse('2026-12-04T23:59:59+01:00')), 'open', 'Fri 4/12 23:59:59 Rome is open');
-eq(phaseAt(Date.parse('2026-12-05T00:00:00+01:00')), 'closed', 'Sat 5/12 00:00 Rome is closed');
+eq(phaseAt(Date.parse('2026-12-05T00:00:00+01:00')), 'after', 'Sat 5/12 00:00 Rome: the founders price is over, the doors stay open (24/11)');
+eq(phaseAt(Date.parse('2027-06-01T12:00:00+02:00')), 'after', 'June 2027: the doors are still open');
 
 // every phase × buyer or not × seats 0 / 99 / 100 × month or year (waitlist: false, then true in the early hours)
 const rows = [];
 for (const phase of Object.keys(at)) for (const buyer of [false, true]) for (const waitlisted of [false, true]) for (const taken of [0, 99, 100]) for (const plan of ['month', 'year']) {
   const d = decide({ now: at[phase], taken, buyer, waitlisted, plan });
   let want;
-  if (phase === 'before' || phase === 'closed') want = { ok: false, phase, error: 'closed' };
-  else if (phase === 'early' && !buyer && !waitlisted) want = { ok: false, phase, error: 'early' };
+  const ph = phase === 'later' ? 'after' : phase;
+  if (phase === 'before') want = { ok: false, phase: ph, error: 'closed' };
+  else if (phase === 'early' && !buyer && !waitlisted) want = { ok: false, phase: ph, error: 'early' };
   else {
-    const low = true || buyer || taken < 100; // 23/11: the founders round is €9 for everyone (FOUNDERS_ROUND)
-    want = { ok: true, phase, key: plan === 'year' ? (low ? 'Y90' : 'Y190') : low ? 'M9' : 'M19', eur: plan === 'year' ? (low ? 90 : 190) : low ? 9 : 19 };
+    // 23/11: until 4/12 €9 for everyone (FOUNDERS_ROUND); 24/11: after it the doors stay open at €19, guide buyers €9
+    const low = phase === 'early' || phase === 'open' || buyer;
+    want = { ok: true, phase: ph, key: plan === 'year' ? (low ? 'Y90' : 'Y190') : low ? 'M9' : 'M19', eur: plan === 'year' ? (low ? 90 : 190) : low ? 9 : 19 };
   }
   eq(d, want, `${phase} buyer=${buyer} waitlist=${waitlisted} seats=${taken} ${plan}`);
   rows.push([phase, buyer ? 'buyer' : '-', waitlisted ? 'list' : '-', taken, plan, d.ok ? `€${d.eur} (${d.key})` : `refused: ${d.error}`]);
@@ -39,6 +42,11 @@ eq(decide({ now: at.open, taken: 250, buyer: true, plan: 'month' }).eur, 9, 'a g
 eq(decide({ now: at.open, taken: 100, buyer: true, plan: 'year' }).eur, 90, 'a guide buyer pays €90 a year');
 eq(decide({ now: at.open, taken: 100, plan: 'year' }).eur, 90, 'still €90 a year after the first 100 in the founders round');
 eq(decide({ now: at.early, taken: 0, waitlisted: true, plan: 'month' }).eur, 9, 'the waitlist gets in at 09:00');
+eq(decide({ now: Date.parse('2026-12-04T23:59:59+01:00'), taken: 300, plan: 'month' }).eur, 9, 'Fri 4/12 23:59:59 Rome is still €9');
+eq(decide({ now: at.after, taken: 0, plan: 'month' }).key, 'M19', 'Sat 5/12 00:00: €19 a month, the doors are open (24/11)');
+eq(decide({ now: at.after, taken: 0, plan: 'year' }).key, 'Y190', 'Sat 5/12 00:00: €190 a year');
+eq(decide({ now: at.later, taken: 0, buyer: true, plan: 'month' }).key, 'M9', 'a guide buyer is still €9 after 4/12');
+eq(decide({ now: at.later, taken: 0, buyer: true, plan: 'year' }).key, 'Y90', 'a guide buyer is still €90 a year after 4/12');
 
 // the buyer token
 const tok = signToken('r:1415-7362');

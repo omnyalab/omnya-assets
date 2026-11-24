@@ -5,7 +5,8 @@
 /** Round 1 (Europe/Rome, +01:00 for the whole window), the same instants as api/_lib/club.js */
 export const EARLY = '2026-11-28T09:00:00+01:00'; // doors open for the waitlist and the guide buyers
 export const OPEN = '2026-11-28T18:00:00+01:00'; // doors open for everyone
-export const CLOSE = '2026-12-05T00:00:00+01:00'; // the first moment after Fri 4/12 23:59
+// 24/11 Nico: «le porte son sempre aperte»: 4/12 23:59 ends only the founders' €9, the doors stay open at €19
+export const FOUNDERS_END = '2026-12-05T00:00:00+01:00'; // the first moment after Fri 4/12 23:59
 export const SEATS = 100; // the founders' gifts (23/11): the whole round is €9
 
 export const NAME = { a: 'THE 3D FUTURE', b: '3D THAT SELLS' } as const;
@@ -58,8 +59,8 @@ export const FAQ: [string, string][] = [
   ['Do I need to code?', 'No. The Claude skills and the prompts do the building, the course shows you each step.'],
   ['What do I need?', 'A computer and Claude Pro or Claude Code for the skills. Higgsfield for photos and video.'],
   ['Can I cancel?', 'Yes, in one tap, whenever you want.'],
-  ['Who gets the founders\' gifts?', 'The first 100 who join: our three playbooks and the full 3D AI Mastery course, yours to keep.'],
-  ['I bought a guide, what do I pay?', '€9 a month, in the next rounds too: enter your receipt number.'],
+  ['Who gets the founders\' gifts?', 'The first 100 who join by Friday 4 December: our three playbooks and the full 3D AI Mastery course, yours to keep.'],
+  ['I bought a guide, what do I pay?', '€9 a month, after Friday 4 December too: enter your receipt number.'],
   ['When do new builds arrive?', 'Every Friday.'],
 ];
 

@@ -62,17 +62,15 @@ export function readToken(tok) {
 }
 
 // The four notes. {link} is the one link of the note (tracked), the rest is plain text.
-// club = 'soon' | 'open' | 'closed': THE 3D FUTURE doors (DRIP_FUTURE_OPEN / DRIP_FUTURE_CLOSE), so mail 4 says it right.
+// club = 'soon' | 'open': THE 3D FUTURE doors (DRIP_FUTURE_OPEN), so mail 4 says it right. 24/11 Nico: «le porte son
+// sempre aperte»: once open they never close (4/12 ends only the founders' €9), so there is no 'closed' any more.
 const OPEN = () => Date.parse(process.env.DRIP_FUTURE_OPEN || '2026-11-28T17:00:00Z'); // 28/11 18:00 Rome, open to everyone (club plan L1; 9:00 is only for its list and buyers)
-const CLOSE = () => Date.parse(process.env.DRIP_FUTURE_CLOSE || '2026-12-04T22:59:00Z'); // 4/12 23:59 Rome
-export const clubState = (ms = Date.now()) => (ms < OPEN() ? 'soon' : ms <= CLOSE() ? 'open' : 'closed');
+export const clubState = (ms = Date.now()) => (ms < OPEN() ? 'soon' : 'open');
 // the end of every P.S. (and of mail 4): the club's door, said the way it is that day
 const door = (club, link) =>
   club === 'open'
     ? `and the doors are open now: ${link('join THE 3D FUTURE', 'f')}`
-    : club === 'closed'
-      ? `and the doors are closed for this round, but you can get on the list for the next one here: ${link('get on the list', 'f')}`
-      : `and the doors open on Saturday 28 November, so you can get on the list here: ${link('get on the list', 'f')}`;
+    : `and the doors open on Saturday 28 November, so you can get on the list here: ${link('get on the list', 'f')}`;
 
 // Mails 1-3 end with a P.S. that opens the club's door (Nico 20/11: «these emails are to bring people into the community»),
 // only while the club page is online (live); mail 4 is the invitation itself and waits for the page.
@@ -115,9 +113,7 @@ const NOTES = [
       `Everything I sent you in these emails, and a lot more, is inside THE 3D FUTURE, our new club: first of all a video course that walks you step by step through one of our builds, so you can make it exactly the way we do, and a new course every Friday with the build of the week, then the files, the prompts and the Claude skills behind the builds from our reels, and my comments on your own builds every Monday.`,
       club === 'open'
         ? `The doors are open now, and you can join here: ${link('join THE 3D FUTURE')}`
-        : club === 'closed'
-          ? `The doors are closed for this round, but you can get on the list for the next one here: ${link('get on the list')}`
-          : `The doors open on Saturday 28 November, and you can get on the list here: ${link('get on the list')}`,
+        : `The doors open on Saturday 28 November, and you can get on the list here: ${link('get on the list')}`,
     ],
   },
 ];

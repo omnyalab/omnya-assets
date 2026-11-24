@@ -28,7 +28,7 @@ button { font: inherit; color: inherit }
 html[data-phase="before"] [data-when]:not([data-when~="before"]),
 html[data-phase="early"] [data-when]:not([data-when~="early"]),
 html[data-phase="open"] [data-when]:not([data-when~="open"]),
-html[data-phase="closed"] [data-when]:not([data-when~="closed"]),
+html[data-phase="after"] [data-when]:not([data-when~="after"]),
 html[data-v="a"] [data-vv="b"], html[data-v="b"] [data-vv="a"] { display: none !important }
 
 .club {

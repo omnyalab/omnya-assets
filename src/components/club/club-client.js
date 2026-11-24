@@ -1,5 +1,6 @@
 /* THE 3D FUTURE public page, the behaviour (inlined at the end of src/pages/the-3d-future/index.astro).
-   The head script has already set html[data-phase] (before · early · open · closed), html[data-v] (a · b) and
+   The head script has already set html[data-phase] (before · early · open · after;
+   24/11: after = from Sat 5/12, the doors stay open at €19, only the founders' €9 is over), html[data-v] (a · b) and
    window.__t3f = { off, v } (off = the ?at= preview offset). Every call to the APIs may fail: the page then says
    "Something went wrong, try again" and stays usable. */
 (function () {
@@ -7,7 +8,7 @@
   var T = window.__t3f || { off: 0, v: h.getAttribute('data-v') || 'a' };
   var now = function () { return Date.now() + T.off; };
   var E = +h.dataset.tEarly, O = +h.dataset.tOpen, C = +h.dataset.tClose, SEATS = 100;
-  var phaseAt = function (t) { return t < E ? 'before' : t < O ? 'early' : t < C ? 'open' : 'closed'; };
+  var phaseAt = function (t) { return t < E ? 'before' : t < O ? 'early' : t < C ? 'open' : 'after'; };
   var phase = h.getAttribute('data-phase');
   var RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var atQ = q.get('at') ? '?at=' + encodeURIComponent(q.get('at').replace(' ', '+')) : '';
@@ -52,18 +53,20 @@
       var n = Math.min(SEATS, taken); box.hidden = false; $('[data-left]').textContent = String(SEATS - n);
       $$('[data-seatbar] i').forEach(function (i, k) { var f = Math.max(0, Math.min(1, (n - k * 5) / 5)); i.className = f >= 1 ? 'on' : f > 0 ? 'part' : ''; i.style.setProperty('--f', Math.round(f * 100) + '%'); });
     }
-    var eur = '€9'; // 23/11: the whole founders' round is €9; the 100 are the gifts
+    // 23/11: the whole founders' round is €9, the 100 are the gifts; 24/11: after 4/12 €19, €9 for a proven guide buyer
+    var eur = phase === 'after' && !proof ? '€19' : '€9';
     $$('[data-eur]').forEach(function (e) { if (e.textContent !== eur) e.textContent = eur; });
   }
   var seatsTimer = null;
   function loadSeats() {
     var raw = q.get('seats');
     if (raw !== null) { taken = Math.max(0, parseInt(raw, 10) || 0); return renderSeats(); }
-    if (phase !== 'early' && phase !== 'open') return renderSeats();
+    var live = function () { return phase === 'early' || phase === 'open'; }; // the founders' gifts end with 4/12 too
+    if (!live()) return renderSeats();
     fetch('/api/club/seats' + atQ).then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) { if (d && typeof d.taken === 'number') taken = d.taken; renderSeats(); })
       .catch(function () { renderSeats(); });
-    if (!seatsTimer) seatsTimer = setInterval(function () { if (phase === 'early' || phase === 'open') loadSeats(); }, 60000);
+    if (!seatsTimer) seatsTimer = setInterval(function () { if (live()) loadSeats(); }, 60000);
   }
   loadSeats();
 
@@ -100,7 +103,7 @@
     var j = e.target.closest('[data-join]'); if (j) { e.preventDefault(); join(j); return; }
     var s = e.target.closest('[data-see]'); if (s) { e.preventDefault(); $('#vault').scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' }); }
   });
-  function join(from) { if (phase === 'early' || phase === 'open') openPay(from); else openList(from); }
+  function join(from) { if (phase === 'before') openList(from); else openPay(from); } // 24/11: the doors never close
 
   /* ---------- dialogs: one open at a time, Escape and the back button close it, the focus stays inside ---------- */
   var cur = null, back = null, sheet = $('[data-sheet]');
@@ -128,7 +131,7 @@
   var focusHead = function (el) { setTimeout(function () { if (el) el.focus({ preventScroll: true }); }, 30); };
 
   /* ---------- A2: the pre-registration in three steps ---------- */
-  var L = $('[data-ov="list"]'), want = 'tower', round = function () { return phase === 'closed' ? 'next' : 'r1'; };
+  var L = $('[data-ov="list"]'), want = 'tower', ROUND = 'r1'; // the list is only before the doors open
   function setStep(n) {
     L.dataset.step = String(n);
     $$('[data-s]', L).forEach(function (s) { s.hidden = +s.dataset.s !== n; });
@@ -140,7 +143,7 @@
     L.setAttribute('aria-labelledby', 't3f-l' + n);
     L.scrollTop = 0; focusHead($('#t3f-l' + n));
   }
-  function openList(from) { setStep(ls.get('t3f-listed') === round() ? 3 : 1); showOv(L, from); focusHead($('#t3f-l' + L.dataset.step)); }
+  function openList(from) { setStep(ls.get('t3f-listed') === ROUND ? 3 : 1); showOv(L, from); focusHead($('#t3f-l' + L.dataset.step)); }
   $('[data-back]', L).addEventListener('click', function () { var n = +L.dataset.step; if (n > 1) setStep(n - 1); else hideOv(); });
   $('[data-next]', L).addEventListener('click', function () { setStep(2); });
   var opts = $$('[data-want]', L);
@@ -166,11 +169,11 @@
     var fbp = (document.cookie.match(/(?:^|; )_fbp=([^;]+)/) || [])[1] || '';
     // api/optin.js keeps page (40 characters) and k (the word, 20): the reel and the first build ride in page as a query,
     // so the Meta event URL stays a real address; k is the name variant
-    var page = ('the-3d-future?ig=' + (ig || '-') + '&b=' + want + (round() === 'next' ? '&r=2' : '')).slice(0, 40);
+    var page = ('the-3d-future?ig=' + (ig || '-') + '&b=' + want).slice(0, 40);
     post('/api/optin', { free: 'waitlist-3d-future', name: name, email: email, page: page, k: T.v, company: lf.elements.company.value, cv: 'v3', nl: false, ads: ads, eid: eid, fbp: ads ? fbp : '' })
       .then(function (r) {
         if (!r.ok) throw new Error();
-        ls.set('t3f-listed', round()); ss.set('t3f-who', { name: name, email: email });
+        ls.set('t3f-listed', ROUND); ss.set('t3f-who', { name: name, email: email });
         setStep(3);
       })
       .catch(function () { toast(FAIL); })
@@ -266,12 +269,12 @@
         var r = res[0], d = r.d;
         if (!r.ok) {
           if (d.code === 'early') { $('[data-early]', P).hidden = false; return; }
-          if (d.code === 'closed') { perr.textContent = 'Doors closed for this round'; return; }
+          if (d.code === 'closed') { perr.textContent = 'The doors open Saturday 28 November'; return; }
           throw new Error(r.status === 429 ? d.error : '');
         }
         if (!window.Stripe || !d.client_secret || !d.pk) throw new Error('');
         pf.hidden = true; stage.hidden = false; pbox.className = 'paybox load';
-        $('[data-payeur]', P).textContent = '€' + (d.price || 9);
+        $('[data-payeur]', P).textContent = '€' + (d.price || (phase === 'after' && !proof ? 19 : 9));
         var co = window.Stripe(d.pk).initCheckoutElementsSdk({ clientSecret: d.client_secret, elementsOptions: { appearance: LOOK } });
         return Promise.resolve(co).then(function (co) {
           return co.loadActions().then(function (a) {

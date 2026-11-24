@@ -4,7 +4,10 @@
 // - €9 a month for the first 100 members of the round, then €19. Who bought one of our guides pays €9 even after the
 //   first 100. A year: €90 (for the €9 members) or €190 (for the €19 ones). Euro only.
 // - Round 1 (Europe/Rome): Sat 28/11/2026 09:00 the doors open only for the waitlist (/api/optin 'waitlist-3d-future')
-//   and the guide buyers, at 18:00 for everyone, they close Fri 4/12/2026 23:59. Before and after: closed.
+//   and the guide buyers, at 18:00 for everyone. Before 9:00: closed.
+// - 24/11 Nico: «le porte son sempre aperte»: the doors never close. Fri 4/12/2026 23:59 ends only the founders' price
+//   (€9 a month, €90 a year, for everyone who joins by then); from Sat 5/12 who joins pays €19 (€190 a year), who bought
+//   one of our guides still €9 (€90).
 // - The seats are the club subscriptions of round 1 that are active, trialing or past_due, read from Stripe and kept
 //   60 s. Only the real number, never one written by hand.
 // - The proof of a guide purchase is the Stripe receipt number (1415-7362) or the email paid with, checked here against
@@ -18,16 +21,18 @@ import { signedHref, isGuideProduct, HOUSE_SKILL_FILE, FOUNDERS_GIFTS, DAY } fro
 
 export const ROUND = '1';
 export const CLUB = '3d-future';
-// Rome is on +01:00 for the whole round (CET), so the instants are fixed. CLOSE is the first moment after Fri 4/12 23:59.
+// Rome is on +01:00 for the whole round (CET), so the instants are fixed. FOUNDERS_END is the first moment after Fri 4/12 23:59.
 export const EARLY = Date.parse('2026-11-28T09:00:00+01:00');
 // 20/11 (Nico): the Stripe customer portal is on (cancel at the end of the paid period, with the reason asked); its login link
 export const PORTAL_URL = process.env.CLUB_PORTAL_URL || 'https://billing.stripe.com/p/login/9B66oGet7bIs3hAeyN8so00';
 export const OPEN = Date.parse('2026-11-28T18:00:00+01:00');
-export const CLOSE = Date.parse('2026-12-05T00:00:00+01:00');
+export const FOUNDERS_END = Date.parse('2026-12-05T00:00:00+01:00');
 export const CHEAP_SEATS = 100;
 // 23/11 Nico: in the founders' round (28/11-4/12) everyone who joins pays €9 (€90 a year), locked; the 100 are now the
-// founders' gifts (three playbooks + the full 3D AI Mastery course) for the first 100. Later rounds go back to 9 → 19.
+// founders' gifts (three playbooks + the full 3D AI Mastery course) for the first 100.
 export const FOUNDERS_ROUND = true;
+/** the founders' €9 for everyone: from the doors opening until Fri 4/12 23:59 Rome */
+export const foundersAt = (now = Date.now()) => FOUNDERS_ROUND && now < FOUNDERS_END;
 const LIVE = new Set(['active', 'trialing', 'past_due']);
 
 /** The four live Stripe prices of the product "THE 3D FUTURE" (prod_Vf8pJEQunN0guK, 20/11), written here like the funnel
@@ -41,21 +46,23 @@ export const PRICES = {
 export const priceId = (key) => (PRICES[key] ? process.env[PRICES[key].env] || PRICES[key].id : '');
 export const priceIds = () => Object.keys(PRICES).map(priceId).filter(Boolean);
 
-/** before · early (waitlist and buyers only) · open (everyone) · closed */
+/** before · early (waitlist and buyers only) · open (everyone, founders' €9) · after (everyone, €19; the doors never close) */
 export function phaseAt(now = Date.now()) {
-  return now < EARLY ? 'before' : now < OPEN ? 'early' : now < CLOSE ? 'open' : 'closed';
+  return now < EARLY ? 'before' : now < OPEN ? 'early' : now < FOUNDERS_END ? 'open' : 'after';
 }
 
 /**
  * The price decision, with nothing around it (no Stripe, no Redis), so it can be tested on its own (scripts/club-test.mjs).
- * taken = seats already taken in this round, buyer = a proven guide buyer, waitlisted = the email is on the club waitlist.
+ * buyer = a proven guide buyer, waitlisted = the email is on the club waitlist (taken, the seats, is no longer part of
+ * the price since 23/11 and is only accepted so the old calls still work).
  * → { ok: true, phase, key: 'M9'|'M19'|'Y90'|'Y190', eur } or { ok: false, phase, error: 'closed'|'early' }
  */
 export function decide({ now = Date.now(), taken = 0, buyer = false, waitlisted = false, plan = 'month' } = {}) {
   const phase = phaseAt(now);
-  if (phase === 'before' || phase === 'closed') return { ok: false, phase, error: 'closed' };
+  if (phase === 'before') return { ok: false, phase, error: 'closed' };
   if (phase === 'early' && !buyer && !waitlisted) return { ok: false, phase, error: 'early' };
-  const low = FOUNDERS_ROUND || buyer || taken < CHEAP_SEATS;
+  // until 4/12 everyone pays €9; after it, only who bought one of our guides
+  const low = foundersAt(now) || buyer;
   const key = plan === 'year' ? (low ? 'Y90' : 'Y190') : low ? 'M9' : 'M19';
   return { ok: true, phase, key, eur: PRICES[key].eur };
 }
@@ -334,9 +341,10 @@ export async function clubJoined(stripe, session) {
     throw new Error('club: CLUB_SKOOL_URL missing');
   }
   if (!(await first('w1', session.id))) return member;
-  // the founders' gift: this member is one of the first 100 seats of the round (the same count as the page's counter)
+  // the founders' gift: this member is one of the first 100 seats of the round (the same count as the page's counter),
+  // and joined in the founders' round, by Fri 4/12 23:59 Rome (the terms: "the first 100 members of the founders' round")
   let gifts = [];
-  if (FOUNDERS_ROUND) {
+  if (foundersAt(Date.parse(member.at))) {
     const taken = await seats(stripe).catch(() => null);
     if (typeof taken === 'number' && taken <= CHEAP_SEATS) gifts = FOUNDERS_GIFTS.map((g) => ({ name: g.name, href: `https://www.omnyalab.com${signedHref(g.file, SKILL_TTL)}` }));
     if (gifts.length) await kv('HSET', K.members, email, JSON.stringify({ ...member, gift: taken })).catch(() => {});

@@ -1,7 +1,7 @@
 // THE 3D FUTURE, the paid club (20/11, Nico): one function for all of it, like api/city.js (vercel.json sends
 // /api/club/<action> here). The rules (dates, prices, seats, proofs) are in api/_lib/club.js. The addresses below are the
 // ones the club page (src/pages/the-3d-future/index.astro) is built on: keep them as they are.
-//   GET  /api/club/seats[?at=<ISO date>]     → { taken, left, phase: 'before'|'early'|'open'|'closed' }
+//   GET  /api/club/seats[?at=<ISO date>]     → { taken, left, phase: 'before'|'early'|'open'|'after' } (after = from Sat 5/12, €19, the doors never close)
 //        ?at= previews the phase of another moment, like the cards (?at= on the thanks pages); taken is always the real one
 //   POST /api/club/verify   { receipt?, email? }   → { buyer: bool, token? } (the token, 24 hours, is for checkout)
 //   POST /api/club/checkout { name, email, plan: 'month'|'year', token?, ig?, v?, ui? }
@@ -118,7 +118,7 @@ async function verify(req) {
 }
 
 const NO = {
-  closed: 'The doors of THE 3D FUTURE are closed right now. Get on the list and we email you when they open.',
+  closed: 'THE 3D FUTURE opens on Saturday 28 November. Get on the list and we email you when it opens.',
   early: 'Until 18:00 the doors are open only for the waitlist and for who bought one of our guides.',
 };
 
@@ -134,7 +134,7 @@ async function checkout(req) {
   if (!name || !EMAIL.test(email) || !plan || (ig && !IG.test(ig)) || (b.token && String(b.token).length > 300) || (b.v && !v)) return fail(400, 'bad_request', 'Name, email and plan needed.');
 
   const now = clock(req), phase = phaseAt(now);
-  if (phase === 'before' || phase === 'closed') return fail(403, 'closed', NO.closed, { phase });
+  if (phase === 'before') return fail(403, 'closed', NO.closed, { phase }); // 24/11: only before the opening, the doors never close
   try {
     // who is a guide buyer: a token from verify (receipt or email), or this email itself
     let proof = readToken(b.token) || '';
@@ -144,12 +144,11 @@ async function checkout(req) {
     if (proof) { const owner = await kv('HGET', KEYS.proofs, proof); if (owner && owner !== email) { used = true; proof = ''; } }
     const buyer = !!proof;
     const waitlisted = phase === 'early' && !buyer ? (await isWaitlisted(email)) || (typed.toLowerCase() !== email && (await isWaitlisted(typed.toLowerCase()))) : false;
-    // the early doors first: who may not come in yet hears it before Stripe is even asked
-    const pre = decide({ now, taken: 0, buyer, waitlisted, plan });
-    if (!pre.ok) return fail(403, pre.error, NO[pre.error], { phase });
+    // the early doors first: who may not come in yet hears it before Stripe is even asked. 24/11: the price is the date
+    // and the buyer proof only (€9 until Fri 4/12 23:59 Rome, then €19, guide buyers €9), never the seat count
+    const d = decide({ now, buyer, waitlisted, plan });
+    if (!d.ok) return fail(403, d.error, NO[d.error], { phase });
     if (!stripe || !process.env.STRIPE_PUBLISHABLE_KEY) return notConfigured({ phase });
-    const taken = buyer ? 0 : await seats(stripe); // a buyer pays €9 whatever the count
-    const d = decide({ now, taken, buyer, waitlisted, plan });
     const price = priceId(d.key);
     if (!price) return notConfigured({ phase });
     // empty ig / v / proof are left out (an empty value means "remove" for Stripe)
@@ -162,7 +161,7 @@ async function checkout(req) {
       metadata: meta,
       subscription_data: { metadata: meta },
       return_url: `${SITE}/the-3d-future/welcome?session_id={CHECKOUT_SESSION_ID}`,
-      // a €9 seat held in a checkout nobody finishes goes back after half an hour (Stripe's shortest)
+      // a checkout nobody finishes goes back after half an hour (Stripe's shortest)
       expires_at: Math.floor(Date.now() / 1000) + 31 * 60,
     });
     return json({ client_secret: session.client_secret, pk: process.env.STRIPE_PUBLISHABLE_KEY, plan, price: d.eur, buyer, ...(used ? { note: 'That receipt already gave the €9 price to another member.' } : {}) });

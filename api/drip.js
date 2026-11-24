@@ -7,7 +7,7 @@
 // GET ?key=IG_ADMIN_KEY&status=1 | &on=1|0 | &cap=N | &future=1|0 | &quiet=YYYY-MM-DD,… | &unquiet=… | &report=1
 //     | &loadold=1 (the people we already had into pool:old) | &oldday=N (how many of them start a day)
 //     | &launch=1 (THE 3D FUTURE launch mails) | &launchon=1|0 | &ltest=e1..e7[&to=][&as=<email for the A/B half>]
-//     | &clubextra=email:Name,… | &test=<email>&step=1..4[&free=free-stadium][&club=soon|open|closed][&live=1 with the P.S.]
+//     | &clubextra=email:Name,… | &test=<email>&step=1..4[&free=free-stadium][&club=soon|open][&live=1 with the P.S.]
 //
 // The rules, decided with Nico on 20/11:
 // - Resend only (never info@'s Microsoft 365 box), at most omnya:drip:cap a day (default DRIP_CAP or 80): Resend free sends

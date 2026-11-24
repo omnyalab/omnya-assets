@@ -7,7 +7,8 @@
 //   before (until Sat 28/11 09:00)  "Get in first", the pre-registration → /api/optin 'waitlist-3d-future'
 //   early (09:00-18:00) and open (until Fri 4/12 23:59)  "Join for €9/month", seats from /api/club/seats, the receipt
 //     check /api/club/verify, the Stripe checkout of /api/club/checkout inside the page
-//   closed  "Doors closed for this round", the same pre-registration for the next one
+//   after (from Sat 5/12 00:00, 24/11 Nico: «le porte son sempre aperte»)  the doors stay open, "Join for €19/month"
+//     (€9 for who proves a guide), no countdown: only the founders' €9 ended on 4/12
 // Previews: ?at=<ISO date> moves the clock (e.g. ?at=2026-11-29T12:00:00%2B01:00), ?seats=<n> = seats taken (the number
 // the page shows), ?v=a|b picks the name (a THE 3D FUTURE, b 3D THAT SELLS; otherwise 50/50, kept 30 days in t3f_v).
 // The behaviour is in components/club/club-client.js, the look in components/club/club.css.
@@ -15,7 +16,7 @@ import '../../components/club/club.css';
 import Icon from '../../components/club/Icon.astro';
 import ClubPanels from '../../components/club/ClubPanels.astro';
 import { badgeB2 } from '../../components/club/badges';
-import { EARLY, OPEN, CLOSE, SUB, PROOF, SOURCE, proofTxt, DROPS, INSIDE, VALUE, FAQ, bv, bvSet, vImg, vSet } from '../../components/club/data';
+import { EARLY, OPEN, FOUNDERS_END, SUB, PROOF, SOURCE, proofTxt, DROPS, INSIDE, VALUE, FAQ, bv, bvSet, vImg, vSet } from '../../components/club/data';
 import client from '../../components/club/club-client.js?raw';
 
 const title = 'THE 3D FUTURE · Omnya Lab';
@@ -25,7 +26,7 @@ const og = new URL('/og/omnya-lab.jpg', Astro.site);
 const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
 ---
 <!doctype html>
-<html lang="en" data-phase="before" data-v="a" data-t-early={Date.parse(EARLY)} data-t-open={Date.parse(OPEN)} data-t-close={Date.parse(CLOSE)}>
+<html lang="en" data-phase="before" data-v="a" data-t-early={Date.parse(EARLY)} data-t-open={Date.parse(OPEN)} data-t-close={Date.parse(FOUNDERS_END)}>
 <head>
 <meta charset="utf-8">
 <title>{title}</title>
@@ -37,7 +38,7 @@ const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
   var h = document.documentElement, q = new URLSearchParams(location.search), off = 0;
   var at = Date.parse((q.get('at') || '').replace(' ', '+')); if (!isNaN(at)) off = at - Date.now();
   var t = Date.now() + off;
-  h.setAttribute('data-phase', t < +h.dataset.tEarly ? 'before' : t < +h.dataset.tOpen ? 'early' : t < +h.dataset.tClose ? 'open' : 'closed');
+  h.setAttribute('data-phase', t < +h.dataset.tEarly ? 'before' : t < +h.dataset.tOpen ? 'early' : t < +h.dataset.tClose ? 'open' : 'after');
   var v = q.get('v');
   if (v !== 'a' && v !== 'b') { var m = document.cookie.match(/(?:^|;\s*)t3f_v=([ab])/); v = m ? m[1] : (Math.random() < 0.5 ? 'a' : 'b'); }
   try { document.cookie = 't3f_v=' + v + '; Max-Age=2592000; Path=/; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : ''); } catch (e) {}
@@ -93,19 +94,19 @@ const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
           <p class="hsub">{SUB}</p>
           <div class="ctas">
             <button type="button" class="btn cta" data-join>
-              <span data-when="before">Get in first</span><span data-when="early open">Join for <span data-eur>€9</span>/month</span><span data-when="closed">Get on the list for the next one</span>
+              <span data-when="before">Get in first</span><span data-when="early open after">Join for <span data-eur>€9</span>/month</span>
             </button>
             <a class="btn glassbtn" href="#vault" data-see>See inside<span class="chev" aria-hidden="true">›</span></a>
           </div>
           <div class="hwhen">
             <span class="tag" data-when="before"><i></i>Doors open Saturday 28 November</span>
             <span class="tag" data-when="early"><i></i>Open now for the list, for everyone at 18:00</span>
-            <span class="tag" data-when="open"><i></i>Doors close Friday 4 December</span>
-            <span class="tag off" data-when="closed"><i></i>Doors closed for this round</span>
+            <span class="tag" data-when="open"><i></i>The €9 founders' price ends Friday 4 December</span>
+            <span class="tag" data-when="after"><i></i>Doors open, join whenever you want</span>
             <div class="cdn" role="timer" aria-label="Time until the doors open" data-cd="early" data-when="before">
               {cdParts.map(([p, t], i) => <>{i > 0 && <i aria-hidden="true">:</i>}<span><b data-part={p}>{p === 'd' ? '0' : '00'}</b><small>{t}</small></span></>)}
             </div>
-            <div class="cdn" role="timer" aria-label="Time until the doors close" data-cd="close" data-when="early open">
+            <div class="cdn" role="timer" aria-label="Time until the €9 founders' price ends" data-cd="close" data-when="early open">
               {cdParts.map(([p, t], i) => <>{i > 0 && <i aria-hidden="true">:</i>}<span><b data-part={p}>{p === 'd' ? '0' : '00'}</b><small>{t}</small></span></>)}
             </div>
           </div>
@@ -184,9 +185,9 @@ const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
           <p class="was"><s>€150+ on our site</s></p>
           <div class="oprice"><b data-eur>€9</b><span>a month</span></div>
           <p class="olock">locked for as long as you stay</p>
-          <p class="olock">if you join by Friday 4 December</p>
+          <p class="olock" data-when="before early open">if you join by Friday 4 December</p>
           <p class="bonus"><Icon name="gift" /><span><b>Bonus</b> · the House Builder skill is yours to keep</span></p>
-          <p class="bonus fgift"><Icon name="gift" /><span><b>Founders' gift · first 100</b> · our 3 playbooks and the full 3D AI Mastery course, yours to keep</span></p>
+          <p class="bonus fgift" data-when="before early open"><Icon name="gift" /><span><b>Founders' gift · first 100</b> · our 3 playbooks and the full 3D AI Mastery course, yours to keep</span></p>
           <div class="seats">
             <p class="sline" data-when="before">€9 until Friday 4 December · gifts for the first 100</p>
             <div class="seatbox" data-when="early open" data-seatbox hidden>
@@ -197,27 +198,27 @@ const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
           <div class="ocd">
             <span class="tag" data-when="before"><i></i>Doors open Saturday 28 November</span>
             <span class="tag" data-when="early"><i></i>Open now for the list, for everyone at 18:00</span>
-            <span class="tag" data-when="open"><i></i>Doors close Friday 4 December</span>
-            <span class="tag off" data-when="closed"><i></i>Doors closed for this round</span>
+            <span class="tag" data-when="open"><i></i>The €9 founders' price ends Friday 4 December</span>
+            <span class="tag" data-when="after"><i></i>Doors open, join whenever you want</span>
             <div class="cdn" role="timer" aria-label="Time until the doors open" data-cd="early" data-when="before">
               {cdParts.map(([p, t], i) => <>{i > 0 && <i aria-hidden="true">:</i>}<span><b data-part={p}>{p === 'd' ? '0' : '00'}</b><small>{t}</small></span></>)}
             </div>
-            <div class="cdn" role="timer" aria-label="Time until the doors close" data-cd="close" data-when="early open">
+            <div class="cdn" role="timer" aria-label="Time until the €9 founders' price ends" data-cd="close" data-when="early open">
               {cdParts.map(([p, t], i) => <>{i > 0 && <i aria-hidden="true">:</i>}<span><b data-part={p}>{p === 'd' ? '0' : '00'}</b><small>{t}</small></span></>)}
             </div>
           </div>
           <button type="button" class="btn cta wide ojoin" data-join>
-            <span data-when="before">Get in first →</span><span data-when="early open">Join for <span data-eur>€9</span>/month →</span><span data-when="closed">Get on the list for the next one →</span>
+            <span data-when="before">Get in first →</span><span data-when="early open after">Join for <span data-eur>€9</span>/month →</span>
           </button>
-          <p class="fine" data-when="before early open">Cancel in one tap · Secure payment by Stripe</p>
-          <form class="rcpt" data-rcpt data-when="before early open" novalidate>
+          <p class="fine" data-when="before early open after">Cancel in one tap · Secure payment by Stripe</p>
+          <form class="rcpt" data-rcpt data-when="before early open after" novalidate>
             <p class="rq" data-mode="r"><b>Bought one of our guides?</b> Enter your receipt number</p>
             <p class="rq" data-mode="e" hidden><b>Bought one of our guides?</b> Enter the email you paid with</p>
             <div class="rrow">
               <label class="rin" data-rin><span aria-hidden="true" data-mode="r">#</span><span aria-hidden="true" data-mode="e" hidden><Icon name="mail" /></span><input name="proof" inputmode="numeric" autocomplete="off" placeholder="1415-7362" maxlength="120" aria-label="Receipt number" data-rinput></label>
               <button class="btn rbtn" type="submit">Check</button>
             </div>
-            <p class="rok" data-rok role="status" hidden><Icon name="check" /><span>Guide found · €9 a month for you, in the next rounds too</span></p>
+            <p class="rok" data-rok role="status" hidden><Icon name="check" /><span>Guide found · €9 a month for you, after Friday 4 December too</span></p>
             <p class="rno" data-rno role="alert" hidden></p>
             <button type="button" class="rsm" data-rswitch><span data-mode="r">No receipt? Use the email you paid with</span><span data-mode="e" hidden>Have the receipt? Use the receipt number</span></button>
           </form>

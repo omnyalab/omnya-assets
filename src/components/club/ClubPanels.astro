@@ -42,13 +42,12 @@ import { WANTS } from './data';
       <div class="ib">
         <span class="going"><Icon name="check" />You're on the list</span>
         <h2 id="t3f-l3" tabindex="-1">You get in first</h2>
-        <p class="when" data-when="before early open">Sat 28 Nov · 09:00 CET</p>
-        <p class="when" data-when="closed">We write to you when the doors open again</p>
-        <div class="cdn" role="timer" aria-label="Time until your early door" data-cd="early" data-when="before early open">
+        <p class="when">Sat 28 Nov · 09:00 CET</p>
+        <div class="cdn" role="timer" aria-label="Time until your early door" data-cd="early">
           <span><b data-part="d">0</b><small>days</small></span><i aria-hidden="true">:</i><span><b data-part="h">00</b><small>hours</small></span><i aria-hidden="true">:</i><span><b data-part="m">00</b><small>min</small></span><i aria-hidden="true">:</i><span><b data-part="s">00</b><small>sec</small></span>
         </div>
         <div class="two">
-          <button type="button" class="btn" data-sched data-when="before early open"><Icon name="cal" /><span>Schedule it</span></button>
+          <button type="button" class="btn" data-sched><Icon name="cal" /><span>Schedule it</span></button>
           <button type="button" class="btn" data-share><Icon name="share" /><span>Share it</span></button>
         </div>
       </div>
@@ -58,7 +57,7 @@ import { WANTS } from './data';
   <button type="button" class="rb ctr x" data-close aria-label="Close" data-x3 hidden><Icon name="x" /></button>
 </div>
 
-{/* ---------- checkout (early and open) ---------- */}
+{/* ---------- checkout (early, open and after: the doors never close) ---------- */}
 <div class="ov" data-ov="pay" role="dialog" aria-modal="true" aria-labelledby="t3f-p" hidden>
   <div class="joinbg" aria-hidden="true"><img src="/learn/3df_bg_burj.webp" alt="" decoding="async"></div>
   <div class="joinwrap">
@@ -67,7 +66,7 @@ import { WANTS } from './data';
         <h2 id="t3f-p" tabindex="-1">Join <span data-vv="a">THE 3D FUTURE</span><span data-vv="b">3D THAT SELLS</span></h2>
         <button type="button" class="rb ctr" data-close aria-label="Close"><Icon name="x" /></button>
       </div>
-      <p class="paid" data-paid hidden><Icon name="check" /><span>Guide found · €9 a month for you, in the next rounds too</span></p>
+      <p class="paid" data-paid hidden><Icon name="check" /><span>Guide found · €9 a month for you, after Friday 4 December too</span></p>
       <form class="opts" data-payform novalidate>
         <div class="field"><label for="t3f-pn">Name</label><input id="t3f-pn" name="name" required autocomplete="name" maxlength="60" placeholder="Your name"></div>
         <div class="field"><label for="t3f-pe">Email</label><input id="t3f-pe" name="email" type="email" required autocomplete="email" inputmode="email" maxlength="120" placeholder="you@studio.com"></div>
