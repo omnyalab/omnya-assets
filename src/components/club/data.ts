@@ -1,5 +1,5 @@
 // THE 3D FUTURE public page (/the-3d-future, 20/11, Nico's board A "Giro 3": A1 with H6, A2 with P1, B2 badges).
-// Words and numbers of the page in one place. The numbers are the real ones read on 20/11 (Instagram of @omnyalab,
+// Words and numbers of the page in one place. 24/11: 5,813,386 views in 30 days (Nico's Insights), stadium reel 2,548,472 and 18,863 followers (Graph API), €5,000+ sales this month (Nico). Before: the real ones read on 20/11 (Instagram of @omnyalab,
 // 30 days, and Stripe), as written on the board: change them here only with a new source line.
 
 /** Round 1 (Europe/Rome, +01:00 for the whole window), the same instants as api/_lib/club.js */
@@ -14,13 +14,13 @@ export const SUB = 'The club where you learn to build the 3D that sells';
 
 /** l = the label; a "|" breaks it in two lines, the same on every small tile so the labels of a row share one baseline */
 export const PROOF = [
-  { n: 4.7, dec: 1, suf: 'M', l: 'views in 30 days', bv: 1, big: true },
-  { n: 2.3, dec: 1, suf: 'M', l: 'views on|one reel', bv: 3 },
-  { n: 14700, pre: '+', l: 'followers|in 30 days', bv: 2 },
-  { n: 2600, pre: '€', suf: '+', l: 'in guide sales|in 20 days', bv: 5 },
+  { n: 5.8, dec: 1, suf: 'M', l: 'views in 30 days', bv: 1, big: true },
+  { n: 2.5, dec: 1, suf: 'M', l: 'views on|one reel', bv: 3 },
+  { n: 18800, suf: '+', l: 'followers|on Instagram', bv: 2 },
+  { n: 5000, pre: '€', suf: '+', l: 'in sales|this month', bv: 5 },
   { n: 4800, suf: '+', l: 'emails|in 13 days', bv: 4 },
 ] as { n: number; dec?: number; pre?: string; suf?: string; l: string; bv: number; big?: boolean }[];
-export const SOURCE = 'Instagram and Stripe, 20 November 2026';
+export const SOURCE = 'Instagram and Stripe, 24 November 2026';
 export const proofTxt = (s: (typeof PROOF)[number]) => (s.pre || '') + (s.dec ? s.n.toFixed(s.dec) : s.n.toLocaleString('en-US')) + (s.suf || '');
 
 /** The Vault at launch: six builds open, then the card of the next Friday (no project name: not decided yet).

@@ -10,7 +10,7 @@
 //   after (from Sat 5/12 00:00, 24/11 Nico: «le porte son sempre aperte»)  the doors stay open, "Join for €19/month"
 //     (€9 for who proves a guide), no countdown: only the founders' €9 ended on 4/12
 // Previews: ?at=<ISO date> moves the clock (e.g. ?at=2026-11-29T12:00:00%2B01:00), ?seats=<n> = seats taken (the number
-// the page shows), ?v=a|b picks the name (a THE 3D FUTURE, b 3D THAT SELLS; otherwise 50/50, kept 30 days in t3f_v).
+// the page shows), the name is always THE 3D FUTURE (the 50/50 test with 3D THAT SELLS closed 24/11; ?v=b previews it).
 // The behaviour is in components/club/club-client.js, the look in components/club/club.css.
 import '../../components/club/club.css';
 import Icon from '../../components/club/Icon.astro';
@@ -40,7 +40,8 @@ const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
   var t = Date.now() + off;
   h.setAttribute('data-phase', t < +h.dataset.tEarly ? 'before' : t < +h.dataset.tOpen ? 'early' : t < +h.dataset.tClose ? 'open' : 'after');
   var v = q.get('v');
-  if (v !== 'a' && v !== 'b') { var m = document.cookie.match(/(?:^|;\s*)t3f_v=([ab])/); v = m ? m[1] : (Math.random() < 0.5 ? 'a' : 'b'); }
+  // 24/11 name test closed (Nico): everyone sees THE 3D FUTURE; ?v=b only previews the other name, the old t3f_v cookie is ignored
+  if (v !== 'b') v = 'a';
   try { document.cookie = 't3f_v=' + v + '; Max-Age=2592000; Path=/; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : ''); } catch (e) {}
   h.setAttribute('data-v', v);
   if (v === 'b') document.title = document.title.replace('THE 3D FUTURE', '3D THAT SELLS');
