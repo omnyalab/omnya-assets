@@ -42,8 +42,8 @@
       "The ticket with the view from your seat",
       "What to charge a club for it"
     ],
-    "launch_end": "2026-11-22T23:59:59+01:00",
-    "day2": "Monday"
+    "launch_end": "2026-11-27T23:59:59+01:00",
+    "day2": "Saturday"
   },
   "kit": {
     "short": "Claude Skill",

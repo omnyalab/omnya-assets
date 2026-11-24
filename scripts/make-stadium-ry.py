@@ -28,7 +28,7 @@ w = open('src/pages/the-build-blueprint/watch.astro').read()
 w = re.sub(r'^---\n.*?\n---', '''---
 // the-stadium-blueprint/watch (18/11, Nico: the Build/Riyadh format for the Stadium funnel, in red): the free Stadium
 // Blueprint as step 1 (no email, NO_MAIL), the face video with the stadium, our 1M views reel, then the Full Stadium Guide
-// with the real Stripe Checkout inside the page (api/embed-checkout.js). Launch price for everyone until Sunday 22/11 23:59.
+// with the real Stripe Checkout inside the page (api/embed-checkout.js). Launch price for everyone until Friday 27/11 23:59 (24/11 Nico: back to €5.99/€14.99 after it ran out on 22/11).
 // Made by scripts/make-stadium-ry.py from the Build page: change the words there, not here.
 ---''', w, count=1, flags=re.S)
 B = '/learn/bd_book_tight.webp'
@@ -52,7 +52,7 @@ for a, b in [
    '<li>Everything in the Full Guide</li><li>The Claude skill that builds the stadium for you</li><li>Your club, colours and prices in one file</li><li>Every seat with the view from it</li><li>How we made this video viral</li><li>Ready to show a club</li>'),
   ('that builds the house page for you, ready to use', 'that builds this for you + how we made this video viral'),
   ('omnya_bd_first', 'omnya_sd_first'),
-  # the products of the stadium: the Full (€5.99, from Monday €9.99) and the Stadium Builder skill + Full (€14.99, from Monday €19.99)
+  # the products of the stadium: the Full (€5.99, from Saturday 28/11 €9.99) and the Stadium Builder skill + Full (€14.99, from Saturday 28/11 €19.99)
   ("'full': 'https://buy.stripe.com/5kQ3cuacR3bW2dwgGV8so0D'", "'full': 'https://buy.stripe.com/28EaEW3Ot7scdWeeyN8so0M'"),
   ("'skill': 'https://buy.stripe.com/8x2fZg84J3bW4lEgGV8so0Z'", "'skill': 'https://buy.stripe.com/8x2fZg84J13O2dw3U98so11'"),
   ("LINK.full = 'https://buy.stripe.com/6oUdR83Ot3bW9FY4Yd8so0V'", "LINK.full = 'https://buy.stripe.com/00w4gyckZfYI8BU76l8so13'"),
