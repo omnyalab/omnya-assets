@@ -530,7 +530,7 @@ html.x2 .opt[data-o="all"]{display:none}
       <div class="big-play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.4-6.5a1 1 0 0 0 0-1.7L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg></div><div class="ctl" data-ctl><button type="button" class="pp" data-pp aria-label="Pause"><svg viewBox="0 0 24 24" class="i-pause"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg><svg viewBox="0 0 24 24" class="i-play"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.4-6.5a1 1 0 0 0 0-1.7L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg></button><span class="tt" data-tt>0:00</span><div class="sk" data-sk><i data-fill></i><b data-knob></b></div><span class="tt" data-dur>0:45</span><button type="button" class="mu" data-mu aria-label="Sound"><svg viewBox="0 0 24 24"><path d="M3 9.5h4L12 5v14l-5-4.5H3z" fill="currentColor"/><path class="w" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="x" d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><button type="button" class="fs" data-fs aria-label="Full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
       <div class="unm" data-unm><svg viewBox="0 0 24 24" fill="#fff"><path d="M3 9.5h4L12 5v14l-5-4.5H3z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg>Your video is playing<br>Tap to unmute</div></div>
     <div class="cta"><a class="cbtn" href="#offer">Get the full guide<i class="dot"></i><span class="px">€5.99</span></a></div>
-    <p class="rvl"><span class="rvs">-80%</span><span>Launch price · from Saturday €9.99 · <b class="rvt2" data-tx>00:00:00</b></span></p>
+    <p class="rvl"><span class="rvs">-80%</span><span>Launch price · from Sunday €9.99 · <b class="rvt2" data-tx>00:00:00</b></span></p>
   </section>
 
   <section class="big c1">
@@ -577,7 +577,7 @@ if (v === 'b2' || v === 'b4') document.body.classList.add('withprice')
 if (v === 'b3' || v === 'b4') document.body.classList.add('yellow')
 const __ryDay = (() => { const d = new Date(); return d.getFullYear() * 1e4 + (d.getMonth() + 1) * 100 + d.getDate() })()
 let __ryFirst = 0; try { __ryFirst = +localStorage.getItem('omnya_sd_first') || 0; if (!__ryFirst) localStorage.setItem('omnya_sd_first', __ryDay) } catch (e) {}
-window.__ry2 = Date.now() > Date.parse('2026-11-27T23:59:59+01:00')
+window.__ry2 = Date.now() > Date.parse('2026-11-28T23:59:59+01:00') // 24/11 (Nico): Full €5.99 until Sat 28/11
 if (window.__ry2) {
   document.documentElement.classList.add('ry2')
   const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT)
@@ -585,7 +585,7 @@ if (window.__ry2) {
   const r = document.querySelector('.rvl span:last-child'); if (r) r.innerHTML = 'The launch price is over'
   const ks = document.querySelector('.p-kit .stk b'); if (ks) ks.textContent = '-71%'
 }
-let end = Date.parse('2026-11-27T23:59:59+01:00')
+let end = Date.parse('2026-11-28T23:59:59+01:00')
 const pad = n => String(n).padStart(2, '0')
 function tick() {
   const ms = Math.max(0, end - Date.now()), dd = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60, s = Math.floor(ms / 1e3) % 60

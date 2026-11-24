@@ -74,8 +74,8 @@ export const products: { id: ProductId; checkout: string }[] = [
   // 13/11 (Nico): playbook 02 "How to go viral in days, not years" at €97 (the €49 link was https://buy.stripe.com/3cI28q84J5k47xQ3U98so0t)
   { id: 'reel', checkout: 'https://buy.stripe.com/dRm3cu84J13O6tM1M18so0I' },
   { id: 'before-it-exists', checkout: 'https://buy.stripe.com/6oUaEWdp3eUEcSabmB8so0u' },
-  // 13/11: all three at €119 (the €79 link was https://buy.stripe.com/14A8wO5WB6o82dwfCR8so03)
-  { id: 'bundle', checkout: 'https://buy.stripe.com/9B67sK1Gl4g005oaix8so0J' },
+  // 24/11 (Nico: «rimetti 59»): all three at €59 = the Everything link (three playbooks + four Full guides); the €119 link was https://buy.stripe.com/9B67sK1Gl4g005oaix8so0J, the €79 one https://buy.stripe.com/14A8wO5WB6o82dwfCR8so03
+  { id: 'bundle', checkout: 'https://buy.stripe.com/5kQcN4bgVbIs6tMeyN8so0C' },
   { id: 'session', checkout: 'https://buy.stripe.com/7sY14m2KpfYI19s2Q58so04' },
   { id: 'build', checkout: 'https://buy.stripe.com/00w5kCacR27SbO6bmB8so05' },
   { id: 'community', checkout: '' },
@@ -144,7 +144,7 @@ export const products: { id: ProductId; checkout: string }[] = [
 
 /** Playbook prices from 13/11 (Nico): 02 "How to go viral in days, not years" is the dearest at €97, one by one €215, all three €119
     (before: 01 €79, 02 €49, 03 €39, all three €79). The pack stays €59, worth €238 one by one (4 Full at €5.99 + the three playbooks). */
-export const prices = { 'white-to-real': 79, reel: 97, 'before-it-exists': 39, bundle: 119, everything: 59, 'everything-upgrade': 53 } as const;
+export const prices = { 'white-to-real': 79, reel: 97, 'before-it-exists': 39, bundle: 59, everything: 59, 'everything-upgrade': 53 } as const;
 
 /**
  * After each purchase the checkout returns to /learn/thanks/<product>. That page makes one
@@ -159,7 +159,8 @@ export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: Pr
   // 01 costs as much as all three, so after it there is no "other two" offer (7/11)
   'white-to-real': { kind: 'pdf', oto: 'session-reader' },
   reel: { kind: 'pdf', oto: 'rest-02', down: 'session-reader' },
-  'before-it-exists': { kind: 'pdf', oto: 'rest-03' },
+  // 24/11: with all three at €59 the €80 'other two' after 03 is gone
+  'before-it-exists': { kind: 'pdf', oto: 'session-reader' },
   everything: { kind: 'pdf', oto: 'session-reader' },
   bundle: { kind: 'pdf', oto: 'session-reader', down: 'community' },
   session: { kind: 'lesson', oto: 'build-upgrade' },
