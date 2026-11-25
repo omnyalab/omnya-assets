@@ -96,6 +96,8 @@ const en = {
       tower: { name: 'Choose your floor', text: 'Fly in, pick a floor and see its view.', alt: 'The SAMAR tower in Dubai Marina, the camera flying in to a terrace' },
       towers: { name: 'Choose your view', text: 'Pick a view and fly around the three towers.', alt: 'Three towers rising out of the fog by the sea, the camera flying around them' },
       stadium: { name: 'Choose your seat', text: 'Pick a stand, a block and your seat, and fly there.', alt: 'A stadium in a green park seen from above, one stand lit up in orange, the camera flying down to the seats' },
+      waha: { name: 'Burj Al Waha', text: 'Pick a floor of the glass tower and walk through it.', alt: 'A glass tower on the Dubai Hills golf course at sunset, the camera flying in through the glass to a lounge' },
+      rawdah: { name: 'Burj Al Rawdah', text: 'Move along the garden tower in Riyadh, every floor lights up.', alt: 'A garden tower in Riyadh at sunset, its floors lighting up one by one' },
     },
   },
   home: {
@@ -753,6 +755,8 @@ const it: Dict = {
       tower: { name: 'Scegli il piano', text: 'Voli dentro, scegli un piano e vedi la sua vista.', alt: 'La torre SAMAR a Dubai Marina, la camera che vola fino a una terrazza' },
       towers: { name: 'Scegli la vista', text: 'Scegli una vista e voli attorno alle tre torri.', alt: 'Tre torri che escono dalla nebbia sul mare, la camera che vola intorno' },
       stadium: { name: 'Scegli il posto', text: 'Scegli tribuna, blocco e posto, e ci arrivi in volo.', alt: 'Uno stadio in un parco verde visto dall’alto, una tribuna accesa in arancio, la camera che scende fino ai posti' },
+      waha: { name: 'Burj Al Waha', text: 'Scegli un piano della torre di vetro e ci cammini dentro.', alt: 'Una torre di vetro sul golf di Dubai Hills al tramonto, la camera che entra dalla vetrata in un salotto' },
+      rawdah: { name: 'Burj Al Rawdah', text: 'Passi sulla torre dei giardini a Riyadh e ogni piano si accende.', alt: 'Una torre con i giardini a Riyadh al tramonto, i piani che si accendono uno dopo l’altro' },
     },
   },
   home: {
