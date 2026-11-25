@@ -2,9 +2,12 @@
 // 25/11 (Nico, Dubai Villa funnel): «la card siccome è tutto giallo, quella del 59 euro la fai blu». The Black Friday card
 // (RiyadhBlackFriday) stays identical in shape, books, prices and timer; only on /learn/thanks/full-villa its yellow becomes
 // the electric blue of the 3D AI Mastery funnel (#3d8bff → #1f5bff, light #9fd8ff), so it stands out on the orange page.
-// Hand made (not by scripts/new-funnel), is:inline: only on that page. The red discount pill and strike stay red.
+// Hand made (not by scripts/new-funnel), is:inline: only on that page. Also the black text on the yellow buttons of the page. The red discount pill and strike stay red.
 ---
 <style is:inline>
+  /* 25/11 (Nico: giallo acceso): the page is yellow now, so the text on its yellow buttons and steps is near-black */
+  .oto .btn--fill,.oto-dl .btn--fill,.oto__steps .is-done span,.oto__steps .is-now span,.wa-fab,.oto__down{color:#111!important}
+  .oto .btn--fill *,.oto-dl .btn--fill *{color:#111!important}
   .rybf .bridge p,.rybf .bridge .ar{color:#9fd8ff!important}
   .rybf .bfc.bft{background:radial-gradient(120% 90% at 50% 0%,#0b2152 0%,#05080f 62%)!important;border-color:#3d8bff!important;box-shadow:0 0 0 5px #3d8bff1f,0 24px 60px -24px #3d8bffaa!important}
   .rybf .bfc .rib{background:linear-gradient(180deg,#3d8bff,#1f5bff)!important;color:#fff!important}

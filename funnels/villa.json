@@ -1,5 +1,5 @@
 {
-  "_nota": "Il funnel DUBAI VILLA (25/11, reel «Choose your villa · Dubai Hills»: reel ai follower «Client paid us $6,000 for a 3D like this» e trial «Google Maps, but for $10M villas in Dubai», parola HOME su tutti e due, link omnyalab.com/home). Nico 25/11: le guide del singolo progetto vendono più di 3D AI Mastery, quindi questo reel ha il SUO funnel. Formato Riyadh, solo il Full (5,99 fino a sab 28/11 23:59, poi 9,99), niente kit; grazie con la card gialla Everything 59 identica (dentro anche il Full Dubai Villa e la Dubai Villa Builder skill, che sta SOLO nel 59) e in fondo THE 3D FUTURE. Colori: nero + l'arancio della pagina interattiva della villa (#d35400, bottoni #c24a00, motore-choose/engine/kit/tinta.js), neutri sabbia/travertino delle foto. Trial = pubblico freddo: testi generali.",
+  "_nota": "Il funnel DUBAI VILLA (25/11, reel «Choose your villa · Dubai Hills»: reel ai follower «Client paid us $6,000 for a 3D like this» e trial «Google Maps, but for $10M villas in Dubai», parola HOME su tutti e due, link omnyalab.com/home). Nico 25/11: le guide del singolo progetto vendono più di 3D AI Mastery, quindi questo reel ha il SUO funnel. Formato Riyadh, solo il Full (5,99 fino a sab 28/11 23:59, poi 9,99), niente kit; grazie con la card gialla Everything 59 identica (dentro anche il Full Dubai Villa e la Dubai Villa Builder skill, che sta SOLO nel 59) e in fondo THE 3D FUTURE. Colori: dalle 17:45 del 25/11 nero + GIALLO ACCESO #ffd60a (Nico: l'arancio era spento), scritte nere sui gialli. Trial = pubblico freddo: testi generali.",
   "id": "villa",
   "slug": "the-dubai-villa-blueprint",
   "format": "riyadh",
@@ -24,7 +24,8 @@
     "proof": "Steal it before your competitors do",
     "noMail": true,
     "og": "/og/villa.jpg",
-    "og_alt": "The Dubai Villa Blueprint, the free guide: how to build a villa people choose like on Google Maps"
+    "og_alt": "The Dubai Villa Blueprint, the free guide: how to build a villa people choose like on Google Maps",
+    "css": "/* 25/11 (Nico: giallo acceso): black text on the yellow button, like the Black Friday button */\n.oi--dv .x3-btn{color:#111!important}\n.oi--dv .x3-btn *{color:#111!important}"
   },
   "free": {
     "name": "The Dubai Villa Blueprint",
@@ -87,38 +88,39 @@
     "_nota": "25/11 Nico: la card 59 su questa grazie è BLU (src/components/DubaiVillaBlueBF.astro, fatta a mano, inclusa in views/Thanks.astro); dice «Dubai Villa and its skill too» perché la skill sta solo nel 59"
   },
   "colors": {
-    "name": "villa orange",
+    "name": "villa yellow",
+    "_nota": "25/11 Nico: «sto arancione spento fa schifo… un bel giallo acceso che attira tutto il funnel… devi accenderlo»: giallo acceso #ffd60a su nero, scritte nere sui bottoni gialli",
     "watch": {
       "bright": [
-        0.066,
-        1.38,
-        -0.04
+        0.139,
+        1.385,
+        0.04
       ],
       "dark": [
-        0.07,
+        0.139,
         1.0
       ],
       "map": {
-        "#22d35e": "#d35400",
-        "#d4ff5a": "#f2dcc0",
-        "#141a16": "#17120e",
-        "#0d120f": "#0b0806"
+        "#22d35e": "#ffd60a",
+        "#d4ff5a": "#fff1a8",
+        "#141a16": "#17150a",
+        "#0d120f": "#0b0a05"
       }
     },
     "free_card": "blue",
     "optin": {
-      "main": "#d35400",
-      "deep": "#c24a00",
-      "light": "#f2dcc0",
-      "mid": "#ee8a4c",
-      "dh": 24,
+      "main": "#ffd60a",
+      "deep": "#ffc400",
+      "light": "#fff1a8",
+      "mid": "#ffe24a",
+      "dh": 50,
       "ds": 1.0,
-      "bg": "#080605"
+      "bg": "#0a0904"
     },
     "thanks": {
-      "hue": 0.066,
-      "main": "#d35400",
-      "name": "villa orange"
+      "hue": 0.139,
+      "main": "#ffd60a",
+      "name": "villa yellow"
     }
   },
   "dm": {
@@ -131,5 +133,6 @@
     "messaggio": "Here's your free guide 🏡 https://www.omnyalab.com/home\nFollow @omnyalab so you catch the next one 🙌🏻",
     "ritardo": "10 sec",
     "non_follower": "Follow @omnyalab and check your DMs 🏡 (even in Requests or General) or tap the link in our bio"
-  }
+  },
+  "post_script": "scripts/villa-post.py"
 }
