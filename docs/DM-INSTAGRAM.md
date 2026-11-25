@@ -68,3 +68,16 @@ Instant DM (app.instantdm.com, Chrome di Nico), copiata dall'ultima automazione 
 - messaggio: Here's your free Plane Guide ✈️ https://www.omnyalab.com/plane
 Follow @omnyalab so you catch the next one 🙌🏻
 - ritardo: 10 sec
+
+## Reel Dubai Villa, parola HOME (dal 25/11) <!-- funnel:villa -->
+
+Instant DM (app.instantdm.com, Chrome di Nico), copiata dall'ultima automazione buona. Pagina: https://www.omnyalab.com/the-dubai-villa-blueprint · 25/11, da fare dopo il push: copiata «From previous post» dall'ultima automazione buona, testi cambiati; parola HOME su reel e trial
+
+- dove: Quick Automation → Posts (o Next Post Automation se il reel non è ancora uscito) → il reel → Send Link or PDF
+- trigger: All comments
+- risposte: Sent 🏡 check your DMs (even in Requests or General) | Check your DMs 🏡 (even in Requests or General) or tap the link in our bio | Just sent it 🏡 look in your DMs (even in Requests or General)
+- benvenuto: Hey 🙌🏻 your free Dubai Villa Guide is ready, tap below and I'll send it right away!
+- bottone: Send me the guide
+- messaggio: Here's your free Dubai Villa Guide 🏡 https://www.omnyalab.com/home
+Follow @omnyalab so you catch the next one 🙌🏻
+- ritardo: 10 sec

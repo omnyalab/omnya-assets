@@ -1,0 +1,134 @@
+{
+  "_nota": "Il funnel DUBAI VILLA (25/11, reel «Choose your villa · Dubai Hills»: reel ai follower «Client paid us $6,000 for a 3D like this» e trial «Google Maps, but for $10M villas in Dubai», parola HOME su tutti e due, link omnyalab.com/home). Nico 25/11: le guide del singolo progetto vendono più di 3D AI Mastery, quindi questo reel ha il SUO funnel. Formato Riyadh, solo il Full (5,99 fino a sab 28/11 23:59, poi 9,99), niente kit; grazie con la card gialla Everything 59 identica (dentro anche il Full Dubai Villa e la Dubai Villa Builder skill, che sta SOLO nel 59) e in fondo THE 3D FUTURE. Colori: nero + l'arancio della pagina interattiva della villa (#d35400, bottoni #c24a00, motore-choose/engine/kit/tinta.js), neutri sabbia/travertino delle foto. Trial = pubblico freddo: testi generali.",
+  "id": "villa",
+  "slug": "the-dubai-villa-blueprint",
+  "format": "riyadh",
+  "date": "25/11",
+  "from": {
+    "watch": "build",
+    "optin": "stadium"
+  },
+  "name": "Dubai Villa",
+  "word": "HOME",
+  "prefix": "dv",
+  "theme": "dv",
+  "what": "the choose your villa reels in Dubai Hills, where you drop a pin on a street and pick your villa like on Google Maps",
+  "links": {
+    "/home": false
+  },
+  "pack": true,
+  "optin": {
+    "title": "How to build a villa people choose like on Google Maps",
+    "description": "Steal our villa method: the free Dubai Villa Blueprint, and the Full guide that shows you how to build a villa page people choose like on Google Maps, with Claude Code.",
+    "word": "Villa",
+    "proof": "Steal it before your competitors do",
+    "noMail": true,
+    "og": "/og/villa.jpg",
+    "og_alt": "The Dubai Villa Blueprint, the free guide: how to build a villa people choose like on Google Maps"
+  },
+  "free": {
+    "name": "The Dubai Villa Blueprint",
+    "pdf": "omnya-lab-dubai-villa-blueprint.pdf"
+  },
+  "full": {
+    "title": "How to build a villa people choose like on Google Maps",
+    "pdf": "full-dubai-villa-blueprint.pdf"
+  },
+  "watch": {
+    "title": "Step 2: see how we built Google Maps for <u class=\"hb2\">$10M villas</u> with Claude",
+    "vsl": "vsl_riyadh.mp4?v=1",
+    "vsl_poster": "/learn/watch/vsl_poster_riyadh.jpg",
+    "hook": "<b class=\"hb\">Stop selling villas from a PDF</b>buyers pick them like on Google Maps now",
+    "reel": "r_villa.mp4",
+    "reel_poster": "p_villa.jpg",
+    "reel_label": "Our reel",
+    "join": "the same villa page",
+    "book_alt": "The Full Dubai Villa Blueprint",
+    "full_list": [
+      "Build the whole villa page with Claude Code, step by step, even if you've never opened a 3D program",
+      "The real street and the real villa from the map, in real measures and with the real sun",
+      "Drop a pin, scroll down the street like Google Maps and pick your villa",
+      "Turn every 3D frame into a real photo and every move into a seamless clip",
+      "Walk in: living room, kitchen, pool, and one question at the end, \"Is this your home?\"",
+      "Every prompt, every check, and what each photo and clip really costs"
+    ],
+    "launch_end": "2026-11-28T23:59:59+01:00",
+    "day2": "Sunday",
+    "about": "25/11: the Riyadh tower face video (vsl_riyadh, as on 3D AI Mastery) and, until the reel is out, the first 10 s of the villa tour (reale-dh/giro_auto_4k.mp4); then the first 10 s of the reel, as for Æther"
+  },
+  "kit": null,
+  "products": {
+    "full": {
+      "pid": "full-villa",
+      "stripe_name": "The Full Dubai Villa Blueprint",
+      "eur": "5.99",
+      "prod": "prod_Vh7HSZVwVAQG8d",
+      "price": "price_1Ufj2UATIF7pxfqfQMpKuITy",
+      "link": "https://buy.stripe.com/00wdR82Kp3bW2dwgGV8so1f"
+    },
+    "full9": {
+      "pid": "full-villa-9",
+      "stripe_name": "The Full Dubai Villa Blueprint",
+      "eur": "9.99",
+      "prod": "prod_Vh7IUsJfduHaUa",
+      "price": "price_1Ufj3zATIF7pxfqfsyfQJ0OU",
+      "link": "https://buy.stripe.com/8x29ASgBfbIs5pI9et8so1g"
+    }
+  },
+  "thanks": {
+    "bf": {
+      "name": "Dubai Villa and its skill",
+      "book": "/learn/pk_pb02.webp",
+      "side": "/learn/dv_book_tight.webp",
+      "h": "Right now, don’t miss this one",
+      "p": "Our Black Friday offer comes once a year, and what you just paid comes off the price"
+    },
+    "future": "villas like this",
+    "_nota": "25/11 Nico: la card 59 su questa grazie è BLU (src/components/DubaiVillaBlueBF.astro, fatta a mano, inclusa in views/Thanks.astro); dice «Dubai Villa and its skill too» perché la skill sta solo nel 59"
+  },
+  "colors": {
+    "name": "villa orange",
+    "watch": {
+      "bright": [
+        0.066,
+        1.38,
+        -0.04
+      ],
+      "dark": [
+        0.07,
+        1.0
+      ],
+      "map": {
+        "#22d35e": "#d35400",
+        "#d4ff5a": "#f2dcc0",
+        "#141a16": "#17120e",
+        "#0d120f": "#0b0806"
+      }
+    },
+    "free_card": "blue",
+    "optin": {
+      "main": "#d35400",
+      "deep": "#c24a00",
+      "light": "#f2dcc0",
+      "mid": "#ee8a4c",
+      "dh": 24,
+      "ds": 1.0,
+      "bg": "#080605"
+    },
+    "thanks": {
+      "hue": 0.066,
+      "main": "#d35400",
+      "name": "villa orange"
+    }
+  },
+  "dm": {
+    "note": "25/11, da fare dopo il push: copiata «From previous post» dall'ultima automazione buona, testi cambiati; parola HOME su reel e trial",
+    "dove": "Quick Automation → Posts (o Next Post Automation se il reel non è ancora uscito) → il reel → Send Link or PDF",
+    "trigger": "All comments",
+    "risposte": "Sent 🏡 check your DMs (even in Requests or General) | Check your DMs 🏡 (even in Requests or General) or tap the link in our bio | Just sent it 🏡 look in your DMs (even in Requests or General)",
+    "benvenuto": "Hey 🙌🏻 your free Dubai Villa Guide is ready, tap below and I'll send it right away!",
+    "bottone": "Send me the guide",
+    "messaggio": "Here's your free Dubai Villa Guide 🏡 https://www.omnyalab.com/home\nFollow @omnyalab so you catch the next one 🙌🏻",
+    "ritardo": "10 sec"
+  }
+}

@@ -34,8 +34,8 @@
       "How we hand it to a client",
       "What to charge for it"
     ],
-    "launch_end": "2026-11-22T23:59:59+01:00",
-    "day2": "Monday"
+    "launch_end": "2026-11-28T23:59:59+01:00",
+    "day2": "Sunday"
   },
   "kit": {
     "short": "Claude Skill",

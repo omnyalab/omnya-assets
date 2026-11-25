@@ -50,7 +50,10 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'full-plane'
   // the free and the paid 3D AI Mastery PDFs, on /the-3d-ai-mastery (22/11, word STADIUM on Instant DM)
   | 'free-mastery'
-  | 'full-mastery';
+  | 'full-mastery'
+  // the free and the paid Dubai Villa PDFs, on /the-dubai-villa-blueprint (25/11, word HOME on Instant DM)
+  | 'free-villa'
+  | 'full-villa';
 
 /**
  * Step 2 (10/11, Nico): after a Full guide (€5.99) the page /learn/thanks/full-* offers "Everything we teach" for the
@@ -135,6 +138,10 @@ export const products: { id: ProductId; checkout: string }[] = [
   // its Black Friday bundle (only on this funnel, until 27/11): "The 3 playbooks + 3D AI Mastery" €59, prod_Vg117C0bAq1lGQ, https://buy.stripe.com/cNieVcgBf13OcSa4Yd8so1c
   // and €53 on the thanks page for who bought the course at €5.99: prod_Vg1NqsE8ogNXai, https://buy.stripe.com/9B628qbgV7sc3hA8ap8so1d
   { id: 'full-mastery', checkout: 'https://buy.stripe.com/4gM5kCckZ3bW7xQ8ap8so1a' },
+  { id: 'free-villa', checkout: '/learn/free/omnya-lab-dubai-villa-blueprint.pdf' },
+  // the Full Dubai Villa Blueprint at €5.99 (€29 struck), Stripe product "The Full Dubai Villa Blueprint", back to /learn/thanks/full-villa (25/11)
+  // prod_Vh7HSZVwVAQG8d; from Sunday €9.99 https://buy.stripe.com/8x29ASgBfbIs5pI9et8so1g, used on the watch page
+  { id: 'full-villa', checkout: 'https://buy.stripe.com/00wdR82Kp3bW2dwgGV8so1f' },
 ];
 
 // 10/11 (site check 2 and 21): the launch prices are gone from the code. fullTowerDeal, full3dDeal and fullCityDeal (the Full
@@ -175,6 +182,7 @@ export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: Pr
   'full-riyadh': { kind: 'pdf', oto: 'community' },
   'full-plane': { kind: 'pdf', oto: 'community' },
   'full-mastery': { kind: 'pdf', oto: 'community' },
+  'full-villa': { kind: 'pdf', oto: 'community' },
 };
 
 /** The words used in the reels ("Comment 3D"). Each one has its own page, /learn/<word>, and leads with one playbook. */

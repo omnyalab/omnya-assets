@@ -20,15 +20,16 @@
 interface Props {
   next: string; // the old /sent page (no longer linked from here, kept for the pages that pass it)
   hero: string; // the blurred photo behind
-  kind?: 'towers' | 'build' | 'tower' | 'stadium' | 'miami' | 'riyadh' | 'plane' | 'mastery';
+  kind?: 'towers' | 'build' | 'tower' | 'stadium' | 'miami' | 'riyadh' | 'plane' | 'mastery' | 'villa';
   mail?: boolean; // 13/11 (Nico, S5): the glass Apple Mail compose that writes itself and sends, then the watch page
 }
 const { hero, kind = 'towers', mail = false } = Astro.props;
-const MAILS = { mastery: ['FREE 3D AI Mastery Blueprint', 'omnya-lab-3d-ai-mastery-free-guide.pdf'], plane: ['FREE Plane Blueprint', 'omnya-lab-plane-blueprint.pdf'], riyadh: ['FREE Riyadh Blueprint', 'omnya-lab-riyadh-blueprint.pdf'], miami: ['FREE Miami Blueprint', 'omnya-lab-miami-blueprint.pdf'], stadium: ['FREE Stadium Blueprint', 'omnya-lab-stadium-blueprint.pdf'], towers: ['FREE Towers Blueprint', 'omnya-lab-towers-blueprint.pdf'], build: ['FREE Build Blueprint', 'omnya-lab-build-blueprint.pdf'], tower: ['FREE Tower Blueprint', 'omnya-lab-tower-blueprint.pdf'] };
+const MAILS = { villa: ['FREE Dubai Villa Blueprint', 'omnya-lab-dubai-villa-blueprint.pdf'], mastery: ['FREE 3D AI Mastery Blueprint', 'omnya-lab-3d-ai-mastery-free-guide.pdf'], plane: ['FREE Plane Blueprint', 'omnya-lab-plane-blueprint.pdf'], riyadh: ['FREE Riyadh Blueprint', 'omnya-lab-riyadh-blueprint.pdf'], miami: ['FREE Miami Blueprint', 'omnya-lab-miami-blueprint.pdf'], stadium: ['FREE Stadium Blueprint', 'omnya-lab-stadium-blueprint.pdf'], towers: ['FREE Towers Blueprint', 'omnya-lab-towers-blueprint.pdf'], build: ['FREE Build Blueprint', 'omnya-lab-build-blueprint.pdf'], tower: ['FREE Tower Blueprint', 'omnya-lab-tower-blueprint.pdf'] };
 const [subj, pdfName] = MAILS[kind];
 const isBuild = kind === 'build';
 const K = {
   towers: { book: '/learn/tt_book_tight.webp', alt: 'The Full Towers Blueprint', free: '/learn/tt_cover_book.webp', full: '/go/full-towers', scene: '/go/full-towers-scene' },
+  villa: { book: '/learn/dv_book_tight.webp', alt: 'The Full Dubai Villa Blueprint', free: '/learn/dv_cover_book.webp', full: '/go/full-villa', scene: '' },
   mastery: { book: '/learn/mx_book_tight.webp', alt: 'The Full 3D AI Mastery Blueprint', free: '/learn/mx_cover_book.webp', full: '/go/full-mastery', scene: '' },
   plane: { book: '/learn/pl_book_tight.webp', alt: 'The Full Plane Blueprint', free: '/learn/pl_cover_book.webp', full: '/go/full-plane', scene: '' },
   riyadh: { book: '/learn/ry_book_tight.webp', alt: 'The Full Riyadh Blueprint', free: '/learn/ry_cover_book.webp', full: '/go/full-riyadh', scene: '' },

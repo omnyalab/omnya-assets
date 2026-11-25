@@ -59,6 +59,9 @@ const P = {
   'full-mastery-9': { items: ['price_1Ueey2ATIF7pxfqfzouZDTb6'], back: 'full-mastery' }, // 00w7sK84J8wg2dw62h8so1b · 9,99
   // 22/11 (Nico): the Black Friday bundle of the 3D AI Mastery funnel only, "The 3 playbooks + 3D AI Mastery" €59 (prod_Vg117C0bAq1lGQ), until 27/11
   'pack-mastery': { items: ['price_1Ueez6ATIF7pxfqfgnssWzyu'], back: 'full-mastery', until: Date.parse('2026-11-27T23:59:59+01:00') }, // cNieVcgBf13OcSa4Yd8so1c · 59
+  // 25/11 (Nico, Dubai Villa funnel, made by scripts/new-funnel): The Full Dubai Villa Blueprint €5.99, The Full Dubai Villa Blueprint €9.99
+  'full-villa': { items: ['price_1Ufj2UATIF7pxfqfQMpKuITy'], back: 'full-villa' }, // 00wdR82Kp3bW2dwgGV8so1f · 5,99
+  'full-villa-9': { items: ['price_1Ufj3zATIF7pxfqfsyfQJ0OU'], back: 'full-villa' }, // 8x29ASgBfbIs5pI9et8so1g · 9,99
   // 16/11 (Nico): Black Friday, Everything we teach for €39 until Friday 27 November (prod_Vdaact6ADqm1W3), same delivery as the pack
   'black-friday': { items: ['price_1UcJPLATIF7pxfqf6pLZSXoy'], back: 'everything', until: Date.parse('2026-11-27T23:59:59+01:00') },
 };

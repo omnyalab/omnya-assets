@@ -22,6 +22,7 @@ const FREE = {
   'free-riyadh': { name: 'The Riyadh Blueprint', file: '/learn/free/omnya-lab-riyadh-blueprint.pdf' },
   'free-plane': { name: 'The Plane Blueprint', file: '/learn/free/omnya-lab-plane-blueprint.pdf' },
   'free-mastery': { name: 'The 3D AI Mastery Guide', file: '/learn/free/omnya-lab-3d-ai-mastery-free-guide.pdf' },
+  'free-villa': { name: 'The Dubai Villa Blueprint', file: '/learn/free/omnya-lab-dubai-villa-blueprint.pdf' },
   free: { name: 'The Blueprint', file: '/learn/free/omnya-lab-blueprint.pdf' },
   // 17/11 (Nico): the waiting list of The 3D Future (opens Friday 27 November), from the Riyadh thanks page pop-up; no email
   'waitlist-3d-future': { name: 'The 3D Future waitlist', file: '' },
@@ -50,7 +51,7 @@ function mailHtml(name, f) {
 // 18/11 (Nico, board M1): the Build free PDF too, it is downloaded from the watch page
 // 20/11 (Nico: «they already have the PDF from the page, the email should be a follow-up»): Tower, Floors, Fable, Towers,
 // 3D and City too. The guide is step 1 of their watch page; the follow-up series (api/drip.js) writes from the day after.
-const NO_MAIL = new Set(['free-stadium', 'free-miami', 'free-riyadh', 'free-build', 'free-plane', 'free-mastery', 'waitlist-3d-future',
+const NO_MAIL = new Set(['free-stadium', 'free-miami', 'free-riyadh', 'free-build', 'free-plane', 'free-mastery', 'free-villa', 'waitlist-3d-future',
   'free-tower', 'free-towers', 'free-3d', 'free-city']);
 
 export async function POST(request) {
