@@ -14,6 +14,14 @@ import Club from '../../layouts/Club.astro';
   <h1 data-hi>Welcome inside.</h1>
   <p class="lead" data-state>Opening the club…</p>
 
+  {/* 25/11 (Nico): his thank-you video on top whenever a member comes in */}
+  <div class="hello" data-hello hidden>
+    <video controls playsinline preload="metadata" poster="/club/intro-nico.webp">
+      <source src="/club/intro-nico-720.mp4" media="(max-width: 700px)" type="video/mp4">
+      <source src="/club/intro-nico.mp4" type="video/mp4">
+    </video>
+  </div>
+
   {/* no link, or a wrong one */}
   <form class="box" data-lost hidden novalidate>
     <h2>Get your link to the club</h2>
@@ -91,6 +99,7 @@ import Club from '../../layouts/Club.astro';
   .sec > h2{margin:0 0 6px}
   .sec > p{margin:0 0 18px;max-width:62ch}
   .small{font-size:14px;margin-top:44px}
+  .hello{margin:22px 0 26px;aspect-ratio:16/9;border-radius:20px;overflow:hidden;background:#000;border:1px solid #ffffff1f;box-shadow:0 30px 70px -30px #000c}.hello video{display:block;width:100%;height:100%;object-fit:cover}
   .lessons{list-style:none;margin:0;padding:0;display:grid;gap:14px}
   .lessons li{border-radius:18px;background:linear-gradient(160deg,#ffffff12,#ffffff05);border:1px solid var(--line);overflow:hidden}
   .lessons .lh{display:flex;align-items:center;gap:14px;padding:14px 16px}
@@ -137,6 +146,7 @@ import Club from '../../layouts/Club.astro';
     if (d.name && d.name !== 'there') $('[data-hi]').textContent = 'Welcome inside, ' + d.name + '.'
     if (d.portal) { const c = $('[data-cancel]'), a = document.createElement('a'); a.href = d.portal; a.textContent = 'one tap here'; c.textContent = 'To cancel: '; c.append(a, '.'); $('[data-foot]').hidden = false }
     if (d.state === 'none') { st.textContent = 'We are getting your seat ready. Refresh this page in a minute.'; return }
+    if (d.state === 'waiting' || d.state === 'open') $('[data-hello]').hidden = false
     if (d.state === 'waiting') { st.textContent = ''; $('[data-waiting]').hidden = false; return }
     if (d.state === 'ended') { st.textContent = ''; $('[data-ended]').hidden = false; return }
     st.textContent = 'Everything of the club is here. Start with the first lesson.'

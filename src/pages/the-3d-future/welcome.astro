@@ -9,6 +9,14 @@ import Club from '../../layouts/Club.astro';
   <h1 data-hi>You're in.</h1>
   <p class="lead" data-state data-checking="Checking your payment…" data-fail="Your welcome email is on its way, with every link in it (subject: you're in)." data-ok="Three steps, and you're building.">Your welcome email is on its way, with every link in it (subject: you're in).</p>
 
+  {/* 25/11 (Nico): his thank-you video, the first thing they see after joining */}
+  <div class="hello" data-hello>
+    <video controls playsinline preload="metadata" poster="/club/intro-nico.webp">
+      <source src="/club/intro-nico-720.mp4" media="(max-width: 700px)" type="video/mp4">
+      <source src="/club/intro-nico.mp4" type="video/mp4">
+    </video>
+  </div>
+
   <ol class="steps">
     <li class="box">
       <h2>First, open the club</h2>
@@ -48,6 +56,7 @@ import Club from '../../layouts/Club.astro';
   .steps p{margin:0 0 14px}
   .steps li > :last-child{margin-bottom:0}
   .small{font-size:14.5px}
+  .hello{margin:22px 0 26px;aspect-ratio:16/9;border-radius:20px;overflow:hidden;background:#000;border:1px solid #ffffff1f;box-shadow:0 30px 70px -30px #000c}.hello video{display:block;width:100%;height:100%;object-fit:cover}
   .res{margin:26px 0 30px}.res h2{margin:4px 0 8px;font-size:18px}.res p{margin:0 0 12px}.res p:last-child{margin:0}
 </style>
 
