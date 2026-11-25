@@ -25,6 +25,7 @@ import { signedHref, PAGE_TTL, HOUSE_SKILL_FILE } from './_lib/learn-files.js';
 import {
   CLUB, ROUND, CHEAP_SEATS, EARLY, phaseAt, decide, priceId, seats, EMAIL, cleanEmail, cleanReceipt, firstName, signToken, readToken,
   limited, ipOf, receiptEmail, isBuyerEmail, isWaitlisted, fillWaitlist, backfill, lists, KEYS, PORTAL_URL,
+  readMember, insideData, insideUrl, noteBuild, sendInsideLink,
 } from './_lib/club.js';
 
 const SITE = 'https://www.omnyalab.com';
@@ -51,6 +52,7 @@ export async function GET(req) {
   const a = action(req);
   if (a === 'seats') return getSeats(req);
   if (a === 'welcome') return welcome(req);
+  if (a === 'inside') return inside(req);
   if (a === 'admin') {
     if (!admin(req)) return new Response('Not found', { status: 404 });
     return json(await lists());
@@ -63,6 +65,8 @@ export async function POST(req) {
   if (a === 'verify') return verify(req);
   if (a === 'checkout') return checkout(req);
   if (a === 'withdraw') return withdraw(req);
+  if (a === 'link') return lostLink(req);
+  if (a === 'build') return sendBuild(req);
   if (a === 'backfill') {
     if (!admin(req)) return new Response('Not found', { status: 404 });
     if (!stripe) return notConfigured();
@@ -175,6 +179,31 @@ async function checkout(req) {
   }
 }
 
+// 25/11 (Nico: «tutto nel sito»): the members' page /the-3d-future/inside
+//   GET  /api/club/inside?m=<member link>  → what the page shows (api/_lib/club.js insideData)
+//   POST /api/club/link  { email }          → the member link goes again to that email (always { ok: true })
+//   POST /api/club/build { m, link, note }  → the build goes to Nico by email
+async function inside(req) {
+  const email = readMember(new URL(req.url).searchParams.get('m'));
+  if (!email) return fail(403, 'bad_link', 'This link is not right. Write your email and we send you yours.');
+  try { return json(await insideData(email)); } catch (e) { console.error('[club] inside', e.message); return fail(502, 'store', 'Could not open the club right now, try again in a minute.'); }
+}
+async function lostLink(req) {
+  if (await limited(req, 'link', 5, 600)) return tooMany();
+  const b = await body(req), email = cleanEmail(b?.email);
+  if (!EMAIL.test(email)) return fail(400, 'bad_request', 'That email does not look right.');
+  try { await sendInsideLink(email); } catch (e) { console.error('[club] link', e.message); }
+  return json({ ok: true }); // the same answer for everyone: the page never says who is a member
+}
+async function sendBuild(req) {
+  if (await limited(req, 'build', 6, 3600)) return tooMany();
+  const b = await body(req), email = readMember(b?.m);
+  if (!email) return fail(403, 'bad_link', 'Open the club from your own link to send your build.');
+  const link = String(b.link || '').trim().slice(0, 300), note = String(b.note || '').trim().slice(0, 1500);
+  if (!/^https?:\/\/[^\s]+\.[^\s]+$/i.test(link)) return fail(400, 'bad_request', 'Paste the link of your build, like https://your-tower.netlify.app');
+  try { await noteBuild(email, link, note); return json({ ok: true }); } catch (e) { console.error('[club] build', e.message); return fail(502, 'mail', 'Could not send it right now, try again in a minute.'); }
+}
+
 async function welcome(req) {
   const id = new URL(req.url).searchParams.get('session_id') || '';
   if (!/^cs_(live|test)_[A-Za-z0-9]{8,200}$/.test(id)) return fail(400, 'bad_request', 'no payment to check');
@@ -190,7 +219,8 @@ async function welcome(req) {
     }
     let skill = '';
     try { skill = SITE + signedHref(HOUSE_SKILL_FILE, PAGE_TTL); } catch {}
-    return json({ name: firstName(s.metadata?.name || s.customer_details?.name), email: cleanEmail(s.customer_details?.email || s.customer_email), skool: process.env.CLUB_SKOOL_URL || '', skill, portal: PORTAL_URL });
+    const em = cleanEmail(s.customer_details?.email || s.customer_email);
+    return json({ name: firstName(s.metadata?.name || s.customer_details?.name), email: em, inside: em ? insideUrl(em) : '', skill, portal: PORTAL_URL });
   } catch (e) {
     console.error('[club] welcome', e.message);
     return e.statusCode === 404 ? fail(404, 'not_found', 'no such payment') : fail(502, 'stripe', 'could not check');

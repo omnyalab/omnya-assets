@@ -59,7 +59,7 @@ In your first week you build your own tower, in your colours, where buyers choos
 
 It opens in Black Friday week, so if you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay. If you're one of the first 100, you also get our three playbooks and the full 3D AI Mastery course as a gift that stays yours: more than €240 of files at our site's prices. Sell one 3D like that and the club pays for itself many times over.
 
-And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us.
+And if you follow the five lessons, send me your build from the club page and it still isn't live within 7 days, your first month is on us.
 
 Thank you to everyone who already got on the list: you get in before everyone else, first in line for the 100 gifts. If you want to be one of the first, get on the list now:
 {link}
@@ -79,7 +79,7 @@ The fix isn't a better prompt, it's a method: you start every round from the 3D 
 
 This is what you'll find inside from Saturday: step-by-step video courses where you see every click (the first one is your own tower where buyers choose their floor, ready on day one, and a new one comes every Friday with the build of the week), six builds from our reels with their files, prompts and Claude skills, every Full guide, the House Builder skill and my comments on your work every Monday.
 
-If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay. And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us.
+If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay. And if you follow the five lessons, send me your build from the club page and it still isn't live within 7 days, your first month is on us.
 
 You can reserve your seat right now: you add your card, nothing is charged today, and on Saturday your €9 month starts by itself. Every day there are fewer of the 100 founders' gifts left: our three playbooks and the full 3D AI Mastery course, theirs to keep, and only the people who reserve can get them. If you change your mind before Saturday, you cancel and pay nothing:
 {link}
@@ -167,7 +167,7 @@ The moment you join you get the first step-by-step video course: five short less
 
 Bought one by one on our site, the builds, the guides and the skill alone cost more than €150. If you join by Friday 4 December you get all of it for €9 a month, locked for as long as you stay. After Friday it's €19.
 
-And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us. You can cancel in one tap whenever you want:
+And if you follow the five lessons, send me your build from the club page and it still isn't live within 7 days, your first month is on us. You can cancel in one tap whenever you want:
 {link}
 
 Nico`,
@@ -183,7 +183,7 @@ What stops most people isn't talent, it's not knowing the steps. That's exactly 
 
 {img}
 
-If you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us, so the risk is ours, not yours. The €9 price ends on Friday:
+If you follow the five lessons, send me your build from the club page and it still isn't live within 7 days, your first month is on us, so the risk is ours, not yours. The €9 price ends on Friday:
 {link}
 
 Nico`,
@@ -196,7 +196,7 @@ Nico`,
 
 The €9 price of THE 3D FUTURE ends tomorrow, Friday 4 December.
 
-If you're still deciding, these are the usual doubts, with the honest answer to each. You don't need to code: the Claude skills and the prompts do the building, and the course shows you each step. You don't need much time: the first course is five short lessons, under 20 minutes of video in all. And if it doesn't work for you, follow the five lessons, post your build in the group, and if it still isn't live within 7 days your first month is on us.
+If you're still deciding, these are the usual doubts, with the honest answer to each. You don't need to code: the Claude skills and the prompts do the building, and the course shows you each step. You don't need much time: the first course is five short lessons, under 20 minutes of video in all. And if it doesn't work for you, follow the five lessons, send me your build from the club page, and if it still isn't live within 7 days your first month is on us.
 
 {img}
 
@@ -216,7 +216,7 @@ Tonight the €9 price of THE 3D FUTURE ends.
 
 If you join today, this is what's waiting for you: the course where you build your own tower step by step, the kind where buyers choose their floor, then a new course every Friday, six builds from our reels with their files, prompts and Claude skills, every Full guide, the House Builder skill and my comments on your work every Monday, all for €9 a month, locked for as long as you stay.
 
-The guarantee covers you: follow the five lessons, post your build in the group, and if it still isn't live within 7 days your first month is on us. After tonight it's €19 a month:
+The guarantee covers you: follow the five lessons, send me your build from the club page, and if it still isn't live within 7 days your first month is on us. After tonight it's €19 a month:
 {link}
 
 Nico`,

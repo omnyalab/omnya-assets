@@ -2,7 +2,7 @@
 // the welcome email text and the X2 date of the delivery email. Nothing leaves the computer (no Stripe, no Redis, no mail).
 // Usage (repo root): node scripts/club-test.mjs
 process.env.CLUB_SECRET ||= 'test-secret-only-here';
-const { decide, phaseAt, EARLY, OPEN, FOUNDERS_END, RESERVE_FROM, reservedText, signToken, readToken, cleanReceipt, welcomeText } = await import('../api/_lib/club.js');
+const { decide, phaseAt, EARLY, OPEN, FOUNDERS_END, RESERVE_FROM, reservedText, signToken, readToken, cleanReceipt, welcomeText, memberToken, readMember } = await import('../api/_lib/club.js');
 
 let fail = 0, n = 0;
 const eq = (got, want, what) => { n++; if (JSON.stringify(got) !== JSON.stringify(want)) { fail++; console.log('FAIL', what, '\n  got ', JSON.stringify(got), '\n  want', JSON.stringify(want)); } };
@@ -66,12 +66,18 @@ eq(tok.length < 60, true, 'the token is short');
 eq(['#1415-7362', ' 1415-7362 ', '1415 7362', '# 1415-7362', '14157362', 'abcd-efgh', ''].map(cleanReceipt), ['1415-7362', '1415-7362', '1415-7362', '1415-7362', '', '', ''], 'receipt numbers');
 
 // W1 word for word (20/11), with the withdrawal line
-eq(welcomeText({ name: 'Marco', skool: 'S', skill: 'K', portal: 'P' }),
-  "You're in, Marco.\n\nFirst, join the room on Skool with the email you paid with:\nS\n\nYour House Builder skill is yours to keep, here:\nK\n\nThen start the first video course inside, your own tower step by step, and when it's done post it in Show your build: I look at every first build myself.\n\nIf you ever want to cancel, it's one tap here: P\n\nTo withdraw within 14 days: omnyalab.com/withdraw\n\nNico",
-  'W1 text');
+eq(welcomeText({ name: 'Marco', inside: 'I', skill: 'K', portal: 'P' }),
+  "You're in, Marco.\n\nThis is your link to the club, it's yours so keep it: your courses, the Vault with every build and its files, and the Full guides are all there:\nI\n\nYour House Builder skill is yours to keep, here:\nK\n\nStart with the first video course, your own tower step by step, and when it's done send it to me from the club page: I look at every first build myself.\n\nIf you ever want to cancel, it's one tap here: P\n\nTo withdraw within 14 days: omnyalab.com/withdraw\n\nNico",
+  'W1 text (25/11: the club page, no Skool)');
+// 25/11: the member's own link
+const mt = memberToken('Marco@Example.com');
+eq(readMember(mt), 'marco@example.com', 'member link reads back (email in lower case)');
+eq(readMember(mt.slice(0, -1) + (mt.endsWith('A') ? 'B' : 'A')), null, 'a changed member link is refused');
+eq(readMember(signToken('e:marco@example.com')), null, 'a buyer token is not a member link');
+eq(readToken(mt), null, 'a member link is not a buyer token');
 
 // without the portal link the cancel line asks to reply (20/11)
-eq(welcomeText({ name: 'Marco', skool: 'S', skill: 'K', portal: '' }).split('\n\n')[4], 'Reply to this email to cancel.', 'W1 cancel line without the portal');
+eq(welcomeText({ name: 'Marco', inside: 'I', skill: 'K', portal: '' }).split('\n\n')[4], 'Reply to this email to cancel.', 'W1 cancel line without the portal');
 
 // the four live prices are the base, the env variable wins when set
 const { priceId } = await import('../api/_lib/club.js');

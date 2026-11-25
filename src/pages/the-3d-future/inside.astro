@@ -1,0 +1,159 @@
+---
+// /the-3d-future/inside?m=<member link> (25/11, Nico: «tutto nel sito», no Skool): the members' page of THE 3D FUTURE.
+// The page is static; everything personal comes from /api/club/inside (api/_lib/club.js insideData) at every visit:
+//   open     the first course (five lessons, a video each once it is online), the course skill, the Vault with the six
+//            builds and their files, every Full guide, the House Builder skill, the founders' gift for the first 100
+//            reservations, «Send me your build» (to Nico by email) and the cancel link
+//   waiting  a reservation whose first payment has not gone through: the club opens on Saturday 28/11 at 9:00 (Rome)
+//   ended    the membership was cancelled
+//   no link, or a wrong one: «Write your email and we send you your link» (POST /api/club/link, same answer for all)
+// The file links last one day: a new visit makes new ones. noindex.
+import Club from '../../layouts/Club.astro';
+---
+<Club title="Inside THE 3D FUTURE" noindex>
+  <h1 data-hi>Welcome inside.</h1>
+  <p class="lead" data-state>Opening the club…</p>
+
+  {/* no link, or a wrong one */}
+  <form class="box" data-lost hidden novalidate>
+    <h2>Get your link to the club</h2>
+    <p>Write the email you paid with and we send you your own link.</p>
+    <label for="t3i-e">Email</label>
+    <input class="in" id="t3i-e" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@studio.com" required>
+    <button class="btn" type="submit">Send me my link</button>
+    <p class="err" role="status" data-lost-msg></p>
+  </form>
+
+  {/* the reservation, before the first payment */}
+  <div class="box" data-waiting hidden>
+    <h2>Your seat is reserved</h2>
+    <p>The club opens on Saturday 28 November at 9:00 (Rome), when your first month starts. Come back to this page then: your courses, the Vault and every Full guide will be here.</p>
+  </div>
+
+  <div class="box" data-ended hidden>
+    <h2>Your membership has ended</h2>
+    <p>Thank you for being part of it. If you want to come back, the doors are always open: <a href="/the-3d-future">omnyalab.com/the-3d-future</a>.</p>
+  </div>
+
+  <div data-open hidden>
+    <section class="sec">
+      <h2>Your first course: your own tower, floor by floor</h2>
+      <p class="mute">Five short lessons where you see every click. At the end your tower, where buyers choose their floor, is online in your colours.</p>
+      <ol class="lessons" data-lessons></ol>
+      <div class="file" data-skill></div>
+    </section>
+
+    <section class="sec">
+      <h2>Send me your build</h2>
+      <p class="mute">When your tower is online, paste its link here. I look at every first build myself and I answer you by email every Monday.</p>
+      <form class="box sendb" data-build novalidate>
+        <label for="t3i-l">The link of your build</label>
+        <input class="in" id="t3i-l" name="link" type="url" inputmode="url" maxlength="300" placeholder="https://your-tower.netlify.app" required>
+        <label for="t3i-n">A note for me (optional)</label>
+        <textarea class="in" id="t3i-n" name="note" rows="3" maxlength="1500" placeholder="What you'd like me to look at"></textarea>
+        <button class="btn" type="submit">Send it to Nico</button>
+        <p class="err" role="status" data-build-msg></p>
+      </form>
+    </section>
+
+    <section class="sec">
+      <h2>The Vault</h2>
+      <p class="mute">Six builds from our reels, each with its files, prompts and Claude skills. A new one comes every Friday.</p>
+      <div class="vault" data-vault></div>
+    </section>
+
+    <section class="sec" data-gifts-sec hidden>
+      <h2>Your founders' gift</h2>
+      <p class="mute">You reserved your seat among the first 100, so these are yours to keep.</p>
+      <div class="files" data-gifts></div>
+    </section>
+
+    <section class="sec">
+      <h2>Every Full guide</h2>
+      <div class="files" data-guides></div>
+    </section>
+
+    <section class="sec">
+      <h2>Your bonus</h2>
+      <div class="files" data-house></div>
+    </section>
+  </div>
+
+  <p class="mute small" data-foot hidden><span data-cancel></span> To withdraw within 14 days: <a href="/withdraw">omnyalab.com/withdraw</a>.</p>
+</Club>
+
+<style is:global>
+  .cl{width:min(980px,100%)}
+</style>
+<style is:global>
+  /* global: most of the page is written by the script below (scoped styles would not reach it) */
+  .sec{margin:42px 0 0}
+  .sec > h2{margin:0 0 6px}
+  .sec > p{margin:0 0 18px;max-width:62ch}
+  .small{font-size:14px;margin-top:44px}
+  .lessons{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+  .lessons li{border-radius:18px;background:linear-gradient(160deg,#ffffff12,#ffffff05);border:1px solid var(--line);overflow:hidden}
+  .lessons .lh{display:flex;align-items:center;gap:14px;padding:14px 16px}
+  .lessons .num{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--blue);font:700 15px Geist,sans-serif}
+  .lessons .lt{flex:1;min-width:0;font:600 16.5px/1.3 Geist,sans-serif}
+  .lessons .ld{flex:none;font:500 14px Geist,sans-serif;color:var(--mute);font-variant-numeric:tabular-nums}
+  .lessons video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+  .lessons .soon{margin:0;padding:0 16px 14px 64px;font-size:14px;color:var(--mute)}
+  .vault{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  .vb{border-radius:18px;overflow:hidden;background:linear-gradient(160deg,#ffffff12,#ffffff05);border:1px solid var(--line)}
+  .vb img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover}
+  .vb .vbb{padding:14px 16px 16px}
+  .vb h3{margin:0;font:600 18px/1.2 Geist,sans-serif}
+  .vb .ty{margin:2px 0 12px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+  .files{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+  .vb .files{grid-template-columns:1fr;gap:8px}
+  .fl{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;border:1px solid #ffffff26;background:#0b1428;color:#fff;text-decoration:none;font:500 15px/1.3 Geist,sans-serif}
+  .fl:hover{border-color:var(--blue2)}
+  .fl b{flex:none;font:600 11px Geist,sans-serif;letter-spacing:.1em;padding:4px 7px;border-radius:6px;background:#ffffff18;color:#cfe5ff}
+  .fl span{flex:1;min-width:0}
+  .file .fl{margin-top:14px}
+  .note{margin:6px 2px 0;font-size:13.5px;color:var(--mute)}
+  .sendb{margin:0;max-width:640px}
+  .sendb textarea{resize:vertical;font:500 15px/1.45 Geist,sans-serif}
+  .ok{color:#7fe0a8 !important}
+</style>
+
+<script is:inline>
+{ const q = new URLSearchParams(location.search), m = q.get('m') || '', $ = s => document.querySelector(s), st = $('[data-state]')
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+  const fl = f => `<a class="fl" href="${esc(f.href)}"${f.zip ? ' download' : ' target="_blank" rel="noopener"'}><b>${f.zip ? 'ZIP' : 'PDF'}</b><span>${esc(f.name)}</span></a>`
+  const lost = (msg) => { st.textContent = msg || 'Your link to the club comes by email.'; $('[data-lost]').hidden = false }
+  const post = (u, b) => fetch(u, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json().catch(() => ({})).then(d => ({ ok: r.ok, d })))
+  $('[data-lost]').addEventListener('submit', e => {
+    e.preventDefault(); const f = e.currentTarget, msg = $('[data-lost-msg]'), btn = f.querySelector('button'), email = f.email.value.trim()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.textContent = 'That email does not look right'; return }
+    btn.disabled = true; msg.textContent = ''
+    post('/api/club/link', { email }).then(r => { msg.className = r.ok ? 'err ok' : 'err'; msg.textContent = r.ok ? 'If that email is a member, your link is on its way. Check your inbox (and the spam folder).' : (r.d.error || 'Something went wrong, try again') })
+      .catch(() => { msg.textContent = 'Something went wrong, try again' }).then(() => { btn.disabled = false })
+  })
+  if (!m) lost()
+  else fetch('/api/club/inside?m=' + encodeURIComponent(m)).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => {
+    if (!ok) return lost(d.error)
+    if (d.name && d.name !== 'there') $('[data-hi]').textContent = 'Welcome inside, ' + d.name + '.'
+    if (d.portal) { const c = $('[data-cancel]'), a = document.createElement('a'); a.href = d.portal; a.textContent = 'one tap here'; c.textContent = 'To cancel: '; c.append(a, '.'); $('[data-foot]').hidden = false }
+    if (d.state === 'none') { st.textContent = 'We are getting your seat ready. Refresh this page in a minute.'; return }
+    if (d.state === 'waiting') { st.textContent = ''; $('[data-waiting]').hidden = false; return }
+    if (d.state === 'ended') { st.textContent = ''; $('[data-ended]').hidden = false; return }
+    st.textContent = 'Everything of the club is here. Start with the first lesson.'
+    $('[data-lessons]').innerHTML = d.lessons.map(l => `<li><div class="lh"><span class="num">${l.n}</span><span class="lt">${esc(l.t)}</span><span class="ld">${esc(l.d)}</span></div>${l.src ? `<video controls playsinline preload="metadata" src="${esc(l.src)}"></video>` : '<p class="soon">This lesson opens on Saturday 28 November.</p>'}</li>`).join('')
+    $('[data-skill]').innerHTML = fl(d.skill) + `<p class="note">${esc(d.skill.name)} ${esc(d.skill.note)}</p>`
+    $('[data-vault]').innerHTML = d.vault.map(b => `<article class="vb"><img src="/club/v-${esc(b.img)}-760.webp" alt="" loading="lazy" decoding="async"><div class="vbb"><h3>${esc(b.t)}</h3><p class="ty">${esc(b.type)}</p><div class="files">${b.files.map(fl).join('')}</div></div></article>`).join('')
+    $('[data-guides]').innerHTML = d.guides.map(fl).join('')
+    $('[data-house]').innerHTML = fl(d.house)
+    if (d.gifts && d.gifts.length) { $('[data-gifts]').innerHTML = d.gifts.map(fl).join(''); $('[data-gifts-sec]').hidden = false }
+    $('[data-open]').hidden = false
+  }).catch(() => { st.textContent = 'Could not open the club right now, try again in a minute.' })
+  $('[data-build]').addEventListener('submit', e => {
+    e.preventDefault(); const f = e.currentTarget, msg = $('[data-build-msg]'), btn = f.querySelector('button'), link = f.link.value.trim()
+    if (!/^https?:\/\/[^\s]+\.[^\s]+$/i.test(link)) { msg.className = 'err'; msg.textContent = 'Paste the link of your build, like https://your-tower.netlify.app'; return }
+    btn.disabled = true; msg.textContent = ''
+    post('/api/club/build', { m, link, note: f.note.value.trim() }).then(r => { msg.className = r.ok ? 'err ok' : 'err'; msg.textContent = r.ok ? 'Sent. I answer you by email on Monday.' : (r.d.error || 'Something went wrong, try again'); if (r.ok) f.reset() })
+      .catch(() => { msg.className = 'err'; msg.textContent = 'Something went wrong, try again' }).then(() => { btn.disabled = false })
+  })
+}
+</script>

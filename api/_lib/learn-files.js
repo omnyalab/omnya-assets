@@ -108,7 +108,27 @@ const PLANE_SKILL = {
   note: `is a skill for Claude: unzip it into ~/.claude/skills for Claude Code, or ${ON_CLAUDE_AI}, then ask "build me the plane booking site for my airline". The README inside has every step.`,
 };
 
-const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE, FULL_MASTERY, SCENE, SKILL, MIAMI_SKILL, HOUSE_SKILL, RIYADH_KIT, PLANE_KIT, PLANE_SKILL];
+// 25/11 (Nico: «tutto nel sito»): the Tower Builder skill of the first course of THE 3D FUTURE (the five First Build lessons
+// install it), given only to the members on /the-3d-future/inside
+const TOWER_SKILL = {
+  name: 'The Tower Builder skill', file: 'en/tower-builder-skill.zip', kind: 'zip',
+  note: `is the skill of your first course: ${ON_CLAUDE_AI}, or unzip it into ~/.claude/skills for Claude Code. Lesson 2 shows every step, and the README inside has them too.`,
+};
+
+const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE, FULL_MASTERY, SCENE, SKILL, MIAMI_SKILL, HOUSE_SKILL, RIYADH_KIT, PLANE_KIT, PLANE_SKILL, TOWER_SKILL];
+
+/** 25/11: what the members of THE 3D FUTURE find inside (/the-3d-future/inside): the course skill, the six builds of the
+    Vault with their files (the same order and photos as the club page, src/components/club/data.ts DROPS) and every Full guide */
+export const CLUB_COURSE_SKILL = TOWER_SKILL;
+export const CLUB_VAULT = [
+  { t: 'The Towers', type: '3D scene', img: 'towers', files: [SCENE, FULL_TOWERS] },
+  { t: 'Riyadh Tower', type: 'Phone remote', img: 'riyadh', files: [RIYADH_KIT, FULL_RIYADH] },
+  { t: 'Stadium', type: 'Skill', img: 'stadium', files: [SKILL, FULL_STADIUM] },
+  { t: 'House that builds itself', type: 'Skill', img: 'house', files: [HOUSE_SKILL, FULL_BUILD] },
+  { t: 'Plane', type: 'Skill and kit', img: 'plane', files: [PLANE_SKILL, PLANE_KIT, FULL_PLANE] },
+  { t: 'Miami', type: 'Skill', img: 'miami', files: [MIAMI_SKILL, FULL_MIAMI] },
+];
+export const CLUB_GUIDES = [FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE];
 // 13/11: the playbooks got new names. The one-year links already in buyers' emails still carry the old file names, so
 // the old names stay valid and point to the new files (who bought the old playbook 02 now gets the new one).
 const OLD = {

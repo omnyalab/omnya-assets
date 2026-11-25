@@ -17,7 +17,7 @@ import { kv } from './store.js';
 import { sendMail } from './mail.js';
 import { host } from './config.js';
 import { fixEmail } from './mail-fix.js';
-import { signedHref, isGuideProduct, HOUSE_SKILL_FILE, FOUNDERS_GIFTS, DAY } from './learn-files.js';
+import { signedHref, isGuideProduct, HOUSE_SKILL_FILE, FOUNDERS_GIFTS, DAY, CLUB_VAULT, CLUB_GUIDES, CLUB_COURSE_SKILL } from './learn-files.js';
 
 export const ROUND = '1';
 export const CLUB = '3d-future';
@@ -97,7 +97,8 @@ const K = {
   pi: (pi) => `omnya:club:pi:${pi}`,
   byCustomer: 'omnya:club:customers', // hash: Stripe customer id → member email (the Saturday charge finds the reservation)
   reserved: 'omnya:club:reserved:n', // INCR: the order of the reservations (the first 100 get the founders' gift)
-  rank: 'omnya:club:rank', // hash: checkout session → its place among the reservations // a guide payment whose receipt number was not there yet → email
+  rank: 'omnya:club:rank', // hash: checkout session → its place among the reservations
+  builds: 'omnya:club:builds', // list: the builds the members sent from the inside page (Nico answers by email) // a guide payment whose receipt number was not there yet → email
   once: (what, id) => `omnya:club:once:${what}:${id}`,
 };
 export { K as KEYS };
@@ -127,6 +128,74 @@ export function readToken(token) {
   const proof = Buffer.from(m[2], 'base64url').toString();
   const a = Buffer.from(mac(key, `${exp}|${proof}`)), b = Buffer.from(m[3]);
   return a.length === b.length && timingSafeEqual(a, b) && /^[re]:/.test(proof) ? proof : null;
+}
+
+// ---- 25/11 (Nico: «tutto nel sito», no Skool): the member's own link to /the-3d-future/inside ----
+// <email in base64url>.<signature>: no end date, because what the page shows is decided at every visit by the member in
+// Redis (reserved, active, left). Signed with the same key as the buyer token, with its own word so the two never mix.
+const SITE_URL = 'https://www.omnyalab.com';
+export function memberToken(email) {
+  const key = tokenKey(), e = cleanEmail(email);
+  return key && e ? `${Buffer.from(e).toString('base64url')}.${mac(key, `inside|${e}`)}` : '';
+}
+/** The email inside a member link that is ours, or null. */
+export function readMember(token) {
+  const key = tokenKey();
+  const m = /^([A-Za-z0-9_-]{4,240})\.([A-Za-z0-9_-]{22})$/.exec(String(token || ''));
+  if (!key || !m) return null;
+  const email = Buffer.from(m[1], 'base64url').toString();
+  const a = Buffer.from(mac(key, `inside|${email}`)), b = Buffer.from(m[2]);
+  return a.length === b.length && timingSafeEqual(a, b) && EMAIL.test(email) ? email : null;
+}
+export const insideUrl = (email) => `${SITE_URL}/the-3d-future/inside?m=${memberToken(email)}`;
+
+/** The five lessons of the first course (First Build, the tower where buyers choose their floor, 23/11). src = the video
+    once it is online; until then the page says the lesson opens on Saturday. */
+export const LESSONS = [
+  { n: 1, t: 'What you build and what you need', d: '2:13', src: '' },
+  { n: 2, t: 'Install the skill', d: '1:55', src: '' },
+  { n: 3, t: 'Build your tower, floor by floor', d: '3:25', src: '' },
+  { n: 4, t: 'Make it yours', d: '2:43', src: '' },
+  { n: 5, t: 'Put it online and post it', d: '2:29', src: '' },
+];
+const fileLink = (f, ttl) => ({ name: f.name, href: `${SITE_URL}${signedHref(f.file, ttl)}`, zip: f.kind === 'zip', note: f.note || '' });
+/**
+ * What /the-3d-future/inside shows to this member (GET /api/club/inside). state: 'none' (no such member), 'ended' (left),
+ * 'waiting' (reserved, the first payment has not gone through yet: the page opens on Saturday), 'open'. The file links
+ * are good for one day: the page makes new ones at every visit.
+ */
+export async function insideData(email) {
+  let m = null; try { m = JSON.parse((await kv('HGET', K.members, cleanEmail(email))) || 'null'); } catch {}
+  if (!m) return { state: 'none' };
+  const base = { name: m.name, email: m.email, portal: PORTAL_URL };
+  if (m.status === 'canceled') return { ...base, state: 'ended' };
+  if (m.reserved && !m.welcomed) return { ...base, state: 'waiting', opens: new Date(EARLY).toISOString() };
+  const gift = m.reserved && Number(m.rank) > 0 && Number(m.rank) <= CHEAP_SEATS;
+  return {
+    ...base, state: 'open',
+    lessons: LESSONS,
+    skill: fileLink(CLUB_COURSE_SKILL, DAY),
+    house: fileLink({ name: 'The House Builder skill', file: HOUSE_SKILL_FILE, kind: 'zip' }, DAY),
+    vault: CLUB_VAULT.map((b) => ({ t: b.t, type: b.type, img: b.img, files: b.files.map((f) => fileLink(f, DAY)) })),
+    guides: CLUB_GUIDES.map((f) => fileLink(f, DAY)),
+    gifts: gift ? FOUNDERS_GIFTS.map((g) => fileLink(g, DAY)) : [],
+  };
+}
+/** «Send me your build» from the inside page: Nico gets it by email and in a Redis list (GET /api/club/admin). */
+export async function noteBuild(email, link, note) {
+  let m = null; try { m = JSON.parse((await kv('HGET', K.members, email)) || 'null'); } catch {}
+  const row = { at: new Date().toISOString(), email, name: m?.name || '', link, note };
+  await kv('RPUSH', K.builds, JSON.stringify(row));
+  await sendMail({ to: host.email, replyTo: email, subject: `[club] build from ${row.name || email}`, text: `${row.name} <${email}> sent a build:\n${link}\n\n${note || '(no note)'}\n\nReply to this email to answer them.` });
+  return row;
+}
+/** «Lost your link?»: the link goes again to the member's email, never on the page. */
+export async function sendInsideLink(email) {
+  let m = null; try { m = JSON.parse((await kv('HGET', K.members, email)) || 'null'); } catch {}
+  if (!m || m.status === 'canceled') return false;
+  const text = `Here's your link to THE 3D FUTURE, ${m.name}. It's yours, keep it:\n${insideUrl(email)}\n\nNico`;
+  await sendMail({ to: `${m.name} <${email}>`, replyTo: host.email, subject: 'your link to THE 3D FUTURE', text });
+  return true;
 }
 
 // ---- rate limit: the INCR + EXPIRE of the other routes (api/contract.js), per address ----
@@ -305,18 +374,19 @@ const WITHDRAW = 'omnyalab.com/withdraw';
 /** W1, the welcome email: the text approved by Nico on 20/11, word for word, with the withdrawal line added. While the
     customer portal link (CLUB_PORTAL_URL) is not there, the cancel line says to reply (the reply goes to info@). */
 export const CANCEL_REPLY = 'Reply to this email to cancel.';
-export function welcomeText({ name, skool, skill, portal, gifts }) {
+export function welcomeText({ name, inside, skill, portal, gifts }) {
   const cancel = portal ? `If you ever want to cancel, it's one tap here: ${portal}` : CANCEL_REPLY;
   // 23/11: the first 100 of the founders' round also get the founders' gift, theirs to keep
   const gift = gifts?.length ? `\n\nYou're one of the first 100, so the founders' gift is yours to keep too:\n${gifts.map((g) => `${g.name}: ${g.href}`).join('\n')}` : '';
-  return `You're in, ${name}.\n\nFirst, join the room on Skool with the email you paid with:\n${skool}\n\nYour House Builder skill is yours to keep, here:\n${skill}${gift}\n\nThen start the first video course inside, your own tower step by step, and when it's done post it in Show your build: I look at every first build myself.\n\n${cancel}\n\nTo withdraw within 14 days: ${WITHDRAW}\n\nNico`;
+  // 25/11 (Nico: «tutto nel sito»): the club is our own page, the link below is the member's own (no Skool)
+  return `You're in, ${name}.\n\nThis is your link to the club, it's yours so keep it: your courses, the Vault with every build and its files, and the Full guides are all there:\n${inside}\n\nYour House Builder skill is yours to keep, here:\n${skill}${gift}\n\nStart with the first video course, your own tower step by step, and when it's done send it to me from the club page: I look at every first build myself.\n\n${cancel}\n\nTo withdraw within 14 days: ${WITHDRAW}\n\nNico`;
 }
 /** R1 (25/11), the reservation email: the card is saved, nothing is charged until the doors open on Saturday 28/11 at
     9:00 Rome; the first 100 who reserve get the founders' gift, sent with the welcome email W1 once the card is charged. */
 export function reservedText({ name, rank, portal }) {
   const gift = rank && rank <= CHEAP_SEATS
-    ? `You're number ${rank} of the first 100 who reserved, so the founders' gift is yours: our three playbooks and the full 3D AI Mastery course, yours to keep. It arrives on Saturday with your welcome email, together with the room on Skool and your House Builder skill.`
-    : `The 100 founders' gifts were all taken before you reserved, but your €9 price is yours, locked for as long as you stay. On Saturday your welcome email brings the room on Skool and your House Builder skill.`;
+    ? `You're number ${rank} of the first 100 who reserved, so the founders' gift is yours: our three playbooks and the full 3D AI Mastery course, yours to keep. It arrives on Saturday with your welcome email, together with your link to the club and your House Builder skill.`
+    : `The 100 founders' gifts were all taken before you reserved, but your €9 price is yours, locked for as long as you stay. On Saturday your welcome email brings your link to the club and your House Builder skill.`;
   const cancel = portal ? `If you change your mind before Saturday, cancel here and you pay nothing: ${portal}` : `If you change your mind before Saturday, reply to this email and you pay nothing.`;
   return `Your seat is reserved, ${name}.\n\nNothing was charged today. On Saturday 28 November at 9:00 (Rome) the doors of THE 3D FUTURE open, your first month starts and your card is charged €9, the founders' price that stays locked for as long as you stay.\n\n${gift}\n\n${cancel}\n\nTo withdraw within 14 days: ${WITHDRAW}\n\nNico`;
 }
@@ -325,7 +395,7 @@ const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').
 /** The same words as a plain note (no design, links written out), like the free blueprint email. */
 export function welcomeHtml(v) {
   const link = (u) => `<a href="${esc(u)}">${esc(u)}</a>`;
-  const p = welcomeText({ name: esc(v.name), skool: link(v.skool), skill: link(v.skill), portal: v.portal ? link(v.portal) : '', gifts: (v.gifts || []).map((g) => ({ name: esc(g.name), href: link(g.href) })) })
+  const p = welcomeText({ name: esc(v.name), inside: link(v.inside), skill: link(v.skill), portal: v.portal ? link(v.portal) : '', gifts: (v.gifts || []).map((g) => ({ name: esc(g.name), href: link(g.href) })) })
     .replace(WITHDRAW, `<a href="https://www.${WITHDRAW}">${WITHDRAW}</a>`)
     .split('\n\n').map((x) => `<p>${x.replace(/\n/g, '<br>')}</p>`).join('\n');
   return `<!doctype html><html><body><div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#222">\n${p}\n</div></body></html>`;
@@ -340,7 +410,7 @@ export async function clubJoined(stripe, session) {
   const md = session.metadata || {};
   const email = cleanEmail(session.customer_details?.email || session.customer_email);
   const name = firstName(md.name || session.customer_details?.name);
-  const skool = process.env.CLUB_SKOOL_URL || '', portal = PORTAL_URL;
+  const portal = PORTAL_URL;
   if (!email) throw new Error('club: no email on the session');
   const member = {
     email, name, ig: md.ig || '', v: md.v || '', buyer: md.buyer === 'yes', plan: md.plan || '', price: Number(md.price) || null, round: md.round || ROUND,
@@ -367,15 +437,11 @@ export async function clubJoined(stripe, session) {
     } catch (e) { await kv('DEL', K.once('r1', session.id)).catch(() => {}); throw e; }
     return member;
   }
-  // without the Skool link the email would have a hole: Nico is told once, and Stripe tries again (for up to three days)
-  // until CLUB_SKOOL_URL is on Vercel. Without the portal link the email asks to reply to cancel (welcomeText)
-  if (!skool) {
-    if (await first('nolinks', 'w1')) await sendMail({ to: host.email, subject: '[club] welcome email NOT sent: CLUB_SKOOL_URL missing', text: `${name} <${email}> joined THE 3D FUTURE. Add CLUB_SKOOL_URL on Vercel: Stripe sends the payment again and the email leaves then.` }).catch(() => {});
-    throw new Error('club: CLUB_SKOOL_URL missing');
-  }
+  // 25/11: no Skool, the club is /the-3d-future/inside with the member's own link (without the key to sign it Stripe retries)
+  if (!memberToken(email)) throw new Error('club: no key to sign the member link');
   if (!(await first('w1', session.id))) return member;
   // 25/11: who joins after the opening (no reservation) gets no founders' gift: the gift is only for the first 100 reservations
-  const v = { name, skool, portal, gifts: [], skill: `https://www.omnyalab.com${signedHref(HOUSE_SKILL_FILE, SKILL_TTL)}` };
+  const v = { name, inside: insideUrl(email), portal, gifts: [], skill: `https://www.omnyalab.com${signedHref(HOUSE_SKILL_FILE, SKILL_TTL)}` };
   try {
     await sendMail({ to: `${name} <${email}>`, bcc: host.email, replyTo: host.email, subject: "you're in", text: welcomeText(v), html: welcomeHtml(v) });
   } catch (e) {
@@ -395,15 +461,12 @@ export async function clubCharged(stripe, charge) {
   if (!email) return null;
   let m = null; try { m = JSON.parse((await kv('HGET', K.members, email)) || 'null'); } catch {}
   if (!m || !m.reserved || m.welcomed) return null;
-  const skool = process.env.CLUB_SKOOL_URL || '', portal = PORTAL_URL;
-  if (!skool) {
-    if (await first('nolinks', 'w1r')) await sendMail({ to: host.email, subject: '[club] welcome email NOT sent: CLUB_SKOOL_URL missing', text: `${m.name} <${email}> was charged for the reserved seat. Add CLUB_SKOOL_URL on Vercel: Stripe sends the charge again and the email leaves then.` }).catch(() => {});
-    throw new Error('club: CLUB_SKOOL_URL missing');
-  }
+  const portal = PORTAL_URL;
+  if (!memberToken(email)) throw new Error('club: no key to sign the member link');
   if (!(await first('w1', `r:${m.session}`))) return m;
   const rank = Number(m.rank) || Number(await kv('HGET', K.rank, m.session)) || 0;
   const gifts = rank && rank <= CHEAP_SEATS ? FOUNDERS_GIFTS.map((g) => ({ name: g.name, href: `https://www.omnyalab.com${signedHref(g.file, SKILL_TTL)}` })) : [];
-  const v = { name: m.name, skool, portal, gifts, skill: `https://www.omnyalab.com${signedHref(HOUSE_SKILL_FILE, SKILL_TTL)}` };
+  const v = { name: m.name, inside: insideUrl(email), portal, gifts, skill: `https://www.omnyalab.com${signedHref(HOUSE_SKILL_FILE, SKILL_TTL)}` };
   try {
     await sendMail({ to: `${m.name} <${email}>`, bcc: host.email, replyTo: host.email, subject: "you're in", text: welcomeText(v), html: welcomeHtml(v) });
   } catch (e) { await kv('DEL', K.once('w1', `r:${m.session}`)).catch(() => {}); throw e; }
@@ -442,6 +505,7 @@ export async function lists() {
     skoolTodo: parse(await kv('LRANGE', K.todo, 0, -1)),
     skoolRemove: parse(await kv('LRANGE', K.remove, 0, -1)),
     withdrawals: parse(await kv('LRANGE', K.withdrawals, 0, -1)),
+    builds: parse(await kv('LRANGE', K.builds, 0, -1)),
     counts: { buyers: Number(await kv('SCARD', K.buyers)), receipts: Number(await kv('HLEN', K.receipts)), waitlist: Number(await kv('SCARD', K.waitlist)) },
   };
 }

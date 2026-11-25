@@ -11,9 +11,9 @@ import Club from '../../layouts/Club.astro';
 
   <ol class="steps">
     <li class="box">
-      <h2>First, join the room on Skool</h2>
-      <p>Join with the email you paid with<span data-email></span>, so we can let you in.</p>
-      <a class="btn" data-skool hidden target="_blank" rel="noopener">Join on Skool →</a>
+      <h2>First, open the club</h2>
+      <p>Everything is on one page: your courses, the Vault with every build and its files, and the Full guides. The link is yours, and it's in your welcome email too<span data-email></span>.</p>
+      <a class="btn" data-skool hidden>Open the club →</a>
     </li>
     <li class="box">
       <h2>Your House Builder skill is yours to keep</h2>
@@ -22,7 +22,7 @@ import Club from '../../layouts/Club.astro';
     </li>
     <li class="box">
       <h2>Then start the first video course</h2>
-      <p>Your own tower step by step, and when it's done post it in <b>Show your build</b>: I look at every first build myself.</p>
+      <p>Your own tower step by step, and when it's done send it to me from the club page: I look at every first build myself.</p>
     </li>
   </ol>
 
@@ -30,9 +30,9 @@ import Club from '../../layouts/Club.astro';
   <div class="box res" data-res hidden>
     <h2>Nothing was charged today</h2>
     <p>On Saturday 28 November at 9:00 (Rome) the doors open, your first month starts and your card is charged €9, the founders' price that stays locked for as long as you stay.</p>
-    <p data-gift hidden>You're <b data-rank></b> of the first 100 who reserved, so the founders' gift is yours: our three playbooks and the full 3D AI Mastery course. It arrives on Saturday with your welcome email, together with the room on Skool and your House Builder skill.</p>
-    <p data-nogift hidden>On Saturday your welcome email brings the room on Skool and your House Builder skill.</p>
-    <p data-wait hidden>Your email tells you if you're one of the first 100 who reserved and get the founders' gift. On Saturday your welcome email brings the room on Skool and your House Builder skill.</p>
+    <p data-gift hidden>You're <b data-rank></b> of the first 100 who reserved, so the founders' gift is yours: our three playbooks and the full 3D AI Mastery course. It arrives on Saturday with your welcome email, together with your link to the club and your House Builder skill.</p>
+    <p data-nogift hidden>On Saturday your welcome email brings your link to the club and your House Builder skill.</p>
+    <p data-wait hidden>Your email tells you if you're one of the first 100 who reserved and get the founders' gift. On Saturday your welcome email brings your link to the club and your House Builder skill.</p>
   </div>
 
   {/* the one-tap cancel link: the Stripe customer portal (api/_lib/club.js PORTAL_URL), as in the email */}
@@ -67,9 +67,9 @@ import Club from '../../layouts/Club.astro';
       }
       if (d.name && d.name !== 'there') document.querySelector('[data-hi]').textContent = 'You’re in, ' + d.name + '.'
       if (d.email) document.querySelector('[data-email]').textContent = ' (' + d.email + ')'
-      show('[data-skool]', d.skool); show('[data-skill]', d.skill)
+      show('[data-skool]', d.inside); show('[data-skill]', d.skill)   /* 25/11: the club page, no Skool */
       if (d.portal) { const c = document.querySelector('[data-cancel]'), a = document.createElement('a'); a.href = d.portal; a.textContent = 'here'; c.textContent = 'If you ever want to cancel, it’s one tap '; c.append(a, '.') }
-      st.textContent = d.skool ? st.dataset.ok : st.dataset.fail
+      st.textContent = d.inside ? st.dataset.ok : st.dataset.fail
     }).catch(() => { st.textContent = st.dataset.fail })
   } }
 </script>
