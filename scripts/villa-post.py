@@ -79,7 +79,7 @@ def bf59(text):
         raise SystemExit('FERMO villa-post.py: riga del Full non trovata')
     card = ('<label class="opt bfc bfc59" data-o="bf"><span class="rib"><i></i>BLACK FRIDAY OFFER</span>'
             '<span class="fan fan--front"><img src="/learn/pk_pb01.webp" alt=""><img src="/learn/pk_pb02.webp" alt=""><img src="/learn/pk_pb03.webp" alt=""><img src="/learn/dv_book_tight.webp" alt=""></span>'
-            '<span class="bh">Get everything</span><span class="inc">Every Full guide, the Dubai Villa and its skill too, the 3 playbooks, the skills and every new guide</span>'
+            '<span class="bh">Get everything</span><span class="skp"><b>★</b>Skill included: recreate it exactly like in our video</span><span class="inc">Every Full guide, the Dubai Villa and its skill too, the 3 playbooks, the skills and every new guide</span>'
             '<span class="pz"><s>€260</s><b>€59</b><span>-77%</span></span><span class="go" data-bfgo>Get everything · €59</span><span class="end">Ends Friday 27 November at 23:59</span></label>')
     text = text.replace(m.group(0), m.group(0) + card, 1)
     # the pane on the left when the pack is chosen: the Dubai Villa book first and its line on top
@@ -111,5 +111,8 @@ def bf59(text):
            '.bfc59 .go{height:62px!important;font-size:18px!important;color:#fff!important;background:linear-gradient(180deg,#3d8bff,#1f5bff)!important;box-shadow:inset 0 0 0 1px #9fd8ff40,0 16px 36px -12px #3d8bffcc!important}'
            '.bfc59 .end{color:#9fd8ff!important;font-size:12.5px!important}'
            '.bfc59 .ck{display:none}'
+           # 25/11 (Nico: «metti che c'è anche skill included… con una pill e tipo stellina prima»)
+           '.bfc59 .skp{display:inline-flex;align-items:center;gap:8px;margin:12px auto 2px;padding:8px 14px 8px 11px;border-radius:999px;background:#ffd60a1f;border:1.5px solid #ffd60a;color:#fff;font:800 13.5px/1.25 Inter,sans-serif;text-align:left;box-shadow:0 0 22px -6px #ffd60a88}'
+           '.bfc59 .skp b{display:grid;place-items:center;width:22px;height:22px;flex:none;border-radius:50%;background:#ffd60a;color:#111;font:900 13px/1 Inter,sans-serif}'
            '@media (min-width:821px){.bfc59 .fan.fan--front{transform:scale(1.1);transform-origin:50% 100%}}\n')
     return rep(text, '</style></head><body>', css + '</style></head><body>')
