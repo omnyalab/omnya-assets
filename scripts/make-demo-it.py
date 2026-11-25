@@ -186,3 +186,26 @@ AETHER = [
     ('https://www.omnyalab.com/demo/aether/"', 'https://www.omnyalab.com/it/demo/aether/"'),
 ]
 make(P('demo/aether/index.html'), P('it/demo/aether/index.html'), '/demo/aether/', AETHER)
+
+# 25/11 (Nico): the Riyadh mega project, Burj Al Ballur (the views page of the three towers, purple).
+BALLUR = [
+    ('<html lang="en"', '<html lang="it"'),
+    ('Burj Al Ballur · Choose your view · Omnya Lab', 'Burj Al Ballur · Scegli la vista · Omnya Lab'),
+    ('The new Riyadh mega project in interactive 3D by Omnya Lab: pick a view and fly around the tower, into the sky pool and up to the crown.',
+     'Il nuovo mega progetto di Riyadh in 3D interattivo di Omnya Lab: scegli una vista e voli attorno alla torre, nella piscina in cielo e fino alla corona.'),
+    ('https://www.omnyalab.com/demo/burj-al-ballur/"', 'https://www.omnyalab.com/it/demo/burj-al-ballur/"'),
+    ('Choose<br> your <em>view</em>', 'Scegli<br> la <em>vista</em>'),
+    ('<b>Choose your view</b>', '<b>Scegli la vista</b>'),
+    ('Choose your view · loading', 'Scegli la vista · caricamento'),
+    ('Turn your phone<small>This tower is best seen in landscape</small>', 'Gira il telefono<small>Questa torre si guarda in orizzontale</small>'),
+    ('aria-label="Previous view"', 'aria-label="Vista prima"'),
+    ('aria-label="Next view"', 'aria-label="Vista dopo"'),
+    ("name: 'Sky pool'", "name: 'Piscina in cielo'"),
+    ("name: 'Lounge'", "name: 'Lounge'"),
+    ("name: 'City view'", "name: 'Vista sulla città'"),
+    ("name: 'Side view'", "name: 'Vista di lato'"),
+    ("name: 'Crown'", "name: 'La corona'"),
+    ("name: 'Top view'", "name: 'Dall’alto'"),
+    ("name: 'Tower view'", "name: 'La torre'"),
+]
+make(P('demo/burj-al-ballur/index.html'), P('it/demo/burj-al-ballur/index.html'), '/demo/burj-al-ballur/', BALLUR)

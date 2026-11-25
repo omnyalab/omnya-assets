@@ -98,6 +98,7 @@ const en = {
       stadium: { name: 'Choose your seat', text: 'Pick a stand, a block and your seat, and fly there.', alt: 'A stadium in a green park seen from above, one stand lit up in orange, the camera flying down to the seats' },
       waha: { name: 'Burj Al Waha', text: 'Pick a floor of the glass tower and walk through The Sky Diwan.', alt: 'A glass tower on the Dubai Hills golf course at sunset, the camera flying in through the glass to a lounge' },
       aether: { name: 'Æther', text: 'Pick a floor, fly in and look around the house.', alt: 'A split glass tower at the end of a long pool at sunset, the camera flying up into a majlis' },
+      ballur: { name: 'Burj Al Ballur', text: 'The new Riyadh mega project: pick a view and fly around it.', alt: 'A crystal tower over Riyadh at night, the camera flying from the whole tower down to a sky pool' },
     },
   },
   home: {
@@ -757,6 +758,7 @@ const it: Dict = {
       stadium: { name: 'Scegli il posto', text: 'Scegli tribuna, blocco e posto, e ci arrivi in volo.', alt: 'Uno stadio in un parco verde visto dall’alto, una tribuna accesa in arancio, la camera che scende fino ai posti' },
       waha: { name: 'Burj Al Waha', text: 'Scegli un piano della torre di vetro e cammini dentro The Sky Diwan.', alt: 'Una torre di vetro sul golf di Dubai Hills al tramonto, la camera che entra dalla vetrata in un salotto' },
       aether: { name: 'Æther', text: 'Scegli un piano, entri in volo e ti guardi intorno in casa.', alt: 'Una torre di vetro divisa in due in fondo a una lunga vasca al tramonto, la camera che sale fino a un majlis' },
+      ballur: { name: 'Burj Al Ballur', text: 'Il nuovo mega progetto di Riyadh: scegli una vista e ci voli intorno.', alt: 'Una torre di cristallo su Riyadh di notte, la camera che vola dalla torre intera fino a una piscina in cielo' },
     },
   },
   home: {
