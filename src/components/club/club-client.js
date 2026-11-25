@@ -101,6 +101,7 @@
   /* ---------- buttons ---------- */
   document.addEventListener('click', function (e) {
     var j = e.target.closest('[data-join]'); if (j) { e.preventDefault(); join(j); return; }
+    var lj = e.target.closest('[data-list]'); if (lj) { e.preventDefault(); openList(lj); return; } // 25/11: the free list, without the gift
     var s = e.target.closest('[data-see]'); if (s) { e.preventDefault(); $('#vault').scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' }); }
   });
   function join(from) { openPay(from); } // 24/11: the doors never close; 25/11: before the opening it is the reservation with the card
