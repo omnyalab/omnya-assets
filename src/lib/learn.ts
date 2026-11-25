@@ -146,6 +146,9 @@ export const products: { id: ProductId; checkout: string }[] = [
   // prod_Vh7HSZVwVAQG8d; from Sunday €9.99 https://buy.stripe.com/8x29ASgBfbIs5pI9et8so1g, used on the watch page
   { id: 'full-villa', checkout: 'https://buy.stripe.com/00wdR82Kp3bW2dwgGV8so1f' },
   { id: 'free-rome', checkout: '/learn/free/omnya-lab-rome-blueprint.pdf' },
+  // the Full Rome Blueprint at €5.99 (€29 struck), Stripe product "The Full Rome Blueprint", back to /learn/thanks/full-rome (25/11)
+  // prod_VhBKK4qnv5zKyC, used on the watch page
+  { id: 'full-rome', checkout: 'https://buy.stripe.com/00wbJ070F6o8dWe9et8so1h' },
 ];
 
 // 10/11 (site check 2 and 21): the launch prices are gone from the code. fullTowerDeal, full3dDeal and fullCityDeal (the Full

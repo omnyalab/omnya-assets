@@ -1,5 +1,5 @@
 {
-  "_nota": "Il funnel ROME (25/11, reel del Colosseo 80 d.C.: «Claude + Higgsfield just rebuilt ancient Rome», «Asked GPT Astra 6.2 for ancient Rome / got a PS2 game», «We tried Opus 5.6 and it's on another level», «Claude made my GPU explode with this», parola ROME, link omnyalab.com/rome). Copiato dal funnel Dubai Villa (formato Riyadh, solo il Full 5,99 fino a sab 28/11 23:59 poi 9,99, card blu 59 sotto il Full, grazie con Everything 59 e THE 3D FUTURE). Colori: nero + ORO #f5b83d come le guide approvate da Nico il 25/11, scritte nere sull'oro (scripts/rome-post.py).",
+  "_nota": "Il funnel ROME (25/11, reel del Colosseo 80 d.C.: «Claude + Higgsfield just rebuilt ancient Rome», «Asked GPT Astra 6.2 for ancient Rome / got a PS2 game», «We tried Opus 5.6 and it's on another level», «Claude made my GPU explode with this», parola ROME, link omnyalab.com/rome). Copiato dal funnel Dubai Villa (formato Riyadh, solo il Full 5,99 SEMPRE (Nico 25/11: «lascialo sempre a 5,99, non fare il 9,99»: niente full9, niente timer del lancio, scripts/rome-post.py), card blu 59 sotto il Full, grazie con Everything 59 e THE 3D FUTURE). Colori: nero + ORO #f5b83d come le guide approvate da Nico il 25/11, scritte nere sull'oro (scripts/rome-post.py).",
   "id": "rome",
   "slug": "the-rome-blueprint",
   "format": "riyadh",
@@ -62,12 +62,10 @@
     "full": {
       "pid": "full-rome",
       "stripe_name": "The Full Rome Blueprint",
-      "eur": "5.99"
-    },
-    "full9": {
-      "pid": "full-rome-9",
-      "stripe_name": "The Full Rome Blueprint",
-      "eur": "9.99"
+      "eur": "5.99",
+      "prod": "prod_VhBKK4qnv5zKyC",
+      "price": "price_1UfmyBATIF7pxfqfCQWApr92",
+      "link": "https://buy.stripe.com/00wbJ070F6o8dWe9et8so1h"
     }
   },
   "thanks": {

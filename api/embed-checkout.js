@@ -62,6 +62,8 @@ const P = {
   // 25/11 (Nico, Dubai Villa funnel, made by scripts/new-funnel): The Full Dubai Villa Blueprint €5.99, The Full Dubai Villa Blueprint €9.99
   'full-villa': { items: ['price_1Ufj2UATIF7pxfqfQMpKuITy'], back: 'full-villa' }, // 00wdR82Kp3bW2dwgGV8so1f · 5,99
   'full-villa-9': { items: ['price_1Ufj3zATIF7pxfqfsyfQJ0OU'], back: 'full-villa' }, // 8x29ASgBfbIs5pI9et8so1g · 9,99
+  // 25/11 (Nico, Rome funnel, made by scripts/new-funnel): The Full Rome Blueprint €5.99
+  'full-rome': { items: ['price_1UfmyBATIF7pxfqfCQWApr92'], back: 'full-rome' }, // 00wbJ070F6o8dWe9et8so1h · 5,99
   // 16/11 (Nico): Black Friday, Everything we teach for €39 until Friday 27 November (prod_Vdaact6ADqm1W3), same delivery as the pack
   'black-friday': { items: ['price_1UcJPLATIF7pxfqf6pLZSXoy'], back: 'everything', until: Date.parse('2026-11-27T23:59:59+01:00') },
 };

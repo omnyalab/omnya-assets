@@ -36,6 +36,7 @@ def post(text, C):
     if 'rome-post.py' in text:
         return text
     text = bf59(text)
+    text = sempre599(text)
     n = 0
 
     def rule(m):
@@ -123,3 +124,27 @@ def bf59(text):
            '.bfc59 .skp em{display:block;margin-top:3px;font:600 13px/1.3 Inter,sans-serif;font-style:normal;color:#fff}'
            '@media (min-width:821px){.bfc59 .fan.fan--front{transform:scale(1.1);transform-origin:50% 100%}}\n')
     return rep(text, '</style></head><body>', css + '</style></head><body>')
+
+
+def sempre599(text):
+    """25/11 (Nico: «lascialo sempre a 5,99 ok? non fare il 9,99»): the Full Rome stays €5.99 for good, there is no €9.99
+    product on Stripe. So the page never switches to the day-after price, and every countdown of the launch price goes,
+    because a timer on a price that never ends would be a lie: the big timer at the top with «Then the Full Guide goes back
+    to €29», «Launch price ends in» in the bar and in the choice column, the line «Launch price · from Sunday €9.99».
+    The Black Friday card keeps its own real end (Friday 27/11)."""
+    import re as _re
+    m = _re.search(r"window\.__ry2 = Date\.now\(\) > Date\.parse\('[^']+'\)[^\n]*", text)
+    if not m:
+        raise SystemExit('FERMO rome-post.py: riga del prezzo del giorno dopo (__ry2) non trovata')
+    text = text.replace(m.group(0), "window.__ry2 = false // 25/11 (Nico): «lascialo sempre a 5,99», no €9.99", 1)
+    m = _re.search(r"\nif \(window\.__ry2\) \{ LINK\.full = [^\n]*", text)
+    if not m:
+        raise SystemExit('FERMO rome-post.py: riga dei link del giorno dopo non trovata')
+    text = text.replace(m.group(0), '', 1)
+    m = _re.search(r'\s*<p class="rvl">.*?</p>', text)
+    if not m or 'Launch price' not in m.group(0):
+        raise SystemExit('FERMO rome-post.py: riga «Launch price · from …» non trovata')
+    text = text.replace(m.group(0), '', 1)
+    css = ('/* rome-post.py (25/11, Nico: sempre 5,99): no launch countdown anywhere */\n'
+           '.hero .ctop,.hero .csub,.right .tml,.right [data-t3],.bar .lbl,.bar .tm{display:none!important}\n')
+    return text.replace('</style></head><body>', css + '</style></head><body>', 1)
