@@ -115,7 +115,7 @@
     }
   },
   "dm": {
-    "note": "da fare: Next Post Automation col codice nella caption dei reel del Colosseo",
+    "note": "25/11 sera, fatte da Claude: 4 Next Post Automation (Instant DM manage-post 1-4), una per reel, codice = una parola che c'è solo nella sua caption: VISIT (Claude + Higgsfield), PS2 (GPT Astra), MOVIE (Opus 5.6), DOCUMENTARIES (GPU explode). Copiate dalla villa e cambiati tutti i testi (🏛️, /rome). Follow non richiesto come la villa. Ognuna si attacca al primo post nuovo con la sua parola: se un reel non esce, va cancellata (MOVIE e VISIT sono parole comuni).",
     "trigger": "All comments",
     "risposte": "Sent 🏛️ check your DMs (even in Requests or General) | Check your DMs 🏛️ (even in Requests or General) or tap the link in our bio | Just sent it 🏛️ look in your DMs (even in Requests or General)",
     "benvenuto": "Hey 🙌🏻 your free Rome Guide is ready, tap below and I'll send it right away!",
