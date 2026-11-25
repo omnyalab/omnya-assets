@@ -126,7 +126,15 @@ const VILLA_SKILL = {
   note: `is a skill for Claude: ${ON_CLAUDE_AI}, or unzip it into ~/.claude/skills for Claude Code, then ask "build me the Dubai villa page". The README inside has every step.`,
 };
 
-const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE, FULL_MASTERY, FULL_VILLA, FULL_ROME, SCENE, SKILL, MIAMI_SKILL, HOUSE_SKILL, RIYADH_KIT, PLANE_KIT, PLANE_SKILL, TOWER_SKILL, VILLA_SKILL];
+// 25/11 (Nico: «skill in the 59»): the Rome Builder skill, a zip for Claude that rebuilds the Colosseum film of the
+// «Claude + Higgsfield just rebuilt ancient Rome» reels (word ROME): the Blender code, every prompt, our photos and film,
+// the checks and the sound. ONLY in Everything we teach (€59), not with the Full guide, like the villa one.
+const ROME_SKILL = {
+  name: 'The Rome Builder skill', file: 'en/rome-builder-skill.zip', kind: 'zip',
+  note: `is a skill for Claude: ${ON_CLAUDE_AI}, or unzip it into ~/.claude/skills for Claude Code, then ask "build me ancient Rome like the Colosseum reel". The README inside has every step.`,
+};
+
+const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE, FULL_MASTERY, FULL_VILLA, FULL_ROME, SCENE, SKILL, MIAMI_SKILL, HOUSE_SKILL, RIYADH_KIT, PLANE_KIT, PLANE_SKILL, TOWER_SKILL, VILLA_SKILL, ROME_SKILL];
 
 /** 25/11: what the members of THE 3D FUTURE find inside (/the-3d-future/inside): the course skill, the six builds of the
     Vault with their files (the same order and photos as the club page, src/components/club/data.ts DROPS) and every Full guide */
@@ -165,7 +173,7 @@ export const allFiles = () => EVERY.flatMap((f) => [{ name: f.name, file: f.file
 // 25/11: the Dubai Villa joined the pack (the Black Friday card says "Dubai Villa too"): its Full guide and the Dubai Villa
 // Builder skill, which is only here (Nico: «la skill sta solo nel 59»)
 // 25/11: the Rome joined the pack (the Black Friday card says "Rome too"): its Full guide
-const PACK = [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_CITY, FULL_PLANE, FULL_VILLA, FULL_ROME, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, SKILL, MIAMI_SKILL, HOUSE_SKILL, PLANE_SKILL, PLANE_KIT, VILLA_SKILL];
+const PACK = [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_CITY, FULL_PLANE, FULL_VILLA, FULL_ROME, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, SKILL, MIAMI_SKILL, HOUSE_SKILL, PLANE_SKILL, PLANE_KIT, VILLA_SKILL, ROME_SKILL];
 /** True for every Stripe product that is the pack, whatever its price: "Everything we teach" (€59),
     "Everything we teach · upgrade" (€53 after a Full guide) and "Everything we teach · thank you price" (€29, sent by hand). */
 export const isPack = (name) => /everything we teach/i.test(String(name || ''));

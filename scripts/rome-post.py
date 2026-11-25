@@ -68,8 +68,8 @@ def post(text, C):
 
 def bf59(text):
     """25/11 (Nico: «manca sotto la full guide in blu bello il pack da 59 euro… mettilo con card bella grande»): under the Full
-    Guide, in the choice column, a big blue card of the €59 pack (the Everything we teach link, with the Dubai Villa guide and
-    its skill inside), like the €59 card under the course on 3D AI Mastery (scripts/mastery-post.py). A tap chooses it and the
+    Guide, in the choice column, a big blue card of the €59 pack (the Everything we teach link, with the Rome guide and
+    its skill inside; 25/11 Nico: «skill in the 59», the ★ pill like the villa), like the €59 card under the course on 3D AI Mastery (scripts/mastery-post.py). A tap chooses it and the
     payment becomes the €59 pack; the Full stays the one already chosen. Shown until Friday 27/11 23:59 like the other cards."""
     def rep(t, old, new):
         if t.count(old) != 1:
@@ -80,12 +80,12 @@ def bf59(text):
         raise SystemExit('FERMO rome-post.py: riga del Full non trovata')
     card = ('<label class="opt bfc bfc59" data-o="bf"><span class="rib"><i></i>BLACK FRIDAY OFFER</span>'
             '<span class="fan fan--front"><img src="/learn/pk_pb01.webp" alt=""><img src="/learn/pk_pb02.webp" alt=""><img src="/learn/pk_pb03.webp" alt=""><img src="/learn/ro_book_tight.webp" alt=""></span>'
-            '<span class="bh">Get everything</span><span class="inc">Every Full guide, the Rome one too, the 3 playbooks, the skills and every new guide</span>'
+            '<span class="bh">Get everything</span><span class="skp"><b>★</b>Skill included: recreate it exactly like in our video</span><span class="inc">Every Full guide, the Rome one and its skill too, the 3 playbooks, the skills and every new guide</span>'
             '<span class="pz"><s>€260</s><b>€59</b><span>-77%</span></span><span class="go" data-bfgo>Get everything · €59</span><span class="end">Ends Friday 27 November at 23:59</span></label>')
     text = text.replace(m.group(0), m.group(0) + card, 1)
     # the pane on the left when the pack is chosen: the Dubai Villa book first and its line on top
     text = rep(text, '<div class="fbr"><img src="/learn/3d_book.webp" alt="The Full 3D Guide">', '<div class="fbr"><img src="/learn/ro_book_tight.webp" alt="The Full Rome Guide">')
-    text = rep(text, '<ul><li>The Full Towers Guide</li><li>The Full Tower Guide</li><li>The Full 3D Guide</li>', '<ul><li>The Full Rome Guide</li><li>The Full Towers Guide</li><li>The Full Tower Guide</li><li>The Full 3D Guide</li>')
+    text = rep(text, '<ul><li>The Full Towers Guide</li><li>The Full Tower Guide</li><li>The Full 3D Guide</li>', '<ul><li>The Full Rome Guide + its Claude skill</li><li>The Full Towers Guide</li><li>The Full Tower Guide</li><li>The Full 3D Guide</li>')
     # the script: the card is the new one, its button chooses it and goes to the email (no countdown boxes on this card)
     old = re.search(r"\{ const bfEnd = Date\.parse\('2026-11-27T23:59:59\+01:00'\), bfCard = document\.querySelector\('\[data-bft\]'\).*?bt\(\); setInterval\(bt, 1000\) \}\n", text, re.S)
     if not old:
