@@ -150,20 +150,21 @@ export function readMember(token) {
 export const insideUrl = (email) => `${SITE_URL}/the-3d-future/inside?m=${memberToken(email)}`;
 
 /** The first course, SAMAR in eleven steps (25/11, titles and intros from the course scripts, «Corso SAMAR - copioni degli
-    11 step.md»). src = the video once it is online; until then the page shows the step locked, opening on Saturday 28/11.
+    11 step.md»). k = the word in azure and s = the short line, both from the approved step covers; img = the cover photo,
+    blurred, under the card (Nico, B3). src = the video once it is online; until then the page shows the step locked, opening on Saturday 28/11.
     No lengths yet: the films are not cut (Nico: no made-up numbers). */
 export const LESSONS = [
-  { n: 1, t: "What you'll build", p: "The tower we're building together, why developers pay over $6,000 for a page like this, and everything you need before you start.", src: '' },
-  { n: 2, t: 'Set up your kit', p: "What's inside the kit, how to open it on Mac or Windows with one double click, and your first test run.", src: '' },
-  { n: 3, t: 'Inside the engine', p: 'A tour of the engine piece by piece, so you know exactly what every part does and how to drive it.', src: '' },
-  { n: 4, t: 'References and real measures', p: 'How to collect the real photos from every side, pick your main photo, and give every number a source.', src: '' },
-  { n: 5, t: 'The tower in 3D', p: 'Your tower built from the main photo and checked with numbers, not with hope: overlay, silhouette score and an honest critic.', src: '' },
-  { n: 6, t: 'The apartment inside', p: 'The home at real size, laid out like the real photos, full of life and clean before any AI touches it.', src: '' },
-  { n: 7, t: 'The camera', p: 'The tour written like a story, one straight move per shot, and the judge that tells you when a move is ready.', src: '' },
-  { n: 8, t: 'The photos', p: 'The cover that makes people ask «is that real?», and every room made in a chain so it all stays the same.', src: '' },
-  { n: 9, t: 'The clips', p: 'From one photo to the next with Kling, one clip at a time, with the trick that cuts your credits almost in half.', src: '' },
-  { n: 10, t: 'The real page', p: 'Photos and clips inside the real page, a name for every floor, online with Netlify and tested on the phone.', src: '' },
-  { n: 11, t: 'The reel and the sale', p: 'The reel that gets the views, the caption that gets the comments, and how to sell your tower to a developer.', src: '' },
+  { n: 1, t: "What you'll build", p: "The tower we're building together, why developers pay over $6,000 for a page like this, and everything you need before you start.", k: "build", s: "The tower we build together, and why developers pay for it.", img: '/club/course/step-01.webp', src: '' },
+  { n: 2, t: 'Set up your kit', p: "What's inside the kit, how to open it on Mac or Windows with one double click, and your first test run.", k: "kit", s: "What's in the kit, and your first run with one double click.", img: '/club/course/step-02.webp', src: '' },
+  { n: 3, t: 'Inside the engine', p: 'A tour of the engine piece by piece, so you know exactly what every part does and how to drive it.', k: "engine", s: "Every part of the engine, and how to drive it.", img: '/club/course/step-03.webp', src: '' },
+  { n: 4, t: 'References and real measures', p: 'How to collect the real photos from every side, pick your main photo, and give every number a source.', k: "real measures", s: "Real photos from every side, and a source for every number.", img: '/club/course/step-04.webp', src: '' },
+  { n: 5, t: 'The tower in 3D', p: 'Your tower built from the main photo and checked with numbers, not with hope: overlay, silhouette score and an honest critic.', k: "in 3D", s: "Your tower in 3D, checked with numbers, not with hope.", img: '/club/course/step-05.webp', src: '' },
+  { n: 6, t: 'The apartment inside', p: 'The home at real size, laid out like the real photos, full of life and clean before any AI touches it.', k: "inside", s: "The home at real size, full of life, clean before any AI.", img: '/club/course/step-06.webp', src: '' },
+  { n: 7, t: 'The camera', p: 'The tour written like a story, one straight move per shot, and the judge that tells you when a move is ready.', k: "camera", s: "The tour written as a story, one straight move per shot.", img: '/club/course/step-07.webp', src: '' },
+  { n: 8, t: 'The photos', p: 'The cover that makes people ask «is that real?», and every room made in a chain so it all stays the same.', k: "photos", s: "The cover that makes people ask «wait, is that real?»", img: '/club/course/step-08.webp', src: '' },
+  { n: 9, t: 'The clips', p: 'From one photo to the next with Kling, one clip at a time, with the trick that cuts your credits almost in half.', k: "clips", s: "One clip at a time, and the trick that halves your credits.", img: '/club/course/step-09.webp', src: '' },
+  { n: 10, t: 'The real page', p: 'Photos and clips inside the real page, a name for every floor, online with Netlify and tested on the phone.', k: "real page", s: "Your tower online, with a name and a light for every floor.", img: '/club/course/step-10.webp', src: '' },
+  { n: 11, t: 'The reel and the sale', p: 'The reel that gets the views, the caption that gets the comments, and how to sell your tower to a developer.', k: "the sale", s: "The reel that gets the views, and how to sell your tower.", img: '/club/course/step-11.webp', src: '' },
 ];
 const fileLink = (f, ttl) => ({ name: f.name, href: `${SITE_URL}${signedHref(f.file, ttl)}`, zip: f.kind === 'zip', note: f.note || '' });
 /** 25/11 (Nico): his own look at the members' page before anyone is inside. A signed link like a member's, for this
