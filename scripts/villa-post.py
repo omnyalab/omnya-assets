@@ -34,6 +34,7 @@ def fix(decls):
 def post(text, C):
     if 'villa-post.py' in text:
         return text
+    text = bf59(text)
     n = 0
 
     def rule(m):
@@ -62,3 +63,53 @@ def post(text, C):
         raise SystemExit('FERMO: villa-post.py non trova testi bianchi su fondo giallo (è cambiata la pagina del Build?)')
     note = f'/* villa-post.py (25/11, Nico: giallo acceso): {n} testi bianchi su fondo giallo portati a #111 */\n'
     return text.replace('</style></head><body>', note + '</style></head><body>', 1)
+
+
+def bf59(text):
+    """25/11 (Nico: «manca sotto la full guide in blu bello il pack da 59 euro… mettilo con card bella grande»): under the Full
+    Guide, in the choice column, a big blue card of the €59 pack (the Everything we teach link, with the Dubai Villa guide and
+    its skill inside), like the €59 card under the course on 3D AI Mastery (scripts/mastery-post.py). A tap chooses it and the
+    payment becomes the €59 pack; the Full stays the one already chosen. Shown until Friday 27/11 23:59 like the other cards."""
+    def rep(t, old, new):
+        if t.count(old) != 1:
+            raise SystemExit(f'FERMO villa-post.py: «{old[:80]}» trovato {t.count(old)} volte invece di 1')
+        return t.replace(old, new)
+    m = re.search(r'<label class="opt opt-fu on" data-o="full">.*?</label>', text)
+    if not m:
+        raise SystemExit('FERMO villa-post.py: riga del Full non trovata')
+    card = ('<label class="opt bfc bfc59" data-o="bf"><span class="rib"><i></i>BLACK FRIDAY OFFER</span>'
+            '<span class="fan fan--front"><img src="/learn/pk_pb01.webp" alt=""><img src="/learn/pk_pb02.webp" alt=""><img src="/learn/pk_pb03.webp" alt=""><img src="/learn/dv_book_tight.webp" alt=""></span>'
+            '<span class="bh">Get everything</span><span class="inc">Every Full guide, the Dubai Villa and its skill too, the 3 playbooks, the skills and every new guide</span>'
+            '<span class="pz"><s>€260</s><b>€59</b><span>-77%</span></span><span class="go" data-bfgo>Get everything · €59</span><span class="end">Ends Friday 27 November at 23:59</span></label>')
+    text = text.replace(m.group(0), m.group(0) + card, 1)
+    # the pane on the left when the pack is chosen: the Dubai Villa book first and its line on top
+    text = rep(text, '<div class="fbr"><img src="/learn/3d_book.webp" alt="The Full 3D Guide">', '<div class="fbr"><img src="/learn/dv_book_tight.webp" alt="The Full Dubai Villa Guide">')
+    text = rep(text, '<ul><li>The Full Towers Guide</li><li>The Full Tower Guide</li><li>The Full 3D Guide</li>', '<ul><li>The Full Dubai Villa Guide + its Claude skill</li><li>The Full Towers Guide</li><li>The Full Tower Guide</li><li>The Full 3D Guide</li>')
+    # the script: the card is the new one, its button chooses it and goes to the email (no countdown boxes on this card)
+    old = re.search(r"\{ const bfEnd = Date\.parse\('2026-11-27T23:59:59\+01:00'\), bfCard = document\.querySelector\('\[data-bft\]'\).*?bt\(\); setInterval\(bt, 1000\) \}\n", text, re.S)
+    if not old:
+        raise SystemExit('FERMO villa-post.py: script del Black Friday non trovato')
+    new = ("{ const bfEnd = Date.parse('2026-11-27T23:59:59+01:00'), bfCard = document.querySelector('.opt.bfc59')\n"
+           "  if (bfCard && Date.now() < bfEnd) { document.documentElement.classList.add('bf')\n"
+           "    document.querySelectorAll('.p-all .pr b').forEach(b => b.textContent = '€59'); document.querySelectorAll('.p-all .fanstk b').forEach(b => b.textContent = '-77%'); document.querySelectorAll('.p-all .fanstk small').forEach(b => b.textContent = 'BLACK FRIDAY')\n"
+           "    const go = bfCard.querySelector('[data-bfgo]'); if (go) go.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); bfCard.click(); setTimeout(() => { const t = document.querySelector('[data-em]') || document.querySelector('[data-pay]'); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'center' }) }, 50) }) }\n")
+    text = text.replace(old.group(0), new, 1)
+    # blue and big (Nico), on the yellow page: the light, the ribbon, the price and the button in the blue of the €59 card
+    css = ('.opt.bfc59{margin:18px 0 18px;padding:22px 18px 18px;border-radius:22px;background:radial-gradient(120% 80% at 50% 0%,#0d2a66 0%,#071027 55%,#04070f 100%)!important;border:2px solid #3d8bff!important;box-shadow:0 0 0 6px #3d8bff22,0 28px 70px -22px #3d8bffcc!important}'
+           '.opt.bfc59.on{box-shadow:0 0 0 6px #5fb4ff55,0 28px 70px -16px #3d8bffee!important}'
+           '.bfc59 .rib{background:linear-gradient(180deg,#3d8bff,#1f5bff)!important;color:#fff!important;font-size:12.5px!important;padding:7px 14px!important}'
+           '.bfc59 .fan.fan--front{height:190px;width:300px;margin:14px auto 8px}'
+           '.bfc59 .fan.fan--front img{bottom:8px;width:70px;filter:brightness(.72)!important;box-shadow:0 10px 20px #000c,0 0 0 1px #ffffff14!important}'
+           '.bfc59 .fan.fan--front img:nth-child(1){left:30px;transform:rotate(-18deg) translateY(2px);z-index:1}'
+           '.bfc59 .fan.fan--front img:nth-child(2){left:115px;transform:translateY(-70px);z-index:0}'
+           '.bfc59 .fan.fan--front img:nth-child(3){left:200px;transform:rotate(18deg) translateY(2px);z-index:1}'
+           '.bfc59 .fan.fan--front img:nth-child(4){left:102px;width:96px;bottom:0;z-index:3;filter:none!important;transform:none;box-shadow:0 0 0 2px #5fb4ff,0 0 34px #3d8bffaa,0 14px 26px #000c!important}'
+           '.bfc59 .bh{font-size:34px!important;margin-top:10px!important}'
+           '.bfc59 .inc{font-size:14px!important;color:#cfe3ff!important;max-width:330px;margin-left:auto!important;margin-right:auto!important}'
+           '.bfc59 .pz{margin-top:12px!important}.bfc59 .pz s{color:#8ea3c8!important;font-size:22px!important}'
+           '.bfc59 .pz b{color:#5fb4ff!important;font-size:60px!important;text-shadow:0 0 30px #3d8bff88!important}'
+           '.bfc59 .go{height:62px!important;font-size:18px!important;color:#fff!important;background:linear-gradient(180deg,#3d8bff,#1f5bff)!important;box-shadow:inset 0 0 0 1px #9fd8ff40,0 16px 36px -12px #3d8bffcc!important}'
+           '.bfc59 .end{color:#9fd8ff!important;font-size:12.5px!important}'
+           '.bfc59 .ck{display:none}'
+           '@media (min-width:821px){.bfc59 .fan.fan--front{transform:scale(1.1);transform-origin:50% 100%}}\n')
+    return rep(text, '</style></head><body>', css + '</style></head><body>')
