@@ -61,7 +61,7 @@
   function loadSeats() {
     var raw = q.get('seats');
     if (raw !== null) { taken = Math.max(0, parseInt(raw, 10) || 0); return renderSeats(); }
-    var live = function () { return phase === 'before'; }; // 25/11: the counter shows the founders' gifts left, only for reservations
+    var live = function () { return false; }; // 25/11 Nico «basta contatore»: no number on the page (the seat box stays hidden)
     if (!live()) return renderSeats();
     fetch('/api/club/seats' + atQ).then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) { if (d && typeof d.taken === 'number') taken = d.taken; renderSeats(); })

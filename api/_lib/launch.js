@@ -8,7 +8,9 @@ import { seatsUrl } from './seats-card.js';
 export const LAUNCH = [
   { id: 'e1', at: '2026-11-20T17:00:00Z', list: 'consent' }, // 20/11 Nico: «oggi si inizia, mai domani» (was Monday 23/11)
   { id: 'e1b', at: '2026-11-23T17:00:00Z', list: 'consent', hold: true }, // 23/11 Nico: «si inizia DA OGGI»; goes only after &lgo=e1b
-  { id: 'e2', at: '2026-11-25T17:00:00Z', list: 'consent', seats: true }, // 25/11: seats = the founders' gifts left for the reservations
+  // 25/11 Nico «basta contatore, solo sempre meno posti disponibili»: no number and no counter words in the mails, one fixed
+  // sentence about the 100 founders' gifts; seats: true only so that who already reserved is skipped
+  { id: 'e2', at: '2026-11-25T17:00:00Z', list: 'consent', seats: true },
   // 23/11 (Nico: «mandami tutto così vediamo»): the rest of the launch, each held until &lgo=<id>
   { id: 'e2b', at: '2026-11-26T17:00:00Z', list: 'consent', seats: true, hold: true },
   { id: 'e3b', at: '2026-11-27T17:00:00Z', list: 'consent', seats: true, hold: true }, // everyone, before the club list of the same day
@@ -79,7 +81,7 @@ This is what you'll find inside from Saturday: step-by-step video courses where 
 
 If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay. And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us.
 
-You can reserve your seat right now: you add your card, nothing is charged today, and on Saturday your €9 month starts by itself. {Seats_words}: our three playbooks and the full 3D AI Mastery course, theirs to keep, and only the people who reserve can get them. If you change your mind before Saturday, you cancel and pay nothing:
+You can reserve your seat right now: you add your card, nothing is charged today, and on Saturday your €9 month starts by itself. Every day there are fewer of the 100 founders' gifts left: our three playbooks and the full 3D AI Mastery course, theirs to keep, and only the people who reserve can get them. If you change your mind before Saturday, you cancel and pay nothing:
 {link}
 
 Nico`,
@@ -97,7 +99,7 @@ The fix is to plan the video backwards: the result first, then how you got there
 
 This is one build from the Vault: the kit that builds it again in your colours, the exact prompts we used, the 3D scene and the Full guide that explains every step. On Saturday you get six of them, and a new one every Friday, next to the step-by-step video courses, starting with your own tower where buyers choose their floor.
 
-If you reserve your seat before Saturday, nothing is charged today and your €9 a month is locked for as long as you stay. {Seats_words}: our three playbooks and the full 3D AI Mastery course, and only the people who reserve can get them. The doors open in 2 days:
+If you reserve your seat before Saturday, nothing is charged today and your €9 a month is locked for as long as you stay. Every day there are fewer of the 100 founders' gifts left: our three playbooks and the full 3D AI Mastery course, and only the people who reserve can get them. The doors open in 2 days:
 {link}
 
 Nico`,
@@ -107,7 +109,7 @@ Nico`,
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name},
 
-Black Friday ends tonight, and tomorrow THE 3D FUTURE opens. Tonight is the last night to reserve your seat: you add your card, nothing is charged today, and {seats_words}:
+Black Friday ends tonight, and tomorrow THE 3D FUTURE opens. Tonight is the last night to reserve your seat: you add your card, nothing is charged today, and there are fewer of the 100 founders' gifts left every day:
 {link}
 
 {img}
@@ -125,7 +127,7 @@ Nico`,
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name}, we said we'd email you today, so here it is.
 
-Tomorrow the doors of THE 3D FUTURE open, and you're on the list, so you get in before everyone else, with €9 a month locked for as long as you stay. The founders' gift, our three playbooks and the full 3D AI Mastery course, is only for the people who reserve their seat before the doors open, and {seats_words}. Tonight you still can: you add your card, nothing is charged today, and if you change your mind before tomorrow you cancel and pay nothing.
+Tomorrow the doors of THE 3D FUTURE open, and you're on the list, so you get in before everyone else, with €9 a month locked for as long as you stay. The founders' gift, our three playbooks and the full 3D AI Mastery course, is only for the people who reserve their seat before the doors open, and fewer of them are left every day. Tonight you still can: you add your card, nothing is charged today, and if you change your mind before tomorrow you cancel and pay nothing.
 
 {img}
 
