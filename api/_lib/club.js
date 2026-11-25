@@ -159,18 +159,24 @@ export const LESSONS = [
   { n: 5, t: 'Put it online and post it', d: '2:29', src: '' },
 ];
 const fileLink = (f, ttl) => ({ name: f.name, href: `${SITE_URL}${signedHref(f.file, ttl)}`, zip: f.kind === 'zip', note: f.note || '' });
+/** 25/11 (Nico): his own look at the members' page before anyone is inside. A signed link like a member's, for this
+    address only, made by GET /api/club/preview with the admin key; it shows the page open, with the founders' gift. */
+export const PREVIEW_EMAIL = 'preview@omnyalab.com';
 /**
  * What /the-3d-future/inside shows to this member (GET /api/club/inside). state: 'none' (no such member), 'ended' (left),
  * 'waiting' (reserved, the first payment has not gone through yet: the page opens on Saturday), 'open'. The file links
  * are good for one day: the page makes new ones at every visit.
  */
 export async function insideData(email) {
+  if (cleanEmail(email) === PREVIEW_EMAIL) return openData({ name: 'Nico', email: PREVIEW_EMAIL, portal: PORTAL_URL }, true);
   let m = null; try { m = JSON.parse((await kv('HGET', K.members, cleanEmail(email))) || 'null'); } catch {}
   if (!m) return { state: 'none' };
   const base = { name: m.name, email: m.email, portal: PORTAL_URL };
   if (m.status === 'canceled') return { ...base, state: 'ended' };
   if (m.reserved && !m.welcomed) return { ...base, state: 'waiting', opens: new Date(EARLY).toISOString() };
-  const gift = m.reserved && Number(m.rank) > 0 && Number(m.rank) <= CHEAP_SEATS;
+  return openData(base, m.reserved && Number(m.rank) > 0 && Number(m.rank) <= CHEAP_SEATS);
+}
+function openData(base, gift) {
   return {
     ...base, state: 'open',
     lessons: LESSONS,

@@ -25,7 +25,7 @@ import { signedHref, PAGE_TTL, HOUSE_SKILL_FILE } from './_lib/learn-files.js';
 import {
   CLUB, ROUND, CHEAP_SEATS, EARLY, phaseAt, decide, priceId, seats, EMAIL, cleanEmail, cleanReceipt, firstName, signToken, readToken,
   limited, ipOf, receiptEmail, isBuyerEmail, isWaitlisted, fillWaitlist, backfill, lists, KEYS, PORTAL_URL,
-  readMember, insideData, insideUrl, noteBuild, sendInsideLink,
+  readMember, insideData, insideUrl, PREVIEW_EMAIL, noteBuild, sendInsideLink,
 } from './_lib/club.js';
 
 const SITE = 'https://www.omnyalab.com';
@@ -53,6 +53,10 @@ export async function GET(req) {
   if (a === 'seats') return getSeats(req);
   if (a === 'welcome') return welcome(req);
   if (a === 'inside') return inside(req);
+  if (a === 'preview') {
+    if (!admin(req)) return new Response('Not found', { status: 404 });
+    return json({ url: insideUrl(PREVIEW_EMAIL) });
+  }
   if (a === 'admin') {
     if (!admin(req)) return new Response('Not found', { status: 404 });
     return json(await lists());
@@ -181,6 +185,7 @@ async function checkout(req) {
 
 // 25/11 (Nico: «tutto nel sito»): the members' page /the-3d-future/inside
 //   GET  /api/club/inside?m=<member link>  → what the page shows (api/_lib/club.js insideData)
+//   GET  /api/club/preview (admin key)     → Nico's preview link of the page, open, with sample name and gift
 //   POST /api/club/link  { email }          → the member link goes again to that email (always { ok: true })
 //   POST /api/club/build { m, link, note }  → the build goes to Nico by email
 async function inside(req) {

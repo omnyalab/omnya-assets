@@ -80,6 +80,11 @@ eq(readToken(mt), null, 'a member link is not a buyer token');
 eq(welcomeText({ name: 'Marco', inside: 'I', skill: 'K', portal: '' }).split('\n\n')[4], 'Reply to this email to cancel.', 'W1 cancel line without the portal');
 
 // the four live prices are the base, the env variable wins when set
+// 25/11: Nico's preview of the members' page: open, with the gift, without touching the store
+{ const { insideData, PREVIEW_EMAIL, insideUrl } = await import('../api/_lib/club.js');
+  const pv = await insideData(PREVIEW_EMAIL);
+  eq([pv.state, pv.name, pv.gifts.length > 0, pv.lessons.length > 0], ['open', 'Nico', true, true], 'preview: open page with the gift');
+  eq(readMember(insideUrl(PREVIEW_EMAIL).split('m=')[1]), PREVIEW_EMAIL, 'preview link reads back as the preview address'); }
 const { priceId } = await import('../api/_lib/club.js');
 eq(['M9', 'M19', 'Y90', 'Y190'].map(priceId), ['price_1UdoXdATIF7pxfqf6XDiZBM9', 'price_1UdoXdATIF7pxfqfuAmUNY34', 'price_1UdoXdATIF7pxfqfrq5TEnf9', 'price_1UdoXdATIF7pxfqfa6wu7qpT'], 'live price ids');
 process.env.CLUB_PRICE_M9 = 'price_from_env'; eq(priceId('M9'), 'price_from_env', 'env price wins'); delete process.env.CLUB_PRICE_M9;
