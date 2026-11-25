@@ -5,7 +5,7 @@ import Arrow from './Arrow.astro';
 import { t, langFromPath } from '../i18n';
 
 interface Props {
-  id: 'house' | 'tower' | 'towers' | 'stadium' | 'waha';
+  id: 'house' | 'tower' | 'towers' | 'stadium' | 'waha' | 'aether';
   slot: number;
   kind?: 'pcard' | 'wcard';
   shape?: string;
@@ -22,8 +22,9 @@ const media = {
   tower: { href: `${lang === 'it' ? '/it' : ''}/demo/choose-your-floor/`, video: '/interactive/tower.mp4', videoM: '/interactive/tower-m.mp4', pic: '/interactive/tower', cat: 'real-estate' },
   towers: { href: `${lang === 'it' ? '/it' : ''}/demo/choose-your-view/`, video: '/interactive/towers.mp4', videoM: '/interactive/towers-m.mp4', pic: '/interactive/towers', cat: 'real-estate' },
   stadium: { href: `${lang === 'it' ? '/it' : ''}/demo/choose-your-seat/`, video: '/interactive/stadium.mp4', videoM: '/interactive/stadium-m.mp4', pic: '/interactive/stadium', cat: 'real-estate' },
-  // 25/11 (Nico): the new glass tower, Burj Al Waha (Dubai Hills golf)
+  // 25/11 (Nico): the two new towers, Burj Al Waha (glass, Dubai Hills golf) and Æther (the split tower of the ads)
   waha: { href: `${lang === 'it' ? '/it' : ''}/demo/burj-al-waha/`, video: '/interactive/waha.mp4', videoM: '/interactive/waha-m.mp4', pic: '/interactive/waha', cat: 'real-estate' },
+  aether: { href: `${lang === 'it' ? '/it' : ''}/demo/aether/`, video: '/interactive/aether.mp4', videoM: '/interactive/aether-m.mp4', pic: '/interactive/aether', cat: 'real-estate' },
 }[id];
 ---
 

@@ -1,0 +1,608 @@
+{
+ "_nota": "x = est (m), z = sud (m) dal centro del lotto, calcolati da lat/lon (equirettangolare). Altezze: architettoniche come da fonte. Coordinate OSM/Wikipedia approssimate (+-50 m).",
+ "citta": [
+  {
+   "id": "dubai",
+   "nome": "Dubai - Business Bay, sponda del Dubai Water Canal",
+   "lotto": {
+    "nome": "Dubai - Business Bay, sponda del Dubai Water Canal",
+    "lat": 25.1845,
+    "lon": 55.2745,
+    "perche": "Burj Khalifa a nord a ~1,4 km, skyline di Downtown e DIFC alle spalle, canale con passeggiata e verde davanti: l'inquadratura da reel piu riconoscibile del Golfo.",
+    "coordinate_nota": "Coordinate approssimate del lotto (ipotetico): da confermare su catasto/mappa prima della consegna"
+   },
+   "torri": [
+    {
+     "nome": "Burj Khalifa",
+     "h": 828,
+     "piani": 163,
+     "lat": 25.1972,
+     "lon": 55.2742,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai; coordinate: Wikipedia",
+     "x": -30,
+     "z": -1404,
+     "dist_m": 1404
+    },
+    {
+     "nome": "Kempinski The Boulevard",
+     "h": 370,
+     "piani": 72,
+     "lat": 25.2009,
+     "lon": 55.2762,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai; coordinate: Wikipedia",
+     "x": 171,
+     "z": -1813,
+     "dist_m": 1821
+    },
+    {
+     "nome": "Gevora Hotel",
+     "h": 356,
+     "piani": 75,
+     "lat": 25.21237,
+     "lon": 55.27714,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Dubai); coordinate: OpenStreetMap (ODbL)",
+     "x": 266,
+     "z": -3082,
+     "dist_m": 3093
+    },
+    {
+     "nome": "Il Primo",
+     "h": 356,
+     "piani": 77,
+     "lat": 25.19637,
+     "lon": 55.27198,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai; coordinate: Wikipedia (Il Primo Dubai)",
+     "x": -254,
+     "z": -1313,
+     "dist_m": 1337
+    },
+    {
+     "nome": "JW Marriott Marquis Dubai Tower 1",
+     "h": 355,
+     "piani": 76,
+     "lat": 25.18538,
+     "lon": 55.25774,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Dubai); coordinate: OpenStreetMap (ODbL)",
+     "nota": "Wikipedia, voce Business Bay, indica 77 piani",
+     "x": -1688,
+     "z": -97,
+     "dist_m": 1691
+    },
+    {
+     "nome": "JW Marriott Marquis Dubai Tower 2",
+     "h": 355,
+     "piani": 76,
+     "lat": 25.18606,
+     "lon": 55.25836,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Dubai); coordinate: OpenStreetMap (ODbL)",
+     "nota": "Wikipedia, voce Business Bay, indica 77 piani",
+     "x": -1626,
+     "z": -172,
+     "dist_m": 1635
+    },
+    {
+     "nome": "Emirates Office Tower",
+     "h": 355,
+     "piani": 54,
+     "lat": 25.21722,
+     "lon": 55.28306,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai; coordinate: Wikipedia (coordinate del complesso Emirates Towers)",
+     "x": 862,
+     "z": -3618,
+     "dist_m": 3719
+    },
+    {
+     "nome": "Rose Rayhaan by Rotana",
+     "h": 333,
+     "piani": 72,
+     "lat": 25.21167,
+     "lon": 55.27659,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Dubai); coordinate: OpenStreetMap (ODbL)",
+     "x": 211,
+     "z": -3004,
+     "dist_m": 3011
+    },
+    {
+     "nome": "The Index",
+     "h": 326,
+     "piani": 80,
+     "lat": 25.20746,
+     "lon": 55.27772,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Dubai); coordinate: OpenStreetMap (ODbL)",
+     "x": 324,
+     "z": -2539,
+     "dist_m": 2560
+    },
+    {
+     "nome": "Mr. C Residences Downtown",
+     "h": 323,
+     "piani": 72,
+     "lat": 25.2009,
+     "lon": 55.26692,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Dubai); coordinate: OpenStreetMap (ODbL)",
+     "nota": "Wikipedia lo indica con anno 2026: stato di completamento da verificare",
+     "x": -764,
+     "z": -1813,
+     "dist_m": 1967
+    },
+    {
+     "nome": "Address Downtown",
+     "h": 302,
+     "piani": 63,
+     "lat": 25.1936,
+     "lon": 55.2768,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai; coordinate: Wikipedia",
+     "x": 232,
+     "z": -1006,
+     "dist_m": 1032
+    },
+    {
+     "nome": "Opera Grand",
+     "h": 288,
+     "piani": 71,
+     "lat": 25.19366,
+     "lon": 55.2713,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Dubai); coordinate: OpenStreetMap (ODbL)",
+     "x": -322,
+     "z": -1013,
+     "dist_m": 1063
+    },
+    {
+     "nome": "Millennium Tower",
+     "h": 285,
+     "piani": 60,
+     "lat": 25.19484,
+     "lon": 55.26588,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Dubai); coordinate: OpenStreetMap (ODbL)",
+     "x": -868,
+     "z": -1143,
+     "dist_m": 1435
+    },
+    {
+     "nome": "ICD Brookfield Place",
+     "h": 282.3,
+     "piani": 54,
+     "lat": 25.21199,
+     "lon": 55.28041,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Dubai); coordinate: OpenStreetMap (ODbL)",
+     "x": 595,
+     "z": -3040,
+     "dist_m": 3098
+    },
+    {
+     "nome": "21st Century Tower",
+     "h": 269,
+     "piani": 55,
+     "lat": 25.21095,
+     "lon": 55.27616,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Dubai); coordinate: OpenStreetMap (ODbL)",
+     "x": 167,
+     "z": -2925,
+     "dist_m": 2930
+    },
+    {
+     "nome": "DAMAC Maison-Paramount Tower 1",
+     "h": 268.1,
+     "piani": 69,
+     "lat": 25.18594,
+     "lon": 55.29172,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Dubai); coordinate: OpenStreetMap (ODbL)",
+     "x": 1735,
+     "z": -159,
+     "dist_m": 1742
+    },
+    {
+     "nome": "Address Sky View Tower 1",
+     "h": 264,
+     "piani": 60,
+     "lat": 25.20121,
+     "lon": 55.27028,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Dubai); coordinate: OpenStreetMap (ODbL)",
+     "x": -425,
+     "z": -1848,
+     "dist_m": 1896
+    },
+    {
+     "nome": "Address Residences Dubai Opera Tower 1",
+     "h": 260,
+     "piani": 65,
+     "lat": 25.19696,
+     "lon": 55.27185,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Dubai (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Dubai); coordinate: OpenStreetMap (ODbL)",
+     "x": -267,
+     "z": -1378,
+     "dist_m": 1404
+    },
+    {
+     "nome": "Executive Tower M",
+     "h": 208,
+     "piani": 52,
+     "lat": 25.18943,
+     "lon": 55.26334,
+     "fonte": "Altezza e piani: Wikipedia, voce Business Bay; coordinate: OpenStreetMap (ODbL)",
+     "x": -1124,
+     "z": -545,
+     "dist_m": 1249
+    },
+    {
+     "nome": "Executive Tower B",
+     "h": 188,
+     "piani": 47,
+     "lat": 25.19278,
+     "lon": 55.26648,
+     "fonte": "Altezza e piani: Wikipedia, voce Business Bay; coordinate: OpenStreetMap (ODbL)",
+     "x": -808,
+     "z": -916,
+     "dist_m": 1221
+    }
+   ],
+   "bassi": {
+    "h": 100,
+    "stima": true,
+    "fonte": "STIMA: nessuna altezza media pubblicata. Basata sui tag building:levels di OpenStreetMap in Business Bay (molti edifici da 20-35 piani, ~3,5 m a piano), contro le torri da 200-350 m."
+   },
+   "foto": {
+    "pagina": "https://commons.wikimedia.org/wiki/File:Dubai_Skyline_from_Business_Bay_-_Dubai,_UAE.jpg",
+    "autore": "Lxs",
+    "licenza": "CC BY 4.0"
+   }
+  },
+  {
+   "id": "riyadh",
+   "nome": "Riyadh - bordo sud del KAFD (King Abdullah Financial District)",
+   "lotto": {
+    "nome": "Riyadh - bordo sud del KAFD (King Abdullah Financial District)",
+    "lat": 24.76,
+    "lon": 46.644,
+    "perche": "Il distretto finanziario ha lotti aperti e piazze, PIF Tower (385 m) e KAFD WTC (304 m) a pochi passi, e intorno la citta bassa nella foschia: e quasi la foto di riferimento.",
+    "coordinate_nota": "Coordinate approssimate del lotto (ipotetico): da confermare su catasto/mappa prima della consegna"
+   },
+   "torri": [
+    {
+     "nome": "Public Investment Fund Tower",
+     "h": 385,
+     "piani": 80,
+     "lat": 24.76369,
+     "lon": 46.64152,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Saudi Arabia; coordinate: OpenStreetMap",
+     "nota": "OSM riporta 72 piani, Wikipedia 80",
+     "x": -251,
+     "z": -408,
+     "dist_m": 479
+    },
+    {
+     "nome": "KAFD World Trade Center",
+     "h": 304,
+     "piani": 67,
+     "lat": 24.76293,
+     "lon": 46.64069,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Saudi Arabia (e tag OSM); coordinate: OpenStreetMap",
+     "x": -335,
+     "z": -324,
+     "dist_m": 466
+    },
+    {
+     "nome": "Kingdom Centre",
+     "h": 302.3,
+     "piani": 99,
+     "lat": 24.7113,
+     "lon": 46.6744,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Saudi Arabia; coordinate: Wikipedia",
+     "nota": "Oltre 3 km: solo sullo sfondo, se visibile",
+     "x": 3073,
+     "z": 5385,
+     "dist_m": 6200
+    },
+    {
+     "nome": "Riyad Bank Tower (sede)",
+     "h": 264,
+     "piani": 53,
+     "lat": 24.76251,
+     "lon": 46.64132,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Saudi Arabia (e tag OSM); coordinate: OpenStreetMap",
+     "x": -271,
+     "z": -278,
+     "dist_m": 388
+    },
+    {
+     "nome": "Tamkeen Tower",
+     "h": 258.2,
+     "piani": 58,
+     "lat": 24.8215,
+     "lon": 46.6198,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Saudi Arabia; coordinate: Wikipedia",
+     "nota": "Oltre 3 km: solo sullo sfondo, se visibile",
+     "x": -2446,
+     "z": -6800,
+     "dist_m": 7227
+    },
+    {
+     "nome": "Al Majdoul Tower",
+     "h": 244,
+     "piani": 54,
+     "lat": 24.7391,
+     "lon": 46.6593,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Saudi Arabia; coordinate: Wikipedia (Al-Majdoul Tower)",
+     "x": 1547,
+     "z": 2311,
+     "dist_m": 2781
+    },
+    {
+     "nome": "SNB Head Office (ex Al Ahli Bank)",
+     "h": 231.2,
+     "piani": 40,
+     "lat": 24.76252,
+     "lon": 46.64213,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Saudi Arabia; coordinate: OpenStreetMap (identificazione col nome OSM 'بنك الاهلي المقر الرئيسي', da verificare)",
+     "x": -189,
+     "z": -279,
+     "dist_m": 337
+    },
+    {
+     "nome": "Al Rajhi Bank Tower",
+     "h": 205,
+     "piani": 36,
+     "lat": 24.75012,
+     "lon": 46.65354,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Saudi Arabia; coordinate: OpenStreetMap",
+     "x": 964,
+     "z": 1092,
+     "dist_m": 1457
+    },
+    {
+     "nome": "Al Nakheel Tower",
+     "h": 200,
+     "piani": 26,
+     "lat": 24.74886,
+     "lon": 46.65272,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Saudi Arabia; coordinate: OpenStreetMap",
+     "x": 881,
+     "z": 1232,
+     "dist_m": 1515
+    },
+    {
+     "nome": "Torre senza nome (nord KAFD)",
+     "h": 182,
+     "piani": 46,
+     "lat": 24.77021,
+     "lon": 46.64091,
+     "fonte": "Altezza e piani: OpenStreetMap (tag height e building:levels); nome non noto",
+     "x": -312,
+     "z": -1129,
+     "dist_m": 1171
+    },
+    {
+     "nome": "Torre senza nome (KAFD nord)",
+     "h": 160,
+     "piani": 32,
+     "lat": 24.76812,
+     "lon": 46.64155,
+     "fonte": "OpenStreetMap (tag height e building:levels); nome non noto",
+     "x": -248,
+     "z": -898,
+     "dist_m": 932
+    },
+    {
+     "nome": "Torre senza nome (KAFD sud)",
+     "h": 145,
+     "piani": 34,
+     "lat": 24.76066,
+     "lon": 46.64031,
+     "fonte": "OpenStreetMap (tag height e building:levels); nome non noto",
+     "x": -373,
+     "z": -73,
+     "dist_m": 380
+    },
+    {
+     "nome": "Torre senza nome (KAFD nord-ovest)",
+     "h": 126,
+     "piani": 32,
+     "lat": 24.76809,
+     "lon": 46.64075,
+     "fonte": "OpenStreetMap (tag height e building:levels); nome non noto",
+     "x": -329,
+     "z": -895,
+     "dist_m": 954
+    }
+   ],
+   "bassi": {
+    "h": 15,
+    "stima": true,
+    "fonte": "STIMA: la citta intorno al KAFD e fatta soprattutto di case e palazzine di 2-4 piani (circa 10-15 m); il KAFD stesso ha basamenti e mid-rise di 80-130 m (tag OSM). Nessun valore medio pubblicato."
+   },
+   "foto": {
+    "pagina": "https://commons.wikimedia.org/wiki/File:Riyadh_Skyline_showing_the_King_Abdullah_Financial_District_(KAFD)_and_the_famous_Kingdom_Tower_.jpg",
+    "autore": "B.alotaby",
+    "licenza": "CC BY-SA 4.0"
+   }
+  },
+  {
+   "id": "miami",
+   "nome": "Miami - Brickell, a ovest di Brickell Avenue (zona SE 12th St)",
+   "lotto": {
+    "nome": "Miami - Brickell, a ovest di Brickell Avenue (zona SE 12th St)",
+    "lat": 25.7625,
+    "lon": -80.1925,
+    "perche": "Skyline di lusso sull'acqua, Panorama Tower (264,6 m, la piu alta della Florida) a ~230 m: una torre da 268 m sarebbe la nuova piu alta della citta. Resa migliore per reel immobiliari di lusso (baia, tramonto, yacht). Da verificare i limiti di altezza aeroportuali.",
+    "coordinate_nota": "Coordinate approssimate del lotto (ipotetico): da confermare su catasto/mappa prima della consegna"
+   },
+   "torri": [
+    {
+     "nome": "Panorama Tower",
+     "h": 264.6,
+     "piani": 85,
+     "lat": 25.76307,
+     "lon": -80.19032,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Miami (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Miami); coordinate: OpenStreetMap (ODbL)",
+     "x": 219,
+     "z": -63,
+     "dist_m": 228
+    },
+    {
+     "nome": "Aston Martin Residences",
+     "h": 250.2,
+     "piani": 66,
+     "lat": 25.77077,
+     "lon": -80.18785,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Miami (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Miami); coordinate: Wikipedia",
+     "x": 466,
+     "z": -914,
+     "dist_m": 1026
+    },
+    {
+     "nome": "Four Seasons Hotel Miami",
+     "h": 240.4,
+     "piani": 70,
+     "lat": 25.75861,
+     "lon": -80.19139,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Miami (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Miami); coordinate: Wikipedia",
+     "x": 111,
+     "z": 430,
+     "dist_m": 444
+    },
+    {
+     "nome": "Southeast Financial Center",
+     "h": 232.8,
+     "piani": 55,
+     "lat": 25.772255,
+     "lon": -80.187677,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Miami (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Miami); coordinate: Wikipedia",
+     "x": 484,
+     "z": -1079,
+     "dist_m": 1183
+    },
+    {
+     "nome": "830 Brickell",
+     "h": 220.7,
+     "piani": 57,
+     "lat": 25.766,
+     "lon": -80.19247,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Miami (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Miami); coordinate: OpenStreetMap",
+     "x": 3,
+     "z": -387,
+     "dist_m": 387
+    },
+    {
+     "nome": "Marquis Miami",
+     "h": 214,
+     "piani": 63,
+     "lat": 25.78519,
+     "lon": -80.19013,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Miami (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Miami); coordinate: OpenStreetMap",
+     "x": 238,
+     "z": -2509,
+     "dist_m": 2520
+    },
+    {
+     "nome": "Brickell Flatiron",
+     "h": 212.9,
+     "piani": 64,
+     "lat": 25.763854,
+     "lon": -80.192961,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Miami (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Miami); coordinate: Wikipedia",
+     "x": -46,
+     "z": -150,
+     "dist_m": 157
+    },
+    {
+     "nome": "Wells Fargo Center",
+     "h": 199.5,
+     "piani": 47,
+     "lat": 25.771364,
+     "lon": -80.188608,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Miami (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Miami); coordinate: Wikipedia",
+     "x": 390,
+     "z": -980,
+     "dist_m": 1055
+    },
+    {
+     "nome": "900 Biscayne Bay",
+     "h": 198,
+     "piani": 63,
+     "lat": 25.78338,
+     "lon": -80.19014,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Miami (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Miami); coordinate: OpenStreetMap",
+     "x": 237,
+     "z": -2309,
+     "dist_m": 2321
+    },
+    {
+     "nome": "Echo Brickell",
+     "h": 194.2,
+     "piani": 57,
+     "lat": 25.75819,
+     "lon": -80.19236,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Miami (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Miami); coordinate: Wikipedia",
+     "x": 14,
+     "z": 477,
+     "dist_m": 477
+    },
+    {
+     "nome": "Mint at Riverfront",
+     "h": 192.3,
+     "piani": 55,
+     "lat": 25.76954,
+     "lon": -80.19521,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Miami (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Miami); coordinate: OpenStreetMap",
+     "x": -272,
+     "z": -778,
+     "dist_m": 824
+    },
+    {
+     "nome": "Infinity at Brickell",
+     "h": 192,
+     "piani": 52,
+     "lat": 25.76103,
+     "lon": -80.19415,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Miami (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Miami); coordinate: Wikipedia",
+     "x": -165,
+     "z": 163,
+     "dist_m": 232
+    },
+    {
+     "nome": "Miami Tower",
+     "h": 190.5,
+     "piani": 47,
+     "lat": 25.772,
+     "lon": -80.1912,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Miami (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Miami); coordinate: Wikipedia",
+     "x": 130,
+     "z": -1050,
+     "dist_m": 1058
+    },
+    {
+     "nome": "Plaza on Brickell Tower I",
+     "h": 185.9,
+     "piani": 56,
+     "lat": 25.764973,
+     "lon": -80.190529,
+     "fonte": "Altezza e piani: Wikipedia, List of tallest buildings in Miami (https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Miami); coordinate: Wikipedia",
+     "x": 198,
+     "z": -273,
+     "dist_m": 337
+    },
+    {
+     "nome": "Icon Brickell South Tower",
+     "h": 179,
+     "piani": 58,
+     "lat": 25.76828,
+     "lon": -80.1886,
+     "fonte": "Altezza e piani: OpenStreetMap (tag height e building:levels, ODbL); coordinate: OpenStreetMap",
+     "x": 391,
+     "z": -639,
+     "dist_m": 749
+    }
+   ],
+   "bassi": {
+    "h": 60,
+    "stima": true,
+    "fonte": "STIMA: nessuna altezza media pubblicata. A Brickell convivono mid-rise di 15-30 piani e basse di 2-6 piani; valore indicativo."
+   },
+   "foto": {
+    "pagina": "https://commons.wikimedia.org/wiki/File:Brickell_neighborhood_skyline_(60062p).jpg",
+    "autore": "Rhododendrites",
+    "licenza": "CC BY-SA 4.0"
+   }
+  }
+ ]
+}

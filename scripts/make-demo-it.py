@@ -166,7 +166,7 @@ make(P('demo/choose-your-floor/m/index.html'), P('it/demo/choose-your-floor/m/in
 make(P('demo/choose-your-view/index.html'), P('it/demo/choose-your-view/index.html'), '/demo/choose-your-view/', VIEW)
 make(P('demo/choose-your-seat/index.html'), P('it/demo/choose-your-seat/index.html'), '/demo/choose-your-seat/', SEAT)
 
-# 25/11 (Nico): the new glass tower. Their pages read their own words from <html lang> (loading, turn your phone, the floor card),
+# 25/11 (Nico): the two new towers (Burj Al Waha, Æther). Their pages read their own words from <html lang> (loading, turn your phone, the floor card),
 # so here only the head changes.
 WAHA = [
     ('<html lang="en"', '<html lang="it"'),
@@ -177,3 +177,12 @@ WAHA = [
     ('https://www.omnyalab.com/demo/burj-al-waha/"', 'https://www.omnyalab.com/it/demo/burj-al-waha/"'),
 ]
 make(P('demo/burj-al-waha/index.html'), P('it/demo/burj-al-waha/index.html'), '/demo/burj-al-waha/', WAHA)
+AETHER = [
+    ('<html lang="en"', '<html lang="it"'),
+    ('<title>Æther · Choose your floor · Omnya Lab</title>', '<title>Æther · Scegli il piano · Omnya Lab</title>'),
+    ('content="Æther · Choose your floor · Omnya Lab"', 'content="Æther · Scegli il piano · Omnya Lab"'),
+    ('A twin tower in interactive 3D by Omnya Lab: pick a floor, fly inside, look around the house and go up to the Glass Crown.',
+     'Una torre in 3D interattivo di Omnya Lab: scegli un piano, entri in volo, ti guardi intorno in casa e sali al Glass Crown.'),
+    ('https://www.omnyalab.com/demo/aether/"', 'https://www.omnyalab.com/it/demo/aether/"'),
+]
+make(P('demo/aether/index.html'), P('it/demo/aether/index.html'), '/demo/aether/', AETHER)

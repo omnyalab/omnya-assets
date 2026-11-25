@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<base href="/demo/aether/">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Æther · Scegli il piano · Omnya Lab</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Omnya Lab">
+<meta property="og:title" content="Æther · Scegli il piano · Omnya Lab">
+<meta property="og:description" content="Una torre in 3D interattivo di Omnya Lab: scegli un piano, entri in volo, ti guardi intorno in casa e sali al Glass Crown.">
+<meta property="og:url" content="https://www.omnyalab.com/it/demo/aether/">
+<meta property="og:image" content="https://www.omnyalab.com/og/demo-aether.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.omnyalab.com/og/demo-aether.jpg">
+<meta name="description" content="Una torre in 3D interattivo di Omnya Lab: scegli un piano, entri in volo, ti guardi intorno in casa e sali al Glass Crown.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- 25/11 (Nico): Æther on the site, the real version of «15 Aether Choose your floor» (engine of motore-choose,
+     4K photos + the 7 Kling clips + the two 180° houses, re-encoded for the web: clip/ 1080p on computers, clipm/ 720p + 2k photos + panom/ on phones).
+     The engine files are a copy; only engine.js reads its URL defaults from window.__Q0 (reale=1, ao=0). -->
+<style>
+html,body{margin:0;height:100%;background:#000;overflow:hidden;cursor:default;-webkit-tap-highlight-color:transparent}
+#c3,#ui{position:fixed;inset:0;width:100vw;height:100vh;object-fit:cover;display:block}
+#ui{pointer-events:none}
+body.auto,body.auto *{cursor:none}
+/* loading: the tower photo under a dark veil, the number counts the clips as they arrive */
+.veil{position:fixed;inset:0;z-index:2147482000;display:grid;place-items:center;background:#07080a;transition:opacity .7s ease,visibility 0s linear .7s}
+.veil img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;filter:blur(6px) saturate(.9);transform:scale(1.04)}
+.veil div{position:relative;text-align:center;color:#f6ecd6;font:italic 400 clamp(22px,3vw,38px)/1.1 Didot,"Bodoni 72","Playfair Display",Georgia,serif;letter-spacing:.02em;text-shadow:0 2px 24px rgba(0,0,0,.6)}
+.veil small{display:block;margin-top:14px;font:600 11px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:rgba(246,236,214,.78);font-style:normal}
+.veil b{font-weight:600}
+.veil.off{opacity:0;visibility:hidden}
+.veil .err{display:none;margin-top:18px}
+.veil.fail .err{display:block}
+.veil .err button{all:unset;cursor:pointer;padding:11px 20px;border-radius:999px;background:rgba(246,236,214,.14);box-shadow:inset 0 0 0 1px rgba(246,236,214,.45);font:600 13px/1 -apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,sans-serif;letter-spacing:.04em;color:#f6ecd6}
+/* phones: a hint for the two taps, and «Turn your phone» when held upright */
+.tip{position:fixed;left:50%;top:max(18px,env(safe-area-inset-top,0px));z-index:2147481000;transform:translate(-50%,-8px);opacity:0;pointer-events:none;transition:opacity .35s ease,transform .35s ease;
+  padding:10px 16px;border-radius:999px;background:rgba(12,12,14,.52);-webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.35);
+  color:#f6ecd6;font:600 13px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Text",Arial,sans-serif;white-space:nowrap}
+.tip.on{opacity:1;transform:translate(-50%,0)}
+.rotate{display:none}
+@media (orientation:portrait) and (pointer:coarse){
+  .rotate{display:grid;place-items:center;position:fixed;inset:0;z-index:2147482500;background:#07080a;color:#fff;text-align:center;font:600 20px/1.3 -apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif}
+  .rotate small{display:block;margin-top:8px;font-weight:400;font-size:14px;color:rgba(255,255,255,.66)}
+  .rotate i{display:block;width:46px;height:78px;margin:0 auto 22px;border:2px solid #fff;border-radius:10px;animation:turn 2.2s ease-in-out infinite}
+}
+@keyframes turn{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
+/* the «Get this for your project» label stays bottom right here: the Æther floor card sits on the right, higher up */
+/* screens wider than 19:10 (phones sideways, 21:9): the whole picture and its card, black bands at the sides (engine toCanvas does the same) */
+@media (min-aspect-ratio: 19/10){ #c3,#ui,#reale>*{object-fit:contain!important} }
+</style>
+<script type="importmap">{ "imports": { "three": "/demo/aether/vendor/three.module.js" } }</script>
+</head>
+<body>
+<div class="veil" id="veil"><img src="/demo/aether/assets/reale/the-split/2k/T/MC.jpg" alt="" aria-hidden="true">
+  <div><span id="vt">Æther</span><small><span id="vl">Loading the tower</span> <b id="pct">0</b>%</small>
+    <div class="err"><button type="button" onclick="location.reload()" id="vr">Reload the page</button></div></div></div>
+<div class="tip" id="tip"></div>
+<div class="rotate"><div><i></i><span id="rt">Turn your phone</span><small id="rs">This tower is best seen in landscape</small></div></div>
+<script>
+// words (the Italian page swaps them, it only has lang="it")
+window.__IT = (document.documentElement.lang || '').slice(0, 2) === 'it';
+if (__IT) {
+  document.getElementById('vl').textContent = 'Carico la torre';
+  document.getElementById('vr').textContent = 'Ricarica la pagina';
+  document.getElementById('rt').textContent = 'Gira il telefono';
+  document.getElementById('rs').textContent = 'Questa torre si guarda in orizzontale';
+}
+// engine defaults: the real version (photo + clips), no ambient occlusion (the 3D scene is only used to aim the floor light)
+window.__Q0 = 'reale=1&ao=0';
+window.__PHONE = matchMedia('(pointer: coarse)').matches || Math.min(screen.width, screen.height) < 600;
+// loading: count the bytes of the clips the engine downloads (it fetches each one whole before it starts)
+(function () {
+  const of = window.fetch.bind(window), seen = new Map(), pct = document.getElementById('pct');
+  let shown = 0;
+  const show = () => { let a = 0, b = 0; for (const v of seen.values()) { a += v[0]; b += v[1]; } const p = b ? Math.min(99, Math.floor(a / b * 100)) : 0; if (p > shown) { shown = p; pct.textContent = p; } };
+  window.fetch = async function (u, o) {
+    const r = await of(u, o), url = String(u && u.url || u);
+    if (!/\.mp4(\?|$)/.test(url) || !r.ok || !r.body) return r;
+    const tot = +r.headers.get('content-length') || 6e6, rd = r.body.getReader(), parts = [];
+    seen.set(url, [0, tot]); show();
+    for (;;) { const { done, value } = await rd.read(); if (done) break; parts.push(value); seen.get(url)[0] += value.length; show(); }
+    return new Response(new Blob(parts, { type: 'video/mp4' }), { status: 200, headers: { 'content-type': 'video/mp4' } });
+  };
+  const veil = document.getElementById('veil'), t0 = Date.now();
+  const iv = setInterval(() => {
+    if (document.body.dataset.pronto === '1') { pct.textContent = '100'; clearInterval(iv); setTimeout(() => veil.classList.add('off'), 250); }
+    else if (Date.now() - t0 > 60000) { veil.classList.add('fail'); }
+  }, 150);
+})();
+</script>
+<script type="module">
+const S = (await import('/demo/aether/soggetti/the-split.js')).default;
+// the clips and the photo of this page, wherever the page is (English or /it/)
+S.reale = { ...S.reale, cartella: '/demo/aether/assets/reale/the-split/' };
+if (window.__PHONE) {
+  S.reale.foto = Object.fromEntries(Object.entries(S.reale.foto).map(([k, v]) => [k, v.replace(/^4k\//, '2k/')]));
+  if (S.reale.pano) S.reale.pano = Object.fromEntries(Object.entries(S.reale.pano).map(([k, v]) => [k, v.replace(/^pano\//, 'panom/')]));
+  S.reale.clip = Object.fromEntries(Object.entries(S.reale.clip).map(([k, v]) => [k, v.map(n => n.replace(/^clip\//, 'clipm/'))]));
+}
+document.title = 'Æther · ' + (window.__IT ? 'Scegli il piano' : 'Choose your floor') + ' · Omnya Lab';
+const { avvia } = await import('/demo/aether/engine/engine.js');
+try { await avvia(S); } catch (e) { console.error(e); document.getElementById('veil').classList.add('fail'); }
+</script>
+<script>
+// Phones (25/11): the engine is made for a mouse. A finger: the first tap on a floor lights it and shows its card,
+// a second tap on the same floor (or a tap on the card button) goes on. Buttons answer the first tap.
+(function () {
+  if (!window.__PHONE) return;
+  const tip = document.getElementById('tip'); let tipT = 0, last = null, sx = 0, sy = 0, st0 = 0, lastTouch = -1e9;
+  const say = s => { tip.textContent = s; tip.classList.add('on'); clearTimeout(tipT); tipT = setTimeout(() => tip.classList.remove('on'), 2200); };
+  const fire = (type, x, y) => window.dispatchEvent(new MouseEvent(type, { clientX: x, clientY: y, bubbles: true }));
+  // the browser's own mouse events after a touch would click at once: they are stopped, ours go through
+  ['mousemove', 'mousedown', 'mouseup', 'click'].forEach(t => window.addEventListener(t, e => { if (e.isTrusted && performance.now() - lastTouch < 900) e.stopImmediatePropagation(); }, true));
+  addEventListener('pointerdown', e => { if (e.pointerType !== 'touch') return; lastTouch = performance.now(); sx = e.clientX; sy = e.clientY; st0 = lastTouch; }, true);
+  addEventListener('pointerup', e => {
+    if (e.pointerType !== 'touch') return; lastTouch = performance.now();
+    if (Math.hypot(e.clientX - sx, e.clientY - sy) > 14 || lastTouch - st0 > 700) return;   // a swipe (bars of the browser), not a tap
+    const M = window.__motore; if (!M) return;
+    fire('mousemove', e.clientX, e.clientY);
+    const st = M.st;
+    if (st.hBtn) { last = null; fire('mousedown', e.clientX, e.clientY); return; }
+    if (st.hover) {
+      const id = st.hover.id;
+      if (id === last) { last = null; fire('mousedown', e.clientX, e.clientY); return; }
+      last = id; say(window.__IT ? 'Tocca di nuovo per entrare' : 'Tap again to go in'); return;
+    }
+    last = null;
+  }, true);
+})();
+</script>
+<script defer src="/demo/cta.js"></script>
+<script defer src="/demo/mark.js"></script>
+<script defer src="/demo/fullscreen.js"></script>
+</body>
+</html>
