@@ -1,114 +1,61 @@
 ---
 // /the-3d-future/inside?m=<member link> (25/11, Nico: «tutto nel sito», no Skool): the members' page of THE 3D FUTURE.
-// The page is static; everything personal comes from /api/club/inside (api/_lib/club.js insideData) at every visit:
-//   open     the first course (five lessons, a video each once it is online), the course skill, the Vault with the six
-//            builds and their files, every Full guide, the House Builder skill, the founders' gift for the first 100
-//            reservations, «Send me your build» (to Nico by email) and the cancel link
-//   waiting  a reservation whose first payment has not gone through: the club opens on Saturday 28/11 at 9:00 (Rome)
-//   ended    the membership was cancelled
-//   no link, or a wrong one: «Write your email and we send you your link» (POST /api/club/link, same answer for all)
-// The file links last one day: a new visit makes new ones. noindex.
-import Club from '../../layouts/Club.astro';
+// 25/11 evening (Nico: «noi avevamo fatto tutto il profilo, tutte le card… bisogna adattare la pagina delle card e
+// inserirla dentro tutto quello che avevamo già fatto»): the member area of board A of 20/11
+// (https://claude.ai/artifact/E9JsJzy1K8P1B4ceYPQaJK, direction A, choices H6 P1 M3 B2) taken as it is: its own CSS
+// (components/club/board-a.css, a copy of the board's), the glass top bar and tab bar, the Home of glass widgets and photo
+// cards, the Vault of stacked photo cards, the profile M3 (the photo melts into its own blurred copy) with the B2 trophy
+// badges. Inside it, the new pieces: Nico's welcome video, the eleven B3 step cards of the course (unchanged), the files
+// of the Vault, every Full guide, the skills, the founders' gift, «Send me your build», cancel and withdraw.
+// No invented numbers: where the board had example data (minutes, likes, streaks, levels) the page shows what is real
+// (real dates, what the member has) or leaves the widget out; badges not earned yet are grey with a lock.
+// 25/11 (Nico: «il corso in primo piano… quando lo schiacci ti escono tutte le card», «B, vai»): the course the member is on is
+// one big card on top of Home; a tap opens the fifth tab, Courses, with its eleven step cards and the next course.
+// Everything personal comes from /api/club/inside (api/_lib/club.js
+// insideData) at every visit; the file links last one day. noindex.
+import '../../components/club/board-a.css';
+import { badgeB2 } from '../../components/club/badges';
+const BADGES: [string, string, string][] = [
+  ['founder', 'Founder', 'One of the first 100 who reserved'],
+  ['first', 'First build', 'Send Nico your first build'],
+  ['tower', 'Tower', 'Finish the SAMAR course'],
+  ['stadium', 'Stadium', 'Build the stadium of the Vault'],
+  ['house', 'House', 'Build the house of the Vault'],
+  ['month', 'Build of the Month', 'Win a monthly challenge'],
+];
+const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
 ---
-<Club title="Inside THE 3D FUTURE" noindex>
-  <h1 data-hi>Welcome inside.</h1>
-  <p class="lead" data-state>Opening the club…</p>
-
-  {/* 25/11 (Nico): his thank-you video on top whenever a member comes in */}
-  <div class="hello" data-hello hidden>
-    <video playsinline preload="metadata" poster="/club/intro-nico-cover.webp" tabindex="0" aria-label="Play the welcome from Nico" style="cursor:pointer">
-      <source src="/club/intro-nico-v2-720.mp4" media="(max-width: 700px)" type="video/mp4">
-      <source src="/club/intro-nico-v2.mp4" type="video/mp4">
-    </video>
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Inside THE 3D FUTURE · Omnya Lab</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b1534">
+<link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="t3m">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a6d4ff"/><stop offset="1" stop-color="#2f7bff"/></linearGradient></defs></svg>
+<div class="app A" data-screen="home" data-app>
+  <div class="mbg" aria-hidden="true"><img src="/club/burj-1080.webp" alt="" data-mbg></div>
+  <div class="member" data-root>
+    <div class="mtop"><div><h1 data-state-h>Opening the club…</h1></div></div>
   </div>
-
-  {/* no link, or a wrong one */}
-  <form class="box" data-lost hidden novalidate>
-    <h2>Get your link to the club</h2>
-    <p>Write the email you paid with and we send you your own link.</p>
-    <label for="t3i-e">Email</label>
-    <input class="in" id="t3i-e" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@studio.com" required>
-    <button class="btn" type="submit">Send me my link</button>
-    <p class="err" role="status" data-lost-msg></p>
-  </form>
-
-  {/* the reservation, before the first payment */}
-  <div class="box" data-waiting hidden>
-    <h2>Your seat is reserved</h2>
-    <p>The club opens on Saturday 28 November at 9:00 (Rome), when your first month starts. Come back to this page then: your courses, the Vault and every Full guide will be here.</p>
-  </div>
-
-  <div class="box" data-ended hidden>
-    <h2>Your membership has ended</h2>
-    <p>Thank you for being part of it. If you want to come back, the doors are always open: <a href="/the-3d-future">omnyalab.com/the-3d-future</a>.</p>
-  </div>
-
-  {/* 25/11 (Nico, L2): the first course, eleven steps as cards, each locked until it opens on Saturday 28/11 */}
-  <section class="course" data-course hidden>
-    <div class="chead">
-      <span class="eyebrow">Your first course</span>
-      <h2>SAMAR, <span class="g">floor by floor</span></h2>
-      <p>Eleven steps, from an empty folder to a tower online where buyers choose their floor, built the real way we build them for our clients.</p>
-      <div class="cd" data-cd>
-        <div class="num"><span><b data-u="d">0</b><small>days</small></span><span><b data-u="h">00</b><small>hours</small></span><span><b data-u="m">00</b><small>min</small></span><span><b data-u="s">00</b><small>sec</small></span></div>
-        <span class="when">Every step opens on Saturday 28 November at 9:00 (Rome)</span>
-      </div>
-    </div>
-    <ol class="steps2" data-lessons></ol>
-  </section>
-
-  <div data-open hidden>
-    <div class="file" data-skill></div>
-
-    <section class="sec">
-      <h2>Send me your build</h2>
-      <p class="mute">When your tower is online, paste its link here. I look at every first build myself and I answer you by email every Monday.</p>
-      <form class="box sendb" data-build novalidate>
-        <label for="t3i-l">The link of your build</label>
-        <input class="in" id="t3i-l" name="link" type="url" inputmode="url" maxlength="300" placeholder="https://your-tower.netlify.app" required>
-        <label for="t3i-n">A note for me (optional)</label>
-        <textarea class="in" id="t3i-n" name="note" rows="3" maxlength="1500" placeholder="What you'd like me to look at"></textarea>
-        <button class="btn" type="submit">Send it to Nico</button>
-        <p class="err" role="status" data-build-msg></p>
-      </form>
-    </section>
-
-    <section class="sec">
-      <h2>The Vault</h2>
-      <p class="mute">Six builds from our reels, each with its files, prompts and Claude skills. A new one comes every Friday.</p>
-      <div class="vault" data-vault></div>
-    </section>
-
-    <section class="sec" data-gifts-sec hidden>
-      <h2>Your founders' gift</h2>
-      <p class="mute">You reserved your seat among the first 100, so these are yours to keep.</p>
-      <div class="files" data-gifts></div>
-    </section>
-
-    <section class="sec">
-      <h2>Every Full guide</h2>
-      <div class="files" data-guides></div>
-    </section>
-
-    <section class="sec">
-      <h2>Your bonus</h2>
-      <div class="files" data-house></div>
-    </section>
-  </div>
-
-  <p class="mute small" data-foot hidden><span data-cancel></span> To withdraw within 14 days: <a href="/withdraw">omnyalab.com/withdraw</a>.</p>
-</Club>
+</div>
+<div class="sheetwrap" data-sheet hidden><div class="scrim" data-sheetx></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="t3m-sh"><div class="grab" aria-hidden="true"></div><button type="button" class="sx ctr" data-sheetx aria-label="Close"></button><div class="sbody" data-sheetbody></div></div></div>
+<div class="toast" role="status" aria-live="polite" data-toast></div>
+<footer class="mfooter">
+  <nav aria-label="Club links"><a href="/the-3d-future/terms">Club terms</a><a class="w" href="/withdraw">Withdraw from contract here</a><a href="/privacy-policy">Privacy</a><a href="mailto:info@omnyalab.com">info@omnyalab.com</a></nav>
+  <span>Omnya Lab · Venice, Italy · VAT IT05578770264</span>
+</footer>
 
 <style is:global>
-  .cl{width:min(980px,100%)}
-</style>
-<style is:global>
-  /* global: most of the page is written by the script below (scoped styles would not reach it) */
-  .sec{margin:42px 0 0}
-  .sec > h2{margin:0 0 6px}
-  .sec > p{margin:0 0 18px;max-width:62ch}
-  .small{font-size:14px;margin-top:44px}
-  .hello{margin:22px 0 26px;aspect-ratio:16/9;border-radius:20px;overflow:hidden;background:#000;border:1px solid #ffffff1f;box-shadow:0 30px 70px -30px #000c}.hello video{display:block;width:100%;height:100%;object-fit:cover}
+  /* the course cards (B3) read these */
+  :root{--line:#ffffff1f;--mute2:#a9b8d0;--blue2:#5ab8ff}
   /* the course (L2): a header with a live countdown, then eleven cards, each with a glass lock until its video is online */
   .course{margin:34px 0 0}
   .g{background:linear-gradient(180deg,#f2f9ff 0%,#a6d4ff 36%,#3f8cff 70%,#2457e0 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.06em}
@@ -147,46 +94,188 @@ import Club from '../../layouts/Club.astro';
   .lk-pill i{width:7px;height:7px;border-radius:50%;background:#5ab8ff;box-shadow:0 0 0 4px #5ab8ff2a}
   @media (max-width:600px){.cd .num span{min-width:54px}.cd .num b{font-size:21px}}
   @media (prefers-reduced-motion:reduce){.lk::after{animation:none}.steps2.rv li{opacity:1;transform:none}}
-  .lessons{list-style:none;margin:0;padding:0;display:grid;gap:14px}
-  .lessons li{border-radius:18px;background:linear-gradient(160deg,#ffffff12,#ffffff05);border:1px solid var(--line);overflow:hidden}
-  .lessons .lh{display:flex;align-items:center;gap:14px;padding:14px 16px}
-  .lessons .num{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--blue);font:700 15px Geist,sans-serif}
-  .lessons .lt{flex:1;min-width:0;font:600 16.5px/1.3 Geist,sans-serif}
-  .lessons .ld{flex:none;font:500 14px Geist,sans-serif;color:var(--mute);font-variant-numeric:tabular-nums}
-  .lessons video{display:block;width:100%;aspect-ratio:16/9;background:#000}
-  .lessons .soon{margin:0;padding:0 16px 14px 64px;font-size:14px;color:var(--mute)}
-  .vault{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-  .vb{border-radius:18px;overflow:hidden;background:linear-gradient(160deg,#ffffff12,#ffffff05);border:1px solid var(--line)}
-  .vb img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover}
-  .vb .vbb{padding:14px 16px 16px}
-  .vb h3{margin:0;font:600 18px/1.2 Geist,sans-serif}
-  .vb .ty{margin:2px 0 12px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
-  .files{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
-  .vb .files{grid-template-columns:1fr;gap:8px}
-  .fl{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;border:1px solid #ffffff26;background:#0b1428;color:#fff;text-decoration:none;font:500 15px/1.3 Geist,sans-serif}
-  .fl:hover{border-color:var(--blue2)}
-  .fl b{flex:none;font:600 11px Geist,sans-serif;letter-spacing:.1em;padding:4px 7px;border-radius:6px;background:#ffffff18;color:#cfe5ff}
-  .fl span{flex:1;min-width:0}
-  .file .fl{margin-top:14px}
-  .note{margin:6px 2px 0;font-size:13.5px;color:var(--mute)}
-  .sendb{margin:0;max-width:640px}
-  .sendb textarea{resize:vertical;font:500 15px/1.45 Geist,sans-serif}
-  .ok{color:#7fe0a8 !important}
 </style>
+<style is:global>
+  /* ===== the page around board A's member area (the board drew it inside a phone or a browser frame) ===== */
+  html, body.t3m { background: #0b1534; color: #fff; margin: 0 }
+  body.t3m { min-height: 100vh; font-family: var(--f-sf); -webkit-font-smoothing: antialiased; overflow-x: clip }
+  .t3m :focus-visible { outline: 3px solid #8cc4ff; outline-offset: 2px }
+  .t3m .app.A { min-height: 100vh }
+  .A .top { top: max(8px, env(safe-area-inset-top)) }
+  .A .mbg { position: fixed; height: 100vh }
+  .A .mbg img { transition: opacity .5s ease }
+  .A .mtop { padding-top: 24px }
+  .A .tabbar { position: fixed; left: 0; right: 0; bottom: 0; padding-bottom: max(16px, env(safe-area-inset-bottom)) }
+  .A .member { padding-bottom: 112px }
+  .A .mav { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font: 700 17px/1 var(--f-sfd); color: #fff; background: linear-gradient(140deg, #8cc4ff, #2a74ff 55%, #1d4fd8); box-shadow: 0 0 0 2px rgba(255,255,255,.22), 0 8px 20px rgba(42,116,255,.45); flex: none }
+  .A .top .lockup img { width: 32px; height: 32px; display: block; filter: drop-shadow(0 4px 12px rgba(40,110,255,.4)) }
+  .A [data-v] { display: none }
+  .A[data-screen="home"] [data-v="home"], .A[data-screen="course"] [data-v="course"], .A[data-screen="vault"] [data-v="vault"], .A[data-screen="chal"] [data-v="chal"], .A[data-screen="me"] [data-v="me"] { display: block }
+  /* Nico's welcome inside the board's video widget (.yt) */
+  .A .yt video { display: block; width: 100%; height: 100%; object-fit: cover; cursor: pointer }
+  .A .w .btn { justify-self: start; min-height: 44px; font-size: 15px; padding: 0 18px }
+  .A .w .lede2 { margin: 0; font: 400 15px/20px var(--f-sf); color: var(--fg); opacity: .86; max-width: 46ch }
+  .A .inc { text-decoration: none }
+  .A .medal2 { position: relative }
+  .A .medal2 small { font: 400 11px/14px var(--f-sf); color: var(--mute); max-width: 15ch }
+  /* the course (B3 cards of the course chat, unchanged) inside the board's page */
+  .A .ccourse { max-width: 1280px; margin: 0 auto; padding: 8px 24px 32px }
+  .A .course .cd { display: flex; grid-template-columns: none; padding: 0; border-radius: 0; background: none; border: 0; -webkit-backdrop-filter: none; backdrop-filter: none }
+  .A .course .cd > div + div { box-shadow: none }
+  .A .course .cd .num span { text-transform: none; letter-spacing: 0; opacity: 1 }
+  .A .course .chead h2 { font: 700 clamp(30px,6vw,44px)/1.04 Geist,sans-serif; letter-spacing: -.035em }
+  .A .course .steps2 h3 { margin: auto 0 8px; font: 700 26px/1.04 Geist,sans-serif }
+  .A .course .chead .eyebrow { opacity: 1 }
+  .A .mfile { margin-top: 18px }
+  .A .mfile .note, .A .files .note { margin: 8px 2px 0; font: 400 13.5px/1.45 var(--f-sf); color: var(--mute) }
+  /* files: glass rows */
+  .A .files { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 10px; margin-top: 8px }
+  .A .fl { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 10px 14px; border-radius: 16px; border: 1px solid var(--edge); background: var(--glass-2);
+    color: #fff; text-decoration: none; font: 500 15px/1.3 var(--f-sf); transition: border-color .2s, background-color .2s }
+  .A .fl:hover { border-color: #8cc4ff; background: rgba(0,113,227,.28) }
+  .A .fl b { flex: none; font: 700 11px/1 var(--f-sf); letter-spacing: .1em; padding: 6px 8px; border-radius: 8px; background: rgba(140,196,255,.2); color: #d6e9ff }
+  .A .fl span { flex: 1; min-width: 0 }
+  .A .fl .ic { width: 18px; height: 18px; color: #8cc4ff }
+  .A .w.fgw { border-color: rgba(140,200,255,.65); box-shadow: 0 0 28px 2px rgba(59,155,255,.4), 0 0 70px 10px rgba(59,155,255,.14) }
+  /* the build form in the challenge widget */
+  .A .bform { display: grid; gap: 12px; margin-top: 8px }
+  .A .bform label { font: 600 13px/16px var(--f-sf); color: var(--mute) }
+  .A .bform input, .A .bform textarea { width: 100%; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.1); color: #fff; font: 400 17px/1.35 var(--f-sf); outline: none }
+  .A .bform textarea { resize: vertical }
+  .A .bform input:focus, .A .bform textarea:focus { border-color: #fff }
+  .A .err { margin: 0; min-height: 20px; font: 500 15px/20px var(--f-sf); color: #ffb4a8 }
+  .A .err.ok { color: #7fe0a8 }
+  .A .msmall { margin: 0; font: 400 14px/20px var(--f-sf); color: var(--mute) }
+  .A .msmall a { color: #8cc4ff }
+  /* the sheet of a Vault build */
+  .sheetwrap[hidden] { display: none }
+  .sheetwrap { position: fixed; inset: 0; z-index: 60; --sheet-bg: #121c3d; --sheet-fg: #fff; --sheet-chip: rgba(255,255,255,.12) }
+  .sheetwrap .sheet { position: absolute }
+  @media (min-width: 900px) { .sheetwrap .sheet { left: 50%; right: auto; width: 560px; margin-left: -280px; bottom: auto; top: 50%; max-height: min(760px, calc(100% - 48px)) } .sheetwrap.on .sheet { transform: translateY(-50%) } }
+  .sheet .fl { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 10px 14px; border-radius: 16px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); color: #fff; text-decoration: none; font: 500 15px/1.3 var(--f-sf) }
+  .sheet .fl b { flex: none; font: 700 11px/1 var(--f-sf); letter-spacing: .1em; padding: 6px 8px; border-radius: 8px; background: rgba(140,196,255,.2); color: #d6e9ff }
+  .sheet .fl span { flex: 1 } .sheet .fl .ic { width: 18px; height: 18px; color: #8cc4ff }
+  .sheet .note { margin: 0; font: 400 13.5px/1.45 var(--f-sf); opacity: .75 }
+  .toast { position: fixed }
+  /* states outside the member area */
+  .A .mbox { max-width: 560px; margin: 24px auto; padding: 24px; display: grid; gap: 14px }
+  .A .mbox p { margin: 0; font: 400 17px/24px var(--f-sf) }
+  .A .mbox a { color: #8cc4ff }
+  .A .mbox input { width: 100%; height: 56px; padding: 0 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.1); color: #fff; font: 400 17px/1 var(--f-sf) }
+  .mfooter { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 22px 24px 120px; border-top: 1px solid rgba(255,255,255,.12); font: 400 13.5px/1.5 var(--f-sf); color: rgba(255,255,255,.66) }
+  .mfooter nav { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 10px }
+  .mfooter a { color: #d9e6fb; text-decoration: none }
+  .mfooter .w { font-weight: 600; color: #fff }
+  @container app (min-width: 900px) {
+    .A .member { margin-top: 0 }
+    .A .mtop { padding-top: 48px }
+    .A .ccourse { padding: 8px 64px 48px }
+    .A .mbox { margin-top: 48px }
+  }
+  @media (min-width: 900px) { .mfooter { padding: 22px 64px 40px } }
+  /* where board A's own rules met the course cards */
+  .A .course .steps2 .no { color: #fff }
+  .A .course .steps2 .stop { width: 100%; justify-content: space-between }
+  .A .course .cd > div { display: flex; justify-items: normal; gap: 8px }
+  .A .course .cd span { letter-spacing: normal; text-transform: none; opacity: 1 }
+  .A .course .cd .when { font: 500 15px Geist, sans-serif; color: var(--mute2) }
+  .A .snote { margin: 8px 2px 0; font: 400 13.5px/1.45 var(--f-sf); color: var(--mute) }
+  .sheet .snote { margin: 0; opacity: .75 }
+  .A a.lockup { text-decoration: none }
+  .A .w.wf { align-content: start; min-height: 0 }
 
+  /* ===== the course in front (25/11, Nico: «il corso in cui sta facendo adesso in primo piano, quando lo schiacci ti escono tutte le card») ===== */
+  .A .cherow { grid-column: 1 / -1; display: grid; gap: 16px }
+  .A .chero { position: relative; isolation: isolate; overflow: hidden; display: grid; min-height: 360px; border-radius: 32px; color: #fff; text-decoration: none; border: 1px solid rgba(190,220,255,.28);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 30px 70px rgba(3,8,30,.45); transition: transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s }
+  .A .chero:hover { transform: translateY(-4px); border-color: rgba(140,196,255,.6) }
+  .A .chero > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -3; transform: scale(1.04) }
+  .A .chero .gz { z-index: -2; height: 70% }
+  .A .chero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(5,8,18,.2), rgba(5,8,18,0) 30%, rgba(5,8,18,.55) 70%, rgba(5,8,18,.88)) }
+  .A .chero .grain2 { position: absolute; inset: 0; z-index: -1; opacity: .1; mix-blend-mode: overlay; pointer-events: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>") }
+  .A .chero .ip { left: 16px; top: 16px; height: 32px; padding: 0 12px; font-size: 12px }
+  .A .chno { position: absolute; right: 22px; top: 14px; display: flex; align-items: baseline; gap: 4px }
+  .A .chno b { font: 700 84px/1 var(--f-sfd); letter-spacing: -.06em; text-shadow: 0 6px 36px rgba(0,0,0,.45) }
+  .A .chno small { font: 500 20px/1 var(--f-sf); opacity: .8 }
+  .A .chbody { align-self: end; display: grid; gap: 10px; padding: 96px 22px 22px }
+  .A .cht { font: 700 40px/1.02 var(--f-sfd); letter-spacing: -.04em; text-wrap: balance; text-shadow: 0 3px 24px rgba(0,0,0,.45) }
+  .A .chero .kw { font-style: normal; background: linear-gradient(100deg, #b9ddff 0%, #5aa8ff 52%, #2a74ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 16px rgba(47,123,255,.35)) }
+  .A .chs { font: 500 17px/22px var(--f-sf); color: rgba(255,255,255,.92) }
+  .A .chdots { display: grid; grid-template-columns: repeat(11, 1fr); gap: 5px; max-width: 440px; margin-top: 4px }
+  .A .chdots i { height: 6px; border-radius: 3px; background: rgba(255,255,255,.28) }
+  .A .chdots i.on { background: linear-gradient(90deg, #b9ddff, #5aa8ff 55%, #2a74ff) }
+  .A .chfoot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; margin-top: 6px }
+  .A .chcd { font: 500 15px/20px var(--f-sf); color: rgba(255,255,255,.86) }
+  .A .chcd b { font-weight: 700; color: #fff }
+  .A .chero .btn { pointer-events: none; min-height: 48px; padding: 0 20px; font-size: 16px }
+  .A .nextc .big small { font: 400 17px/1 var(--f-sf); color: var(--mute); margin-left: 4px }
+  .A .nextc { background: repeating-linear-gradient(115deg, rgba(255,255,255,.03) 0 2px, transparent 2px 18px), var(--glass) }
+  @container app (min-width: 900px) {
+    .A .chero { min-height: 420px }
+    .A .chbody { padding: 120px 36px 32px }
+    .A .cht { font-size: 64px }
+    .A .chno b { font-size: 120px }
+    .A .chno { right: 32px; top: 20px }
+  }
+  /* the welcome and the badges side by side, then four photo cards */
+  .A .mgrid .w.lvl.lvl2 { grid-column: span 2 }
+  .A .lvl2 .medals { grid-template-columns: repeat(3, 1fr) }
+  @container app (max-width: 899px) { .A .mgrid .w.lvl.lvl2 { grid-column: 1 / -1 } .A .lvl2 .lvlrow { grid-template-columns: 1fr; justify-items: center } }
+  .A .tabin.t5 { grid-template-columns: repeat(5, 1fr); max-width: 460px }
+  .A .tabin.t5 button span { font-size: 10.5px }
+
+  .A .pname .mav.big { width: 88px; height: 88px; font-size: 40px; justify-self: center; margin-bottom: 6px; box-shadow: 0 0 0 4px rgba(11,21,52,.55), 0 0 0 6px rgba(140,196,255,.7), 0 18px 40px rgba(42,116,255,.55) }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap }
+  .A .obj { text-decoration: none; color: var(--fg) }
+</style>
+<script is:inline define:vars={{ SVG, BADGES }}>
+window.__T3M = { SVG, BADGES };
+</script>
 <script is:inline>
-{ const q = new URLSearchParams(location.search), m = q.get('m') || '', $ = s => document.querySelector(s), st = $('[data-state]')
+{ const q = new URLSearchParams(location.search), m = q.get('m') || '', $ = (s, r) => (r || document).querySelector(s), $$ = (s, r) => Array.from((r || document).querySelectorAll(s))
+  const h = document.documentElement, app = $('[data-app]'), root = $('[data-root]')
+  const { SVG, BADGES } = window.__T3M
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
-  const fl = f => `<a class="fl" href="${esc(f.href)}"${f.zip ? ' download' : ' target="_blank" rel="noopener"'}><b>${f.zip ? 'ZIP' : 'PDF'}</b><span>${esc(f.name)}</span></a>`
-  const lost = (msg) => { st.textContent = msg || 'Your link to the club comes by email.'; $('[data-lost]').hidden = false }
+  /* the icons of board A */
+const P = {
+  lock: '<rect x="5" y="11" width="14" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  chev: '<path d="M9 5l7 7-7 7"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+  arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  cal: '<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+  cube: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/>',
+  doc: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>',
+  code: '<path d="M9 8l-4 4 4 4M15 8l4 4-4 4"/>',
+  trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M9 20h6"/>',
+  person: '<circle cx="12" cy="8" r="4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/>',
+  home: '<path d="M4 11l8-7 8 7v9H4z"/><path d="M10 20v-6h4v6"/>',
+  grid: '<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/>',
+  flame: '<path d="M12 21c4 0 6-2.7 6-6 0-4-3-6-4-9-1.5 2-2 3.5-2 5-1.5-1-2-2.5-2-4-2 2-4 4.6-4 8 0 3.3 2 6 6 6z"/>',
+  copy: '<rect x="8" y="8" width="12" height="12" rx="3"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+  share: '<path d="M12 15V4M7 8l5-5 5 5"/><path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  play: '<path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/>',
+  eye: '<path d="M2.5 12S6 5 12 5s9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7z"/><circle cx="12" cy="12" r="3"/>',
+  live: '<circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M7.8 16.2a6 6 0 0 1 0-8.4M16.2 7.8a6 6 0 0 1 0 8.4M5 19a10 10 0 0 1 0-14M19 5a10 10 0 0 1 0 14"/>',
+  spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/>',
+  seat: '<path d="M7 4h10v8H7zM5 12h14v4H5zM7 16v4M17 16v4"/>',
+  hand: '<path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V12M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6.5a1.5 1.5 0 0 1 3 0V14a6 6 0 0 1-6 6h-.5A5.5 5.5 0 0 1 6 17.5L4.3 13a1.5 1.5 0 0 1 2.6-1.4L8 13"/>',
+  pen: '<path d="M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20z"/><path d="M14 7l3 3"/>',
+  laurel: '<path d="M7 19c-3-3-3.5-8-1-12M17 19c3-3 3.5-8 1-12M5.5 12.5l-2-.5M5 9l-2-1M6.5 15.5L4.5 16M18.5 12.5l2-.5M19 9l2-1M17.5 15.5l2 .5"/>'
+};
+  const ic = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${P[n] || ''}</svg>`
+  P.down = '<path d="M12 4v12M6 11l6 6 6-6M5 20h14"/>'
+  const fl = f => `<a class="fl" href="${esc(f.href)}"${f.zip ? ' download' : ' target="_blank" rel="noopener"'}><b>${f.zip ? 'ZIP' : 'PDF'}</b><span>${esc(f.name)}</span>${ic('down')}</a>`
   const post = (u, b) => fetch(u, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json().catch(() => ({})).then(d => ({ ok: r.ok, d })))
-  $('[data-lost]').addEventListener('submit', e => {
-    e.preventDefault(); const f = e.currentTarget, msg = $('[data-lost-msg]'), btn = f.querySelector('button'), email = f.email.value.trim()
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.textContent = 'That email does not look right'; return }
-    btn.disabled = true; msg.textContent = ''
-    post('/api/club/link', { email }).then(r => { msg.className = r.ok ? 'err ok' : 'err'; msg.textContent = r.ok ? 'If that email is a member, your link is on its way. Check your inbox (and the spam folder).' : (r.d.error || 'Something went wrong, try again') })
-      .catch(() => { msg.textContent = 'Something went wrong, try again' }).then(() => { btn.disabled = false })
-  })
+  const toastEl = $('[data-toast]'); let tt; const toast = t => { toastEl.textContent = t; toastEl.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => toastEl.classList.remove('on'), 2600) }
+  /* board A's ring (the badges earned) */
+  function ring(p, size, sw, col, track = 'rgba(255,255,255,.14)', inner = '') {
+    const r = (size - sw) / 2, len = 2 * Math.PI * r, off = len * (1 - p)
+    return `<span class="ringwrap" style="width:${size}px;height:${size}px"><svg class="ring go" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="--len:${len.toFixed(1)};--off:${off.toFixed(1)}" aria-hidden="true"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${track}" stroke-width="${sw}"/><circle class="v" cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${len.toFixed(1)}" transform="rotate(-90 ${size / 2} ${size / 2})"/></svg>${inner ? `<span class="ringin">${inner}</span>` : ''}</span>`
+  }
   // 25/11 (Nico, L2): the course as eleven cards, locked until each video is online; live countdown to Saturday 9:00 Rome
   const OPENS = Date.parse('2026-11-28T08:00:00Z')
   const LOCK = '<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="lkg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eaf4ff"/><stop offset="1" stop-color="#7fb8ff"/></linearGradient></defs><path d="M7.5 10.5V8a4.5 4.5 0 0 1 9 0v2.5" fill="none" stroke="url(#lkg)" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10" rx="3" fill="url(#lkg)"/><circle cx="12" cy="15.2" r="1.6" fill="#1b4fae"/><path d="M12 16.4v1.8" stroke="#1b4fae" stroke-width="1.6" stroke-linecap="round"/></svg>'
@@ -208,33 +297,177 @@ import Club from '../../layouts/Club.astro';
       cd.querySelectorAll('[data-u]').forEach(b => { b.textContent = b.dataset.u === 'd' ? u.d : String(u[b.dataset.u]).padStart(2, '0') }) }
     tick(); if (before) setInterval(tick, 1000); else cd.hidden = true
   }
+  /* every copy of a badge gets its own ids (the same badge is in Home and in Profile; shared ids lose their colours) */
+  let bn = 0
+  const svgOf = k => { const n = ++bn; return SVG[k].replace(/id="([^"]+)"/g, `id="$1-${n}"`).replace(/url\(#([^)]+)\)/g, `url(#$1-${n})`).replace(/href="#([^"]+)"/g, `href="#$1-${n}"`) }
+  const medal = ([k, t, how], on) => `<div class="medal2 ${on ? '' : 'off'}" title="${esc(how)}"><span class="bdg">${svgOf(k)}${on ? '' : `<span class="lk">${ic('lock')}</span>`}</span><b>${esc(t)}</b><small>${on ? 'Earned' : esc(how)}</small></div>`
+  const incoming = (img, pill, k, n, u, sub, go) => `<a class="inc" href="#${go}" data-go="${go}"><img src="${img}" alt="" loading="lazy"><span class="gz"></span><span class="ip">${ic('spark')}${pill}</span><span class="ik">${k}</span><span class="in"><b>${n}</b>${u ? `<small>${u}</small>` : ''}</span><span class="is">${sub}</span></a>`
+  const BG = { home: '/club/burj-1080.webp', course: '/club/join-1.webp', vault: '/club/bg-towers-top.webp', chal: '/club/join-3.webp', me: '/club/profile-cover-800.webp' }
+  /* 25/11 Nico («B, vai»): five tabs, the courses have their own (a new course comes every Friday) */
+  const TABS = [['home', 'home', 'Home'], ['course', 'play', 'Courses'], ['vault', 'grid', 'Vault'], ['chal', 'trophy', 'Build'], ['me', 'person', 'Profile']]
+  const GO_COURSE = 'course' // the course card in Home opens the Courses tab
+
+  function render(d) {
+    const first = String(d.name || '').trim().split(/\s+/)[0] || 'friend', init = (first[0] || '·').toUpperCase()
+    const founder = !!(d.gifts && d.gifts.length), before = Date.now() < OPENS, open = d.state === 'open'
+    const earned = BADGES.map(([k]) => k === 'founder' && founder), nOn = earned.filter(Boolean).length
+    const now = new Date(), hr = +new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Europe/Rome' }).format(now)
+    const greet = hr < 5 ? 'Good evening' : hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening'
+    const today = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Europe/Rome' }).format(now)
+    const since = d.since && !isNaN(Date.parse(d.since)) ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', timeZone: 'Europe/Rome' }).format(new Date(d.since)) : ''
+    const role = founder ? 'Founding member' : d.state === 'waiting' ? 'Seat reserved' : 'Member'
+    const top = `<nav class="top mnav" aria-label="THE 3D FUTURE"><div class="topin"><a class="lockup" href="/the-3d-future"><img src="/club/knot-96.webp" alt="" width="32" height="32"><span class="wm">THE <b>3D</b> FUTURE</span></a>
+      <div class="links">${TABS.map(([k, , t]) => `<a href="#${k}" data-go="${k}">${t}</a>`).join('')}</div><span class="mav" aria-hidden="true">${init}</span></div></nav>`
+    const courseBlock = `<section class="course" data-course hidden>
+        <div class="chead"><span class="eyebrow">Your first course</span><h2>SAMAR, <span class="g">floor by floor</span></h2>
+          <p>Eleven steps, from an empty folder to a tower online where buyers choose their floor, built the real way we build them for our clients.</p>
+          <div class="cd" data-cd><div class="num"><span><b data-u="d">0</b><small>days</small></span><span><b data-u="h">00</b><small>hours</small></span><span><b data-u="m">00</b><small>min</small></span><span><b data-u="s">00</b><small>sec</small></span></div><span class="when">Every step opens on Saturday 28 November at 9:00 (Rome)</span></div></div>
+        <ol class="steps2" data-lessons></ol>
+        ${open && d.skill ? `<div class="mfile">${fl(d.skill)}<p class="snote">${esc(d.skill.name)} ${esc(d.skill.note)}</p></div>` : ''}</section>`
+    const left = Math.max(0, OPENS - Date.now()), dd = Math.floor(left / 864e5), hh = Math.floor(left / 36e5) % 24
+    const ls = d.lessons || [], cur = ls.find(l => l.src) || ls[0] || { n: 1, t: '' }, live = ls.filter(l => l.src).length
+    const tt = (l) => { const t = esc(l.t), k = esc(l.k || ''); return k && t.includes(k) ? t.replace(k, '<em class="kw">' + k + '</em>') : t }
+    const hero = `<a class="chero" href="#course" data-go="${GO_COURSE}" aria-label="SAMAR, floor by floor: open the ${ls.length} steps">
+        <img src="${esc(cur.img || '/club/course/step-01.webp')}" alt=""><span class="gz"></span><span class="grain2"></span>
+        <span class="ip">${ic('play')}${live ? 'Your course' : 'Your first course'}</span>
+        <span class="chno"><b>${String(cur.n).padStart(2, '0')}</b><small>/${ls.length}</small></span>
+        <span class="chbody">
+          <span class="cht">SAMAR, <em class="kw">floor by floor</em></span>
+          <span class="chs">${live ? 'Next' : 'Starts with'} step ${String(cur.n).padStart(2, '0')} · ${tt(cur)}</span>
+          <span class="chdots" aria-hidden="true">${ls.map(l => `<i class="${l.src ? 'on' : ''}"></i>`).join('')}</span>
+          <span class="chfoot"><span class="chcd">${before ? `Opens in <b>${dd}d ${hh}h</b> · Saturday 28 November, 9:00 (Rome)` : `${live} of ${ls.length} steps online`}</span><span class="btn cta">${ic('play')}<span>See the ${ls.length} steps</span></span></span>
+        </span></a>`
+    const home = `<div data-v="home">
+      <div class="mtop"><div><p class="eyebrow">${esc(today)}</p><h1>${greet}, ${esc(first)}</h1></div></div>
+      <div class="mgrid">
+        <div class="cherow span full">${hero}</div>
+        <div class="glass w span"><span class="k">${ic('play')}A welcome from Nico<span class="r">1:58</span></span>
+          <div class="yt" data-hello><video playsinline preload="metadata" poster="/club/intro-nico-cover.webp" tabindex="0" aria-label="Play the welcome from Nico"><source src="/club/intro-nico-v2-720.mp4" media="(max-width: 700px)" type="video/mp4"><source src="/club/intro-nico-v2.mp4" type="video/mp4"></video></div></div>
+        <div class="glass w span lvl lvl2"><span class="k">${ic('spark')}Your badges<span class="r">${nOn} of ${BADGES.length}</span></span><div class="lvlrow">${ring(nOn / BADGES.length, 104, 12, 'url(#rg)', 'rgba(255,255,255,.14)', `<b class="rn">${nOn}<small>/${BADGES.length}</small></b>`)}<div class="medals">${BADGES.map((b, i) => medal(b, earned[i])).join('')}</div></div></div>
+        ${incoming('/club/v-stadium-760.webp', 'Incoming', 'New in the Vault', '4', 'Dec', 'A new build every Friday', 'vault')}
+        ${incoming('/club/v-house-760.webp', 'Every week', 'My comments on your builds', 'Mon', '', 'Send me your build', 'chal')}
+        ${founder ? incoming('/club/v-towers-760.webp', 'Yours', "Your founders' gift", String(d.gifts.length), 'files', 'Yours to keep', 'gift') : incoming('/club/v-plane-760.webp', 'Yours', 'Your skills', '2', 'skills', 'Yours to keep', 'vault')}
+        ${incoming('/club/v-miami-760.webp', 'Open', 'Every Full guide', String(d.guides ? d.guides.length : ''), 'guides', 'In the Vault', 'vault')}
+      </div>
+    </div>`
+    const courseV = `<div data-v="course"><div class="mtop"><div><h1>Courses</h1><p class="msub">A new course every Friday, with the build of the week</p></div></div>
+      <div class="mgrid"><div class="cherow span full">${hero.replace('data-go="course"', 'data-go="course-list"')}</div>
+        <div class="glass w span nextc"><span class="k">${ic('lock')}Next course<span class="r">Friday 4 December</span></span><span class="big">4<small>Dec</small></span><p class="lede2">The next course comes with the build of the week.</p></div></div>
+      <div class="ccourse" id="course-list">${courseBlock}</div></div>`
+    const deck = (d.vault || []).map((b, i) => `<article class="vcard ${i === 0 ? 'open' : ''}" data-vb="${i}" tabindex="0" role="button" aria-label="${esc(b.t)}, open its files">
+        <img src="/club/v-${esc(b.img)}-760.webp" alt="" loading="lazy"><span class="gz"></span>
+        <div class="vt"><span class="pill">${ic('doc')}${esc(b.type)}</span><span class="go ctr">${ic('chev')}</span></div>
+        <span class="word">${esc(b.t.replace(/^The /, '').split(' ')[0])}</span></article>`).join('') + `<article class="vcard lock soon" tabindex="0" data-next aria-label="Next build, Friday 4 December"><span class="mystery"></span><div class="vt"><span class="pill">${ic('lock')}Fri 4 Dec</span><span class="go ctr">${ic('lock')}</span></div><span class="word">Next build</span><span class="sub2">Friday 4 December</span></article>`
+    const vault = `<div data-v="vault">
+      <div class="mtop"><div><h1>The Vault</h1><p class="msub">${(d.vault || []).length} open · a new one every Friday</p></div></div>
+      ${open ? `<div class="wrap vwrap"><div class="deck">${deck}</div></div>
+      <div class="mgrid">
+        ${founder ? `<div class="glass w span full wf fgw" id="gift"><span class="k">${ic('spark')}Your founders' gift<span class="r">yours to keep</span></span><p class="lede2">You reserved your seat among the first 100, so these are yours to keep.</p><div class="files">${d.gifts.map(fl).join('')}</div></div>` : ''}
+        <div class="glass w span full wf"><span class="k">${ic('doc')}Every Full guide<span class="r">${(d.guides || []).length} guides</span></span><div class="files">${(d.guides || []).map(fl).join('')}</div></div>
+        <div class="glass w span full wf"><span class="k">${ic('code')}Your skills<span class="r">yours to keep</span></span><div class="files">${d.skill ? fl(d.skill) : ''}${d.house ? fl(d.house) : ''}</div></div>
+      </div>` : `<div class="mgrid"><div class="glass w span full"><span class="k">${ic('lock')}Opens Saturday 28 November</span><p class="lede2">Your seat is reserved. The Vault, every Full guide and your skills open here on Saturday 28 November at 9:00 (Rome), when your first month starts.</p></div></div>`}
+    </div>`
+    function sendW() { return `<div class="glass w span full" id="send-w"><span class="k">${ic('trophy')}Send me your build<span class="r">I answer every Monday</span></span>
+        <p class="lede2">When your tower is online, paste its link here. I look at every first build myself and I answer you by email every Monday.</p>
+        <form class="bform" data-build novalidate><label for="t3m-l">The link of your build</label><input id="t3m-l" name="link" type="url" inputmode="url" maxlength="300" placeholder="https://your-tower.netlify.app" required>
+        <label for="t3m-n">A note for me (optional)</label><textarea id="t3m-n" name="note" rows="3" maxlength="1500" placeholder="What you'd like me to look at"></textarea>
+        <button class="btn cta" type="submit">${ic('plus')}<span>Send it to Nico</span></button><p class="err" role="status" data-build-msg></p></form></div>` }
+    const chal = `<div data-v="chal"><div class="mtop"><div><h1>Your build</h1><p class="msub">Every Monday I answer every build you send me</p></div></div><div class="mgrid chalg">${sendW()}</div></div>`
+    const me = `<div data-v="me"><div class="prof m3">
+      <div class="pcard">
+        <div class="ptone" aria-hidden="true"><div class="pbw"><img class="pblur" src="/club/profile-cover-800.webp" alt=""></div></div>
+        <div class="pphoto"><img class="pimg" src="/club/profile-cover.webp" alt="" style="object-position:50% 40%"><div class="pfade"></div>
+          <div class="pname"><span class="mav big" aria-hidden="true">${init}</span><h1>${esc(first)}</h1><p>${role}${since ? ' · since ' + since : ''}</p></div></div>
+        <div class="pact"><a class="btn cta" href="#chal" data-go="chal">${ic('plus')}<span>Send me your build</span></a><a class="pcam ctr" href="#vault" data-go="vault" aria-label="Open the Vault">${ic('grid')}</a></div>
+        <div class="pstat">${[[(d.lessons || []).length, 'steps'], [(d.vault || []).length, 'builds'], [(d.guides || []).length, 'guides']].filter(x => x[0]).map(([n, l]) => `<span><b>${n}</b><small>${l}</small></span>`).join('')}</div>
+      </div>
+      <div class="pmain">
+        <div class="glass w wide2 badgesw"><span class="k">${ic('trophy')}Badges<span class="r">${nOn} of ${BADGES.length}</span></span><div class="medals lg">${BADGES.map((b, i) => medal(b, earned[i])).join('')}</div></div>
+        ${open ? `<div class="objs">${[['/club/course/step-05.webp', (d.lessons || []).length, 'course steps', GO_COURSE], ['/club/v-towers-760.webp', (d.vault || []).length, 'Vault builds', 'vault'], [founder ? '/club/v-plane-760.webp' : '/club/v-miami-760.webp', founder ? d.gifts.length : (d.guides || []).length, founder ? "founders' gifts" : 'Full guides', founder ? 'gift' : 'vault']].map(([im, n, l, go]) => `<a class="glass obj" href="#${go}" data-go="${go}"><img src="${im}" alt=""><b>${n}</b><span>${l}</span></a>`).join('')}</div>` : ''}
+        <div class="glass w wide2"><span class="k">${ic('person')}Your membership</span>
+          <p class="msmall">${d.portal ? `To cancel: <a href="${esc(d.portal)}">one tap here</a>. ` : ''}To withdraw within 14 days: <a href="/withdraw">omnyalab.com/withdraw</a>.</p></div>
+      </div></div></div>`
+    const tabs = `<div class="tabbar"><div class="tabin t${TABS.length}" role="tablist">${TABS.map(([k, i, t]) => `<button type="button" data-go="${k}">${ic(i)}<span>${t}</span></button>`).join('')}</div></div>`
+    app.insertAdjacentHTML('afterbegin', '') // keep the background first
+    root.insertAdjacentHTML('beforebegin', top)
+    root.innerHTML = home + courseV + vault + chal + me
+    app.insertAdjacentHTML('beforeend', tabs)
+    if (d.lessons) course_(d.lessons)
+    wire()
+  }
+  const course_ = ls => course(ls)
+
+  /* the screens: a tap on the bar shows one (board A), the address keeps it (#vault) */
+  const SCREENS = ['home', 'course', 'vault', 'chal', 'me']
+  function show(k, push) {
+    let target = null
+    if (k === 'course-list') { k = 'course'; target = 'course-list' }
+    if (k === 'send') { k = 'home'; target = 'send' }
+    if (k === 'gift') { k = 'vault'; target = 'gift' }
+    if (!SCREENS.includes(k) || !$(`[data-v="${k}"]`)) k = 'home'
+    app.dataset.screen = k
+    $$('.links [data-go], .tabin [data-go]').forEach(a => { if (a.dataset.go === k) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current') })
+    const bg = $('[data-mbg]'); if (bg && BG[k] && !bg.src.endsWith(BG[k])) bg.src = BG[k]
+    if (push !== false) try { history.replaceState(null, '', '#' + k) } catch (e) {}
+    // the cards of a screen that was hidden come in when it shows
+    setTimeout(() => $$(`[data-v="${k}"] .steps2 li`).forEach(li => li.classList.add('in')), 350)
+    if (target) setTimeout(() => { const el = document.getElementById(target); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }) }, 40); else if (push !== false) scrollTo({ top: 0 })
+  }
+  function wire() {
+    document.addEventListener('click', e => {
+      const g = e.target.closest('[data-go]'); if (g) { e.preventDefault(); show(g.dataset.go); return }
+      const b = e.target.closest("[data-vb]"); if (b) { openBuild(+b.dataset.vb); return }
+      if (e.target.closest('[data-next]')) { toast('The next build opens Friday 4 December'); return }
+      if (e.target.closest('[data-sheetx]')) closeSheet()
+    })
+    // the Vault: on the computer the card under the pointer opens (board A)
+    $$('.vcard').forEach(c => c.addEventListener('mouseenter', () => $$('.vcard').forEach(x => x.classList.toggle('open', x === c))))
+    $$('.vcard').forEach(c => c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click() } }))
+    $$('[data-hello] video').forEach(v => { const go = () => { if (!v.controls) { v.controls = true; v.play().catch(() => {}) } }
+      v.addEventListener('click', go); v.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go() } }) })
+    $$('[data-build]').forEach(f => f.tagName === 'FORM' && f.addEventListener('submit', e => {
+      e.preventDefault(); const msg = $('[data-build-msg]', f), btn = $('button', f), link = f.link.value.trim()
+      if (!/^https?:\/\/[^\s]+\.[^\s]+$/i.test(link)) { msg.className = 'err'; msg.textContent = 'Paste the link of your build, like https://your-tower.netlify.app'; return }
+      btn.disabled = true; msg.textContent = ''
+      post('/api/club/build', { m, link, note: f.note.value.trim() }).then(r => { msg.className = r.ok ? 'err ok' : 'err'; msg.textContent = r.ok ? 'Sent. I answer you by email on Monday.' : (r.d.error || 'Something went wrong, try again'); if (r.ok) f.reset() })
+        .catch(() => { msg.className = 'err'; msg.textContent = 'Something went wrong, try again' }).then(() => { btn.disabled = false })
+    }))
+    const start = (location.hash || '').slice(1); show(SCREENS.includes(start) ? start : 'home', false)
+  }
+  let DATA = null
+  const sheet = $('[data-sheet]')
+  $('[data-sheet] .sx').innerHTML = ic('x')
+  function openBuild(i) {
+    const b = DATA && DATA.vault && DATA.vault[i]; if (!b) return
+    $('[data-sheetbody]').innerHTML = `<p class="s-eyebrow">${esc(b.type)}</p><h3 class="s-title" id="t3m-sh">${esc(b.t)}</h3><img class="s-img" src="/club/v-${esc(b.img)}-760.webp" alt="">${b.files.map(f => fl(f) + (f.note ? `<p class="snote">${esc(f.note)}</p>` : '')).join('')}`
+    sheet.hidden = false; requestAnimationFrame(() => sheet.classList.add('on')); document.documentElement.style.overflow = 'hidden'
+  }
+  function closeSheet() { sheet.classList.remove('on'); document.documentElement.style.overflow = ''; setTimeout(() => { sheet.hidden = true }, 300) }
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !sheet.hidden) closeSheet() })
+
+  /* states before the member area: no link, the link went bad, the membership ended */
+  const stateH = $('[data-state-h]')
+  function lost(msg) {
+    root.innerHTML = `<div class="mtop"><div><h1>Get your link to the club</h1></div></div><form class="glass mbox" data-lost novalidate><p>${esc(msg || 'Write the email you paid with and we send you your own link.')}</p>
+      <label for="t3m-e" class="sr">Email</label><input id="t3m-e" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@studio.com" required>
+      <button class="btn cta wide" type="submit">Send me my link</button><p class="err" role="status" data-lost-msg></p></form>`
+    $('[data-lost]').addEventListener('submit', e => {
+      e.preventDefault(); const f = e.currentTarget, msg = $('[data-lost-msg]'), btn = $('button', f), email = f.email.value.trim()
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.textContent = 'That email does not look right'; return }
+      btn.disabled = true; msg.textContent = ''
+      post('/api/club/link', { email }).then(r => { msg.className = r.ok ? 'err ok' : 'err'; msg.textContent = r.ok ? 'If that email is a member, your link is on its way. Check your inbox (and the spam folder).' : (r.d.error || 'Something went wrong, try again') })
+        .catch(() => { msg.textContent = 'Something went wrong, try again' }).then(() => { btn.disabled = false })
+    })
+  }
   if (!m) lost()
   else fetch('/api/club/inside?m=' + encodeURIComponent(m)).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => {
     if (!ok) return lost(d.error)
-    if (d.name && d.name !== 'there') $('[data-hi]').textContent = 'Welcome inside, ' + d.name + '.'
-    if (d.portal) { const c = $('[data-cancel]'), a = document.createElement('a'); a.href = d.portal; a.textContent = 'one tap here'; c.textContent = 'To cancel: '; c.append(a, '.'); $('[data-foot]').hidden = false }
-    if (d.state === 'none') { st.textContent = 'We are getting your seat ready. Refresh this page in a minute.'; return }
-    if (d.state === 'waiting' || d.state === 'open') { $('[data-hello]').hidden = false; if (d.lessons) course(d.lessons) }
-    if (d.state === 'waiting') { st.textContent = ''; $('[data-waiting]').hidden = false; return }
-    if (d.state === 'ended') { st.textContent = ''; $('[data-ended]').hidden = false; return }
-    st.textContent = 'Everything of the club is here. Start with the first lesson.'
-    $('[data-skill]').innerHTML = fl(d.skill) + `<p class="note">${esc(d.skill.name)} ${esc(d.skill.note)}</p>`
-    $('[data-vault]').innerHTML = d.vault.map(b => `<article class="vb"><img src="/club/v-${esc(b.img)}-760.webp" alt="" loading="lazy" decoding="async"><div class="vbb"><h3>${esc(b.t)}</h3><p class="ty">${esc(b.type)}</p><div class="files">${b.files.map(fl).join('')}</div></div></article>`).join('')
-    $('[data-guides]').innerHTML = d.guides.map(fl).join('')
-    $('[data-house]').innerHTML = fl(d.house)
-    if (d.gifts && d.gifts.length) { $('[data-gifts]').innerHTML = d.gifts.map(fl).join(''); $('[data-gifts-sec]').hidden = false }
-    $('[data-open]').hidden = false
-  }).catch(() => { st.textContent = 'Could not open the club right now, try again in a minute.' })
-  $('[data-build]').addEventListener('submit', e => {
-    e.preventDefault(); const f = e.currentTarget, msg = $('[data-build-msg]'), btn = f.querySelector('button'), link = f.link.value.trim()
-    if (!/^https?:\/\/[^\s]+\.[^\s]+$/i.test(link)) { msg.className = 'err'; msg.textContent = 'Paste the link of your build, like https://your-tower.netlify.app'; return }
-    btn.disabled = true; msg.textContent = ''
-    post('/api/club/build', { m, link, note: f.note.value.trim() }).then(r => { msg.className = r.ok ? 'err ok' : 'err'; msg.textContent = r.ok ? 'Sent. I answer you by email on Monday.' : (r.d.error || 'Something went wrong, try again'); if (r.ok) f.reset() })
-      .catch(() => { msg.className = 'err'; msg.textContent = 'Something went wrong, try again' }).then(() => { btn.disabled = false })
-  })
+    if (d.state === 'none') { stateH.textContent = 'We are getting your seat ready. Refresh this page in a minute.'; return }
+    if (d.state === 'ended') { root.innerHTML = `<div class="mtop"><div><h1>Your membership has ended</h1></div></div><div class="glass mbox"><p>Thank you for being part of it. If you want to come back, the doors are always open: <a href="/the-3d-future">omnyalab.com/the-3d-future</a>.</p></div>`; return }
+    DATA = d; render(d)
+  }).catch(() => { stateH.textContent = 'Could not open the club right now, try again in a minute.' })
 }
 
-// 25/11 (Nico): his welcome video shows the cover first (A welcome from Nico · Play); the player bar appears on the first tap
-document.querySelectorAll('[data-hello] video').forEach(v => { const go = () => { if (!v.controls) { v.controls = true; v.play().catch(() => {}) } }
-  v.addEventListener('click', go); v.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go() } }) })
 </script>
+</body>
+</html>

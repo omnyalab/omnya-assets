@@ -176,10 +176,12 @@ export const PREVIEW_EMAIL = 'preview@omnyalab.com';
  * are good for one day: the page makes new ones at every visit.
  */
 export async function insideData(email) {
-  if (cleanEmail(email) === PREVIEW_EMAIL) return openData({ name: 'Nico', email: PREVIEW_EMAIL, portal: PORTAL_URL }, true);
+  // since: the day the membership starts (a reservation starts with the doors, Sat 28/11 9:00 Rome), for the profile card
+  if (cleanEmail(email) === PREVIEW_EMAIL) return openData({ name: 'Nico', email: PREVIEW_EMAIL, portal: PORTAL_URL, since: new Date(EARLY).toISOString() }, true);
   let m = null; try { m = JSON.parse((await kv('HGET', K.members, cleanEmail(email))) || 'null'); } catch {}
   if (!m) return { state: 'none' };
-  const base = { name: m.name, email: m.email, portal: PORTAL_URL };
+  const at = Date.parse(m.at || '') || 0;
+  const base = { name: m.name, email: m.email, portal: PORTAL_URL, since: new Date(m.reserved ? Math.max(EARLY, at) : at || Date.now()).toISOString() };
   if (m.status === 'canceled') return { ...base, state: 'ended' };
   if (m.reserved && !m.welcomed) return { ...base, state: 'waiting', opens: new Date(EARLY).toISOString(), lessons: LESSONS };   // 25/11: the course shows, locked
   return openData(base, m.reserved && Number(m.rank) > 0 && Number(m.rank) <= CHEAP_SEATS);
