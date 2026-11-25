@@ -15,6 +15,7 @@ import '../styles/optin-stadium.css';
 import '../styles/optin-plane.css';
 import '../styles/optin-mastery.css';
 import '../styles/optin-villa.css';
+import '../styles/optin-rome.css';
 import AllSetOffer from './AllSetOffer.astro';
 
 interface Props {
@@ -31,7 +32,7 @@ interface Props {
   hero: string;
   heroMobile: string;
   book?: boolean; // 9/11 (Nico, Build page): the cover in book format (1000x1375) instead of the tall 9:16 PDF
-  theme?: 'c1' | 'vc' | 'ry' | 'ry1' | 'ry2' | 'ry3' | 'sd' | 'pl' | 'mx' | 'dv'; // 18/11: pl = the plane colours (optin-plane.css, scripts/recolor-plane.py); sd = the stadium red (optin-stadium.css, scripts/recolor-stadium.py)
+  theme?: 'c1' | 'vc' | 'ry' | 'ry1' | 'ry2' | 'ry3' | 'sd' | 'pl' | 'mx' | 'dv' | 'ro'; // 18/11: pl = the plane colours (optin-plane.css, scripts/recolor-plane.py); sd = the stadium red (optin-stadium.css, scripts/recolor-stadium.py)
   // 16/11: vc = the Miami night colours (src/styles/optin-miami.css, scripts/recolor-miami.py); 17/11: ry = the Burj Al Ballur colours (optin-burj.css, scripts/recolor-burj.py)
   // // 9/11 (Nico): C1 green on the Build page (src/styles/optin-build.css, made by scripts/recolor-build.py)
   fade?: boolean; // 9/11 (Nico, Towers page): the blue fade between the form and the offer, like the green one of the Build page
@@ -85,7 +86,7 @@ const next = after || `/${slug}/sent`;
      with `allset` (Towers, 11/11) "You're all set" and the Full offer instead -->
 {allset ? (
 <div class="oil oil--as" hidden data-oil data-as>
-  <AllSetOffer next={next} hero={heroMobile} mail={!!watch} kind={slug === 'the-build-blueprint' ? 'build' : slug === 'the-tower-blueprint' ? 'tower' : slug === 'the-stadium-blueprint' ? 'stadium' : slug === 'the-miami-blueprint' ? 'miami' : slug === 'the-riyadh-blueprint' ? 'riyadh' : (slug === 'the-plane-blueprint' || slug === 'the-plane-skill') ? 'plane' : slug === 'the-3d-ai-mastery' ? 'mastery' : slug === 'the-dubai-villa-blueprint' ? 'villa' : 'towers'} />
+  <AllSetOffer next={next} hero={heroMobile} mail={!!watch} kind={slug === 'the-build-blueprint' ? 'build' : slug === 'the-tower-blueprint' ? 'tower' : slug === 'the-stadium-blueprint' ? 'stadium' : slug === 'the-miami-blueprint' ? 'miami' : slug === 'the-riyadh-blueprint' ? 'riyadh' : (slug === 'the-plane-blueprint' || slug === 'the-plane-skill') ? 'plane' : slug === 'the-3d-ai-mastery' ? 'mastery' : slug === 'the-dubai-villa-blueprint' ? 'villa' : slug === 'the-rome-blueprint' ? 'rome' : 'towers'} />
 </div>
 ) : (
 <div class="oil" hidden data-oil>
@@ -149,7 +150,7 @@ const next = after || `/${slug}/sent`;
       // a place on this same page (the City page, "#full"): the card and the loading screen go away
       if (url.charAt(0) === '#') { oil.hidden = true; box.hidden = true; var el = document.querySelector(url); if (el) el.scrollIntoView(); return; }
       if (!green) { location.href = url; return; }
-      var f = document.createElement('div'); var vc = (box.className.match(/oi--((?:vc|ry|sd|pl|mx|dv)\d?)\b/) || [])[1]; f.className = 'oi-fade' + (box.classList.contains('oi--c1') ? '' : vc ? ' oi-fade--' + vc : ' oi-fade--blue'); document.body.appendChild(f);
+      var f = document.createElement('div'); var vc = (box.className.match(/oi--((?:vc|ry|sd|pl|mx|dv|ro)\d?)\b/) || [])[1]; f.className = 'oi-fade' + (box.classList.contains('oi--c1') ? '' : vc ? ' oi-fade--' + vc : ' oi-fade--blue'); document.body.appendChild(f);
       requestAnimationFrame(function () { f.classList.add('on'); });
       setTimeout(function () { location.href = url; }, 520);
     };

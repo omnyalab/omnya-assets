@@ -59,6 +59,8 @@ const FULL_PLANE = pdf('How to build a plane where you pick your own seat', 'ful
 const FULL_MASTERY = pdf('3D AI Mastery, how to build any 3D with Claude', '3d-ai-mastery.pdf');
 // 25/11: how to build a villa people choose like on Google Maps (Dubai Villa reels, word HOME)
 const FULL_VILLA = pdf('How to build a villa you pick on the map', 'full-dubai-villa-blueprint.pdf');
+// 25/11: how to build ancient Rome in one shot (Rome reels, word ROME)
+const FULL_ROME = pdf('How to build ancient Rome in one shot', 'full-rome-blueprint.pdf');
 // 10/11 (Nico): "The Towers Scene File" (€12), the one file that is not a PDF. It is sold in the same Stripe cart as the
 // Full Towers Blueprint (a recommended product of that payment link): the base three.js scene of the three towers as a
 // zip that opens in the browser, with the panel for views, light, height, fog and video recording. It is the base 3D
@@ -124,7 +126,7 @@ const VILLA_SKILL = {
   note: `is a skill for Claude: ${ON_CLAUDE_AI}, or unzip it into ~/.claude/skills for Claude Code, then ask "build me the Dubai villa page". The README inside has every step.`,
 };
 
-const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE, FULL_MASTERY, FULL_VILLA, SCENE, SKILL, MIAMI_SKILL, HOUSE_SKILL, RIYADH_KIT, PLANE_KIT, PLANE_SKILL, TOWER_SKILL, VILLA_SKILL];
+const EVERY = [WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE, FULL_MASTERY, FULL_VILLA, FULL_ROME, SCENE, SKILL, MIAMI_SKILL, HOUSE_SKILL, RIYADH_KIT, PLANE_KIT, PLANE_SKILL, TOWER_SKILL, VILLA_SKILL];
 
 /** 25/11: what the members of THE 3D FUTURE find inside (/the-3d-future/inside): the course skill, the six builds of the
     Vault with their files (the same order and photos as the club page, src/components/club/data.ts DROPS) and every Full guide */
@@ -162,7 +164,8 @@ export const allFiles = () => EVERY.flatMap((f) => [{ name: f.name, file: f.file
 // 19/11: the Plane joined the pack (the Black Friday card says "Plane too"): its Full guide, skill and kit
 // 25/11: the Dubai Villa joined the pack (the Black Friday card says "Dubai Villa too"): its Full guide and the Dubai Villa
 // Builder skill, which is only here (Nico: «la skill sta solo nel 59»)
-const PACK = [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_CITY, FULL_PLANE, FULL_VILLA, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, SKILL, MIAMI_SKILL, HOUSE_SKILL, PLANE_SKILL, PLANE_KIT, VILLA_SKILL];
+// 25/11: the Rome joined the pack (the Black Friday card says "Rome too"): its Full guide
+const PACK = [FULL_TOWER, FULL_3D, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_CITY, FULL_PLANE, FULL_VILLA, FULL_ROME, WHITE_TO_REAL, REEL, BEFORE_IT_EXISTS, PROMPTS, CHECKLIST, SKILL, MIAMI_SKILL, HOUSE_SKILL, PLANE_SKILL, PLANE_KIT, VILLA_SKILL];
 /** True for every Stripe product that is the pack, whatever its price: "Everything we teach" (€59),
     "Everything we teach · upgrade" (€53 after a Full guide) and "Everything we teach · thank you price" (€29, sent by hand). */
 export const isPack = (name) => /everything we teach/i.test(String(name || ''));
@@ -172,7 +175,7 @@ export const isPack = (name) => /everything we teach/i.test(String(name || ''));
     alone is not a guide. */
 export const oneFullGuide = (files) => {
   const pdfs = files.filter((f) => !f.kind);
-  return pdfs.length === 1 && [FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE, FULL_MASTERY, FULL_VILLA].some((g) => g.file === pdfs[0].en);
+  return pdfs.length === 1 && [FULL_TOWER, FULL_3D, FULL_CITY, FULL_BUILD, FULL_TOWERS, FULL_STADIUM, FULL_MIAMI, FULL_RIYADH, FULL_PLANE, FULL_MASTERY, FULL_VILLA, FULL_ROME].some((g) => g.file === pdfs[0].en);
 };
 
 /** One Stripe product name → the files it should deliver. Checked in order, first match wins. */
@@ -205,6 +208,8 @@ const RULES = [
   [/3D\s+AI\s+Mastery/i, [FULL_MASTERY]],
   // 25/11: "The Full Dubai Villa Blueprint" (€5.99 / €9.99), exact Stripe name
   [/The\s+Full\s+Dubai\s+Villa\s+Blueprint/i, [FULL_VILLA]],
+  // 25/11: "The Full Rome Blueprint" (€5.99 / €9.99), exact Stripe name
+  [/The\s+Full\s+Rome\s+Blueprint/i, [FULL_ROME]],
   // 10/11: "The Towers Scene File" BEFORE every rule with "tower" in it. It delivers the zip and nothing else: without
   // this line /tower/ below would send the Full Tower PDF to who bought the scene. "The Full Towers Blueprint" has no
   // "towers scene" in its name, so it still reaches its own rule and its own PDF.

@@ -17,6 +17,7 @@ import PlaneThanksColors from '../components/PlaneThanksColors.astro';
 import FunnelThanksColors from '../components/FunnelThanksColors.astro';
 import MasteryThanksColors from '../components/MasteryThanksColors.astro';
 import DubaiVillaThanksColors from '../components/DubaiVillaThanksColors.astro';
+import RomeThanksColors from '../components/RomeThanksColors.astro';
 import DubaiVillaBlueBF from '../components/DubaiVillaBlueBF.astro';
 import { goHref, thanks, booking, everythingUpgrade, type ProductId } from '../lib/learn';
 import { t, langFromPath, localize } from '../i18n';
@@ -69,7 +70,7 @@ const book = booking[Astro.props.id as ProductId];
 // scene file is added by the script only for who has the scene: neither is in the HTML of the page.
 // 10/11 (Nico): on this page the round WhatsApp button and the WhatsApp link in the footer no longer open
 // "I'd like to request a free sample": who is here has just paid, so the message is a plain help one, with what they bought.
-const fulls: Record<string, string> = { 'full-tower': 'Full Tower Blueprint', 'full-3d': 'Full 3D Blueprint', 'full-city': 'Full City Blueprint', 'full-build': 'Full Build Blueprint', 'full-towers': 'Full Towers Blueprint', 'full-stadium': 'Full Stadium Blueprint', 'full-miami': 'Full Miami Blueprint', 'full-riyadh': 'Full Riyadh Blueprint', 'full-plane': 'Full Plane Blueprint', 'full-mastery': 'Full 3D AI Mastery Blueprint', 'full-villa': 'Full Dubai Villa Blueprint' };
+const fulls: Record<string, string> = { 'full-tower': 'Full Tower Blueprint', 'full-3d': 'Full 3D Blueprint', 'full-city': 'Full City Blueprint', 'full-build': 'Full Build Blueprint', 'full-towers': 'Full Towers Blueprint', 'full-stadium': 'Full Stadium Blueprint', 'full-miami': 'Full Miami Blueprint', 'full-riyadh': 'Full Riyadh Blueprint', 'full-plane': 'Full Plane Blueprint', 'full-mastery': 'Full 3D AI Mastery Blueprint', 'full-villa': 'Full Dubai Villa Blueprint', 'full-rome': 'Full Rome Blueprint' };
 const bought = (() => {
   const id = Astro.props.id;
   const it = lang === 'it';
@@ -142,6 +143,7 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
         middle, €59 minus what they paid: €53 for who paid €5.99 (Nico, 22/11: «crea il link»; same product name, prod_Vg1NqsE8ogNXai, price_1UefKHATIF7pxfqfEwpi3Ydy) */}
     {Astro.props.id === 'full-mastery' && <RiyadhBlackFriday book="/learn/mx_book_tight.webp" h="Right now, don’t miss this one" p="Our Black Friday offer comes once a year, and what you just paid comes off the price" offer={{ books: ['/learn/pk_pb01.webp', '/learn/pk_pb02.webp', '/learn/pk_pb03.webp', '/learn/mx_book_tight.webp'], title: 'The course + 3 playbooks', inc: 'Our 3 playbooks with the course: photos clients pay for, going viral and the launch kit', was: 244, link: 'https://buy.stripe.com/cNieVcgBf13OcSa4Yd8so1c', label: 'Get all four', credit: { 599: [53, 'https://buy.stripe.com/9B628qbgV7sc3hA8ap8so1d', 'You already have the course, so you only pay the rest'] } }} />}
     {Astro.props.id === 'full-villa' && <RiyadhBlackFriday name="Dubai Villa and its skill" book="/learn/pk_pb02.webp" side="/learn/dv_book_tight.webp" h="Right now, don’t miss this one" p="Our Black Friday offer comes once a year, and what you just paid comes off the price" />}
+    {Astro.props.id === 'full-rome' && <RiyadhBlackFriday name="Rome" book="/learn/pk_pb02.webp" side="/learn/ro_book_tight.webp" h="Right now, don’t miss this one" p="Our Black Friday offer comes once a year, and what you just paid comes off the price" />}
 
     <header class="oto__head">
       <p class="oto__done" data-fade>{X.headA}</p>
@@ -153,7 +155,7 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
 
     {/* 20/11 (Nico): The 3D Future card also on the light thanks pages of the Tower, Towers and 3D guides, where it takes the
         place of the old Skool card of the same community (oto 'community'), on its own night ground (panel) */}
-    {Astro.props.id === 'full-riyadh' ? <RiyadhFuture /> : Astro.props.id === 'full-build' ? <RiyadhFuture kind="build" /> : Astro.props.id === 'full-stadium' ? <RiyadhFuture kind="stadium" /> : Astro.props.id === 'full-plane' ? <RiyadhFuture kind="plane" /> : ['full-tower', 'full-towers', 'full-3d'].includes(Astro.props.id) ? <RiyadhFuture panel /> : Astro.props.id === 'full-mastery' ? <RiyadhFuture kind="mastery" /> : Astro.props.id === 'full-villa' ? <RiyadhFuture kind="villa" /> : (
+    {Astro.props.id === 'full-riyadh' ? <RiyadhFuture /> : Astro.props.id === 'full-build' ? <RiyadhFuture kind="build" /> : Astro.props.id === 'full-stadium' ? <RiyadhFuture kind="stadium" /> : Astro.props.id === 'full-plane' ? <RiyadhFuture kind="plane" /> : ['full-tower', 'full-towers', 'full-3d'].includes(Astro.props.id) ? <RiyadhFuture panel /> : Astro.props.id === 'full-mastery' ? <RiyadhFuture kind="mastery" /> : Astro.props.id === 'full-villa' ? <RiyadhFuture kind="villa" /> : Astro.props.id === 'full-rome' ? <RiyadhFuture kind="rome" /> : (
     <article class:list={['oto__card', { 'oto__card--skool': v.kind === 'skool' }]} data-fade>
       <div class="oto__visual">
         {
@@ -245,6 +247,9 @@ const help = 'https://wa.me/393792220465?text=' + encodeURIComponent(lang === 'i
 {Astro.props.id === 'full-plane' && <PlaneThanksColors />}
 {Astro.props.id === 'full-mastery' && <MasteryThanksColors />}
 {Astro.props.id === 'full-villa' && <DubaiVillaThanksColors />}
+{Astro.props.id === 'full-rome' && <RomeThanksColors />}
+{/* 25/11 Rome: the page is gold like the villa yellow, so the same blue €59 card and black text on the gold buttons */}
+{Astro.props.id === 'full-rome' && <DubaiVillaBlueBF />}
 {/* 25/11 (Nico): on the Dubai Villa thanks page the €59 card is blue, not yellow («siccome è tutto giallo… la fai blu») */}
 {Astro.props.id === 'full-villa' && <DubaiVillaBlueBF />}
 {dark[Astro.props.id] && <FunnelThanksColors {...dark[Astro.props.id]} />}

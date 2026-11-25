@@ -1,0 +1,26 @@
+---
+// 25/11 (Nico): the Rome thanks page (/learn/thanks/full-rome) in the colours of its funnel.
+// Made by scripts/new-funnel from the Riyadh violet block of views/Thanks.astro. is:inline: only on that page.
+---
+<style is:inline>
+  /* 17/11 (Nico): after paying for the Rome guide the page is in the colours of that funnel (rome gold, white text) */
+  :root{--bg:#130e06;--ink:#ffffff;--mute:#cdbd9c;--mute-lg:#b1a284;--line:#3c3320}
+  html,body{background:radial-gradient(900px 600px at 50% -8%,#f5b83d33,#0000 70%),#130e06!important;color:#fff}
+  .oto .btn--fill,.oto-dl .btn--fill{background:#f5b83d!important;border-color:#f5b83d!important;color:#fff!important}
+  .oto__steps .is-done span,.oto__steps .is-now span{background:#f5b83d!important;color:#fff!important;border-color:#f5b83d!important}
+  .hdr .logo__img--dark{filter:invert(1)}
+  .hdr::before{background:#130e06e6!important;border-bottom-color:#3c3320!important}
+  .hdr{color:#fff!important}
+  .wa-fab{background:#f5b83d!important;color:#fff!important}
+  html[data-page='thanks'] .oto-dl{background:linear-gradient(160deg,#ffffff1a,#ffffff08)!important;border:1px solid #ffffff26!important;-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);color:#fff!important;box-shadow:0 40px 80px -40px #f5b83daa,inset 0 1px #ffffff33!important}
+  html[data-page='thanks'] .oto-dl *{color:#fff}
+  html[data-page='thanks'] .oto-dl .t-sub{color:#fff!important;-webkit-text-fill-color:#fff!important}
+  html[data-page='thanks'] .oto-dl .oto-dl__note,html[data-page='thanks'] .oto-dl .oto-dl__note *{color:#cdbd9c!important}
+  html[data-page='thanks'] .oto-dl .btn:not(.btn--fill){background:#ffffff14!important;border-color:#ffffff33!important;color:#fff!important}
+  html[data-page='thanks'] .oto__down{background:#f5b83d!important}
+  html[data-page='thanks'] .oto__head{display:none}
+  html[data-page='thanks'] .oto__card{background:#241b0a!important;border:1px solid #3c3320;box-shadow:0 40px 70px -40px #f5b83d88!important;color:#fff}
+  html[data-page='thanks'] .oto__card *{color:#fff}
+  html[data-page='thanks'] .oto__card .t-sub,html[data-page='thanks'] .oto__card p{color:#dfd1b5}
+
+</style>

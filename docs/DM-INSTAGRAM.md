@@ -81,3 +81,16 @@ Instant DM (app.instantdm.com, Chrome di Nico), copiata dall'ultima automazione 
 - messaggio: Here's your free guide 🏡 https://www.omnyalab.com/home
 Follow @omnyalab so you catch the next one 🙌🏻
 - ritardo: 10 sec
+
+## Reel Rome, parola ROME (dal 25/11) <!-- funnel:rome -->
+
+Instant DM (app.instantdm.com, Chrome di Nico), copiata dall'ultima automazione buona. Pagina: https://www.omnyalab.com/the-rome-blueprint · da fare: Next Post Automation col codice nella caption dei reel del Colosseo
+
+- trigger: All comments
+- risposte: Sent 🏛️ check your DMs (even in Requests or General) | Check your DMs 🏛️ (even in Requests or General) or tap the link in our bio | Just sent it 🏛️ look in your DMs (even in Requests or General)
+- benvenuto: Hey 🙌🏻 your free Rome Guide is ready, tap below and I'll send it right away!
+- bottone: Send me the guide
+- messaggio: Here's your free Rome Guide 🏛️ https://www.omnyalab.com/rome
+Follow @omnyalab so you catch the next one 🙌🏻
+- ritardo: 10 sec
+- non_follower: Follow @omnyalab and check your DMs 🏛️ (even in Requests or General) or tap the link in our bio

@@ -15,7 +15,7 @@
   ],
   "redirects": [
     {
-      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint|the-stadium-blueprint|the-miami-blueprint|the-riyadh-blueprint|the-plane-blueprint|the-plane-skill|the-3d-ai-mastery|the-dubai-villa-blueprint|fable)",
+      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint|the-stadium-blueprint|the-miami-blueprint|the-riyadh-blueprint|the-plane-blueprint|the-plane-skill|the-3d-ai-mastery|the-dubai-villa-blueprint|the-rome-blueprint|fable)",
       "has": [
         {
           "type": "query",
@@ -32,7 +32,7 @@
       "permanent": false
     },
     {
-      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint|the-stadium-blueprint|the-miami-blueprint|the-riyadh-blueprint|the-plane-blueprint|the-plane-skill|the-3d-ai-mastery|the-dubai-villa-blueprint|fable)",
+      "source": "/:page(the-blueprint|the-tower-blueprint|the-tower-floors|3d-to-film|the-build-blueprint|the-towers-blueprint|the-stadium-blueprint|the-miami-blueprint|the-riyadh-blueprint|the-plane-blueprint|the-plane-skill|the-3d-ai-mastery|the-dubai-villa-blueprint|the-rome-blueprint|fable)",
       "has": [
         {
           "type": "query",
@@ -327,6 +327,11 @@
       "source": "/mastery",
       "destination": "/the-3d-ai-mastery",
       "permanent": true
+    },
+    {
+      "source": "/rome",
+      "destination": "/the-rome-blueprint",
+      "permanent": false
     },
     {
       "source": "/riyadh",

@@ -53,7 +53,10 @@ export type ProductId = 'white-to-real' | 'reel' | 'before-it-exists' | 'bundle'
   | 'full-mastery'
   // the free and the paid Dubai Villa PDFs, on /the-dubai-villa-blueprint (25/11, word HOME on Instant DM)
   | 'free-villa'
-  | 'full-villa';
+  | 'full-villa'
+  // the free and the paid Rome PDFs, on /the-rome-blueprint (25/11, word ROME on Instant DM)
+  | 'free-rome'
+  | 'full-rome';
 
 /**
  * Step 2 (10/11, Nico): after a Full guide (€5.99) the page /learn/thanks/full-* offers "Everything we teach" for the
@@ -142,6 +145,7 @@ export const products: { id: ProductId; checkout: string }[] = [
   // the Full Dubai Villa Blueprint at €5.99 (€29 struck), Stripe product "The Full Dubai Villa Blueprint", back to /learn/thanks/full-villa (25/11)
   // prod_Vh7HSZVwVAQG8d; from Sunday €9.99 https://buy.stripe.com/8x29ASgBfbIs5pI9et8so1g, used on the watch page
   { id: 'full-villa', checkout: 'https://buy.stripe.com/00wdR82Kp3bW2dwgGV8so1f' },
+  { id: 'free-rome', checkout: '/learn/free/omnya-lab-rome-blueprint.pdf' },
 ];
 
 // 10/11 (site check 2 and 21): the launch prices are gone from the code. fullTowerDeal, full3dDeal and fullCityDeal (the Full
@@ -183,6 +187,7 @@ export const thanks: Partial<Record<ProductId, { kind: 'pdf' | 'lesson'; oto: Pr
   'full-plane': { kind: 'pdf', oto: 'community' },
   'full-mastery': { kind: 'pdf', oto: 'community' },
   'full-villa': { kind: 'pdf', oto: 'community' },
+  'full-rome': { kind: 'pdf', oto: 'community' },
 };
 
 /** The words used in the reels ("Comment 3D"). Each one has its own page, /learn/<word>, and leads with one playbook. */

@@ -23,8 +23,8 @@
 // href (20/11, Nico, Riyadh video page): the same card before the purchase; its buttons open the club page
 // (/the-3d-future does the pre-registration, then the join) instead of the pop-up, and the "you bought this guide" line
 // is left out. Without href the card is exactly the one of the thanks pages.
-const { kind = 'riyadh', bg = 'burj', panel = false, href = '' } = Astro.props as { kind?: 'riyadh' | 'build' | 'stadium' | 'plane' | 'mastery' | 'villa'; bg?: 'towers' | 'burj' | 'stadium'; panel?: boolean; href?: string };
-const what = kind === 'build' ? 'these 3D houses' : kind === 'stadium' ? 'these 3D stadiums' : kind === 'plane' ? 'these 3D planes' : kind === 'mastery' ? 'any 3D like this' : kind === 'villa' ? 'villas like this' : 'these 3D towers';
+const { kind = 'riyadh', bg = 'burj', panel = false, href = '' } = Astro.props as { kind?: 'riyadh' | 'build' | 'stadium' | 'plane' | 'mastery' | 'villa' | 'rome'; bg?: 'towers' | 'burj' | 'stadium'; panel?: boolean; href?: string };
+const what = kind === 'build' ? 'these 3D houses' : kind === 'stadium' ? 'these 3D stadiums' : kind === 'plane' ? 'these 3D planes' : kind === 'mastery' ? 'any 3D like this' : kind === 'villa' ? 'villas like this' : kind === 'rome' ? 'cities like this' : 'these 3D towers';
 // Rome is on +01:00 for the whole window (CET), so the two instants are fixed
 const OPEN = '2026-11-28T09:00:00+01:00', FOUNDERS_END = '2026-12-05T00:00:00+01:00';
 const at = Date.now();

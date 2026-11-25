@@ -1,0 +1,130 @@
+{
+  "_nota": "Il funnel ROME (25/11, reel del Colosseo 80 d.C.: «Claude + Higgsfield just rebuilt ancient Rome», «Asked GPT Astra 6.2 for ancient Rome / got a PS2 game», «We tried Opus 5.6 and it's on another level», «Claude made my GPU explode with this», parola ROME, link omnyalab.com/rome). Copiato dal funnel Dubai Villa (formato Riyadh, solo il Full 5,99 fino a sab 28/11 23:59 poi 9,99, card blu 59 sotto il Full, grazie con Everything 59 e THE 3D FUTURE). Colori: nero + ORO #f5b83d come le guide approvate da Nico il 25/11, scritte nere sull'oro (scripts/rome-post.py).",
+  "id": "rome",
+  "slug": "the-rome-blueprint",
+  "format": "riyadh",
+  "date": "25/11",
+  "from": {
+    "watch": "build",
+    "optin": "stadium"
+  },
+  "name": "Rome",
+  "word": "ROME",
+  "prefix": "ro",
+  "theme": "ro",
+  "what": "the Colosseum reels, one flight from the sky over ancient Rome into the arena, built with Claude",
+  "links": {
+    "/rome": false
+  },
+  "pack": true,
+  "optin": {
+    "title": "How to build ancient Rome in one shot",
+    "description": "Steal our Rome method: the free blueprint in five steps, and the Full Rome Blueprint with every prompt, the whole city in code and the flight from the sky into the Colosseum.",
+    "word": "Rome",
+    "proof": "Steal it before your competitors do",
+    "noMail": true,
+    "og": "/og/rome.jpg",
+    "og_alt": "The Rome Blueprint, the free guide: how to build ancient Rome in one shot, from the sky into the Colosseum",
+    "css": "/* 25/11 (oro di Roma, come la villa): black text on the gold button, like the Black Friday button */\n.oi--ro .x3-btn{color:#111!important}\n.oi--ro .x3-btn *{color:#111!important}"
+  },
+  "free": {
+    "name": "The Rome Blueprint",
+    "pdf": "omnya-lab-rome-blueprint.pdf"
+  },
+  "full": {
+    "title": "How to build ancient Rome in one shot",
+    "pdf": "full-rome-blueprint.pdf"
+  },
+  "watch": {
+    "title": "Step 2: see how we built <u class=\"hb2\">ancient Rome</u> with Claude",
+    "vsl": "vsl_riyadh.mp4?v=1",
+    "vsl_poster": "/learn/watch/vsl_poster_riyadh.jpg",
+    "hook": "<b class=\"hb\">Stop selling renders</b>clients pay for this now",
+    "reel": "r_rome.mp4",
+    "reel_poster": "p_rome.jpg",
+    "reel_label": "Our reel",
+    "join": "the same flight into the Colosseum",
+    "book_alt": "The Full Rome Blueprint",
+    "full_list": [
+      "The whole city in code, 37,861 buildings",
+      "The Colosseum in real metres, with the sources",
+      "One camera from the sky to the sand",
+      "Every photo prompt, view by view",
+      "The clip prompts and the duel",
+      "The sound, the reels, and who to sell it to"
+    ],
+    "launch_end": "2026-11-28T23:59:59+01:00",
+    "day2": "Sunday",
+    "about": "25/11: the generic VSL with Nico and the tower (like the villa before its own video), and the first 10 s of our split reel (3D on top, real below, hook «Claude + Higgsfield just rebuilt ancient Rome»), 540x960 24 fps, until the real reel is out"
+  },
+  "kit": null,
+  "products": {
+    "full": {
+      "pid": "full-rome",
+      "stripe_name": "The Full Rome Blueprint",
+      "eur": "5.99"
+    },
+    "full9": {
+      "pid": "full-rome-9",
+      "stripe_name": "The Full Rome Blueprint",
+      "eur": "9.99"
+    }
+  },
+  "thanks": {
+    "bf": {
+      "name": "Rome",
+      "book": "/learn/pk_pb02.webp",
+      "side": "/learn/ro_book_tight.webp",
+      "h": "Right now, don’t miss this one",
+      "p": "Our Black Friday offer comes once a year, and what you just paid comes off the price"
+    },
+    "future": "cities like this"
+  },
+  "colors": {
+    "name": "rome gold",
+    "_nota": "25/11: l'oro delle guide ROME approvate da Nico (#f5b83d su nero), scritte nere sull'oro",
+    "watch": {
+      "bright": [
+        0.111,
+        1.25,
+        0.04
+      ],
+      "dark": [
+        0.111,
+        1.0
+      ],
+      "map": {
+        "#22d35e": "#f5b83d",
+        "#d4ff5a": "#ffe2a6",
+        "#141a16": "#17110a",
+        "#0d120f": "#0b0805"
+      }
+    },
+    "free_card": "blue",
+    "optin": {
+      "main": "#f5b83d",
+      "deep": "#e09a1c",
+      "light": "#ffe2a6",
+      "mid": "#f8c867",
+      "dh": 40,
+      "ds": 1.0,
+      "bg": "#0b0805"
+    },
+    "thanks": {
+      "hue": 0.111,
+      "main": "#f5b83d",
+      "name": "rome gold"
+    }
+  },
+  "dm": {
+    "note": "da fare: Next Post Automation col codice nella caption dei reel del Colosseo",
+    "trigger": "All comments",
+    "risposte": "Sent 🏛️ check your DMs (even in Requests or General) | Check your DMs 🏛️ (even in Requests or General) or tap the link in our bio | Just sent it 🏛️ look in your DMs (even in Requests or General)",
+    "benvenuto": "Hey 🙌🏻 your free Rome Guide is ready, tap below and I'll send it right away!",
+    "bottone": "Send me the guide",
+    "messaggio": "Here's your free Rome Guide 🏛️ https://www.omnyalab.com/rome\nFollow @omnyalab so you catch the next one 🙌🏻",
+    "ritardo": "10 sec",
+    "non_follower": "Follow @omnyalab and check your DMs 🏛️ (even in Requests or General) or tap the link in our bio"
+  },
+  "post_script": "scripts/rome-post.py"
+}
