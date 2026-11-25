@@ -166,7 +166,7 @@ make(P('demo/choose-your-floor/m/index.html'), P('it/demo/choose-your-floor/m/in
 make(P('demo/choose-your-view/index.html'), P('it/demo/choose-your-view/index.html'), '/demo/choose-your-view/', VIEW)
 make(P('demo/choose-your-seat/index.html'), P('it/demo/choose-your-seat/index.html'), '/demo/choose-your-seat/', SEAT)
 
-# 25/11 (Nico): the two new towers. Their pages read their own words from <html lang> (loading, turn your phone, the floor card),
+# 25/11 (Nico): the new glass tower. Their pages read their own words from <html lang> (loading, turn your phone, the floor card),
 # so here only the head changes.
 WAHA = [
     ('<html lang="en"', '<html lang="it"'),
@@ -176,14 +176,4 @@ WAHA = [
      'Una torre di vetro sul golf di Dubai Hills in 3D interattivo di Omnya Lab: scegli un piano, entri e ci cammini dentro.'),
     ('https://www.omnyalab.com/demo/burj-al-waha/"', 'https://www.omnyalab.com/it/demo/burj-al-waha/"'),
 ]
-RAWDAH = [
-    ('<html lang="en"', '<html lang="it"'),
-    ('<title>Burj Al Rawdah · Choose your floor · Omnya Lab</title>', '<title>Burj Al Rawdah · Scegli il piano · Omnya Lab</title>'),
-    ('content="Burj Al Rawdah · Choose your floor · Omnya Lab"', 'content="Burj Al Rawdah · Scegli il piano · Omnya Lab"'),
-    ('A garden tower in Riyadh in interactive 3D by Omnya Lab: move along the tower, every floor lights up, pick yours and fly closer.',
-     'Una torre con i giardini a Riyadh in 3D interattivo di Omnya Lab: passi sulla torre, ogni piano si accende, scegli il tuo e ti avvicini in volo.'),
-    ('https://www.omnyalab.com/demo/burj-al-rawdah/"', 'https://www.omnyalab.com/it/demo/burj-al-rawdah/"'),
-    ('alt="Burj Al Rawdah, a garden tower in Riyadh, at sunset"', 'alt="Burj Al Rawdah, una torre con i giardini a Riyadh, al tramonto"'),
-]
 make(P('demo/burj-al-waha/index.html'), P('it/demo/burj-al-waha/index.html'), '/demo/burj-al-waha/', WAHA)
-make(P('demo/burj-al-rawdah/index.html'), P('it/demo/burj-al-rawdah/index.html'), '/demo/burj-al-rawdah/', RAWDAH)
