@@ -43,13 +43,22 @@ import Club from '../../layouts/Club.astro';
     <p>Thank you for being part of it. If you want to come back, the doors are always open: <a href="/the-3d-future">omnyalab.com/the-3d-future</a>.</p>
   </div>
 
+  {/* 25/11 (Nico, L2): the first course, eleven steps as cards, each locked until it opens on Saturday 28/11 */}
+  <section class="course" data-course hidden>
+    <div class="chead">
+      <span class="eyebrow">Your first course</span>
+      <h2>SAMAR, <span class="g">floor by floor</span></h2>
+      <p>Eleven steps, from an empty folder to a tower online where buyers choose their floor, built the real way we build them for our clients.</p>
+      <div class="cd" data-cd>
+        <div class="num"><span><b data-u="d">0</b><small>days</small></span><span><b data-u="h">00</b><small>hours</small></span><span><b data-u="m">00</b><small>min</small></span><span><b data-u="s">00</b><small>sec</small></span></div>
+        <span class="when">Every step opens on Saturday 28 November at 9:00 (Rome)</span>
+      </div>
+    </div>
+    <ol class="steps2" data-lessons></ol>
+  </section>
+
   <div data-open hidden>
-    <section class="sec">
-      <h2>Your first course: your own tower, floor by floor</h2>
-      <p class="mute">Five short lessons where you see every click. At the end your tower, where buyers choose their floor, is online in your colours.</p>
-      <ol class="lessons" data-lessons></ol>
-      <div class="file" data-skill></div>
-    </section>
+    <div class="file" data-skill></div>
 
     <section class="sec">
       <h2>Send me your build</h2>
@@ -100,6 +109,37 @@ import Club from '../../layouts/Club.astro';
   .sec > p{margin:0 0 18px;max-width:62ch}
   .small{font-size:14px;margin-top:44px}
   .hello{margin:22px 0 26px;aspect-ratio:16/9;border-radius:20px;overflow:hidden;background:#000;border:1px solid #ffffff1f;box-shadow:0 30px 70px -30px #000c}.hello video{display:block;width:100%;height:100%;object-fit:cover}
+  /* the course (L2): a header with a live countdown, then eleven cards, each with a glass lock until its video is online */
+  .course{margin:34px 0 0}
+  .g{background:linear-gradient(180deg,#f2f9ff 0%,#a6d4ff 36%,#3f8cff 70%,#2457e0 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.06em}
+  .chead{display:grid;gap:12px;margin:0 0 22px}
+  .chead .eyebrow{display:inline-flex;width:max-content;padding:6px 14px;border-radius:999px;background:#ffffff10;border:1px solid var(--line);font:600 12.5px Geist,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+  .chead h2{margin:0;font:700 clamp(30px,6vw,44px)/1.04 Geist,sans-serif;letter-spacing:-.035em}
+  .chead p{margin:0;max-width:60ch;color:#cfdcf2;font-size:17px}
+  .cd{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:4px}
+  .cd .num{display:flex;gap:8px}
+  .cd .num span{display:grid;justify-items:center;min-width:62px;padding:8px 10px;border-radius:14px;background:#ffffff12;border:1px solid var(--line)}
+  .cd .num b{font:700 25px/1.1 Geist,sans-serif;font-variant-numeric:tabular-nums}
+  .cd .num small{font:500 10.5px Geist,sans-serif;letter-spacing:.12em;color:var(--mute);text-transform:uppercase}
+  .cd .when{font:500 15px Geist,sans-serif;color:var(--mute)}
+  .steps2{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+  .steps2 li{position:relative;overflow:hidden;min-height:230px;padding:22px 22px 20px;border-radius:24px;background:linear-gradient(165deg,#13264a,#0a1428);border:1px solid var(--line);display:flex;flex-direction:column;transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+  .steps2.rv li{opacity:0;transform:translateY(18px)}
+  .steps2.rv li.in{opacity:1;transform:none}
+  .steps2 .big{position:absolute;right:18px;top:6px;font:800 92px/1 Geist,sans-serif;letter-spacing:-.06em;color:#ffffff0d;pointer-events:none}
+  .steps2 h3{margin:22px 0 6px;font:600 19px/1.25 Geist,sans-serif;letter-spacing:-.01em}
+  .steps2 p{margin:0 0 14px;color:var(--mute);font-size:14.5px}
+  .steps2 video{display:block;width:100%;aspect-ratio:16/9;margin-top:auto;border-radius:14px;background:#000}
+  .lk{position:relative;flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;margin-bottom:auto;background:linear-gradient(160deg,#2f8bff55,#0b2a6b55);border:1px solid #7fb8ff55;box-shadow:inset 0 1px 0 #ffffff40,0 10px 30px -10px #2f8bffaa}
+  .lk svg{width:24px;height:24px}
+  .lk::after{content:"";position:absolute;inset:-6px;border-radius:18px;border:1px solid #5ab8ff;opacity:0;animation:lkring 3.2s ease-out infinite;animation-delay:var(--d,0s)}
+  @keyframes lkring{0%{opacity:.6;transform:scale(.9)}70%,100%{opacity:0;transform:scale(1.25)}}
+  .lk-pill{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;margin-top:auto;padding:5px 11px;border-radius:999px;background:#ffffff10;border:1px solid var(--line);font:600 12.5px Geist,sans-serif;color:#cfe3ff}
+  .lk-pill i{width:7px;height:7px;border-radius:50%;background:#5ab8ff;box-shadow:0 0 0 4px #5ab8ff2a}
+  .steps2 li.locked::before{content:"";position:absolute;top:0;bottom:0;left:-40%;width:30%;background:linear-gradient(100deg,#ffffff00,#ffffff14,#ffffff00);transform:skewX(-18deg);animation:lksweep 4.8s ease-in-out infinite;animation-delay:var(--d,0s);pointer-events:none}
+  @keyframes lksweep{0%{left:-40%}55%,100%{left:130%}}
+  @media (max-width:600px){.cd .num span{min-width:54px}.cd .num b{font-size:21px}}
+  @media (prefers-reduced-motion:reduce){.lk::after,.steps2 li.locked::before{animation:none}.steps2.rv li{opacity:1;transform:none}}
   .lessons{list-style:none;margin:0;padding:0;display:grid;gap:14px}
   .lessons li{border-radius:18px;background:linear-gradient(160deg,#ffffff12,#ffffff05);border:1px solid var(--line);overflow:hidden}
   .lessons .lh{display:flex;align-items:center;gap:14px;padding:14px 16px}
@@ -140,17 +180,35 @@ import Club from '../../layouts/Club.astro';
     post('/api/club/link', { email }).then(r => { msg.className = r.ok ? 'err ok' : 'err'; msg.textContent = r.ok ? 'If that email is a member, your link is on its way. Check your inbox (and the spam folder).' : (r.d.error || 'Something went wrong, try again') })
       .catch(() => { msg.textContent = 'Something went wrong, try again' }).then(() => { btn.disabled = false })
   })
+  // 25/11 (Nico, L2): the course as eleven cards, locked until each video is online; live countdown to Saturday 9:00 Rome
+  const OPENS = Date.parse('2026-11-28T08:00:00Z')
+  const LOCK = '<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="lkg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eaf4ff"/><stop offset="1" stop-color="#7fb8ff"/></linearGradient></defs><path d="M7.5 10.5V8a4.5 4.5 0 0 1 9 0v2.5" fill="none" stroke="url(#lkg)" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10" rx="3" fill="url(#lkg)"/><circle cx="12" cy="15.2" r="1.6" fill="#1b4fae"/><path d="M12 16.4v1.8" stroke="#1b4fae" stroke-width="1.6" stroke-linecap="round"/></svg>'
+  function course(ls) {
+    const before = Date.now() < OPENS, ol = $('[data-lessons]')
+    ol.innerHTML = ls.map((l, i) => l.src
+      ? `<li><span class="big">${String(l.n).padStart(2, '0')}</span><h3>${esc(l.t)}</h3><p>${esc(l.p)}</p><video controls playsinline preload="metadata"${l.poster ? ` poster="${esc(l.poster)}"` : ''} src="${esc(l.src)}"></video></li>`
+      : `<li class="locked" style="--d:${(i * .35).toFixed(2)}s"><span class="big">${String(l.n).padStart(2, '0')}</span><span class="lk" role="img" aria-label="Locked">${LOCK}</span><h3>${esc(l.t)}</h3><p>${esc(l.p)}</p><span class="lk-pill"><i></i>${before ? 'Opens 28 November' : 'Coming soon'}</span></li>`).join('')
+    $('[data-course]').hidden = false
+    // the cards come in as they scroll into view (and are all there without the observer)
+    if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      ol.classList.add('rv'); const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target) } }), { rootMargin: '0px 0px -8% 0px' })
+      ol.querySelectorAll('li').forEach((li, i) => { li.style.transitionDelay = (i % 3) * 90 + 'ms'; io.observe(li) })
+    }
+    const cd = $('[data-cd]'), tick = () => { const s = Math.max(0, Math.floor((OPENS - Date.now()) / 1000)); if (!s) { cd.hidden = true; return }
+      const u = { d: Math.floor(s / 86400), h: Math.floor(s % 86400 / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 }
+      cd.querySelectorAll('[data-u]').forEach(b => { b.textContent = b.dataset.u === 'd' ? u.d : String(u[b.dataset.u]).padStart(2, '0') }) }
+    tick(); if (before) setInterval(tick, 1000); else cd.hidden = true
+  }
   if (!m) lost()
   else fetch('/api/club/inside?m=' + encodeURIComponent(m)).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => {
     if (!ok) return lost(d.error)
     if (d.name && d.name !== 'there') $('[data-hi]').textContent = 'Welcome inside, ' + d.name + '.'
     if (d.portal) { const c = $('[data-cancel]'), a = document.createElement('a'); a.href = d.portal; a.textContent = 'one tap here'; c.textContent = 'To cancel: '; c.append(a, '.'); $('[data-foot]').hidden = false }
     if (d.state === 'none') { st.textContent = 'We are getting your seat ready. Refresh this page in a minute.'; return }
-    if (d.state === 'waiting' || d.state === 'open') $('[data-hello]').hidden = false
+    if (d.state === 'waiting' || d.state === 'open') { $('[data-hello]').hidden = false; if (d.lessons) course(d.lessons) }
     if (d.state === 'waiting') { st.textContent = ''; $('[data-waiting]').hidden = false; return }
     if (d.state === 'ended') { st.textContent = ''; $('[data-ended]').hidden = false; return }
     st.textContent = 'Everything of the club is here. Start with the first lesson.'
-    $('[data-lessons]').innerHTML = d.lessons.map(l => `<li><div class="lh"><span class="num">${l.n}</span><span class="lt">${esc(l.t)}</span><span class="ld">${esc(l.d)}</span></div>${l.src ? `<video controls playsinline preload="metadata"${l.poster ? ` poster="${esc(l.poster)}"` : ''} src="${esc(l.src)}"></video>` : '<p class="soon">This lesson opens on Saturday 28 November.</p>'}</li>`).join('')
     $('[data-skill]').innerHTML = fl(d.skill) + `<p class="note">${esc(d.skill.name)} ${esc(d.skill.note)}</p>`
     $('[data-vault]').innerHTML = d.vault.map(b => `<article class="vb"><img src="/club/v-${esc(b.img)}-760.webp" alt="" loading="lazy" decoding="async"><div class="vbb"><h3>${esc(b.t)}</h3><p class="ty">${esc(b.type)}</p><div class="files">${b.files.map(fl).join('')}</div></div></article>`).join('')
     $('[data-guides]').innerHTML = d.guides.map(fl).join('')
