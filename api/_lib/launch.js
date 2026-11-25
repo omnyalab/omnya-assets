@@ -77,9 +77,9 @@ The fix isn't a better prompt, it's a method: you start every round from the 3D 
 
 This is what you'll find inside from Saturday: step-by-step video courses where you see every click (the first one is your own tower where buyers choose their floor, ready on day one, and a new one comes every Friday with the build of the week), six builds from our reels with their files, prompts and Claude skills, every Full guide, the House Builder skill and my comments on your work every Monday.
 
-If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us.
+If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay. And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us.
 
-Every day more people get on the list, and the people on it get in before everyone else, first in line for the 100 founders' gifts. The doors open in 3 days:
+From today you can reserve your seat before the doors open: you add your card, nothing is charged today, and on Saturday your €9 month starts by itself. The first 100 who reserve also get our three playbooks and the full 3D AI Mastery course as a gift that stays theirs, and that gift is only for the people who reserve. If you change your mind before Saturday, you cancel and pay nothing:
 {link}
 
 Nico`,
@@ -97,7 +97,7 @@ The fix is to plan the video backwards: the result first, then how you got there
 
 This is one build from the Vault: the kit that builds it again in your colours, the exact prompts we used, the 3D scene and the Full guide that explains every step. On Saturday you get six of them, and a new one every Friday, next to the step-by-step video courses, starting with your own tower where buyers choose their floor.
 
-If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. The list grows every day, and the people on it get in first, so every day there are more people ahead of you for those 100 gifts. The doors open in 2 days:
+If you reserve your seat before Saturday, nothing is charged today, your €9 a month is locked for as long as you stay, and if you're one of the first 100 who reserve, our three playbooks and the full 3D AI Mastery course are yours as a gift. The gift is only for the people who reserve, and every day a few more of the 100 are taken. The doors open in 2 days:
 {link}
 
 Nico`,
@@ -107,16 +107,16 @@ Nico`,
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name},
 
-Black Friday ends tonight, and tomorrow THE 3D FUTURE opens. The people on the list get in first, and the list is still open tonight:
+Black Friday ends tonight, and tomorrow THE 3D FUTURE opens. Tonight is the last night to reserve your seat: you add your card, nothing is charged today, and the founders' gift goes only to the first 100 who reserve:
 {link}
 
 {img}
 
 One last tip before the doors open: before we build a real place in 3D, we look up the real heights of the buildings around it, because a tower that's even a little too short looks fake next to its neighbours. That's the level of detail of the courses inside.
 
-If you join by Friday 4 December you pay €9 a month, locked for as long as you stay, and if you're one of the first 100 you also get these as a gift: our three playbooks and the full 3D AI Mastery course. After Friday it's €19.
+If you reserve tonight you pay €9 a month from tomorrow, locked for as long as you stay, and if you're one of the first 100 who reserve you also get these as a gift: our three playbooks and the full 3D AI Mastery course. Who joins after the doors open still gets the €9 until Friday, but not the gift.
 
-The list has kept growing all week, and tomorrow the people on it get in before everyone else, so some of the 100 gifts may be gone before the doors open for everyone.
+If you change your mind before tomorrow morning, you cancel and pay nothing, so the risk is ours, not yours.
 
 Nico`,
   },
@@ -125,11 +125,11 @@ Nico`,
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name}, we said we'd email you today, so here it is.
 
-Tomorrow the doors of THE 3D FUTURE open, and you're on the list, so you get in before everyone else: first in line for the 100 founders' gifts, our three playbooks and the full 3D AI Mastery course, with €9 a month locked for as long as you stay.
+Tomorrow the doors of THE 3D FUTURE open, and you're on the list, so you get in before everyone else, with €9 a month locked for as long as you stay. The founders' gift, our three playbooks and the full 3D AI Mastery course, goes only to the first 100 who reserve their seat before the doors open, and tonight you still can: you add your card, nothing is charged today, and if you change your mind before tomorrow you cancel and pay nothing.
 
 {img}
 
-One last thing before you build: before we make a real place in 3D, we look up the real heights of the buildings around it, because a tower that's even a little too short looks fake next to its neighbours. Your link works from tomorrow:
+One last thing before you build: before we make a real place in 3D, we look up the real heights of the buildings around it, because a tower that's even a little too short looks fake next to its neighbours. Reserve your seat here:
 {link}
 
 Nico`,
@@ -139,7 +139,7 @@ Nico`,
     img: { src: '/club/mail/doors.jpg', alt: 'THE 3D FUTURE: doors are open, your first course is your own tower, floor by floor' },
     body: `Hey {name},
 
-THE 3D FUTURE is open, and you're on the list, so you're in before everyone else. The founders' gifts, our three playbooks and the full 3D AI Mastery course, go to the first 100 who join, so this is the moment to take yours.
+THE 3D FUTURE is open, and you're on the list, so you're in nine hours before everyone else, at the founders' price.
 
 {img}
 
@@ -157,13 +157,13 @@ Nico`,
     img: { src: '/club/mail/doors.jpg', alt: 'THE 3D FUTURE: doors are open, your first course is your own tower, floor by floor' },
     body: `Hey {name},
 
-THE 3D FUTURE is open, and the 100 founders' gifts go to the first who join.
+THE 3D FUTURE is open, and until Friday you get in at the founders' price.
 
 {img}
 
 The moment you join you get the first step-by-step video course: five short lessons where you see every click and build your own tower in your colours, the kind where buyers choose their floor. Then a new course every Friday with the build of the week, six builds from our reels with their files, prompts and Claude skills, every Full guide, the House Builder skill and my comments on your work every Monday.
 
-Bought one by one on our site, the builds, the guides and the skill alone cost more than €150. If you join by Friday 4 December you get all of it for €9 a month, locked for as long as you stay, and if you're one of the first 100 you also get our three playbooks and the full 3D AI Mastery course as a gift. After Friday it's €19.
+Bought one by one on our site, the builds, the guides and the skill alone cost more than €150. If you join by Friday 4 December you get all of it for €9 a month, locked for as long as you stay. After Friday it's €19.
 
 And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us. You can cancel in one tap whenever you want:
 {link}
@@ -181,7 +181,7 @@ What stops most people isn't talent, it's not knowing the steps. That's exactly 
 
 {img}
 
-If you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us, so the risk is ours, not yours. {Seats_words}, and the €9 price ends on Friday:
+If you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us, so the risk is ours, not yours. The €9 price ends on Friday:
 {link}
 
 Nico`,
@@ -192,7 +192,7 @@ Nico`,
     img: { src: '/club/mail/vault-files.jpg', alt: 'One build from the Vault of THE 3D FUTURE: the build kit, the exact prompts, the 3D scene and the Full guide' },
     body: `Hey {name},
 
-The €9 price of THE 3D FUTURE ends tomorrow, Friday 4 December, and {seats_words}.
+The €9 price of THE 3D FUTURE ends tomorrow, Friday 4 December.
 
 If you're still deciding, these are the usual doubts, with the honest answer to each. You don't need to code: the Claude skills and the prompts do the building, and the course shows you each step. You don't need much time: the first course is five short lessons, under 20 minutes of video in all. And if it doesn't work for you, follow the five lessons, post your build in the group, and if it still isn't live within 7 days your first month is on us.
 
@@ -205,14 +205,14 @@ Nico`,
   },
   e7: {
     subject: '€9 ends tonight',
-    img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
+    img: { src: '/club/mail/inside-v2.jpg', alt: 'Inside THE 3D FUTURE: the step-by-step course to build your own tower where buyers choose their floor, and a new build every Friday' },
     body: `Hey {name},
 
-Tonight the €9 price of THE 3D FUTURE ends. {Seats_words}.
+Tonight the €9 price of THE 3D FUTURE ends.
 
 {img}
 
-If you join today, this is what's waiting for you: the course where you build your own tower step by step, the kind where buyers choose their floor, then a new course every Friday, six builds from our reels with their files, prompts and Claude skills, every Full guide, the House Builder skill and my comments on your work every Monday, all for €9 a month, locked for as long as you stay. If you're one of the first 100, our three playbooks and the full 3D AI Mastery course are yours too.
+If you join today, this is what's waiting for you: the course where you build your own tower step by step, the kind where buyers choose their floor, then a new course every Friday, six builds from our reels with their files, prompts and Claude skills, every Full guide, the House Builder skill and my comments on your work every Monday, all for €9 a month, locked for as long as you stay.
 
 The guarantee covers you: follow the five lessons, post your build in the group, and if it still isn't live within 7 days your first month is on us. After tonight it's €19 a month:
 {link}

@@ -23,6 +23,10 @@ export const ROUND = '1';
 export const CLUB = '3d-future';
 // Rome is on +01:00 for the whole round (CET), so the instants are fixed. FOUNDERS_END is the first moment after Fri 4/12 23:59.
 export const EARLY = Date.parse('2026-11-28T09:00:00+01:00');
+// 25/11 Nico: before the doors open people reserve their seat with the card (€0 today, the €9 month starts at EARLY, when
+// Stripe charges the card by itself), and the founders' gift goes ONLY to the first 100 who reserve: who is only on the
+// free list, or joins after the opening, gets no gift. RESERVE_FROM = when the reservations started (the seat count starts here).
+export const RESERVE_FROM = Date.parse('2026-11-25T00:00:00+01:00');
 // 20/11 (Nico): the Stripe customer portal is on (cancel at the end of the paid period, with the reason asked); its login link
 export const PORTAL_URL = process.env.CLUB_PORTAL_URL || 'https://billing.stripe.com/p/login/9B66oGet7bIs3hAeyN8so00';
 export const OPEN = Date.parse('2026-11-28T18:00:00+01:00');
@@ -59,7 +63,8 @@ export function phaseAt(now = Date.now()) {
  */
 export function decide({ now = Date.now(), taken = 0, buyer = false, waitlisted = false, plan = 'month' } = {}) {
   const phase = phaseAt(now);
-  if (phase === 'before') return { ok: false, phase, error: 'closed' };
+  // 25/11: before the doors open it is a reservation: the founders' €9, nothing charged until EARLY
+  if (phase === 'before') { if (now < RESERVE_FROM) return { ok: false, phase, error: 'closed' }; const key = plan === 'year' ? 'Y90' : 'M9'; return { ok: true, phase, key, eur: PRICES[key].eur, reserve: true }; }
   if (phase === 'early' && !buyer && !waitlisted) return { ok: false, phase, error: 'early' };
   // until 4/12 everyone pays €9; after it, only who bought one of our guides
   const low = foundersAt(now) || buyer;
@@ -89,7 +94,10 @@ const K = {
   waitlist: 'omnya:club:waitlist', // set: emails on the club waitlist
   waitFilled: 'omnya:club:waitlist:filled', // set once the old opt-in rows have been read into the set
   seats: 'omnya:club:seats', // the count of the seats, kept 60 s
-  pi: (pi) => `omnya:club:pi:${pi}`, // a guide payment whose receipt number was not there yet → email
+  pi: (pi) => `omnya:club:pi:${pi}`,
+  byCustomer: 'omnya:club:customers', // hash: Stripe customer id → member email (the Saturday charge finds the reservation)
+  reserved: 'omnya:club:reserved:n', // INCR: the order of the reservations (the first 100 get the founders' gift)
+  rank: 'omnya:club:rank', // hash: checkout session → its place among the reservations // a guide payment whose receipt number was not there yet → email
   once: (what, id) => `omnya:club:once:${what}:${id}`,
 };
 export { K as KEYS };
@@ -151,7 +159,7 @@ export async function seats(stripe) {
     const subs = new Set(); // by id: a subscription with two of the prices is one seat
     for (const price of new Set(priceIds())) {
       // status 'all' and the filter here: active, trialing and past_due are the three that hold a seat
-      for await (const s of stripe.subscriptions.list({ price, status: 'all', limit: 100, created: { gte: Math.floor(EARLY / 1000) } })) {
+      for await (const s of stripe.subscriptions.list({ price, status: 'all', limit: 100, created: { gte: Math.floor(RESERVE_FROM / 1000) } })) {
         if (LIVE.has(s.status)) subs.add(s.id);
       }
     }
@@ -175,7 +183,7 @@ async function seatsFromMembers() {
   for (let i = 1; i < all.length; i += 2) {
     try {
       const m = JSON.parse(all[i]);
-      if ((m.round || ROUND) === ROUND && m.status !== 'canceled' && Date.parse(m.at) >= EARLY) n++;
+      if ((m.round || ROUND) === ROUND && m.status !== 'canceled' && Date.parse(m.at) >= RESERVE_FROM) n++;
     } catch {}
   }
   return n;
@@ -303,6 +311,16 @@ export function welcomeText({ name, skool, skill, portal, gifts }) {
   const gift = gifts?.length ? `\n\nYou're one of the first 100, so the founders' gift is yours to keep too:\n${gifts.map((g) => `${g.name}: ${g.href}`).join('\n')}` : '';
   return `You're in, ${name}.\n\nFirst, join the room on Skool with the email you paid with:\n${skool}\n\nYour House Builder skill is yours to keep, here:\n${skill}${gift}\n\nThen start the first video course inside, your own tower step by step, and when it's done post it in Show your build: I look at every first build myself.\n\n${cancel}\n\nTo withdraw within 14 days: ${WITHDRAW}\n\nNico`;
 }
+/** R1 (25/11), the reservation email: the card is saved, nothing is charged until the doors open on Saturday 28/11 at
+    9:00 Rome; the first 100 who reserve get the founders' gift, sent with the welcome email W1 once the card is charged. */
+export function reservedText({ name, rank, portal }) {
+  const gift = rank && rank <= CHEAP_SEATS
+    ? `You're number ${rank} of the first 100 who reserved, so the founders' gift is yours: our three playbooks and the full 3D AI Mastery course, yours to keep. It arrives on Saturday with your welcome email, together with the room on Skool and your House Builder skill.`
+    : `The 100 founders' gifts were all taken before you reserved, but your €9 price is yours, locked for as long as you stay. On Saturday your welcome email brings the room on Skool and your House Builder skill.`;
+  const cancel = portal ? `If you change your mind before Saturday, cancel here and you pay nothing: ${portal}` : `If you change your mind before Saturday, reply to this email and you pay nothing.`;
+  return `Your seat is reserved, ${name}.\n\nNothing was charged today. On Saturday 28 November at 9:00 (Rome) the doors of THE 3D FUTURE open, your first month starts and your card is charged €9, the founders' price that stays locked for as long as you stay.\n\n${gift}\n\n${cancel}\n\nTo withdraw within 14 days: ${WITHDRAW}\n\nNico`;
+}
+const noteHtml = (text) => `<!doctype html><html><body><div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#222">\n${text.split('\n\n').map((x) => `<p>${x.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1">$1</a>').replace(WITHDRAW, `<a href="https://www.${WITHDRAW}">${WITHDRAW}</a>`).replace(/\n/g, '<br>')}</p>`).join('\n')}\n</div></body></html>`;
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 /** The same words as a plain note (no design, links written out), like the free blueprint email. */
 export function welcomeHtml(v) {
@@ -329,11 +347,26 @@ export async function clubJoined(stripe, session) {
     customer: typeof session.customer === 'string' ? session.customer : session.customer?.id || '',
     subscription: typeof session.subscription === 'string' ? session.subscription : session.subscription?.id || '',
     session: session.id, at: new Date((session.created || Date.now() / 1000) * 1000).toISOString(), status: 'active',
+    reserved: md.reserve === '1',
   };
   await kv('HSET', K.members, email, JSON.stringify(member));
+  if (member.customer) await kv('HSET', K.byCustomer, member.customer, email);
   if (md.proof && !(await kv('HGET', K.proofs, md.proof))) await kv('HSET', K.proofs, md.proof, email);
-  if (await first('todo', session.id)) await kv('RPUSH', K.todo, JSON.stringify({ at: member.at, email, name, ig: member.ig, plan: member.plan, price: member.price }));
+  if (await first('todo', session.id)) await kv('RPUSH', K.todo, JSON.stringify({ at: member.at, email, name, ig: member.ig, plan: member.plan, price: member.price, ...(member.reserved ? { reserved: true } : {}) }));
   await forgetSeats();
+  // 25/11: a reservation gets R1 now (its place among the reservations decides the founders' gift); W1 with Skool, the
+  // skill and the gift leaves when Stripe charges the card on Saturday (clubCharged)
+  if (member.reserved) {
+    let rank = Number(await kv('HGET', K.rank, session.id)) || 0;
+    if (!rank) { rank = Number(await kv('INCR', K.reserved)); await kv('HSET', K.rank, session.id, String(rank)); }
+    await kv('HSET', K.members, email, JSON.stringify({ ...member, rank })).catch(() => {});
+    if (!(await first('r1', session.id))) return member;
+    const text = reservedText({ name, rank, portal });
+    try {
+      await sendMail({ to: `${name} <${email}>`, bcc: host.email, replyTo: host.email, subject: 'your seat is reserved', text, html: noteHtml(text) });
+    } catch (e) { await kv('DEL', K.once('r1', session.id)).catch(() => {}); throw e; }
+    return member;
+  }
   // without the Skool link the email would have a hole: Nico is told once, and Stripe tries again (for up to three days)
   // until CLUB_SKOOL_URL is on Vercel. Without the portal link the email asks to reply to cancel (welcomeText)
   if (!skool) {
@@ -341,15 +374,8 @@ export async function clubJoined(stripe, session) {
     throw new Error('club: CLUB_SKOOL_URL missing');
   }
   if (!(await first('w1', session.id))) return member;
-  // the founders' gift: this member is one of the first 100 seats of the round (the same count as the page's counter),
-  // and joined in the founders' round, by Fri 4/12 23:59 Rome (the terms: "the first 100 members of the founders' round")
-  let gifts = [];
-  if (foundersAt(Date.parse(member.at))) {
-    const taken = await seats(stripe).catch(() => null);
-    if (typeof taken === 'number' && taken <= CHEAP_SEATS) gifts = FOUNDERS_GIFTS.map((g) => ({ name: g.name, href: `https://www.omnyalab.com${signedHref(g.file, SKILL_TTL)}` }));
-    if (gifts.length) await kv('HSET', K.members, email, JSON.stringify({ ...member, gift: taken })).catch(() => {});
-  }
-  const v = { name, skool, portal, gifts, skill: `https://www.omnyalab.com${signedHref(HOUSE_SKILL_FILE, SKILL_TTL)}` };
+  // 25/11: who joins after the opening (no reservation) gets no founders' gift: the gift is only for the first 100 reservations
+  const v = { name, skool, portal, gifts: [], skill: `https://www.omnyalab.com${signedHref(HOUSE_SKILL_FILE, SKILL_TTL)}` };
   try {
     await sendMail({ to: `${name} <${email}>`, bcc: host.email, replyTo: host.email, subject: "you're in", text: welcomeText(v), html: welcomeHtml(v) });
   } catch (e) {
@@ -357,6 +383,32 @@ export async function clubJoined(stripe, session) {
     throw e;
   }
   return member;
+}
+
+/** 25/11, charge.succeeded: the Saturday charge of a reservation (€9 or €90, a customer we wrote at the reservation): the
+    welcome email W1 with Skool, the skill and, for the first 100 reservations, the founders' gift. Throws to make Stripe
+    retry (missing Skool link, mail down); safe to repeat. */
+export async function clubCharged(stripe, charge) {
+  if (!charge || charge.status !== 'succeeded' || charge.currency !== 'eur' || ![900, 9000].includes(charge.amount)) return null;
+  const cus = typeof charge.customer === 'string' ? charge.customer : charge.customer?.id;
+  const email = cus ? await kv('HGET', K.byCustomer, cus) : null;
+  if (!email) return null;
+  let m = null; try { m = JSON.parse((await kv('HGET', K.members, email)) || 'null'); } catch {}
+  if (!m || !m.reserved || m.welcomed) return null;
+  const skool = process.env.CLUB_SKOOL_URL || '', portal = PORTAL_URL;
+  if (!skool) {
+    if (await first('nolinks', 'w1r')) await sendMail({ to: host.email, subject: '[club] welcome email NOT sent: CLUB_SKOOL_URL missing', text: `${m.name} <${email}> was charged for the reserved seat. Add CLUB_SKOOL_URL on Vercel: Stripe sends the charge again and the email leaves then.` }).catch(() => {});
+    throw new Error('club: CLUB_SKOOL_URL missing');
+  }
+  if (!(await first('w1', `r:${m.session}`))) return m;
+  const rank = Number(m.rank) || Number(await kv('HGET', K.rank, m.session)) || 0;
+  const gifts = rank && rank <= CHEAP_SEATS ? FOUNDERS_GIFTS.map((g) => ({ name: g.name, href: `https://www.omnyalab.com${signedHref(g.file, SKILL_TTL)}` })) : [];
+  const v = { name: m.name, skool, portal, gifts, skill: `https://www.omnyalab.com${signedHref(HOUSE_SKILL_FILE, SKILL_TTL)}` };
+  try {
+    await sendMail({ to: `${m.name} <${email}>`, bcc: host.email, replyTo: host.email, subject: "you're in", text: welcomeText(v), html: welcomeHtml(v) });
+  } catch (e) { await kv('DEL', K.once('w1', `r:${m.session}`)).catch(() => {}); throw e; }
+  await kv('HSET', K.members, email, JSON.stringify({ ...m, welcomed: new Date().toISOString(), ...(gifts.length ? { gift: rank } : {}) })).catch(() => {});
+  return m;
 }
 
 /** customer.subscription.deleted of a club subscription (our metadata, or one of the four prices): the member goes on

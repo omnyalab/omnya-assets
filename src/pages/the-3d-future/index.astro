@@ -4,7 +4,8 @@
 // A2 pre-registration in three steps on P1, B2 badges, Burtville photos under glass, the Vault with six open builds and
 // the locked next one, the numbers with their source, the value stack before the price, the questions after.
 // The page is static: the phase of the round is picked in the visitor's browser before the first paint (Europe/Rome):
-//   before (until Sat 28/11 09:00)  "Get in first", the pre-registration → /api/optin 'waitlist-3d-future'
+//   before (until Sat 28/11 09:00)  25/11 "Reserve your seat": the Stripe checkout with the card, €0 today, the €9 month
+//     starts on Sat 28/11 09:00; the first 100 reservations get the founders' gift (the free list is no longer offered here)
 //   early (09:00-18:00) and open (until Fri 4/12 23:59)  "Join for €9/month", seats from /api/club/seats, the receipt
 //     check /api/club/verify, the Stripe checkout of /api/club/checkout inside the page
 //   after (from Sat 5/12 00:00, 24/11 Nico: «le porte son sempre aperte»)  the doors stay open, "Join for €19/month"
@@ -95,7 +96,7 @@ const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
           <p class="hsub">{SUB}</p>
           <div class="ctas">
             <button type="button" class="btn cta" data-join>
-              <span data-when="before">Get in first</span><span data-when="early open after">Join for <span data-eur>€9</span>/month</span>
+              <span data-when="before">Reserve your seat</span><span data-when="early open after">Join for <span data-eur>€9</span>/month</span>
             </button>
             <a class="btn glassbtn" href="#vault" data-see>See inside<span class="chev" aria-hidden="true">›</span></a>
           </div>
@@ -188,10 +189,9 @@ const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
           <p class="olock">locked for as long as you stay</p>
           <p class="olock" data-when="before early open">if you join by Friday 4 December</p>
           <p class="bonus"><Icon name="gift" /><span><b>Bonus</b> · the House Builder skill is yours to keep</span></p>
-          <p class="bonus fgift" data-when="before early open"><Icon name="gift" /><span><b>Founders' gift · first 100</b> · our 3 playbooks and the full 3D AI Mastery course, yours to keep</span></p>
+          <p class="bonus fgift" data-when="before"><Icon name="gift" /><span><b>Founders' gift · first 100 who reserve</b> · our 3 playbooks and the full 3D AI Mastery course, yours to keep</span></p>
           <div class="seats">
-            <p class="sline" data-when="before">€9 until Friday 4 December · gifts for the first 100</p>
-            <div class="seatbox" data-when="early open" data-seatbox hidden>
+            <div class="seatbox" data-when="before" data-seatbox hidden>
               <p class="sline"><b data-left>100</b> of 100 founders' gifts left</p>
               <div class="seatbar" aria-hidden="true" data-seatbar>{Array.from({ length: 20 }, () => <i></i>)}</div>
             </div>
@@ -209,9 +209,10 @@ const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
             </div>
           </div>
           <button type="button" class="btn cta wide ojoin" data-join>
-            <span data-when="before">Get in first →</span><span data-when="early open after">Join for <span data-eur>€9</span>/month →</span>
+            <span data-when="before">Reserve your seat →</span><span data-when="early open after">Join for <span data-eur>€9</span>/month →</span>
           </button>
-          <p class="fine" data-when="before early open after">Cancel in one tap · Secure payment by Stripe</p>
+          <p class="fine" data-when="before">Nothing to pay today · your €9 month starts Saturday 28 November</p>
+          <p class="fine" data-when="early open after">Cancel in one tap · Secure payment by Stripe</p>
           <form class="rcpt" data-rcpt data-when="before early open after" novalidate>
             <p class="rq" data-mode="r"><b>Bought one of our guides?</b> Enter your receipt number</p>
             <p class="rq" data-mode="e" hidden><b>Bought one of our guides?</b> Enter the email you paid with</p>

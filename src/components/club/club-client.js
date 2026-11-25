@@ -61,7 +61,7 @@
   function loadSeats() {
     var raw = q.get('seats');
     if (raw !== null) { taken = Math.max(0, parseInt(raw, 10) || 0); return renderSeats(); }
-    var live = function () { return phase === 'early' || phase === 'open'; }; // the founders' gifts end with 4/12 too
+    var live = function () { return phase === 'before'; }; // 25/11: the counter shows the founders' gifts left, only for reservations
     if (!live()) return renderSeats();
     fetch('/api/club/seats' + atQ).then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) { if (d && typeof d.taken === 'number') taken = d.taken; renderSeats(); })
@@ -103,7 +103,7 @@
     var j = e.target.closest('[data-join]'); if (j) { e.preventDefault(); join(j); return; }
     var s = e.target.closest('[data-see]'); if (s) { e.preventDefault(); $('#vault').scrollIntoView({ behavior: RM ? 'auto' : 'smooth', block: 'start' }); }
   });
-  function join(from) { if (phase === 'before') openList(from); else openPay(from); } // 24/11: the doors never close
+  function join(from) { openPay(from); } // 24/11: the doors never close; 25/11: before the opening it is the reservation with the card
 
   /* ---------- dialogs: one open at a time, Escape and the back button close it, the focus stays inside ---------- */
   var cur = null, back = null, sheet = $('[data-sheet]');
@@ -269,7 +269,7 @@
         var r = res[0], d = r.d;
         if (!r.ok) {
           if (d.code === 'early') { $('[data-early]', P).hidden = false; return; }
-          if (d.code === 'closed') { perr.textContent = 'The doors open Saturday 28 November'; return; }
+          if (d.code === 'closed') { perr.textContent = 'Reservations are not open yet, try again in a minute'; return; }
           throw new Error(r.status === 429 ? d.error : '');
         }
         if (!window.Stripe || !d.client_secret || !d.pk) throw new Error('');

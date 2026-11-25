@@ -13,7 +13,7 @@ import { metaEvent } from './_lib/meta.js';
 import { fixEmail } from './_lib/mail-fix.js';
 import { noteSale } from './_lib/centrale-sales.js';
 import { markMailed } from './_lib/drip.js';
-import { clubJoined, clubLeft, noteBuyer, noteReceipt } from './_lib/club.js';
+import { clubJoined, clubLeft, clubCharged, noteBuyer, noteReceipt } from './_lib/club.js';
 
 // Omnya City upsell (6/11/2026): these products move the buyer (client_reference_id = username, dots sent as dashes).
 const CITY = { 'Omnya City · The penthouse': 'penthouse', 'Omnya City · The best villa in Omnyawood': 'villa', 'Omnya City · A house by the fountain': 'fountain',
@@ -89,6 +89,10 @@ export async function POST(request) {
   }
   if (event.type === 'charge.updated' || event.type === 'charge.succeeded') {
     await noteReceipt(event.data.object).catch((e) => console.error('[stripe-webhook] receipt', e.message));
+    // 25/11: the Saturday charge of a reserved seat sends the welcome email W1 (and the founders' gift to the first 100)
+    if (event.type === 'charge.succeeded') {
+      try { await clubCharged(stripe, event.data.object); } catch (e) { console.error('[stripe-webhook] club charged', e.message); return new Response('club failed', { status: 502 }); }
+    }
     return new Response('ok');
   }
   const clubPaid = event.type === 'checkout.session.async_payment_succeeded' && event.data.object?.metadata?.club;

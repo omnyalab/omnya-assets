@@ -2,7 +2,7 @@
 // the welcome email text and the X2 date of the delivery email. Nothing leaves the computer (no Stripe, no Redis, no mail).
 // Usage (repo root): node scripts/club-test.mjs
 process.env.CLUB_SECRET ||= 'test-secret-only-here';
-const { decide, phaseAt, EARLY, OPEN, FOUNDERS_END, signToken, readToken, cleanReceipt, welcomeText } = await import('../api/_lib/club.js');
+const { decide, phaseAt, EARLY, OPEN, FOUNDERS_END, RESERVE_FROM, reservedText, signToken, readToken, cleanReceipt, welcomeText } = await import('../api/_lib/club.js');
 
 let fail = 0, n = 0;
 const eq = (got, want, what) => { n++; if (JSON.stringify(got) !== JSON.stringify(want)) { fail++; console.log('FAIL', what, '\n  got ', JSON.stringify(got), '\n  want', JSON.stringify(want)); } };
@@ -22,7 +22,7 @@ for (const phase of Object.keys(at)) for (const buyer of [false, true]) for (con
   const d = decide({ now: at[phase], taken, buyer, waitlisted, plan });
   let want;
   const ph = phase === 'later' ? 'after' : phase;
-  if (phase === 'before') want = { ok: false, phase: ph, error: 'closed' };
+  if (phase === 'before') want = { ok: true, phase: ph, key: plan === 'year' ? 'Y90' : 'M9', eur: plan === 'year' ? 90 : 9, reserve: true }; // 25/11: the reservation
   else if (phase === 'early' && !buyer && !waitlisted) want = { ok: false, phase: ph, error: 'early' };
   else {
     // 23/11: until 4/12 €9 for everyone (FOUNDERS_ROUND); 24/11: after it the doors stay open at €19, guide buyers €9
@@ -43,6 +43,12 @@ eq(decide({ now: at.open, taken: 100, buyer: true, plan: 'year' }).eur, 90, 'a g
 eq(decide({ now: at.open, taken: 100, plan: 'year' }).eur, 90, 'still €90 a year after the first 100 in the founders round');
 eq(decide({ now: at.early, taken: 0, waitlisted: true, plan: 'month' }).eur, 9, 'the waitlist gets in at 09:00');
 eq(decide({ now: Date.parse('2026-12-04T23:59:59+01:00'), taken: 300, plan: 'month' }).eur, 9, 'Fri 4/12 23:59:59 Rome is still €9');
+eq(decide({ now: RESERVE_FROM - 1, plan: 'month' }), { ok: false, phase: 'before', error: 'closed' }, 'before the reservations: closed');
+eq(decide({ now: Date.parse('2026-11-25T10:00:00+01:00'), plan: 'month' }), { ok: true, phase: 'before', key: 'M9', eur: 9, reserve: true }, '25/11: a reservation at €9');
+eq(decide({ now: EARLY, waitlisted: true, plan: 'month' }).reserve, undefined, '28/11 09:00: no more reservations, a normal join');
+eq(reservedText({ name: 'Marco', rank: 7, portal: 'P' }).includes("You're number 7 of the first 100 who reserved"), true, 'R1 with the gift');
+eq(reservedText({ name: 'Marco', rank: 101, portal: 'P' }).includes('were all taken'), true, 'R1 after the 100 gifts');
+eq(reservedText({ name: 'Marco', rank: 3, portal: 'P' }).startsWith('Your seat is reserved, Marco.\n\nNothing was charged today.'), true, 'R1 opening');
 eq(decide({ now: at.after, taken: 0, plan: 'month' }).key, 'M19', 'Sat 5/12 00:00: €19 a month, the doors are open (24/11)');
 eq(decide({ now: at.after, taken: 0, plan: 'year' }).key, 'Y190', 'Sat 5/12 00:00: €190 a year');
 eq(decide({ now: at.later, taken: 0, buyer: true, plan: 'month' }).key, 'M9', 'a guide buyer is still €9 after 4/12');

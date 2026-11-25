@@ -70,7 +70,7 @@ export const clubState = (ms = Date.now()) => (ms < OPEN() ? 'soon' : 'open');
 const door = (club, link) =>
   club === 'open'
     ? `and the doors are open now: ${link('join THE 3D FUTURE', 'f')}`
-    : `and the doors open on Saturday 28 November, so you can get on the list here: ${link('get on the list', 'f')}`;
+    : `and the doors open on Saturday 28 November, so you can reserve your seat here, with nothing to pay today: ${link('reserve your seat', 'f')}`;
 
 // Mails 1-3 end with a P.S. that opens the club's door (Nico 20/11: «these emails are to bring people into the community»),
 // only while the club page is online (live); mail 4 is the invitation itself and waits for the page.
@@ -113,7 +113,7 @@ const NOTES = [
       `Everything I sent you in these emails, and a lot more, is inside THE 3D FUTURE, our new club: first of all a video course that walks you step by step through one of our builds, so you can make it exactly the way we do, and a new course every Friday with the build of the week, then the files, the prompts and the Claude skills behind the builds from our reels, and my comments on your own builds every Monday.`,
       club === 'open'
         ? `The doors are open now, and you can join here: ${link('join THE 3D FUTURE')}`
-        : `The doors open on Saturday 28 November, and you can get on the list here: ${link('get on the list')}`,
+        : `The doors open on Saturday 28 November, and you can reserve your seat here, with nothing to pay today: ${link('reserve your seat')}`,
     ],
   },
 ];

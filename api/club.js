@@ -23,7 +23,7 @@ import { sendMail } from './_lib/mail.js';
 import { host } from './_lib/config.js';
 import { signedHref, PAGE_TTL, HOUSE_SKILL_FILE } from './_lib/learn-files.js';
 import {
-  CLUB, ROUND, CHEAP_SEATS, phaseAt, decide, priceId, seats, EMAIL, cleanEmail, cleanReceipt, firstName, signToken, readToken,
+  CLUB, ROUND, CHEAP_SEATS, EARLY, phaseAt, decide, priceId, seats, EMAIL, cleanEmail, cleanReceipt, firstName, signToken, readToken,
   limited, ipOf, receiptEmail, isBuyerEmail, isWaitlisted, fillWaitlist, backfill, lists, KEYS, PORTAL_URL,
 } from './_lib/club.js';
 
@@ -83,7 +83,8 @@ async function getSeats(req) {
   // the phase of ?at= for the previews (anyone: it only says which of the four dates that moment falls in)
   const at = atOf(req), preview = !isNaN(at), phase = phaseAt(preview ? at : Date.now());
   try {
-    const taken = await seats(stripe);
+    // 25/11: before the opening the counter is the founders' gifts, given in the order of the reservations (rank)
+    const taken = phase === 'before' ? Number(await kv('GET', KEYS.reserved)) || 0 : await seats(stripe);
     // the CDN keeps it 30 s too (the doors open with a crowd); a preview is never kept
     return json({ taken, left: Math.max(0, CHEAP_SEATS - taken), phase }, 200, preview ? 'no-store' : 'public, max-age=0, s-maxage=30');
   } catch (e) {
@@ -134,7 +135,6 @@ async function checkout(req) {
   if (!name || !EMAIL.test(email) || !plan || (ig && !IG.test(ig)) || (b.token && String(b.token).length > 300) || (b.v && !v)) return fail(400, 'bad_request', 'Name, email and plan needed.');
 
   const now = clock(req), phase = phaseAt(now);
-  if (phase === 'before') return fail(403, 'closed', NO.closed, { phase }); // 24/11: only before the opening, the doors never close
   try {
     // who is a guide buyer: a token from verify (receipt or email), or this email itself
     let proof = readToken(b.token) || '';
@@ -152,19 +152,22 @@ async function checkout(req) {
     const price = priceId(d.key);
     if (!price) return notConfigured({ phase });
     // empty ig / v / proof are left out (an empty value means "remove" for Stripe)
-    const meta = Object.fromEntries(Object.entries({ club: CLUB, round: ROUND, ig: ig.replace(/^@/, ''), v, buyer: buyer ? 'yes' : 'no', name, plan, price: String(d.eur), proof }).filter(([, x]) => x));
+    const meta = Object.fromEntries(Object.entries({ club: CLUB, round: ROUND, ig: ig.replace(/^@/, ''), v, buyer: buyer ? 'yes' : 'no', name, plan, price: String(d.eur), proof, reserve: d.reserve ? '1' : '' }).filter(([, x]) => x));
+    // 25/11: a reservation (before the doors open): the card is saved now, nothing is charged until the doors open on
+    // Sat 28/11 09:00 Rome (EARLY), when the first month starts and Stripe charges the card by itself
+    const sub = d.reserve ? { metadata: meta, billing_cycle_anchor: Math.floor(EARLY / 1000), proration_behavior: 'none' } : { metadata: meta };
     const session = await stripe.checkout.sessions.create({
       ui_mode: b.ui === 'embedded' ? 'embedded' : 'elements',
       mode: 'subscription',
       line_items: [{ price, quantity: 1 }],
       customer_email: email,
       metadata: meta,
-      subscription_data: { metadata: meta },
+      subscription_data: sub,
       return_url: `${SITE}/the-3d-future/welcome?session_id={CHECKOUT_SESSION_ID}`,
       // a checkout nobody finishes goes back after half an hour (Stripe's shortest)
       expires_at: Math.floor(Date.now() / 1000) + 31 * 60,
     });
-    return json({ client_secret: session.client_secret, pk: process.env.STRIPE_PUBLISHABLE_KEY, plan, price: d.eur, buyer, ...(used ? { note: 'That receipt already gave the €9 price to another member.' } : {}) });
+    return json({ client_secret: session.client_secret, pk: process.env.STRIPE_PUBLISHABLE_KEY, plan, price: d.eur, buyer, reserve: !!d.reserve, ...(used ? { note: 'That receipt already gave the €9 price to another member.' } : {}) });
   } catch (e) {
     if (e.code === 'not_configured') return notConfigured({ phase });
     console.error('[club] checkout', e.message);
@@ -180,6 +183,11 @@ async function welcome(req) {
     const s = await stripe.checkout.sessions.retrieve(id);
     const paid = s.status === 'complete' && (s.payment_status === 'paid' || s.payment_status === 'no_payment_required');
     if (!paid || s.metadata?.club !== CLUB) return fail(402, 'not_paid', 'not paid');
+    // 25/11: a reservation shows "your seat is reserved" (Skool and the skill come on Saturday, when the card is charged)
+    if (s.metadata?.reserve === '1') {
+      const rank = Number(await kv('HGET', KEYS.rank, s.id).catch(() => 0)) || 0;
+      return json({ reserved: true, name: firstName(s.metadata?.name || s.customer_details?.name), email: cleanEmail(s.customer_details?.email || s.customer_email), rank, gift: rank > 0 && rank <= CHEAP_SEATS, portal: PORTAL_URL });
+    }
     let skill = '';
     try { skill = SITE + signedHref(HOUSE_SKILL_FILE, PAGE_TTL); } catch {}
     return json({ name: firstName(s.metadata?.name || s.customer_details?.name), email: cleanEmail(s.customer_details?.email || s.customer_email), skool: process.env.CLUB_SKOOL_URL || '', skill, portal: PORTAL_URL });

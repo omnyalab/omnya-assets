@@ -26,6 +26,15 @@ import Club from '../../layouts/Club.astro';
     </li>
   </ol>
 
+  {/* 25/11: a reservation (card saved, nothing charged until Sat 28/11 09:00 Rome) sees this box instead of the steps */}
+  <div class="box res" data-res hidden>
+    <h2>Nothing was charged today</h2>
+    <p>On Saturday 28 November at 9:00 (Rome) the doors open, your first month starts and your card is charged €9, the founders' price that stays locked for as long as you stay.</p>
+    <p data-gift hidden>You're <b data-rank></b> of the first 100 who reserved, so the founders' gift is yours: our three playbooks and the full 3D AI Mastery course. It arrives on Saturday with your welcome email, together with the room on Skool and your House Builder skill.</p>
+    <p data-nogift hidden>On Saturday your welcome email brings the room on Skool and your House Builder skill.</p>
+    <p data-wait hidden>Your email tells you if you're one of the first 100 who reserved and get the founders' gift. On Saturday your welcome email brings the room on Skool and your House Builder skill.</p>
+  </div>
+
   {/* the one-tap cancel link: the Stripe customer portal (api/_lib/club.js PORTAL_URL), as in the email */}
   <p class="mute small"><span data-cancel>To cancel, reply to the welcome email.</span> To withdraw within 14 days: <a href="/withdraw">omnyalab.com/withdraw</a>.</p>
   <p class="mute">Nico</p>
@@ -39,6 +48,7 @@ import Club from '../../layouts/Club.astro';
   .steps p{margin:0 0 14px}
   .steps li > :last-child{margin-bottom:0}
   .small{font-size:14.5px}
+  .res{margin:26px 0 30px}.res h2{margin:4px 0 8px;font-size:18px}.res p{margin:0 0 12px}.res p:last-child{margin:0}
 </style>
 
 <script is:inline>
@@ -47,6 +57,14 @@ import Club from '../../layouts/Club.astro';
   if (/^cs_(live|test)_[A-Za-z0-9]{8,200}$/.test(id)) {
     st.textContent = st.dataset.checking
     fetch('/api/club/welcome?session_id=' + encodeURIComponent(id)).then(r => r.ok ? r.json() : Promise.reject()).then(d => {
+      if (d.reserved) { // 25/11: the reservation
+        document.querySelector('[data-hi]').textContent = 'Your seat is reserved' + (d.name && d.name !== 'there' ? ', ' + d.name : '') + '.'
+        document.querySelector('.steps').hidden = true; document.querySelector('[data-res]').hidden = false
+        if (d.gift) { document.querySelector('[data-rank]').textContent = 'number ' + d.rank; document.querySelector('[data-gift]').hidden = false }
+        else document.querySelector(d.rank ? '[data-nogift]' : '[data-wait]').hidden = false   /* rank 0: Stripe's message has not reached us yet */
+        if (d.portal) { const c = document.querySelector('[data-cancel]'), a = document.createElement('a'); a.href = d.portal; a.textContent = 'cancel here'; c.textContent = 'Changed your mind before Saturday? '; c.append(a, ' and you pay nothing.') }
+        st.textContent = 'We sent you an email with all of this (subject: your seat is reserved).'; return
+      }
       if (d.name && d.name !== 'there') document.querySelector('[data-hi]').textContent = 'You’re in, ' + d.name + '.'
       if (d.email) document.querySelector('[data-email]').textContent = ' (' + d.email + ')'
       show('[data-skool]', d.skool); show('[data-skill]', d.skill)

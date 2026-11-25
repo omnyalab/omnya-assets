@@ -63,7 +63,7 @@ import { WANTS } from './data';
   <div class="joinwrap">
     <div class="panel">
       <div class="pbar solo">
-        <h2 id="t3f-p" tabindex="-1">Join <span data-vv="a">THE 3D FUTURE</span><span data-vv="b">3D THAT SELLS</span></h2>
+        <h2 id="t3f-p" tabindex="-1"><span data-when="before">Reserve your seat</span><span data-when="early open after">Join <span data-vv="a">THE 3D FUTURE</span><span data-vv="b">3D THAT SELLS</span></span></h2>
         <button type="button" class="rb ctr" data-close aria-label="Close"><Icon name="x" /></button>
       </div>
       <p class="paid" data-paid hidden><Icon name="check" /><span>Guide found · €9 a month for you, after Friday 4 December too</span></p>
@@ -75,9 +75,10 @@ import { WANTS } from './data';
       </form>
       <div class="opts" data-paystage hidden>
         <div class="paybox" data-paybox></div>
-        <button type="button" class="btn cta wide save" data-pay>Pay <span data-payeur>€9</span> a month</button>
+        <button type="button" class="btn cta wide save" data-pay><span data-when="before">Reserve my seat · €0 today</span><span data-when="early open after">Pay <span data-payeur>€9</span> a month</span></button>
       </div>
       <p class="pnote" data-early hidden>Doors open for everyone at 18:00</p>
+      <p class="pnote" data-when="before">Nothing is charged today. On Saturday 28 November at 9:00 (Rome) the doors open and your card is charged €9 a month, the founders' price locked for as long as you stay. The first 100 who reserve get the founders' gift.</p>
       <p class="perr" data-perr role="alert"></p>
       <p class="small"><Icon name="lock" /><span>Cancel in one tap, whenever you want · <a href="/the-3d-future/terms" target="_blank" rel="noopener">Terms</a></span></p>
     </div>

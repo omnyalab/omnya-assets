@@ -59,7 +59,8 @@ export const FAQ: [string, string][] = [
   ['Do I need to code?', 'No. The Claude skills and the prompts do the building, the course shows you each step.'],
   ['What do I need?', 'A computer and Claude Pro or Claude Code for the skills. Higgsfield for photos and video.'],
   ['Can I cancel?', 'Yes, in one tap, whenever you want.'],
-  ['Who gets the founders\' gifts?', 'The first 100 who join by Friday 4 December: our three playbooks and the full 3D AI Mastery course, yours to keep.'],
+  ['Why do you need my card today?', 'To hold your seat. Nothing is charged today: your first month starts on Saturday 28 November at 9:00 (Rome), when the doors open, and your card is charged €9 then. Cancel before Saturday and you pay nothing.'],
+  ['Who gets the founders\' gifts?', 'The first 100 who reserve their seat before the doors open on Saturday: our three playbooks and the full 3D AI Mastery course, yours to keep. They arrive with your welcome email on Saturday.'],
   ['I bought a guide, what do I pay?', '€9 a month, after Friday 4 December too: enter your receipt number.'],
   ['When do new builds arrive?', 'Every Friday.'],
 ];
