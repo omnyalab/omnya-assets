@@ -39,12 +39,36 @@ export const vImg = (k: string) => `/club/v-${k}-760.webp`;
 export const vSet = (k: string) => `/club/v-${k}-760.webp 760w, /club/v-${k}.webp 1400w`;
 
 /** What's inside, the courses first (the badges are the B2 game trophies of the board) */
+/** 25/11 Nico («strafighe, come le copertine»): each card is a step cover, kw = the words in azure, img = the photo blurred under it */
 export const INSIDE = [
-  { k: 'lesson', t: 'Step-by-step video courses on our builds', d: 'The first one, your own tower where buyers choose their floor, is ready on day one, and a new course comes every Friday with the build of the week' },
-  { k: 'first', t: 'Six builds from our reels', d: 'With the files, the prompts and the Claude skills' },
-  { k: 'month', t: 'My comments on your builds', d: 'Every Monday' },
-  { k: 'house', t: 'The House Builder skill', d: 'Yours to keep' },
+  { k: 'lesson', t: 'Step-by-step video courses on our builds', kw: 'video courses', img: '/club/course/step-05.webp', d: 'The first one, your own tower where buyers choose their floor, is ready on day one, and a new course comes every Friday with the build of the week' },
+  { k: 'first', t: 'Six builds from our reels', kw: 'Six builds', img: '/club/course/step-08.webp', d: 'With the files, the prompts and the Claude skills' },
+  { k: 'month', t: 'My comments on your builds', kw: 'comments', img: '/club/course/step-03.webp', d: 'Every Monday' },
+  { k: 'house', t: 'The House Builder skill', kw: 'House Builder', img: '/club/course/step-10.webp', d: 'Yours to keep' },
 ];
+/** the words kw of t in the azure of the covers (static strings of this file only) */
+export const kw = (t: string, k?: string) => (k && t.includes(k) ? t.replace(k, `<em class="kw">${k}</em>`) : t);
+
+/** 25/11 Nico: «Reserve your seat» is four cards that change: these three questions, then the card with €0 today */
+export const ASK = [
+  { k: 'build', t: 'What will you build first?', kw: 'build', o: [
+    { k: 'tower', t: 'A tower buyers climb floor by floor', img: 'towers' },
+    { k: 'stadium', t: 'A stadium where fans pick their seat', img: 'stadium' },
+    { k: 'house', t: 'A house that builds itself', img: 'house' },
+    { k: 'own', t: 'Something of my own', img: 'miami' },
+  ] },
+  { k: 'use', t: 'What will you use it for?', kw: 'use it', o: [
+    { k: 'clients', t: 'To win clients' },
+    { k: 'projects', t: 'To sell my own projects' },
+    { k: 'service', t: 'To start a 3D service' },
+    { k: 'learn', t: 'Just to learn' },
+  ] },
+  { k: 'now', t: 'Where are you with 3D today?', kw: '3D', o: [
+    { k: 'new', t: 'Never tried it' },
+    { k: 'images', t: 'I make images, not 3D' },
+    { k: 'sell', t: 'I already sell 3D' },
+  ] },
+] as { k: string; t: string; kw: string; o: { k: string; t: string; img?: string }[] }[];
 
 export const VALUE: [string, string][] = [
   ['Step-by-step video courses', 'new, only inside'],

@@ -4,10 +4,11 @@
 //   GET  /api/club/seats[?at=<ISO date>]     → { taken, left, phase: 'before'|'early'|'open'|'after' } (after = from Sat 5/12, €19, the doors never close)
 //        ?at= previews the phase of another moment, like the cards (?at= on the thanks pages); taken is always the real one
 //   POST /api/club/verify   { receipt?, email? }   → { buyer: bool, token? } (the token, 24 hours, is for checkout)
-//   POST /api/club/checkout { name, email, plan: 'month'|'year', token?, ig?, v?, ui? }
+//   POST /api/club/checkout { name, email, plan: 'month'|'year', token?, ig?, v?, ui?, q? }
 //        → { client_secret, pk, plan, price, buyer } of a Stripe Checkout Session in subscription mode, embedded in our
 //          page (ui 'elements' like api/embed-checkout.js, the default, or ui 'embedded' for Stripe's own form).
-//          v = the variant of the name test ('a' THE 3D FUTURE, 'b' 3D THAT SELLS), kept in the metadata with ig
+//          v = the variant of the name test ('a' THE 3D FUTURE, 'b' 3D THAT SELLS), kept in the metadata with ig;
+//          q = the three answers of the join cards (25/11), 'build|use|now' (e.g. 'tower|clients|images'), kept in the metadata
 //   GET  /api/club/welcome?session_id=cs_…   → what /the-3d-future/welcome shows, once Stripe says it is paid
 //   POST /api/club/withdraw { name, email, purchase, confirm: true }  → { ok, id, at, when, mailed } (art. 54-bis Codice del consumo)
 //   GET  /api/club/admin?key=IG_ADMIN_KEY    → members, the two Skool lists, the withdrawals, the index counts
@@ -140,6 +141,8 @@ async function checkout(req) {
   const plan = b.plan === 'year' ? 'year' : b.plan === 'month' ? 'month' : '';
   const ig = String(b.ig || '').trim();
   const v = b.v === 'a' || b.v === 'b' ? b.v : '';
+  // 25/11 Nico: what they want to build, what for and where they are with 3D (the join cards); anything else is dropped
+  const q = /^[a-z]{0,12}\|[a-z]{0,12}\|[a-z]{0,12}$/.test(String(b.q || '')) && String(b.q) !== '||' ? String(b.q) : '';
   if (!name || !EMAIL.test(email) || !plan || (ig && !IG.test(ig)) || (b.token && String(b.token).length > 300) || (b.v && !v)) return fail(400, 'bad_request', 'Name, email and plan needed.');
 
   const now = clock(req), phase = phaseAt(now);
@@ -160,7 +163,7 @@ async function checkout(req) {
     const price = priceId(d.key);
     if (!price) return notConfigured({ phase });
     // empty ig / v / proof are left out (an empty value means "remove" for Stripe)
-    const meta = Object.fromEntries(Object.entries({ club: CLUB, round: ROUND, ig: ig.replace(/^@/, ''), v, buyer: buyer ? 'yes' : 'no', name, plan, price: String(d.eur), proof, reserve: d.reserve ? '1' : '' }).filter(([, x]) => x));
+    const meta = Object.fromEntries(Object.entries({ club: CLUB, round: ROUND, ig: ig.replace(/^@/, ''), v, buyer: buyer ? 'yes' : 'no', name, plan, price: String(d.eur), proof, reserve: d.reserve ? '1' : '', q }).filter(([, x]) => x));
     // 25/11: a reservation (before the doors open): the card is saved now, nothing is charged until the doors open on
     // Sat 28/11 09:00 Rome (EARLY), when the first month starts and Stripe charges the card by itself
     const sub = d.reserve ? { metadata: meta, billing_cycle_anchor: Math.floor(EARLY / 1000), proration_behavior: 'none' } : { metadata: meta };

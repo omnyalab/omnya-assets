@@ -3,7 +3,7 @@
 // panel; step 3 is the Apple Invites card. The same panel holds the checkout from Saturday 28/11 (name and email, then
 // the Stripe fields of api/club.js inside our page). Driven by club-client.js; both open as full-screen dialogs.
 import Icon from './Icon.astro';
-import { WANTS } from './data';
+import { WANTS, ASK, kw, vImg } from './data';
 ---
 {/* ---------- pre-registration ---------- */}
 <div class="ov" data-ov="list" data-step="1" role="dialog" aria-modal="true" aria-labelledby="t3f-l1" hidden>
@@ -57,30 +57,60 @@ import { WANTS } from './data';
   <button type="button" class="rb ctr x" data-close aria-label="Close" data-x3 hidden><Icon name="x" /></button>
 </div>
 
-{/* ---------- checkout (early, open and after: the doors never close) ---------- */}
-<div class="ov" data-ov="pay" role="dialog" aria-modal="true" aria-labelledby="t3f-p" hidden>
-  <div class="joinbg" aria-hidden="true"><img src="/learn/3df_bg_burj.webp" alt="" decoding="async"></div>
-  <div class="joinwrap">
-    <div class="panel">
-      <div class="pbar solo">
-        <h2 id="t3f-p" tabindex="-1"><span data-when="before">Reserve your seat</span><span data-when="early open after">Join <span data-vv="a">THE 3D FUTURE</span><span data-vv="b">3D THAT SELLS</span></span></h2>
-        <button type="button" class="rb ctr" data-close aria-label="Close"><Icon name="x" /></button>
-      </div>
-      <p class="paid" data-paid hidden><Icon name="check" /><span>Guide found · €9 a month for you, after Friday 4 December too</span></p>
-      <form class="opts" data-payform novalidate>
-        <div class="field"><label for="t3f-pn">Name</label><input id="t3f-pn" name="name" required autocomplete="name" maxlength="60" placeholder="Your name"></div>
-        <div class="field"><label for="t3f-pe">Email</label><input id="t3f-pe" name="email" type="email" required autocomplete="email" inputmode="email" maxlength="120" placeholder="you@studio.com"></div>
-        <label class="hp" aria-hidden="true">Company<input name="company" tabindex="-1" autocomplete="off"></label>
-        <button class="btn cta wide save" type="submit" data-go>Continue to payment</button>
-      </form>
-      <div class="opts" data-paystage hidden>
-        <div class="paybox" data-paybox></div>
-        <button type="button" class="btn cta wide save" data-pay><span data-when="before">Reserve my seat · €0 today</span><span data-when="early open after">Pay <span data-payeur>€9</span> a month</span></button>
-      </div>
-      <p class="pnote" data-early hidden>Doors open for everyone at 18:00</p>
-      <p class="pnote" data-when="before">Nothing is charged today. On Saturday 28 November at 9:00 (Rome) the doors open and your card is charged €9 a month, the founders' price locked for as long as you stay. The first 100 who reserve get the founders' gift.</p>
-      <p class="perr" data-perr role="alert"></p>
-      <p class="small"><Icon name="lock" /><span>Cancel in one tap, whenever you want · <a href="/the-3d-future/terms" target="_blank" rel="noopener">Terms</a></span></p>
+{/* ---------- 25/11 Nico («si cambiano le card: finisci una card e vai su un'altra»): the join in four cards that change.
+     01-03 one question each (a tap answers and moves on), 04 the card: name and email, «Join», then the Stripe fields of
+     api/club.js inside the same card with €0 today. Behind each card its own blurred build: Burj Al Ballur at night,
+     the DG tower at sunset, the stadium, the Ballur pool. ?demo=1 shows the card step with a stand-in of the Stripe fields. ---------- */}
+<div class="ov jov" data-ov="pay" data-step="1" data-stage="ask" role="dialog" aria-modal="true" aria-labelledby="t3f-c1" hidden>
+  <div class="jbgs" aria-hidden="true">
+    {[1, 2, 3, 4].map((n) => <img src={`/club/join-${n}.webp`} alt="" decoding="async" class:list={{ on: n === 1 }} data-bg={n} />)}
+    <span class="jtint"></span><span class="grain"></span>
+  </div>
+  <div class="jwrap">
+    <div class="jtop">
+      <button type="button" class="rb ctr" data-jback aria-label="Back"><Icon name="back" /></button>
+      <div class="jprog" role="progressbar" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" aria-label="Card 1 of 4" data-jprog><i></i><i></i><i></i><i></i></div>
+      <button type="button" class="rb ctr" data-close aria-label="Close"><Icon name="x" /></button>
+    </div>
+    <div class="jdeck">
+      {ASK.map((a, i) => (
+        <section class:list={['jc', { cur: i === 0 }]} data-c={i + 1} data-ask={a.k} aria-labelledby={`t3f-c${i + 1}`}>
+          <span class="jn">{`0${i + 1}`}</span>
+          <h2 id={`t3f-c${i + 1}`} tabindex="-1" class="jq" set:html={kw(a.t, a.kw)} />
+          <div class:list={['jopts', { tiles: a.k === 'build' }]} role="radiogroup" aria-labelledby={`t3f-c${i + 1}`}>
+            {a.o.map((o) => (
+              <button type="button" class="jo" role="radio" aria-checked="false" data-pick={o.k}>
+                {o.img && <img src={vImg(o.img)} alt="" loading="lazy" decoding="async" />}
+                <span>{o.t}</span><Icon name="check" class="jok" />
+              </button>
+            ))}
+          </div>
+        </section>
+      ))}
+      <section class="jc jcard" data-c="4" aria-labelledby="t3f-c4">
+        <span class="jn">04</span>
+        <h2 id="t3f-c4" tabindex="-1" class="j0"><span data-when="before"><b>€0</b> <em class="kw">today</em></span><span data-when="early open after"><b data-payeur>€9</b> <em class="kw">a month</em></span></h2>
+        <p class="jthen" data-when="before">then <b>€9/month</b> from <span class="nw">Saturday 28 November</span></p>
+        <p class="jthen" data-when="early open after">Cancel in one tap, whenever you want</p>
+        <span class="cvl"></span>
+        <p class="paid" data-paid hidden><Icon name="check" /><span>Guide found · €9 a month for you, after Friday 4 December too</span></p>
+        <form class="jform" data-payform novalidate>
+          <div class="field"><label for="t3f-pn">Name</label><input id="t3f-pn" name="name" required autocomplete="name" maxlength="60" placeholder="Your name"></div>
+          <div class="field"><label for="t3f-pe">Email</label><input id="t3f-pe" name="email" type="email" required autocomplete="email" inputmode="email" maxlength="120" placeholder="you@studio.com"></div>
+          <label class="hp" aria-hidden="true">Company<input name="company" tabindex="-1" autocomplete="off"></label>
+          <button class="btn cta wide jgo" type="submit" data-go>Join</button>
+        </form>
+        <div class="jpay" data-paystage hidden>
+          <p class="jme"><span data-me></span><button type="button" data-jedit>Change</button></p>
+          <div class="paybox" data-paybox></div>
+          <button type="button" class="btn cta wide jgo" data-pay><span data-when="before">Reserve my seat · €0 today</span><span data-when="early open after">Pay <span data-payeur2>€9</span> a month</span></button>
+        </div>
+        <p class="pnote" data-early hidden>Doors open for everyone at 18:00</p>
+        <p class="perr" data-perr role="alert"></p>
+        <p class="jgift" data-when="before"><Icon name="gift" /><span>The first 100 who reserve get the <b>founders' gift</b></span></p>
+        <p class="jsafe" data-when="before">Cancel before Saturday and you pay nothing.</p>
+        <p class="small"><Icon name="lock" /><span>Secure payment by Stripe · <a href="/the-3d-future/terms" target="_blank" rel="noopener">Terms</a></span></p>
+      </section>
     </div>
   </div>
 </div>

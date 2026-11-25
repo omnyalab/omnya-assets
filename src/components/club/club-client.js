@@ -123,7 +123,7 @@
     if (e.key === 'Escape') { if (!sheet.hidden) closeSheet(); else hideOv(); return; }
     if (e.key !== 'Tab') return;
     var box = sheet.hidden ? cur : sheet;
-    var f = $$('a[href],button:not([disabled]),input:not([tabindex="-1"]),iframe,[tabindex="0"]', box).filter(function (x) { return x.offsetParent !== null || x.tagName === 'IFRAME'; });
+    var f = $$('a[href],button:not([disabled]),input:not([tabindex="-1"]),iframe,[tabindex="0"]', box).filter(function (x) { return (x.offsetParent !== null || x.tagName === 'IFRAME') && !x.closest('[inert]'); });
     if (!f.length) return;
     if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
     else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
@@ -234,16 +234,42 @@
       .then(function () { checking = false; R.removeAttribute('aria-busy'); });
   });
 
-  /* ---------- the checkout inside the page (api/club.js → Stripe, ui 'elements', like the funnel watch pages) ---------- */
-  var P = $('[data-ov="pay"]'), pf = $('[data-payform]', P), stage = $('[data-paystage]', P), pbox = $('[data-paybox]', P), perr = $('[data-perr]', P);
-  var payBtn = $('[data-pay]', P), goBtn = $('[data-go]', P), actions = null, pel = null, opening = false;
+  /* ---------- the join in four cards that change (25/11 Nico): 01-03 a question each, a tap answers and the next card
+     comes in; 04 name and email, «Join», then the Stripe fields of api/club.js (ui 'elements') in the same card ---------- */
+  var P = $('[data-ov="pay"]'), cardsJ = $$('.jc', P), bgs = $$('[data-bg]', P);
+  var pf = $('[data-payform]', P), stage = $('[data-paystage]', P), pbox = $('[data-paybox]', P), perr = $('[data-perr]', P);
+  var payBtn = $('[data-pay]', P), goBtn = $('[data-go]', P), actions = null, pel = null, opening = false, step = 1, nextT = null;
+  var DEMO = !!q.get('demo');
   var LOOK = { theme: 'night', labels: 'above', variables: { colorPrimary: '#0071e3', colorBackground: '#16234d', colorText: '#ffffff', colorTextSecondary: '#c9d4ea', colorTextPlaceholder: '#8e9bbb', colorDanger: '#ff8a7a', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif', fontSizeBase: '17px', borderRadius: '16px', spacingUnit: '4px' },
     rules: { '.Input': { border: '1px solid #44527a', boxShadow: 'none' }, '.Input:focus': { border: '1px solid #ffffff', boxShadow: 'none' }, '.Label': { color: '#c9d4ea', fontWeight: '600', fontSize: '13px' }, '.Tab': { border: '1px solid #44527a' } } };
   function loadStripe() { return window.Stripe ? Promise.resolve() : new Promise(function (ok, no) { var sc = document.createElement('script'); sc.src = 'https://js.stripe.com/endive/stripe.js'; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); }); }
+  function go(n, focus) {
+    clearTimeout(nextT); step = n; P.dataset.step = String(n);
+    cardsJ.forEach(function (c) { var k = +c.dataset.c; c.classList.toggle('cur', k === n); c.classList.toggle('past', k < n); c.setAttribute('aria-hidden', k === n ? 'false' : 'true'); c.inert = k !== n; });
+    bgs.forEach(function (b) { b.classList.toggle('on', +b.dataset.bg === n); });
+    $$('[data-jprog] i', P).forEach(function (i, k) { i.className = k < n ? 'on' : ''; });
+    var pr = $('[data-jprog]', P); pr.setAttribute('aria-valuenow', String(n)); pr.setAttribute('aria-label', 'Card ' + n + ' of 4');
+    P.setAttribute('aria-labelledby', 't3f-c' + n); P.scrollTop = 0;
+    if (focus !== false) focusHead($('#t3f-c' + n));
+  }
+  /* the answers: a tap picks and, a moment later, the next card comes in (nothing is required: every question has an
+     answer for everyone) */
+  var ans = {};
+  $$('[data-ask]', P).forEach(function (g) {
+    var bs = $$('[data-pick]', g);
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      bs.forEach(function (o) { o.setAttribute('aria-checked', o === b ? 'true' : 'false'); });
+      ans[g.dataset.ask] = b.dataset.pick;
+      var n = +g.dataset.c; clearTimeout(nextT); nextT = setTimeout(function () { if (step === n) go(n + 1); }, RM ? 0 : 380);
+    }); });
+  });
+  function setStage(st) { P.dataset.stage = st; pf.hidden = st !== 'ask'; stage.hidden = st !== 'card'; }
   function payReset() {
     if (pel) { try { pel.destroy(); } catch (e) {} pel = null; }
-    actions = null; pf.hidden = false; stage.hidden = true; pbox.className = 'paybox'; perr.textContent = ''; $('[data-early]', P).hidden = true;
-    goBtn.disabled = false; goBtn.textContent = 'Continue to payment';
+    actions = null; setStage('ask'); pbox.className = 'paybox'; pbox.innerHTML = ''; perr.textContent = ''; $('[data-early]', P).hidden = true;
+    goBtn.disabled = false; goBtn.textContent = 'Join';
+    var eur = phase === 'after' && !proof ? '€19' : '€9';
+    $$('[data-payeur],[data-payeur2]', P).forEach(function (x) { x.textContent = eur; });
   }
   function openPay(from) {
     payReset();
@@ -251,8 +277,17 @@
     var who = ss.get('t3f-who') || {};
     if (!pf.elements.name.value && who.name) pf.elements.name.value = who.name;
     if (!pf.elements.email.value) pf.elements.email.value = (proof && proof.email) || who.email || '';
-    showOv(P, from); focusHead($('#t3f-p'));
-    loadStripe().catch(function () {});
+    showOv(P, from); go(1);
+    if (!DEMO) loadStripe().catch(function () {});
+  }
+  $('[data-jback]', P).addEventListener('click', function () {
+    if (step === 4 && P.dataset.stage === 'card') { payReset(); focusHead($('#t3f-c4')); return; }
+    if (step > 1) go(step - 1); else hideOv();
+  });
+  $('[data-jedit]', P).addEventListener('click', function () { payReset(); pf.elements.name.focus(); });
+  /* ?demo=1: the card step with a stand-in of the Stripe fields, for the board (no call to Stripe, nothing is charged) */
+  function demoCard() {
+    pbox.innerHTML = '<div class="demo"><label>Card number<span>1234 1234 1234 1234</span></label><div class="two2"><label>Expiry date<span>MM / YY</span></label><label>Security code<span>CVC</span></label></div><label>Country<span>Italy</span></label></div>';
   }
   pf.addEventListener('submit', function (e) {
     e.preventDefault(); if (opening) return;
@@ -261,8 +296,10 @@
     if (name.length < 2) { nm.setAttribute('aria-invalid', 'true'); toast('Add your name'); nm.focus(); return; }
     if (!EMAIL.test(email)) { em.setAttribute('aria-invalid', 'true'); toast('Add an email we can write to, like you@studio.com'); em.focus(); return; }
     ss.set('t3f-who', { name: name, email: email });
+    $('[data-me]', P).textContent = name + ' · ' + email;
+    if (DEMO) { setStage('card'); demoCard(); return; }
     opening = true; goBtn.disabled = true; goBtn.textContent = 'Opening…'; perr.textContent = ''; $('[data-early]', P).hidden = true;
-    var body = { name: name, email: email, plan: 'month', v: T.v, company: pf.elements.company.value };
+    var body = { name: name, email: email, plan: 'month', v: T.v, company: pf.elements.company.value, q: [ans.build || '', ans.use || '', ans.now || ''].join('|') };
     if (proof && proof.token) body.token = proof.token;
     if (/^[A-Za-z0-9._]{1,30}$/.test(ig)) body.ig = ig; // api/club.js takes an Instagram-like code only
     Promise.all([post('/api/club/checkout' + atQ, body), loadStripe().catch(function () { return null; })])
@@ -274,8 +311,8 @@
           throw new Error(r.status === 429 ? d.error : '');
         }
         if (!window.Stripe || !d.client_secret || !d.pk) throw new Error('');
-        pf.hidden = true; stage.hidden = false; pbox.className = 'paybox load';
-        $('[data-payeur]', P).textContent = '€' + (d.price || (phase === 'after' && !proof ? 19 : 9));
+        setStage('card'); pbox.className = 'paybox load';
+        if (d.price) $$('[data-payeur],[data-payeur2]', P).forEach(function (x) { x.textContent = '€' + d.price; });
         var co = window.Stripe(d.pk).initCheckoutElementsSdk({ clientSecret: d.client_secret, elementsOptions: { appearance: LOOK } });
         return Promise.resolve(co).then(function (co) {
           return co.loadActions().then(function (a) {
@@ -286,9 +323,10 @@
         });
       })
       .catch(function (x) { payReset(); perr.textContent = (x && x.message) || FAIL; })
-      .then(function () { opening = false; goBtn.disabled = false; goBtn.textContent = 'Continue to payment'; });
+      .then(function () { opening = false; goBtn.disabled = false; goBtn.textContent = 'Join'; });
   });
   payBtn.addEventListener('click', function () {
+    if (DEMO) { toast('Board preview: nothing is charged'); return; }
     if (!actions) return; payBtn.disabled = true; perr.textContent = '';
     Promise.resolve(actions.confirm())
       .then(function (r) { if (r && r.type === 'error') throw r.error; })
