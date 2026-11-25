@@ -58,7 +58,7 @@ const FULL_PLANE = pdf('How to build a plane where you pick your own seat', 'ful
 // 22/11: 3D AI Mastery, how to build any 3D with Claude (3D AI Mastery reels, word STADIUM)
 const FULL_MASTERY = pdf('3D AI Mastery, how to build any 3D with Claude', '3d-ai-mastery.pdf');
 // 25/11: how to build a villa people choose like on Google Maps (Dubai Villa reels, word HOME)
-const FULL_VILLA = pdf('How to build a villa people choose like on Google Maps', 'full-dubai-villa-blueprint.pdf');
+const FULL_VILLA = pdf('How to build a villa you pick on the map', 'full-dubai-villa-blueprint.pdf');
 // 10/11 (Nico): "The Towers Scene File" (€12), the one file that is not a PDF. It is sold in the same Stripe cart as the
 // Full Towers Blueprint (a recommended product of that payment link): the base three.js scene of the three towers as a
 // zip that opens in the browser, with the panel for views, light, height, fog and video recording. It is the base 3D

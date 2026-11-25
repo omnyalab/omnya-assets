@@ -111,6 +111,8 @@ def bf59(text):
            '.bfc59 .go{height:62px!important;font-size:18px!important;color:#fff!important;background:linear-gradient(180deg,#3d8bff,#1f5bff)!important;box-shadow:inset 0 0 0 1px #9fd8ff40,0 16px 36px -12px #3d8bffcc!important}'
            '.bfc59 .end{color:#9fd8ff!important;font-size:12.5px!important}'
            '.bfc59 .ck{display:none}'
+           # 25/11 (Nico: «attento che quello sopra sborda fuori a destra in alto»): the -80% badge of the Full row inside the column
+           '.right .opt .off{right:6px!important}'
            # 25/11 (Nico: «metti che c'è anche skill included… con una pill e tipo stellina prima»)
            '.bfc59 .skp{display:inline-flex;align-items:center;gap:8px;margin:12px auto 2px;padding:8px 14px 8px 11px;border-radius:999px;background:#ffd60a1f;border:1.5px solid #ffd60a;color:#fff;font:800 13.5px/1.25 Inter,sans-serif;text-align:left;box-shadow:0 0 22px -6px #ffd60a88}'
            '.bfc59 .skp b{display:grid;place-items:center;width:22px;height:22px;flex:none;border-radius:50%;background:#ffd60a;color:#111;font:900 13px/1 Inter,sans-serif}'

@@ -18,8 +18,8 @@
   },
   "pack": true,
   "optin": {
-    "title": "How to build a villa people choose like on Google Maps",
-    "description": "Steal our villa method: the free Dubai Villa Blueprint, and the Full guide that shows you how to build a villa page people choose like on Google Maps, with Claude Code.",
+    "title": "How to build a villa you pick on the map",
+    "description": "Steal our villa method: the free blueprint in five steps, and the Full Dubai Villa Blueprint with every prompt, the 3D street in code and the page where you pick your villa.",
     "word": "Villa",
     "proof": "Steal it before your competitors do",
     "noMail": true,
@@ -32,30 +32,31 @@
     "pdf": "omnya-lab-dubai-villa-blueprint.pdf"
   },
   "full": {
-    "title": "How to build a villa people choose like on Google Maps",
+    "title": "How to build a villa you pick on the map",
     "pdf": "full-dubai-villa-blueprint.pdf"
   },
   "watch": {
-    "title": "Step 2: see how we built Google Maps for <u class=\"hb2\">$10M villas</u> with Claude",
+    "title": "Step 2: see how we built a <u class=\"hb2\">$10M villa</u> site with Claude",
     "vsl": "vsl_riyadh.mp4?v=1",
     "vsl_poster": "/learn/watch/vsl_poster_riyadh.jpg",
-    "hook": "<b class=\"hb\">Stop selling villas from a PDF</b>buyers pick them like on Google Maps now",
+    "hook": "<b class=\"hb\">Stop selling renders</b>clients pay for this now",
     "reel": "r_villa.mp4",
     "reel_poster": "p_villa.jpg",
     "reel_label": "Our reel",
     "join": "the same villa page",
     "book_alt": "The Full Dubai Villa Blueprint",
     "full_list": [
-      "Build the whole villa page with Claude Code, step by step, even if you've never opened a 3D program",
-      "The real street and the real villa from the map, in real measures and with the real sun",
-      "Drop a pin, scroll down the street like Google Maps and pick your villa",
-      "Turn every 3D frame into a real photo and every move into a seamless clip",
-      "Walk in: living room, kitchen, pool, and one question at the end, \"Is this your home?\"",
-      "Every prompt, every check, and what each photo and clip really costs"
+      "The 3D villa code, every street and every villa",
+      "Drop a pin, scroll the street, pick your villa",
+      "Every photo prompt, view by view",
+      "The clip prompts that walk you inside",
+      "The question at the end: \"Is this your home?\"",
+      "Who to sell it to, and how to pitch it"
     ],
     "launch_end": "2026-11-28T23:59:59+01:00",
     "day2": "Sunday",
-    "about": "25/11: the Riyadh tower face video (vsl_riyadh, as on 3D AI Mastery) and, until the reel is out, the first 10 s of the villa tour (reale-dh/giro_auto_4k.mp4); then the first 10 s of the reel, as for Æther"
+    "about": "25/11: the Riyadh tower face video (vsl_riyadh, as on 3D AI Mastery) and, until the reel is out, the first 10 s of the villa tour (reale-dh/giro_auto_4k.mp4); then the first 10 s of the reel, as for Æther",
+    "_nota_testi": "25/11 Nico: «copia quelli vecchi, anche hook ecc dentro i funnel tipo quelle dello stadio come è scritto»: gancio del plane, titolo nello stampo del plane, lista corta come lo stadio"
   },
   "kit": null,
   "products": {
