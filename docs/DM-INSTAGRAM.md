@@ -76,8 +76,8 @@ Instant DM (app.instantdm.com, Chrome di Nico), copiata dall'ultima automazione 
 - dove: Quick Automation → Posts (o Next Post Automation se il reel non è ancora uscito) → il reel → Send Link or PDF
 - trigger: All comments
 - risposte: Sent 🏡 check your DMs (even in Requests or General) | Check your DMs 🏡 (even in Requests or General) or tap the link in our bio | Just sent it 🏡 look in your DMs (even in Requests or General)
-- benvenuto: Hey 🙌🏻 your free Dubai Villa Guide is ready, tap below and I'll send it right away!
+- benvenuto: Hey 🙌🏻 your free guide is ready, tap below and I'll send it right away!
 - bottone: Send me the guide
-- messaggio: Here's your free Dubai Villa Guide 🏡 https://www.omnyalab.com/home
+- messaggio: Here's your free guide 🏡 https://www.omnyalab.com/home
 Follow @omnyalab so you catch the next one 🙌🏻
 - ritardo: 10 sec
