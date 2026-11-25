@@ -140,7 +140,7 @@ import Club from '../../layouts/Club.astro';
     if (d.state === 'waiting') { st.textContent = ''; $('[data-waiting]').hidden = false; return }
     if (d.state === 'ended') { st.textContent = ''; $('[data-ended]').hidden = false; return }
     st.textContent = 'Everything of the club is here. Start with the first lesson.'
-    $('[data-lessons]').innerHTML = d.lessons.map(l => `<li><div class="lh"><span class="num">${l.n}</span><span class="lt">${esc(l.t)}</span><span class="ld">${esc(l.d)}</span></div>${l.src ? `<video controls playsinline preload="metadata" src="${esc(l.src)}"></video>` : '<p class="soon">This lesson opens on Saturday 28 November.</p>'}</li>`).join('')
+    $('[data-lessons]').innerHTML = d.lessons.map(l => `<li><div class="lh"><span class="num">${l.n}</span><span class="lt">${esc(l.t)}</span><span class="ld">${esc(l.d)}</span></div>${l.src ? `<video controls playsinline preload="metadata"${l.poster ? ` poster="${esc(l.poster)}"` : ''} src="${esc(l.src)}"></video>` : '<p class="soon">This lesson opens on Saturday 28 November.</p>'}</li>`).join('')
     $('[data-skill]').innerHTML = fl(d.skill) + `<p class="note">${esc(d.skill.name)} ${esc(d.skill.note)}</p>`
     $('[data-vault]').innerHTML = d.vault.map(b => `<article class="vb"><img src="/club/v-${esc(b.img)}-760.webp" alt="" loading="lazy" decoding="async"><div class="vbb"><h3>${esc(b.t)}</h3><p class="ty">${esc(b.type)}</p><div class="files">${b.files.map(fl).join('')}</div></div></article>`).join('')
     $('[data-guides]').innerHTML = d.guides.map(fl).join('')

@@ -373,3 +373,7 @@ form.opts { gap: 16px }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: 0s !important; animation: none !important } }
 
 .seatbox { display: grid; gap: 8px }
+
+/* Nico's intro video on the club page (25/11) */
+.introv { max-width: 960px; margin: 0 auto; aspect-ratio: 16 / 9; border-radius: 22px; overflow: hidden; background: #000; border: 1px solid var(--line, #ffffff1f); box-shadow: 0 40px 90px -30px #000c }
+.introv video { display: block; width: 100%; height: 100%; object-fit: cover }

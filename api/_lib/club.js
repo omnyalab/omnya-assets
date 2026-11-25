@@ -152,7 +152,7 @@ export const insideUrl = (email) => `${SITE_URL}/the-3d-future/inside?m=${member
 /** The five lessons of the first course (First Build, the tower where buyers choose their floor, 23/11). src = the video
     once it is online; until then the page says the lesson opens on Saturday. */
 export const LESSONS = [
-  { n: 1, t: 'What you build and what you need', d: '2:13', src: '' },
+  { n: 1, t: 'What you build and what you need', d: '1:58', src: '/club/intro-nico.mp4', poster: '/club/intro-nico.webp' },   // 25/11: Nico's intro in camera (Nico: «mettilo»)
   { n: 2, t: 'Install the skill', d: '1:55', src: '' },
   { n: 3, t: 'Build your tower, floor by floor', d: '3:25', src: '' },
   { n: 4, t: 'Make it yours', d: '2:43', src: '' },
