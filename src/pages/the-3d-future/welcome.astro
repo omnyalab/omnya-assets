@@ -11,7 +11,7 @@ import Club from '../../layouts/Club.astro';
 
   {/* 25/11 (Nico): his thank-you video, the first thing they see after joining */}
   <div class="hello" data-hello>
-    <video controls playsinline preload="metadata" poster="/club/intro-nico.webp">
+    <video playsinline preload="metadata" poster="/club/intro-nico-cover.webp" tabindex="0" aria-label="Play the welcome from Nico" style="cursor:pointer">
       <source src="/club/intro-nico-720.mp4" media="(max-width: 700px)" type="video/mp4">
       <source src="/club/intro-nico.mp4" type="video/mp4">
     </video>
@@ -81,4 +81,8 @@ import Club from '../../layouts/Club.astro';
       st.textContent = d.inside ? st.dataset.ok : st.dataset.fail
     }).catch(() => { st.textContent = st.dataset.fail })
   } }
+
+// 25/11 (Nico): his welcome video shows the cover first (A welcome from Nico · Play); the player bar appears on the first tap
+document.querySelectorAll('[data-hello] video').forEach(v => { const go = () => { if (!v.controls) { v.controls = true; v.play().catch(() => {}) } }
+  v.addEventListener('click', go); v.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go() } }) })
 </script>
