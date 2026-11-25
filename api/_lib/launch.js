@@ -8,11 +8,11 @@ import { seatsUrl } from './seats-card.js';
 export const LAUNCH = [
   { id: 'e1', at: '2026-11-20T17:00:00Z', list: 'consent' }, // 20/11 Nico: «oggi si inizia, mai domani» (was Monday 23/11)
   { id: 'e1b', at: '2026-11-23T17:00:00Z', list: 'consent', hold: true }, // 23/11 Nico: «si inizia DA OGGI»; goes only after &lgo=e1b
-  { id: 'e2', at: '2026-11-25T17:00:00Z', list: 'consent' },
+  { id: 'e2', at: '2026-11-25T17:00:00Z', list: 'consent', seats: true }, // 25/11: seats = the founders' gifts left for the reservations
   // 23/11 (Nico: «mandami tutto così vediamo»): the rest of the launch, each held until &lgo=<id>
-  { id: 'e2b', at: '2026-11-26T17:00:00Z', list: 'consent', hold: true },
-  { id: 'e3b', at: '2026-11-27T17:00:00Z', list: 'consent', hold: true }, // everyone, before the club list of the same day
-  { id: 'e3', at: '2026-11-27T17:00:00Z', list: 'club', hold: true },
+  { id: 'e2b', at: '2026-11-26T17:00:00Z', list: 'consent', seats: true, hold: true },
+  { id: 'e3b', at: '2026-11-27T17:00:00Z', list: 'consent', seats: true, hold: true }, // everyone, before the club list of the same day
+  { id: 'e3', at: '2026-11-27T17:00:00Z', list: 'club', seats: true, hold: true },
   { id: 'e4a', at: '2026-11-28T08:00:00Z', list: 'club', seats: true, hold: true }, // 9:00 Rome, when the list gets in
   { id: 'e4', at: '2026-11-28T17:00:00Z', list: 'consent', seats: true, hold: true },
   { id: 'e5', at: '2026-11-30T17:00:00Z', list: 'consent', seats: true, hold: true },
@@ -66,12 +66,12 @@ Nico`,
   },
   e2: {
     subject: 'The mistake that ruins 3D photos',
-    img: { src: '/club/mail/inside-v2.jpg', alt: 'Inside THE 3D FUTURE: the step-by-step course to build your own tower where buyers choose their floor, and a new build every Friday' },
+    img: { src: '/club/mail/tower-choose.gif', alt: 'A tower where buyers choose their floor: the mouse passes over the floors and each one shows its name, height and size' },
     body: `Hey {name},
 
 The most common mistake with 3D photos is making the next picture from the last one that came out. Every round drifts a little further from the real building, until the client looks at it and says "that's not my tower".
 
-The fix isn't a better prompt, it's a method: you start every round from the 3D again, with photos of the real materials, so the building stays the same in every shot. That method, with the exact prompts, is what we teach inside THE 3D FUTURE, step by step, on real builds.
+The fix isn't a better prompt, it's a method: you start every round from the 3D again, with photos of the real materials, so the building stays the same in every shot. That method, with the exact prompts, is what we teach inside THE 3D FUTURE, step by step, on real builds. Here's the kind of 3D you learn to build there:
 
 {img}
 
@@ -79,7 +79,7 @@ This is what you'll find inside from Saturday: step-by-step video courses where 
 
 If you join by Friday 4 December you pay €9 a month instead of €19, locked for as long as you stay. And if you follow the five lessons, post your build in the group and it still isn't live within 7 days, your first month is on us.
 
-From today you can reserve your seat before the doors open: you add your card, nothing is charged today, and on Saturday your €9 month starts by itself. The first 100 who reserve also get our three playbooks and the full 3D AI Mastery course as a gift that stays theirs, and that gift is only for the people who reserve. If you change your mind before Saturday, you cancel and pay nothing:
+You can reserve your seat right now: you add your card, nothing is charged today, and on Saturday your €9 month starts by itself. {Seats_words}: our three playbooks and the full 3D AI Mastery course, theirs to keep, and only the people who reserve can get them. If you change your mind before Saturday, you cancel and pay nothing:
 {link}
 
 Nico`,
@@ -97,7 +97,7 @@ The fix is to plan the video backwards: the result first, then how you got there
 
 This is one build from the Vault: the kit that builds it again in your colours, the exact prompts we used, the 3D scene and the Full guide that explains every step. On Saturday you get six of them, and a new one every Friday, next to the step-by-step video courses, starting with your own tower where buyers choose their floor.
 
-If you reserve your seat before Saturday, nothing is charged today, your €9 a month is locked for as long as you stay, and if you're one of the first 100 who reserve, our three playbooks and the full 3D AI Mastery course are yours as a gift. The gift is only for the people who reserve, and every day a few more of the 100 are taken. The doors open in 2 days:
+If you reserve your seat before Saturday, nothing is charged today and your €9 a month is locked for as long as you stay. {Seats_words}: our three playbooks and the full 3D AI Mastery course, and only the people who reserve can get them. The doors open in 2 days:
 {link}
 
 Nico`,
@@ -107,7 +107,7 @@ Nico`,
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name},
 
-Black Friday ends tonight, and tomorrow THE 3D FUTURE opens. Tonight is the last night to reserve your seat: you add your card, nothing is charged today, and the founders' gift goes only to the first 100 who reserve:
+Black Friday ends tonight, and tomorrow THE 3D FUTURE opens. Tonight is the last night to reserve your seat: you add your card, nothing is charged today, and {seats_words}:
 {link}
 
 {img}
@@ -125,7 +125,7 @@ Nico`,
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name}, we said we'd email you today, so here it is.
 
-Tomorrow the doors of THE 3D FUTURE open, and you're on the list, so you get in before everyone else, with €9 a month locked for as long as you stay. The founders' gift, our three playbooks and the full 3D AI Mastery course, goes only to the first 100 who reserve their seat before the doors open, and tonight you still can: you add your card, nothing is charged today, and if you change your mind before tomorrow you cancel and pay nothing.
+Tomorrow the doors of THE 3D FUTURE open, and you're on the list, so you get in before everyone else, with €9 a month locked for as long as you stay. The founders' gift, our three playbooks and the full 3D AI Mastery course, is only for the people who reserve their seat before the doors open, and {seats_words}. Tonight you still can: you add your card, nothing is charged today, and if you change your mind before tomorrow you cancel and pay nothing.
 
 {img}
 
@@ -226,7 +226,7 @@ Nico`,
 // those mails speak of the list that grows and gets in first.
 export function seatsWords(left) {
   const n = Number(left);
-  if (left == null || left === '' || !Number.isFinite(n) || n >= 100) return "the 100 founders' gifts go to the first who join";
+  if (left == null || left === '' || !Number.isFinite(n) || n >= 100) return "the 100 founders' gifts go to the first who reserve";
   if (n >= 50) return "fewer of the 100 founders' gifts are left every day";
   if (n > 20) return "more than half of the 100 founders' gifts are already gone";
   if (n > 10) return "only a few of the 100 founders' gifts are left";
