@@ -38,7 +38,7 @@ const TEXTS = {
     // with your card» at the end. NOTE: the feed with likes, comments and shares is not in the club page yet: it must be
     // online before &lgo=r2. Sent only as a test to Nico (&ltest=r2) until he says ok
     subject: 'Your seat is one step away',
-    img2: { src: '/club/mail/step-inside.jpg', alt: 'Step inside: the club page from the inside, your courses, the Vault and my comments' },
+    img2: { src: '/club/mail/step-inside-d3.jpg', alt: 'Step inside: the club page from the inside, your courses, the Vault and my comments' },
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name},
 
