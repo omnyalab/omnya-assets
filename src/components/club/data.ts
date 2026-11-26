@@ -52,10 +52,12 @@ export const kw = (t: string, k?: string) => (k && t.includes(k) ? t.replace(k, 
 /** 25/11 Nico: «Reserve your seat» is four cards that change: these three questions, then the card with €0 today */
 export const ASK = [
   { k: 'build', t: 'What will you build first?', kw: 'build', o: [
-    { k: 'tower', t: 'A tower buyers climb floor by floor', img: 'towers' },
-    { k: 'stadium', t: 'A stadium where fans pick their seat', img: 'stadium' },
-    { k: 'house', t: 'A house that builds itself', img: 'house' },
-    { k: 'own', t: 'Something of my own', img: 'miami' },
+    // 26/11 (Nico, board «Card 01, vetro colorato», C with the light vignette): one word each, no «A», the blurred photo of the
+    // build under a coloured glass (public/club/jt-<k>.webp, blurred in the file so it stays smooth)
+    { k: 'tower', t: 'Tower', img: 'towers' },
+    { k: 'stadium', t: 'Stadium', img: 'stadium' },
+    { k: 'house', t: 'House', img: 'house' },
+    { k: 'own', t: 'My own idea', img: 'miami' },
   ] },
   { k: 'use', t: 'What will you use it for?', kw: 'use it', o: [
     { k: 'clients', t: 'To win clients' },

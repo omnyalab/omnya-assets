@@ -468,6 +468,21 @@ form.opts { gap: 16px }
 .jopts.tiles .jo::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(5,9,21,0) 20%, rgba(5,9,21,.85)) }
 .jopts.tiles .jo:hover img { transform: scale(1.05) }
 .jopts.tiles .jo[aria-checked="true"] { background: #0a1428; box-shadow: 0 0 0 3px #2f7bff, 0 12px 30px rgba(0,113,227,.5) }
+/* 26/11 (Nico, board C «vetro colorato», light vignette): card 01 = the blurred photo, a coloured glass of three soft lights,
+   a white sheen top-left and a soft black vignette; one word in the middle, the check in the corner */
+.jc[data-ask="build"] .jopts.tiles .jo { display: grid; grid-template-columns: minmax(0, 1fr); place-items: center; text-align: center; padding: 12px; aspect-ratio: 1 / .92; min-height: 0;
+  font: 700 22px/1.05 var(--f-sfd); letter-spacing: -.035em; box-shadow: inset 0 1px 0 rgba(255,255,255,.4), inset 0 0 0 1px rgba(255,255,255,.14) }
+.jc[data-ask="build"] .jo[data-pick="tower"] { --c1: #6aa8ff; --c2: #3f5bff; --c3: #9b6bff }
+.jc[data-ask="build"] .jo[data-pick="stadium"] { --c1: #4fe3a7; --c2: #10a37f; --c3: #1fb5d6 }
+.jc[data-ask="build"] .jo[data-pick="house"] { --c1: #ffc27a; --c2: #ff8a4c; --c3: #ff5f8f }
+.jc[data-ask="build"] .jo[data-pick="own"] { --c1: #d9def0; --c2: #8b93b8; --c3: #6f7bff }
+.jc[data-ask="build"] .jopts.tiles .jo::before { background: radial-gradient(90% 80% at 15% 10%, var(--c1), transparent 60%), radial-gradient(80% 90% at 95% 30%, var(--c3), transparent 62%), radial-gradient(120% 90% at 40% 110%, var(--c2), transparent 70%); opacity: .5 }
+.jc[data-ask="build"] .jopts.tiles .jo::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(70% 55% at 30% 12%, rgba(255,255,255,.35), transparent 70%), radial-gradient(120% 115% at 50% 45%, transparent 52%, rgba(0,0,0,.32) 100%); box-shadow: inset 0 0 14px rgba(0,0,0,.28) }
+.jc[data-ask="build"] .jopts.tiles .jo span { text-shadow: 0 1px 12px rgba(0,0,0,.35) }
+.jc[data-ask="build"] .jopts.tiles .jo .jok { position: absolute; top: 10px; right: 10px }
+.jc[data-ask="build"] .jopts.tiles .jo:hover img { transform: scale(1.04) }
+.jc[data-ask="build"] .jopts.tiles .jo[aria-checked="true"] { box-shadow: 0 0 0 3px #fff, 0 0 0 6px rgba(90,168,255,.55), 0 12px 30px rgba(0,0,0,.45) }
 /* card 04 */
 .jcard { justify-items: stretch }
 .j0 { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap }
@@ -507,3 +522,4 @@ form.opts { gap: 16px }
 }
 .jsafe { margin: -6px 0 0; text-align: center; font: 500 15px/20px var(--f-sf); color: rgba(255,255,255,.9) }
 .jo, .jtop .rb { -webkit-tap-highlight-color: transparent }
+@media (max-width: 420px) { .jc[data-ask="build"] .jopts.tiles .jo { font-size: 20px } }

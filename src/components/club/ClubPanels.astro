@@ -80,7 +80,7 @@ import { WANTS, ASK, kw, vImg } from './data';
           <div class:list={['jopts', { tiles: a.k === 'build' }]} role="radiogroup" aria-labelledby={`t3f-c${i + 1}`}>
             {a.o.map((o) => (
               <button type="button" class="jo" role="radio" aria-checked="false" data-pick={o.k}>
-                {o.img && <img src={vImg(o.img)} alt="" loading="lazy" decoding="async" />}
+                {o.img && <img src={a.k === 'build' ? `/club/jt-${o.k}.webp` : vImg(o.img)} alt="" loading="lazy" decoding="async" />}
                 <span>{o.t}</span><Icon name="check" class="jok" />
               </button>
             ))}
