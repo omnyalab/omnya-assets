@@ -184,6 +184,9 @@ async function checkout(req) {
     const session = await stripe.checkout.sessions.create({
       ui_mode: b.ui === 'embedded' ? 'embedded' : 'elements',
       mode: 'subscription',
+      // 26/11 (Nico): who joins from abroad can pay in their own currency (Adaptive Pricing, the 2-4% exchange fee is
+      // the buyer's); club-client.js shows Stripe's currency selector
+      adaptive_pricing: { enabled: true },
       line_items: [{ price, quantity: 1 }],
       customer_email: email,
       metadata: meta,

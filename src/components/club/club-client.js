@@ -238,7 +238,7 @@
      comes in; 04 name and email, «Join», then the Stripe fields of api/club.js (ui 'elements') in the same card ---------- */
   var P = $('[data-ov="pay"]'), cardsJ = $$('.jc', P), bgs = $$('[data-bg]', P);
   var pf = $('[data-payform]', P), stage = $('[data-paystage]', P), pbox = $('[data-paybox]', P), perr = $('[data-perr]', P);
-  var payBtn = $('[data-pay]', P), goBtn = $('[data-go]', P), actions = null, pel = null, opening = false, step = 1, nextT = null;
+  var payBtn = $('[data-pay]', P), goBtn = $('[data-go]', P), actions = null, pel = null, cel = null, cbox = null, opening = false, step = 1, nextT = null;
   var DEMO = !!q.get('demo');
   var LOOK = { theme: 'night', labels: 'above', variables: { colorPrimary: '#0071e3', colorBackground: '#16234d', colorText: '#ffffff', colorTextSecondary: '#c9d4ea', colorTextPlaceholder: '#8e9bbb', colorDanger: '#ff8a7a', fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif', fontSizeBase: '17px', borderRadius: '16px', spacingUnit: '4px' },
     rules: { '.Input': { border: '1px solid #44527a', boxShadow: 'none' }, '.Input:focus': { border: '1px solid #ffffff', boxShadow: 'none' }, '.Label': { color: '#c9d4ea', fontWeight: '600', fontSize: '13px' }, '.Tab': { border: '1px solid #44527a' } } };
@@ -266,10 +266,12 @@
   function setStage(st) { P.dataset.stage = st; pf.hidden = st !== 'ask'; stage.hidden = st !== 'card'; }
   function payReset() {
     if (pel) { try { pel.destroy(); } catch (e) {} pel = null; }
+    if (cel) { try { cel.destroy(); } catch (e) {} cel = null; } if (cbox && cbox.parentNode) { cbox.parentNode.removeChild(cbox); } cbox = null;
     actions = null; setStage('ask'); pbox.className = 'paybox'; pbox.innerHTML = ''; perr.textContent = ''; $('[data-early]', P).hidden = true;
     goBtn.disabled = false; goBtn.textContent = 'Join';
     var eur = phase === 'after' && !proof ? '€19' : '€9';
     $$('[data-payeur],[data-payeur2]', P).forEach(function (x) { x.textContent = eur; });
+    var th = $('.jthen b', P); if (th) th.textContent = eur + '/month';
   }
   function openPay(from) {
     payReset();
@@ -313,12 +315,24 @@
         if (!window.Stripe || !d.client_secret || !d.pk) throw new Error('');
         setStage('card'); pbox.className = 'paybox load';
         if (d.price) $$('[data-payeur],[data-payeur2]', P).forEach(function (x) { x.textContent = '€' + d.price; });
-        var co = window.Stripe(d.pk).initCheckoutElementsSdk({ clientSecret: d.client_secret, elementsOptions: { appearance: LOOK } });
+        var co = window.Stripe(d.pk).initCheckoutElementsSdk({ clientSecret: d.client_secret, adaptivePricing: { allowed: true }, elementsOptions: { appearance: LOOK } });
         return Promise.resolve(co).then(function (co) {
           return co.loadActions().then(function (a) {
             if (a.type !== 'success') throw new Error('');
             pel = co.createPaymentElement({ layout: 'tabs', wallets: { link: 'never' } });
             pbox.className = 'paybox'; pel.mount(pbox); actions = a.actions;
+            // 26/11 (Nico: «fai che puoi pagare in dollari, in qualsiasi valuta»): who joins from abroad sees Stripe's
+            // currency selector above the card (euro or their own money), and the monthly price on the card follows it
+            // (Stripe's recurring.dueNext: for subscriptions the selector shows no amounts). In the euro area nothing changes
+            try {
+              var ses = a.actions.getSession(), opts = ses && ses.currencyOptions;
+              if (opts && opts.length) {
+                cbox = document.createElement('div'); cbox.className = 'cursel'; cbox.style.margin = '0 0 12px';
+                pbox.parentNode.insertBefore(cbox, pbox); cel = co.createCurrencySelectorElement(); cel.mount(cbox);
+                var month = function (s) { var v = s && s.recurring && s.recurring.dueNext && s.recurring.dueNext.total && s.recurring.dueNext.total.amount; if (!v) return; $$('[data-payeur],[data-payeur2]', P).forEach(function (x) { x.textContent = v; }); var th = $('.jthen b', P); if (th) th.textContent = v + '/month'; };
+                month(ses); if (co.on) co.on('change', month);
+              }
+            } catch (e) { console.warn('[currency]', e); }
           });
         });
       })

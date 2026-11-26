@@ -86,6 +86,10 @@ export async function POST(request) {
       // 13/11 (Nico): "elements" = Stripe's card fields inside OUR checkout (black and blue), not Stripe's white page
       ui_mode: 'elements',
       mode: 'payment',
+      // 26/11 (Nico: «fai che puoi pagare in dollari, in qualsiasi valuta»): who pays from abroad can pay in their own
+      // currency (Stripe's Adaptive Pricing, the 2-4% exchange fee is paid by the buyer, nothing by us). The watch pages
+      // show Stripe's currency selector (adaptivePricing.allowed in initCheckoutElementsSdk)
+      adaptive_pricing: { enabled: true },
       line_items: p.items.map((price) => ({ price, quantity: 1 })),
       return_url: `${SITE}/learn/thanks/${p.back}?session_id={CHECKOUT_SESSION_ID}${from ? `&from=${encodeURIComponent(from)}` : ''}`,
       // 13/11 (Nico): the cardholder's name. 26/11 (Nico: «metti tutto, più c'è roba più comprano»): no more card only,

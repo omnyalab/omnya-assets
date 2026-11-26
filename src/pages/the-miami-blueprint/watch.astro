@@ -646,7 +646,20 @@ function loadStripe() { return window.Stripe ? Promise.resolve() : new Promise((
 const LOOK = { theme: 'night', inputs: 'condensed', labels: 'above', variables: { colorPrimary: '#0a84ff', colorBackground: '#0b1224', colorText: '#ffffff', colorTextSecondary: '#c9d2e3', colorTextPlaceholder: '#6b7385', colorDanger: '#ff6b6b', fontFamily: 'Inter, system-ui, sans-serif', fontSizeBase: '16px', borderRadius: '10px', spacingUnit: '4px' },
   rules: { '.Input': { border: '1px solid #2b3550', boxShadow: 'none' }, '.Input:focus': { border: '1px solid #0a84ff', boxShadow: '0 0 0 3px #0a84ff40' }, '.Label': { color: '#e6ebf5', fontWeight: '500', fontSize: '14px' } } }
 const payBtn = document.querySelector('[data-pay]'), perr = document.querySelector('[data-perr]')
-let actions = null, pel = null
+let actions = null, pel = null, cel = null, curBox = null
+// 26/11 (Nico: «fai che puoi pagare in dollari, in qualsiasi valuta»): Stripe's Adaptive Pricing. Who pays from abroad
+// sees Stripe's currency selector above the methods (euro or their own money) and the Pay button says what they pay.
+// For a buyer in the euro area Stripe gives no currency options and nothing changes
+function payCur(co, a) {
+  try {
+    const ses = a.getSession(), opts = ses && ses.currencyOptions
+    if (!opts || !opts.length) return
+    curBox = document.createElement('div'); curBox.className = 'cursel'; curBox.style.margin = '0 0 12px'
+    ecBox.parentElement.insertBefore(curBox, ecBox); cel = co.createCurrencySelectorElement(); cel.mount(curBox)
+    const amt = s => { const v = s && s.total && s.total.total && s.total.total.amount; if (!v) return; let sp = payBtn.querySelector('[data-amt]'); if (!sp) { payBtn.innerHTML = payBtn.innerHTML.replace(/€[\d.,]+/, m => `<span data-amt>${m}</span>`); sp = payBtn.querySelector('[data-amt]') } if (sp) sp.textContent = v }
+    amt(ses); if (co.on) co.on('change', amt)
+  } catch (e) { console.warn('[currency]', e) }
+}
 payBtn.removeEventListener('click', payLink)
 payBtn.addEventListener('click', async () => {
   if (!actions) return payLink()
@@ -667,18 +680,19 @@ async function mount() {
   if (busy) { again = true; return } busy = true
   try {
     if (pel) { try { pel.destroy() } catch (e) {} pel = null }
+    if (cel) { try { cel.destroy() } catch (e) {} cel = null } if (curBox) { curBox.remove(); curBox = null }
     actions = null; ecBox.className = 'ec load'
     // 14/11 (Nico: the card was slow): the session and stripe.js are fetched together, not one after the other
     const [r] = await Promise.all([fetch('/api/embed-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ p: PID[cur], card: true }) }), loadStripe()])
     if (!r.ok) throw new Error('no session')
     const d = await r.json()
     const st = window.Stripe(d.pk)
-    let co = st.initCheckoutElementsSdk({ clientSecret: d.cs, elementsOptions: { appearance: LOOK, fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap' }] } })
+    let co = st.initCheckoutElementsSdk({ clientSecret: d.cs, adaptivePricing: { allowed: true }, elementsOptions: { appearance: LOOK, fonts: [{ cssSrc: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap' }] } })
     if (co && co.then) co = await co
     const res = await co.loadActions(); if (res.type !== 'success') throw new Error('no actions')
     pel = co.createPaymentElement({ layout: 'tabs', /* 26/11 (Nico): card, Apple Pay / Google Pay, then Klarna (pay in 3), then Amazon Pay, the rest after */ paymentMethodOrder: ['card', 'apple_pay', 'google_pay', 'klarna', 'amazon_pay'], wallets: { link: 'never' }, terms: { card: 'never' } })
     const cbr = document.querySelector('[data-cbr]'); pel.on('change', ev => { cbr.classList.toggle('off', !ev.empty); const cp = document.querySelector('.cpanel'); if (cp && ev.value && ev.value.type) cp.classList.toggle('nocard', ev.value.type !== 'card') }); ecBox.className = 'ec'; pel.mount(ecBox)
-    actions = res.actions; right.classList.add('live')
+    actions = res.actions; right.classList.add('live'); payCur(co, res.actions)
   } catch (e) { console.warn('[checkout]', e); ecBox.className = 'ec'; right.classList.remove('live'); actions = null }
   busy = false; if (again) { again = false; mount() }
 }
