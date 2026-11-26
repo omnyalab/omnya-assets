@@ -142,7 +142,7 @@ Nico`,
   },
   e3b: {
     subject: "Last night to get the founders' gift",
-    img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
+    img: { src: '/club/mail/sg-your-gift.jpg', alt: "A small spoiler: the founders' gifts page inside the club, our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name},
 
 Tomorrow at 9:00 (Rome) THE 3D FUTURE opens, so tonight is the last night to reserve your seat with the founders' gift. After 9:00 the gift is gone for good, even for someone who joins a minute later.
@@ -158,7 +158,7 @@ Nico`,
   },
   e3: {
     subject: "You're first tomorrow",
-    img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
+    img: { src: '/club/mail/sg-your-gift.jpg', alt: "A small spoiler: the founders' gifts page inside the club, our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name},
 
 Tomorrow at 9:00 (Rome) the doors of THE 3D FUTURE open, and because you're on the list you get in nine hours before everyone else. There's one thing the list can't do for you, though: the founders' gift goes only to people who reserve their seat with a card before 9:00, and after that it's gone.
@@ -179,7 +179,7 @@ THE 3D FUTURE is open, and you're on the list, so you're in nine hours before ev
 
 {img}
 
-The moment you join, your page opens with the course where you build your own tower step by step, the Vault with six builds from our reels and their files, and every Full guide, and a new course comes in every Friday. The founders' price lasts only until Friday 4 December, then it goes up to €19 and the founders' round doesn't open again:
+The moment you join, your page opens with the course where you build your own tower step by step, the Vault with six builds from our reels and their files, every Full guide and the Feed, where everyone posts their builds and I comment on them, and a new course comes in every Friday. The founders' price lasts only until Friday 4 December, then it goes up to €19 and the founders' round doesn't open again:
 {link}
 
 Nico`,
@@ -193,7 +193,7 @@ THE 3D FUTURE is open, and until Friday you get in at the founders' price: €9 
 
 {img}
 
-The moment you join you start the first course, 11 short steps where you see every click and build your own tower, the kind where buyers choose their floor. Then a new course comes every Friday with the build of the week, next to six builds from our reels with their files, prompts and Claude skills, every Full guide and my comments on your builds every Monday.
+The moment you join you start the first course, 11 short steps where you see every click and build your own tower, the kind where buyers choose their floor. Then a new course comes every Friday with the build of the week, next to six builds from our reels with their files, prompts and Claude skills, every Full guide and the Feed, where everyone in the club posts their builds and I look at every single one.
 
 On Friday 4 December at 23:59 (Rome) the founders' price closes and it goes up to €19 for good. And if you follow the 11 steps, send me your build and it still isn't live within 7 days, your first month is on us:
 {link}
@@ -241,7 +241,7 @@ Tonight at 23:59 (Rome) the founders' price of THE 3D FUTURE closes, and from to
 
 {img}
 
-If you join today you get in at €9 a month, locked for as long as you stay: the course where you build your own tower step by step, a new course every Friday, the Vault with the files of our builds and my comments on your work every Monday.
+If you join today you get in at €9 a month, locked for as long as you stay: the course where you build your own tower step by step, a new course every Friday, the Vault with the files of our builds and the Feed, where everyone posts their builds and I comment on them.
 
 It takes a minute and you can cancel in one tap whenever you want, so don't let it slip:
 {link}
