@@ -171,10 +171,6 @@ async function checkout(req) {
       ui_mode: b.ui === 'embedded' ? 'embedded' : 'elements',
       mode: 'subscription',
       line_items: [{ price, quantity: 1 }],
-      // 26/11: card only (Apple Pay and Google Pay are cards, they stay). Amazon Pay and Satispay leave the page and come
-      // back to the welcome page even when nothing was saved: 3 of 3 reservations that tried them on 25-26/11 failed
-      // (Daksh twice from Instagram), against 4 of 4 by card. Klarna has no place in a €0 reservation.
-      payment_method_types: ['card'],
       customer_email: email,
       metadata: meta,
       subscription_data: sub,
