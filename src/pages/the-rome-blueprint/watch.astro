@@ -296,6 +296,9 @@ body.yellow .pay{color:#111;background:linear-gradient(180deg,#ffe24a,#ffc400);b
 .emw.have{display:none}
 .cpanel{margin-top:6px;border:1px solid #403624;border-radius:14px;background:#1a1409;overflow:hidden}
 .chead{display:flex;align-items:center;gap:10px;padding:14px 16px;font:600 15px Inter;color:#fff;border-bottom:1px solid #403624}
+/* 26/11 (Nico: every method is in now, the tabs looked messy): our turning card logos sat on the tabs and the header said «Card» over Klarna and Satispay too. Stripe puts the logos in the card number itself; the cardholder name only with the card */
+.cbr,.chead{display:none!important}
+.cpanel.nocard .cl,.cpanel.nocard [data-cn]{display:none}
 .cbody{padding:12px 12px 14px}
 /* 13/11 (Nico): the four card logos in the card number like Stripe's, the fourth one changes; they go when he types */
 .ecw{position:relative}
@@ -689,7 +692,7 @@ async function mount() {
     if (co && co.then) co = await co
     const res = await co.loadActions(); if (res.type !== 'success') throw new Error('no actions')
     pel = co.createPaymentElement({ layout: 'tabs', wallets: { link: 'never' }, terms: { card: 'never' } })
-    const cbr = document.querySelector('[data-cbr]'); pel.on('change', ev => cbr.classList.toggle('off', !ev.empty)); ecBox.className = 'ec'; pel.mount(ecBox)
+    const cbr = document.querySelector('[data-cbr]'); pel.on('change', ev => { cbr.classList.toggle('off', !ev.empty); const cp = document.querySelector('.cpanel'); if (cp && ev.value && ev.value.type) cp.classList.toggle('nocard', ev.value.type !== 'card') }); ecBox.className = 'ec'; pel.mount(ecBox)
     actions = res.actions; right.classList.add('live')
   } catch (e) { console.warn('[checkout]', e); ecBox.className = 'ec'; right.classList.remove('live'); actions = null }
   busy = false; if (again) { again = false; mount() }
