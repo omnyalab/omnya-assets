@@ -32,17 +32,23 @@ const PAGE = 'omnyalab.com/the-3d-future';
 // Same facts as the approved brief, written as one person talking, no bullet lists.
 const TEXTS = {
   r2: {
-    subject: "Your seat isn't saved yet",
+    // 26/11 second round (Nico: «la mail gentile e figa alla hormozi»): one small step stands between them and the gift, the
+    // value is the site's own (three playbooks €215 one by one, learn.ts), the risk is ours, one link
+    subject: "Don't miss your founders' gift",
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name},
 
-Quick one, so you don't miss the gift: being on the list, or opening the reservation, doesn't save your seat yet. Only your card does.
+You told us you want in, so I don't want you to miss the best part over one small step: being on the list doesn't save your seat. Your card does.
 
-You add your card, nothing is charged today, and on Saturday at 9:00 (Rome) your €9 month starts by itself, locked for as long as you stay. It's also the only way to get the founders' gift, our three playbooks and the full 3D AI Mastery course, yours to keep. It goes only to the first 100 who reserve, and fewer of them are left every day.
+It takes a minute. You add your card, nothing is charged today, and on Saturday at 9:00 (Rome) your first month starts at €9, locked for as long as you stay.
+
+That minute is also what makes you a founder. The first 100 who reserve get the founders' gift: our three playbooks (€215 if you buy them one by one on our site) and the full 3D AI Mastery course, unlocked inside your own club page and yours to keep. Every day there are fewer of them left, and once the 100 are gone they don't come back.
 
 {img}
 
-If the payment page didn't take it last time, try again with your card, Apple Pay or Google Pay. It takes a minute, and if you change your mind before Saturday you cancel and pay nothing:
+And you risk nothing: if you change your mind before Saturday, you cancel in one tap and pay nothing. If the payment page didn't take your card last time, try again with your card, Apple Pay or Google Pay.
+
+Save your seat here:
 {link}
 
 Nico`,

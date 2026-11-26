@@ -183,8 +183,10 @@ export async function insideData(email) {
   const at = Date.parse(m.at || '') || 0;
   const base = { name: m.name, email: m.email, portal: PORTAL_URL, since: new Date(m.reserved ? Math.max(EARLY, at) : at || Date.now()).toISOString() };
   if (m.status === 'canceled') return { ...base, state: 'ended' };
-  if (m.reserved && !m.welcomed) return { ...base, state: 'waiting', opens: new Date(EARLY).toISOString(), lessons: LESSONS };   // 25/11: the course shows, locked
-  return openData(base, m.reserved && Number(m.rank) > 0 && Number(m.rank) <= CHEAP_SEATS);
+  const founder = m.reserved && Number(m.rank) > 0 && Number(m.rank) <= CHEAP_SEATS ? Number(m.rank) : 0;
+  // 25/11: the course shows, locked; 26/11: a founder sees the gift waiting for them (no files until the card is charged)
+  if (m.reserved && !m.welcomed) return { ...base, state: 'waiting', opens: new Date(EARLY).toISOString(), lessons: LESSONS, founder, giftNames: founder ? FOUNDERS_GIFTS.map((g) => g.name) : [] };
+  return { ...openData(base, !!founder), founder };
 }
 function openData(base, gift) {
   return {
@@ -390,18 +392,20 @@ const WITHDRAW = 'omnyalab.com/withdraw';
 /** W1, the welcome email: the text approved by Nico on 20/11, word for word, with the withdrawal line added. While the
     customer portal link (CLUB_PORTAL_URL) is not there, the cancel line says to reply (the reply goes to info@). */
 export const CANCEL_REPLY = 'Reply to this email to cancel.';
-export function welcomeText({ name, inside, skill, portal, gifts }) {
+export function welcomeText({ name, inside, skill, portal, founder }) {
   const cancel = portal ? `If you ever want to cancel, it's one tap here: ${portal}` : CANCEL_REPLY;
-  // 23/11: the first 100 of the founders' round also get the founders' gift, theirs to keep
-  const gift = gifts?.length ? `\n\nYou're one of the first 100, so the founders' gift is yours to keep too:\n${gifts.map((g) => `${g.name}: ${g.href}`).join('\n')}` : '';
+  // 23/11: the first 100 of the founders' round also get the founders' gift, theirs to keep. 26/11 (Nico: «i regali si
+  // sbloccano solo da dentro la pagina quando uno è founder»): no gift links in the email any more (a link in an email can
+  // be forwarded to anyone), only the line that says where they are: the members' page shows them to the founder alone
+  const gift = founder ? `\n\nYou're founder number ${founder}, so your founders' gift is unlocked inside your club page, only for you: our three playbooks and the full 3D AI Mastery course, yours to keep.` : '';
   // 25/11 (Nico: «tutto nel sito»): the club is our own page, the link below is the member's own (no Skool)
   return `You're in, ${name}.\n\nThis is your link to the club, it's yours so keep it: your courses, the Vault with every build and its files, and the Full guides are all there:\n${inside}\n\nYour House Builder skill is yours to keep, here:\n${skill}${gift}\n\nStart with the first video course, your own tower step by step, and when it's done send it to me from the club page: I look at every first build myself.\n\n${cancel}\n\nTo withdraw within 14 days: ${WITHDRAW}\n\nNico`;
 }
 /** R1 (25/11), the reservation email: the card is saved, nothing is charged until the doors open on Saturday 28/11 at
-    9:00 Rome; the first 100 who reserve get the founders' gift, sent with the welcome email W1 once the card is charged. */
+    9:00 Rome; the first 100 who reserve get the founders' gift, unlocked inside their club page once the card is charged. */
 export function reservedText({ name, rank, portal }) {
   const gift = rank && rank <= CHEAP_SEATS
-    ? `You're number ${rank} of the first 100 who reserved, so the founders' gift is yours: our three playbooks and the full 3D AI Mastery course, yours to keep. It arrives on Saturday with your welcome email, together with your link to the club and your House Builder skill.`
+    ? `You're number ${rank} of the first 100 who reserved, so the founders' gift is yours: our three playbooks and the full 3D AI Mastery course, yours to keep. It unlocks on Saturday inside your club page, only for you, and your welcome email brings you the link to it, together with your House Builder skill.`
     : `The 100 founders' gifts were all taken before you reserved, but your €9 price is yours, locked for as long as you stay. On Saturday your welcome email brings your link to the club and your House Builder skill.`;
   const cancel = portal ? `If you change your mind before Saturday, cancel here and you pay nothing: ${portal}` : `If you change your mind before Saturday, reply to this email and you pay nothing.`;
   return `Your seat is reserved, ${name}.\n\nNothing was charged today. On Saturday 28 November at 9:00 (Rome) the doors of THE 3D FUTURE open, your first month starts and your card is charged €9, the founders' price that stays locked for as long as you stay.\n\n${gift}\n\n${cancel}\n\nTo withdraw within 14 days: ${WITHDRAW}\n\nNico`;
@@ -411,7 +415,7 @@ const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').
 /** The same words as a plain note (no design, links written out), like the free blueprint email. */
 export function welcomeHtml(v) {
   const link = (u) => `<a href="${esc(u)}">${esc(u)}</a>`;
-  const p = welcomeText({ name: esc(v.name), inside: link(v.inside), skill: link(v.skill), portal: v.portal ? link(v.portal) : '', gifts: (v.gifts || []).map((g) => ({ name: esc(g.name), href: link(g.href) })) })
+  const p = welcomeText({ name: esc(v.name), inside: link(v.inside), skill: link(v.skill), portal: v.portal ? link(v.portal) : '', founder: Number(v.founder) || 0 })
     .replace(WITHDRAW, `<a href="https://www.${WITHDRAW}">${WITHDRAW}</a>`)
     .split('\n\n').map((x) => `<p>${x.replace(/\n/g, '<br>')}</p>`).join('\n');
   return `<!doctype html><html><body><div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;color:#222">\n${p}\n</div></body></html>`;
@@ -457,7 +461,7 @@ export async function clubJoined(stripe, session) {
   if (!memberToken(email)) throw new Error('club: no key to sign the member link');
   if (!(await first('w1', session.id))) return member;
   // 25/11: who joins after the opening (no reservation) gets no founders' gift: the gift is only for the first 100 reservations
-  const v = { name, inside: insideUrl(email), portal, gifts: [], skill: `https://www.omnyalab.com${signedHref(HOUSE_SKILL_FILE, SKILL_TTL)}` };
+  const v = { name, inside: insideUrl(email), portal, founder: 0, skill: `https://www.omnyalab.com${signedHref(HOUSE_SKILL_FILE, SKILL_TTL)}` };
   try {
     await sendMail({ to: `${name} <${email}>`, bcc: host.email, replyTo: host.email, subject: "you're in", text: welcomeText(v), html: welcomeHtml(v) });
   } catch (e) {
@@ -468,7 +472,7 @@ export async function clubJoined(stripe, session) {
 }
 
 /** 25/11, charge.succeeded: the Saturday charge of a reservation (€9 or €90, a customer we wrote at the reservation): the
-    welcome email W1 with Skool, the skill and, for the first 100 reservations, the founders' gift. Throws to make Stripe
+    welcome email W1 with the club link and the skill (26/11: the founders' gift opens inside the club page, not in the email). Throws to make Stripe
     retry (missing Skool link, mail down); safe to repeat. */
 export async function clubCharged(stripe, charge) {
   if (!charge || charge.status !== 'succeeded' || charge.currency !== 'eur' || ![900, 9000].includes(charge.amount)) return null;
@@ -481,12 +485,12 @@ export async function clubCharged(stripe, charge) {
   if (!memberToken(email)) throw new Error('club: no key to sign the member link');
   if (!(await first('w1', `r:${m.session}`))) return m;
   const rank = Number(m.rank) || Number(await kv('HGET', K.rank, m.session)) || 0;
-  const gifts = rank && rank <= CHEAP_SEATS ? FOUNDERS_GIFTS.map((g) => ({ name: g.name, href: `https://www.omnyalab.com${signedHref(g.file, SKILL_TTL)}` })) : [];
-  const v = { name: m.name, inside: insideUrl(email), portal, gifts, skill: `https://www.omnyalab.com${signedHref(HOUSE_SKILL_FILE, SKILL_TTL)}` };
+  const founder = rank && rank <= CHEAP_SEATS ? rank : 0; // 26/11: the gift is in the club page (insideData), the email only says so
+  const v = { name: m.name, inside: insideUrl(email), portal, founder, skill: `https://www.omnyalab.com${signedHref(HOUSE_SKILL_FILE, SKILL_TTL)}` };
   try {
     await sendMail({ to: `${m.name} <${email}>`, bcc: host.email, replyTo: host.email, subject: "you're in", text: welcomeText(v), html: welcomeHtml(v) });
   } catch (e) { await kv('DEL', K.once('w1', `r:${m.session}`)).catch(() => {}); throw e; }
-  await kv('HSET', K.members, email, JSON.stringify({ ...m, welcomed: new Date().toISOString(), ...(gifts.length ? { gift: rank } : {}) })).catch(() => {});
+  await kv('HSET', K.members, email, JSON.stringify({ ...m, welcomed: new Date().toISOString(), ...(founder ? { gift: rank } : {}) })).catch(() => {});
   return m;
 }
 

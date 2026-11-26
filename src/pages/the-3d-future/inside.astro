@@ -136,6 +136,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .A .fl b { flex: none; font: 700 11px/1 var(--f-sf); letter-spacing: .1em; padding: 6px 8px; border-radius: 8px; background: rgba(140,196,255,.2); color: #d6e9ff }
   .A .fl span { flex: 1; min-width: 0 }
   .A .fl .ic { width: 18px; height: 18px; color: #8cc4ff }
+  .A .fl.lockd, .A .fl.lockd:hover { cursor: default; opacity: .78; border-color: var(--edge); background: var(--glass-2) } .A .fl.lockd b svg { width: 14px; height: 14px }
   .A .w.fgw { border-color: rgba(140,200,255,.65); box-shadow: 0 0 28px 2px rgba(59,155,255,.4), 0 0 70px 10px rgba(59,155,255,.14) }
   /* the build form in the challenge widget */
   .A .bform { display: grid; gap: 12px; margin-top: 8px }
@@ -309,7 +310,10 @@ const P = {
 
   function render(d) {
     const first = String(d.name || '').trim().split(/\s+/)[0] || 'friend', init = (first[0] || '·').toUpperCase()
-    const founder = !!(d.gifts && d.gifts.length), before = Date.now() < OPENS, open = d.state === 'open'
+    // 26/11 (Nico: «i regali si sbloccano solo da dentro la pagina quando uno è founder»): a founder (one of the first 100
+    // reservations) sees the gift as theirs already; the files come only when the page is open (card charged), as 1-day links
+    const nGift = (d.gifts && d.gifts.length) || (d.giftNames && d.giftNames.length) || 0
+    const founder = nGift > 0, before = Date.now() < OPENS, open = d.state === 'open'
     const earned = BADGES.map(([k]) => k === 'founder' && founder), nOn = earned.filter(Boolean).length
     const now = new Date(), hr = +new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Europe/Rome' }).format(now)
     const greet = hr < 5 ? 'Good evening' : hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening'
@@ -346,7 +350,7 @@ const P = {
         <div class="glass w span lvl lvl2"><span class="k">${ic('spark')}Your badges<span class="r">${nOn} of ${BADGES.length}</span></span><div class="lvlrow">${ring(nOn / BADGES.length, 104, 12, 'url(#rg)', 'rgba(255,255,255,.14)', `<b class="rn">${nOn}<small>/${BADGES.length}</small></b>`)}<div class="medals">${BADGES.map((b, i) => medal(b, earned[i])).join('')}</div></div></div>
         ${incoming('/club/v-stadium-760.webp', 'Incoming', 'New in the Vault', '4', 'Dec', 'A new build every Friday', 'vault')}
         ${incoming('/club/v-house-760.webp', 'Every week', 'My comments on your builds', 'Mon', '', 'Send me your build', 'chal')}
-        ${founder ? incoming('/club/v-towers-760.webp', 'Yours', "Your founders' gift", String(d.gifts.length), 'files', 'Yours to keep', 'gift') : incoming('/club/v-plane-760.webp', 'Yours', 'Your skills', '2', 'skills', 'Yours to keep', 'vault')}
+        ${founder ? incoming('/club/v-towers-760.webp', open ? 'Yours' : 'Founder ' + (d.founder ? '#' + d.founder : ''), "Your founders' gift", String(nGift), 'files', open ? 'Yours to keep' : 'Unlocks Saturday, 9:00', 'gift') : incoming('/club/v-plane-760.webp', 'Yours', 'Your skills', '2', 'skills', 'Yours to keep', 'vault')}
         ${incoming('/club/v-miami-760.webp', 'Open', 'Every Full guide', String(d.guides ? d.guides.length : ''), 'guides', 'In the Vault', 'vault')}
       </div>
     </div>`
@@ -365,7 +369,7 @@ const P = {
         ${founder ? `<div class="glass w span full wf fgw" id="gift"><span class="k">${ic('spark')}Your founders' gift<span class="r">yours to keep</span></span><p class="lede2">You reserved your seat among the first 100, so these are yours to keep.</p><div class="files">${d.gifts.map(fl).join('')}</div></div>` : ''}
         <div class="glass w span full wf"><span class="k">${ic('doc')}Every Full guide<span class="r">${(d.guides || []).length} guides</span></span><div class="files">${(d.guides || []).map(fl).join('')}</div></div>
         <div class="glass w span full wf"><span class="k">${ic('code')}Your skills<span class="r">yours to keep</span></span><div class="files">${d.skill ? fl(d.skill) : ''}${d.house ? fl(d.house) : ''}</div></div>
-      </div>` : `<div class="mgrid"><div class="glass w span full"><span class="k">${ic('lock')}Opens Saturday 28 November</span><p class="lede2">Your seat is reserved. The Vault, every Full guide and your skills open here on Saturday 28 November at 9:00 (Rome), when your first month starts.</p></div></div>`}
+      </div>` : `<div class="mgrid">${founder ? `<div class="glass w span full wf fgw" id="gift"><span class="k">${ic('lock')}Your founders' gift<span class="r">${d.founder ? 'founder #' + esc(d.founder) : 'yours to keep'}</span></span><p class="lede2">You're one of the first 100 who reserved, so these are yours, only yours. They unlock here on Saturday 28 November at 9:00 (Rome), when your first month starts.</p><div class="files">${(d.giftNames || []).map(n => `<span class="fl lockd"><b>${ic('lock')}</b><span>${esc(n)}</span></span>`).join('')}</div></div>` : ''}<div class="glass w span full"><span class="k">${ic('lock')}Opens Saturday 28 November</span><p class="lede2">Your seat is reserved. The Vault, every Full guide and your skills open here on Saturday 28 November at 9:00 (Rome), when your first month starts.</p></div></div>`}
     </div>`
     function sendW() { return `<div class="glass w span full" id="send-w"><span class="k">${ic('trophy')}Send me your build<span class="r">I answer every Monday</span></span>
         <p class="lede2">When your tower is online, paste its link here. I look at every first build myself and I answer you by email every Monday.</p>

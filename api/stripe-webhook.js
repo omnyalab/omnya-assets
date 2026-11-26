@@ -89,7 +89,7 @@ export async function POST(request) {
   }
   if (event.type === 'charge.updated' || event.type === 'charge.succeeded') {
     await noteReceipt(event.data.object).catch((e) => console.error('[stripe-webhook] receipt', e.message));
-    // 25/11: the Saturday charge of a reserved seat sends the welcome email W1 (and the founders' gift to the first 100).
+    // 25/11: the Saturday charge of a reserved seat sends the welcome email W1 (the founders' gift of the first 100 opens inside their club page).
     // Both events: charge.succeeded is the right one, charge.updated (already on the webhook) is the fallback; W1 leaves once
     {
       try { await clubCharged(stripe, event.data.object); } catch (e) { console.error('[stripe-webhook] club charged', e.message); return new Response('club failed', { status: 502 }); }
