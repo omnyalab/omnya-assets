@@ -98,5 +98,40 @@ try {
   eq(upgradeFor(['The Full Tower Blueprint'], one, Date.parse('2026-11-28T00:00:00+01:00')), false, 'no upgrade line from Sat 28/11 00:00');
 } catch (e) { fail++; console.log('FAIL could not load the webhook:', e.message); }
 
+// 26/11 (Nico: F1 C1 H3 G2): the builds feed on the memory store (no Redis, no email leaves)
+{ const { kv } = await import('../api/_lib/store.js');
+  const { KEYS, insideData, PREVIEW_EMAIL } = await import('../api/_lib/club.js');
+  const F = await import('../api/_lib/club-feed.js');
+  const mem = (email, o) => kv('HSET', KEYS.members, email, JSON.stringify({ email, name: 'Test', status: 'active', round: '1', at: '2026-11-25T10:00:00.000Z', ...o }));
+  await mem('a@test.club', { name: 'Ana', reserved: true, rank: 3, welcomed: '2026-11-28T08:00:00Z' });
+  await mem('b@test.club', { name: 'Ben' });
+  await mem('w@test.club', { name: 'Wait', reserved: true, rank: 5 });
+  await mem('c@test.club', { name: 'Gone', status: 'canceled' });
+  const A = await F.feedMember('a@test.club'), B = await F.feedMember('b@test.club'), Wt = await F.feedMember('w@test.club'), N = await F.feedMember(PREVIEW_EMAIL);
+  eq([A.name, A.founder, A.open, B.open, Wt.open, N.nico], ['Ana', 3, true, true, false, true], 'feed: who can post (a reservation only after its first month)');
+  eq([await F.feedMember('c@test.club'), await F.feedMember('nobody@test.club')], [null, null], 'feed: no feed for who left or is not a member');
+  eq((await F.feed(B)).posts.length, 0, 'feed: empty at the start, nothing invented');
+  const img = 'data:image/jpeg;base64,' + Buffer.from('fakejpeg').toString('base64');
+  const p1 = await F.addPost(A, { link: 'https://ana-tower.netlify.app', caption: 'My tower', img, w: 10, h: 12 });
+  eq([p1.name, p1.mine, p1.likes, p1.img.startsWith('/api/club/img?id='), 'email' in p1], ['Ana', true, 0, true, false], 'feed: a post, its photo, no email shown');
+  const fb = await F.feed(B); eq([fb.posts.length, fb.posts[0].mine, fb.posts[0].founder], [1, false, 3], 'feed: everyone sees it');
+  eq((await F.like(B, p1.id, true)).likes, 1, 'like'); eq((await F.like(B, p1.id, true)).likes, 1, 'like twice counts once'); eq((await F.like(B, p1.id, false)).likes, 0, 'unlike');
+  await F.like(B, p1.id, true); eq((await F.feed(B)).posts[0].liked, true, 'feed: my like shows');
+  const c = await F.addComment(B, p1.id, 'Great'); eq([c.comments, c.comment.name, c.comment.mine], [1, 'Ben', true], 'comment');
+  eq((await F.comments(A, p1.id)).map((x) => [x.name, x.text, x.mine]), [['Ben', 'Great', false]], 'comments read back');
+  eq((await F.share(B, p1.id)).shares, 1, 'share');
+  eq((await F.photo(p1.id))[0], 'image/jpeg', 'the photo comes back as an image');
+  eq([F.hideOk(p1.id, F.hideSig(p1.id)), F.hideOk(p1.id, 'x' + F.hideSig(p1.id).slice(1)), F.hideOk('bad id', F.hideSig('bad id'))], [true, false, false], 'hide link: signed, a changed one is refused');
+  await F.setHidden(p1.id, true);
+  eq([(await F.feed(B)).posts.length, (await F.feed(N)).posts[0].hidden, await F.like(B, p1.id, true)], [0, true, null], 'hidden: gone for members, Nico still sees it marked');
+  await F.setHidden(p1.id, false); eq((await F.feed(B)).posts.length, 1, 'shown again');
+  let bad = ''; try { await F.addPost(A, { link: 'https://x.co', img: 'data:text/html;base64,PGI+' }); } catch (e) { bad = e.code; } eq(bad, 'bad_image', 'only a photo is taken as the photo');
+  const ia = await insideData('a@test.club'), ib = await insideData('b@test.club');
+  eq([ia.posted, ib.posted, ia.remind], [true, false, true], 'the First build badge after a post; Friday email on by default');
+  await F.setRemind(B, false); eq((await insideData('b@test.club')).remind, false, 'Friday email turned off');
+  eq([ia.gifts.map((g) => g.cover), (await insideData('w@test.club')).giftList.map((g) => g.cover)].map((x) => x[0]), ['/learn/pk_pb01.webp', '/learn/pk_pb01.webp'], 'gift covers, open and waiting');
+  const nt = await F.notifyCourse({ subject: 's', text: 'Hi {name} {link}' }, async () => {});
+  eq([nt.members, nt.sent], [1, 1], 'Friday email: members who are in, minus who turned it off'); }
+
 console.log(fail ? `\n${fail} of ${n} checks FAILED` : `\nall ${n} checks passed`);
 process.exit(fail ? 1 : 0);

@@ -99,6 +99,8 @@ const K = {
   reserved: 'omnya:club:reserved:n', // INCR: the order of the reservations (the first 100 get the founders' gift)
   rank: 'omnya:club:rank', // hash: checkout session → its place among the reservations
   builds: 'omnya:club:builds', // list: the builds the members sent from the inside page (Nico answers by email) // a guide payment whose receipt number was not there yet → email
+  posters: 'omnya:club:feed:posters', // set: who posted at least one build in the feed (the «First build» badge)
+  notifyOff: 'omnya:club:notify:off', // set: who turned off the email of Friday's new course
   once: (what, id) => `omnya:club:once:${what}:${id}`,
 };
 export { K as KEYS };
@@ -168,6 +170,9 @@ export const LESSONS = [
   { n: 11, t: 'The reel and the sale', p: 'The reel that gets the views, the caption that gets the comments, and how to sell your tower to a developer.', k: "the sale", s: "The reel that gets the views, and how to sell your tower.", img: '/club/course/step-11.webp', src: '' },
 ];
 const fileLink = (f, ttl) => ({ name: f.name, href: `${SITE_URL}${signedHref(f.file, ttl)}`, zip: f.kind === 'zip', note: f.note || '' });
+/** 26/11 (Nico, G2): the cover of each founders' gift, the real covers of the files, on the page «Your gifts» */
+const GIFT_COVERS = { 'en/playbook-01-from-a-3d-to-a-photo-clients-pay-for.pdf': '/learn/pk_pb01.webp', 'en/playbook-02-how-to-go-viral-in-days-not-years.pdf': '/learn/pk_pb02.webp', 'en/playbook-03-the-launch-kit-that-sells-a-tower.pdf': '/learn/pk_pb03.webp', 'en/3d-ai-mastery.pdf': '/learn/3d_cover_full.webp' };
+export const giftCover = (file) => GIFT_COVERS[file] || '';
 /** 25/11 (Nico): his own look at the members' page before anyone is inside. A signed link like a member's, for this
     address only, made by GET /api/club/preview with the admin key; it shows the page open, with the founders' gift. */
 export const PREVIEW_EMAIL = 'preview@omnyalab.com';
@@ -178,15 +183,15 @@ export const PREVIEW_EMAIL = 'preview@omnyalab.com';
  */
 export async function insideData(email) {
   // since: the day the membership starts (a reservation starts with the doors, Sat 28/11 9:00 Rome), for the profile card
-  if (cleanEmail(email) === PREVIEW_EMAIL) return openData({ name: 'Nico', email: PREVIEW_EMAIL, portal: PORTAL_URL, since: new Date(EARLY).toISOString() }, true);
+  if (cleanEmail(email) === PREVIEW_EMAIL) return openData({ name: 'Nico', email: PREVIEW_EMAIL, portal: PORTAL_URL, since: new Date(EARLY).toISOString(), ...(await feedFlags(PREVIEW_EMAIL)) }, true);
   let m = null; try { m = JSON.parse((await kv('HGET', K.members, cleanEmail(email))) || 'null'); } catch {}
   if (!m) return { state: 'none' };
   const at = Date.parse(m.at || '') || 0;
-  const base = { name: m.name, email: m.email, portal: PORTAL_URL, since: new Date(m.reserved ? Math.max(EARLY, at) : at || Date.now()).toISOString() };
+  const base = { name: m.name, email: m.email, portal: PORTAL_URL, since: new Date(m.reserved ? Math.max(EARLY, at) : at || Date.now()).toISOString(), ...(await feedFlags(cleanEmail(email))) };
   if (m.status === 'canceled') return { ...base, state: 'ended' };
   const founder = m.reserved && Number(m.rank) > 0 && Number(m.rank) <= CHEAP_SEATS ? Number(m.rank) : 0;
   // 25/11: the course shows, locked; 26/11: a founder sees the gift waiting for them (no files until the card is charged)
-  if (m.reserved && !m.welcomed) return { ...base, state: 'waiting', opens: new Date(EARLY).toISOString(), lessons: LESSONS, founder, giftNames: founder ? FOUNDERS_GIFTS.map((g) => g.name) : [] };
+  if (m.reserved && !m.welcomed) return { ...base, state: 'waiting', opens: new Date(EARLY).toISOString(), lessons: LESSONS, founder, giftNames: founder ? FOUNDERS_GIFTS.map((g) => g.name) : [], giftList: founder ? FOUNDERS_GIFTS.map((g) => ({ name: g.name, cover: giftCover(g.file) })) : [] };
   return { ...openData(base, !!founder), founder };
 }
 function openData(base, gift) {
@@ -197,8 +202,14 @@ function openData(base, gift) {
     house: fileLink({ name: 'The House Builder skill', file: HOUSE_SKILL_FILE, kind: 'zip' }, DAY),
     vault: CLUB_VAULT.map((b) => ({ t: b.t, type: b.type, img: b.img, files: b.files.map((f) => fileLink(f, DAY)) })),
     guides: CLUB_GUIDES.map((f) => fileLink(f, DAY)),
-    gifts: gift ? FOUNDERS_GIFTS.map((g) => fileLink(g, DAY)) : [],
+    gifts: gift ? FOUNDERS_GIFTS.map((g) => ({ ...fileLink(g, DAY), cover: giftCover(g.file) })) : [],
   };
+}
+/** 26/11: posted = the «First build» badge (one post in the feed), remind = Friday's course email is on (on unless turned off). Two
+    commands; if the store does not answer the page still opens. */
+async function feedFlags(email) {
+  try { return { posted: Number(await kv('SISMEMBER', K.posters, email)) === 1, remind: Number(await kv('SISMEMBER', K.notifyOff, email)) !== 1 }; }
+  catch { return {}; }
 }
 /** «Send me your build» from the inside page: Nico gets it by email and in a Redis list (GET /api/club/admin). */
 export async function noteBuild(email, link, note) {

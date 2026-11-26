@@ -17,7 +17,7 @@ import '../../components/club/board-a.css';
 import { badgeB2 } from '../../components/club/badges';
 const BADGES: [string, string, string][] = [
   ['founder', 'Founder', 'One of the first 100 who reserved'],
-  ['first', 'First build', 'Send Nico your first build'],
+  ['first', 'First build', 'Post your first build'],
   ['tower', 'Tower', 'Finish the SAMAR course'],
   ['stadium', 'Stadium', 'Build the stadium of the Vault'],
   ['house', 'House', 'Build the house of the Vault'],
@@ -34,6 +34,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#0b1534">
 <link rel="icon" href="/favicon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -48,6 +49,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
 </div>
 <div class="sheetwrap" data-sheet hidden><div class="scrim" data-sheetx></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="t3m-sh"><div class="grab" aria-hidden="true"></div><button type="button" class="sx ctr" data-sheetx aria-label="Close"></button><div class="sbody" data-sheetbody></div></div></div>
 <div class="toast" role="status" aria-live="polite" data-toast></div>
+<div class="mwrap" data-mwrap hidden><div class="mscrim m1s" data-mclose></div><nav class="mmenu m1" data-mpanel aria-label="Menu"></nav></div>
 <footer class="mfooter">
   <nav aria-label="Club links"><a href="/the-3d-future/terms">Club terms</a><a class="w" href="/withdraw">Withdraw from contract here</a><a href="/privacy-policy">Privacy</a><a href="mailto:info@omnyalab.com">info@omnyalab.com</a></nav>
   <span>Omnya Lab · Venice, Italy · VAT IT05578770264</span>
@@ -113,7 +115,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .A .mav { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font: 700 17px/1 var(--f-sfd); color: #fff; background: linear-gradient(140deg, #8cc4ff, #2a74ff 55%, #1d4fd8); box-shadow: 0 0 0 2px rgba(255,255,255,.22), 0 8px 20px rgba(42,116,255,.45); flex: none }
   .A .top .lockup img { width: 32px; height: 32px; display: block; filter: drop-shadow(0 4px 12px rgba(40,110,255,.4)) }
   .A [data-v] { display: none }
-  .A[data-screen="home"] [data-v="home"], .A[data-screen="course"] [data-v="course"], .A[data-screen="vault"] [data-v="vault"], .A[data-screen="chal"] [data-v="chal"], .A[data-screen="me"] [data-v="me"] { display: block }
+  .A[data-screen="home"] [data-v="home"], .A[data-screen="course"] [data-v="course"], .A[data-screen="vault"] [data-v="vault"], .A[data-screen="feed"] [data-v="feed"], .A[data-screen="gifts"] [data-v="gifts"], .A[data-screen="me"] [data-v="me"] { display: block }
   /* Nico's welcome inside the board's video widget (.yt) */
   .A .yt video { display: block; width: 100%; height: 100%; object-fit: cover; cursor: pointer }
   .A .w .btn { justify-self: start; min-height: 44px; font-size: 15px; padding: 0 18px }
@@ -232,6 +234,163 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap }
   .A .obj { text-decoration: none; color: var(--fg) }
 </style>
+<style is:global>
+  /* ===== 26/11 (Nico): the builds feed, the founders' gift, the menu. Inside board A, same glass, same fonts ===== */
+  /* the round photo of a member: the initial on the club blue */
+  .A .uav, .sheet .uav, .mmenu .uav { width: 36px; height: 36px; flex: none; border-radius: 50%; display: grid; place-items: center; font: 700 15px/1 var(--f-sfd); color: #fff; background: linear-gradient(140deg, #8cc4ff, #2a74ff 55%, #1d4fd8); box-shadow: 0 0 0 2px rgba(255,255,255,.18) }
+  .uav.f1c { background: linear-gradient(140deg, #ffd6a6, #ff8a3c 60%, #d9480f) } .uav.f2c { background: linear-gradient(140deg, #c9f2d8, #34c77b 60%, #138a4f) } .uav.f3c { background: linear-gradient(140deg, #e6d4ff, #9b6bff 60%, #6236d9) } .uav.f4c { background: linear-gradient(140deg, #ffd1dc, #ff5c8a 60%, #d42a5c) }
+  /* a post */
+  .A .fp { position: relative; display: grid; gap: 0; border-radius: 28px; overflow: hidden; color: var(--fg) }
+  .A .fph { display: flex; align-items: center; gap: 10px; padding: 14px 16px }
+  .A .fpn { display: grid; gap: 2px; min-width: 0; flex: 1 } .A .fpn b { font: 600 15px/18px var(--f-sf) } .A .fpn small { font: 400 13px/16px var(--f-sf); color: var(--mute) }
+  .A .fpo { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.2); color: #fff; text-decoration: none; font: 600 13px/1 var(--f-sf); white-space: nowrap }
+  .A .fpo .ic { width: 15px; height: 15px }
+  .A .fpimg { position: relative; display: block; background: #0a1020 }
+  .A .fpimg img { display: block; width: 100%; aspect-ratio: 4/5; object-fit: cover }
+  .A .fpa { display: flex; align-items: center; gap: 4px; padding: 8px 8px 0 }
+  .A .fpa button { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 10px; border: 0; border-radius: 999px; background: transparent; color: var(--fg); font: 600 15px/1 var(--f-sf); cursor: pointer }
+  .A .fpa button:hover { background: rgba(255,255,255,.08) }
+  .A .fpa .ic { width: 24px; height: 24px }
+  .A .fpa [data-like][aria-pressed="true"] { color: #ff4d6d } .A .fpa [data-like][aria-pressed="true"] .ic { fill: #ff4d6d }
+  .A .fpa [data-like].pop .ic { animation: hpop .45s cubic-bezier(.2,1.6,.4,1) }
+  @keyframes hpop { 0% { transform: scale(1) } 40% { transform: scale(1.35) } 100% { transform: scale(1) } }
+  .A .fpa .sp { flex: 1 }
+  .A .fpc { margin: 0; padding: 6px 18px 0; font: 400 15px/21px var(--f-sf); overflow-wrap: anywhere } .A .fpc b { font-weight: 600; margin-right: 6px }
+  .A .fpm { justify-self: start; margin: 4px 8px 16px; min-height: 36px; padding: 0 10px; border: 0; background: transparent; color: var(--mute); font: 500 14px/1 var(--f-sf); cursor: pointer }
+  .A .fdot { width: 3px; height: 3px; border-radius: 50%; background: currentColor; display: inline-block; vertical-align: middle; margin: 0 6px; opacity: .6 }
+  .A .fnico { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; padding: 2px 7px; border-radius: 999px; background: rgba(140,196,255,.22); color: #d6e9ff; font: 700 11px/1.3 var(--f-sf) }
+  .A .fhide { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; background: rgba(255,255,255,.08); color: #fff; font: 600 13px/1 var(--f-sf); cursor: pointer }
+  .A .fhide .ic { width: 15px; height: 15px }
+  .A .fp.hid { opacity: .55 }
+  /* the composer bar */
+  .A .fcomp { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 28px; cursor: pointer; text-align: left; width: 100%; border: 1px solid var(--edge); color: var(--fg); font: inherit }
+  .A .fcomp .fake { flex: 1; min-height: 44px; display: flex; align-items: center; padding: 0 16px; border-radius: 999px; background: rgba(255,255,255,.1); color: var(--mute); font: 400 16px/1 var(--f-sf) }
+  .A .fcomp .btn { min-height: 44px; padding: 0 18px; font-size: 15px }
+  .A .fcomp[disabled] { cursor: default; opacity: .8 }
+  .A .fhow .k { display: flex; align-items: center; gap: 8px; font: 600 13px/16px var(--f-sf); color: var(--mute) } .A .fhow .k .ic { width: 16px; height: 16px }
+  .A .fhow { padding: 20px; display: grid; gap: 10px } .A .fhow p { margin: 0; font: 400 15px/21px var(--f-sf); color: var(--fg); opacity: .86 }
+  .A .fhow ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px } .A .fhow li { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; font: 400 15px/21px var(--f-sf) }
+  .A .fhow li i { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: rgba(140,196,255,.2); color: #d6e9ff; font: 700 13px/1 var(--f-sf); font-style: normal }
+  /* F1 (Nico): one column like Instagram, the composer and how it works on the side */
+  .A .fw1 { display: grid; gap: 16px; padding: 24px 16px 128px; max-width: 640px; margin: 0 auto }
+  .A .fw1 .fside { display: grid; gap: 16px; align-content: start }
+  .A .fw1 .fside .fhow { display: none }
+  .A .fw1 .fcol { display: grid; gap: 20px }
+  @container app (min-width: 900px) {
+    .A .fw1 { grid-template-columns: minmax(0, 600px) 340px; gap: 32px; max-width: 1040px; padding: 32px 32px 64px; align-items: start }
+    .A .fw1 .fside { order: 2; position: sticky; top: 96px } .A .fw1 .fside .fhow { display: grid } .A .fw1 .fcol { order: 1 }
+  }
+  /* empty feed: real, never invented posts */
+  .A .fempty { display: grid; justify-items: center; text-align: center; gap: 14px; padding: 48px 24px 40px }
+  .A .fempty .fe3d { width: 120px; height: 120px; display: grid; place-items: center; border-radius: 36px; background: radial-gradient(70% 70% at 35% 25%, rgba(255,255,255,.28), rgba(255,255,255,.06) 60%); border: 1px solid rgba(255,255,255,.24); box-shadow: 0 20px 60px -10px rgba(42,116,255,.55) }
+  .A .fempty .fe3d img { width: 84px; height: 84px }
+  .A .fempty h2 { font: 700 34px/38px var(--f-sfd); letter-spacing: -.03em } .A .fempty p { margin: 0; max-width: 44ch; font: 400 17px/24px var(--f-sf); opacity: .86 }
+
+  /* the sheets of the feed */
+  .sheet .fp2 { display: grid; gap: 12px }
+  .sheet .fpa { display: flex; align-items: center; gap: 4px; margin: 0 -8px }
+  .sheet .fpa button { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 10px; border: 0; border-radius: 999px; background: transparent; color: #fff; font: 600 15px/1 var(--f-sf); cursor: pointer }
+  .sheet .fpa .ic { width: 24px; height: 24px } .sheet .fpa .sp { flex: 1 }
+  .sheet .fpa [data-like][aria-pressed="true"] { color: #ff4d6d } .sheet .fpa [data-like][aria-pressed="true"] .ic { fill: #ff4d6d }
+  .sheet .uav { width: 36px; height: 36px }
+  .sheet .crow { display: grid; grid-template-columns: 36px 1fr; gap: 10px; align-items: start; padding: 8px 0 }
+  .sheet .crow p { margin: 0; font: 400 15px/21px var(--f-sf); overflow-wrap: anywhere } .sheet .crow b { font-weight: 600; margin-right: 6px } .sheet .crow small { display: block; margin-top: 2px; font: 400 12px/16px var(--f-sf); opacity: .6 }
+  .sheet .clist { display: grid; max-height: min(46vh, 420px); overflow: auto; padding-right: 4px }
+  .sheet .cform { display: flex; gap: 8px; align-items: center; padding-top: 8px; border-top: 1px solid rgba(255,255,255,.12) }
+  .sheet .cform input, .sheet .finp, .sheet textarea { flex: 1; min-width: 0; width: 100%; min-height: 48px; padding: 12px 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.08); color: #fff; font: 400 17px/1.35 var(--f-sf); outline: none }
+  .sheet textarea { resize: vertical } .sheet input:focus, .sheet textarea:focus { border-color: #fff }
+  .sheet .cform button, .sheet .bigb { min-height: 48px; padding: 0 20px; border: 0; border-radius: 999px; background: #fff; color: #0c0f1a; font: 600 16px/1 var(--f-sf); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none }
+  .sheet .bigb.blue { background: #0071e3; color: #fff } .sheet .bigb.ghost { background: rgba(255,255,255,.12); color: #fff }
+  .sheet .bigb[disabled] { opacity: .5; cursor: default } .sheet .bigb .ic { width: 18px; height: 18px }
+  .sheet .fsteps { display: flex; gap: 6px } .sheet .fsteps i { flex: 1; height: 4px; border-radius: 2px; background: rgba(255,255,255,.2) } .sheet .fsteps i.on { background: #8cc4ff }
+  .sheet .drop2 { position: relative; display: grid; place-items: center; gap: 8px; min-height: 220px; border-radius: 20px; border: 2px dashed rgba(255,255,255,.35); background: rgba(255,255,255,.05); text-align: center; font: 600 16px/22px var(--f-sf); cursor: pointer; overflow: hidden }
+  .sheet .drop2 input { position: absolute; inset: 0; opacity: 0; cursor: pointer }
+  .sheet .drop2 img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover }
+  .sheet .drop2 .ic { width: 36px; height: 36px; opacity: .8 } .sheet .drop2 small { font: 400 13px/18px var(--f-sf); opacity: .7 }
+  .sheet .lbl { font: 600 13px/16px var(--f-sf); opacity: .75 }
+  .sheet .ferr { margin: 0; min-height: 20px; font: 500 15px/20px var(--f-sf); color: #ffb4a8 } .sheet .ferr.ok { color: #7fe0a8 }
+  .sheet .tog { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 0 14px; border-radius: 16px; background: rgba(255,255,255,.08); font: 500 16px/20px var(--f-sf); cursor: pointer }
+  .sheet .tog input { appearance: none; -webkit-appearance: none; width: 51px; height: 31px; flex: none; border-radius: 999px; background: rgba(255,255,255,.25); position: relative; cursor: pointer; transition: background .2s; margin: 0 }
+  .sheet .tog input::after { content: ""; position: absolute; left: 2px; top: 2px; width: 27px; height: 27px; border-radius: 50%; background: #fff; transition: transform .2s; box-shadow: 0 2px 6px rgba(0,0,0,.3) }
+  .sheet .tog input:checked { background: #34c759 } .sheet .tog input:checked::after { transform: translateX(20px) }
+  .sheet .tog small { display: block; font: 400 13px/18px var(--f-sf); opacity: .7 }
+  .sheet .linkbox { padding: 14px 16px; border-radius: 16px; background: rgba(255,255,255,.08); font: 500 14px/20px ui-monospace, SFMono-Regular, Menlo, monospace; overflow-wrap: anywhere; opacity: .9 }
+  .sheet .stepl .ic { display: inline-block; width: 18px; height: 18px; vertical-align: -3px; margin: 0 2px }
+  .sheet .stepl { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px } .sheet .stepl li { display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: center; font: 400 16px/22px var(--f-sf) }
+  .sheet .stepl li i { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.12); font: 700 14px/1 var(--f-sf); font-style: normal }
+  .sheet .sbtns { display: flex; flex-wrap: wrap; gap: 8px }
+
+  /* ===== the founders' gift (G2, Nico): the card «Redeem your gifts» and the page of the gifts ===== */
+  .A .giftc { position: relative; isolation: isolate; overflow: hidden; grid-column: 1 / -1; display: grid; grid-template-columns: 1fr; gap: 18px; min-height: 280px; padding: 28px 24px; border-radius: 32px; border: 1px solid rgba(255,214,150,.45); color: #fff; text-align: left; cursor: pointer; font: inherit; width: 100%;
+    background: radial-gradient(120% 90% at 0% 0%, rgba(255,190,110,.32), rgba(255,190,110,0) 55%), radial-gradient(90% 80% at 100% 100%, rgba(59,130,255,.45), rgba(59,130,255,0) 60%), rgba(16,20,34,.66); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%);
+    box-shadow: 0 0 40px 2px rgba(255,180,90,.18), inset 0 1px 0 rgba(255,255,255,.2); transition: transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s }
+  .A .giftc:hover { transform: translateY(-3px); border-color: rgba(255,214,150,.8) }
+  .A .giftc .gemo { font-size: 84px; line-height: 1; filter: drop-shadow(0 12px 28px rgba(255,160,60,.45)); animation: gbob 3.6s ease-in-out infinite }
+  @keyframes gbob { 0%, 100% { transform: translateY(0) rotate(-4deg) } 50% { transform: translateY(-6px) rotate(3deg) } }
+  .A .giftc .gtx { display: grid; gap: 10px; align-content: center; justify-items: start }
+  .A .giftc .gk { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 999px; background: rgba(255,214,150,.2); border: 1px solid rgba(255,214,150,.45); color: #ffe2b8; font: 700 12px/1 var(--f-sf); letter-spacing: .06em; text-transform: uppercase }
+  .A .giftc .gt { font: 700 38px/1.02 var(--f-sfd); letter-spacing: -.035em; text-wrap: balance }
+  .A .giftc .gt em { font-style: normal; background: linear-gradient(100deg, #ffe7c2 0%, #ffbe73 50%, #ff9f43 100%); -webkit-background-clip: text; background-clip: text; color: transparent }
+  .A .giftc .gs { font: 400 17px/24px var(--f-sf); opacity: .9; max-width: 40ch }
+  .A .giftc .btn { pointer-events: none; min-height: 52px; padding: 0 24px; font-size: 17px; background: linear-gradient(180deg, #ffd29a, #ffae55); color: #2a1300 }
+  .A .giftc .gfan { position: relative; height: 210px; display: none }
+  .A .giftc .gfan img { position: absolute; top: 10px; width: 132px; aspect-ratio: 639/905; object-fit: cover; border-radius: 6px 10px 10px 6px; box-shadow: -8px 18px 40px rgba(0,0,0,.55), inset 3px 0 0 rgba(255,255,255,.15); transition: transform .5s cubic-bezier(.2,.8,.2,1) }
+  .A .giftc .gfan img:nth-child(1) { left: 0; transform: rotate(-12deg) } .A .giftc .gfan img:nth-child(2) { left: 70px; transform: rotate(-4deg) translateY(-8px) } .A .giftc .gfan img:nth-child(3) { left: 140px; transform: rotate(4deg) translateY(-8px) } .A .giftc .gfan img:nth-child(4) { left: 210px; transform: rotate(12deg) }
+  .A .giftc:hover .gfan img:nth-child(1) { transform: rotate(-16deg) translateX(-10px) } .A .giftc:hover .gfan img:nth-child(4) { transform: rotate(16deg) translateX(10px) }
+  .A .giftc .gfan.ph { width: 252px }
+  .A .giftc .gfan.ph { display: block; height: 170px; margin: 4px 0 -6px } .A .giftc .gfan.ph img { width: 96px } .A .giftc .gfan.ph img:nth-child(2) { left: 52px } .A .giftc .gfan.ph img:nth-child(3) { left: 104px } .A .giftc .gfan.ph img:nth-child(4) { left: 156px }
+  .A .giftc .glk { display: inline-flex; align-items: center; gap: 8px; font: 500 15px/20px var(--f-sf); opacity: .9 } .A .giftc .glk .ic { width: 16px; height: 16px }
+  @container app (min-width: 900px) {
+    .A .giftc { grid-template-columns: auto 1fr 360px; align-items: center; gap: 36px; padding: 36px 44px; min-height: 300px }
+    .A .giftc .gemo { font-size: 120px } .A .giftc .gt { font-size: 52px } .A .giftc .gfan { display: block } .A .giftc .gfan.ph { display: none }
+  }
+  /* the page of the gifts */
+  .A .gpage { padding: 24px 16px 128px; max-width: 1280px; margin: 0 auto; display: grid; gap: 24px }
+  .A .ghead { display: flex; align-items: center; gap: 16px } .A .ghead .gemo { font-size: 64px; line-height: 1; filter: drop-shadow(0 10px 24px rgba(255,160,60,.45)) }
+  .A .ggrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px }
+  .A .gitem { position: relative; display: grid; gap: 12px; padding: 14px 14px 16px; border-radius: 28px; color: #fff; text-decoration: none; align-content: start }
+  .A .gitem .gcov { position: relative; border-radius: 8px 14px 14px 8px; overflow: hidden; box-shadow: -6px 16px 36px rgba(0,0,0,.5); transition: transform .4s cubic-bezier(.2,.8,.2,1) }
+  .A a.gitem:hover .gcov { transform: translateY(-4px) rotate(-1deg) }
+  .A .gitem .gcov img { display: block; width: 100%; aspect-ratio: 639/905; object-fit: cover }
+  .A .gitem .gcov::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,.16) 0 3px, transparent 3px 14px, rgba(0,0,0,.18)) }
+  .A .gitem b { font: 600 16px/21px var(--f-sf); text-wrap: balance } .A .gitem .gdl { display: inline-flex; align-items: center; gap: 8px; justify-self: start; min-height: 40px; padding: 0 16px; border-radius: 999px; background: #fff; color: #0c0f1a; font: 600 14px/1 var(--f-sf) } .A .gitem .gdl .ic { width: 16px; height: 16px }
+  .A .gitem.lockd .gcov img { filter: blur(1.5px) saturate(.7) brightness(.7) } .A .gitem.lockd .gdl { background: rgba(255,255,255,.14); color: #fff }
+  .A .gitem .glock { position: absolute; z-index: 2; left: 50%; top: 38%; transform: translate(-50%, -50%) }
+  .A .gnote { margin: 0; font: 400 15px/21px var(--f-sf); color: var(--mute) }
+  .A .gcd { display: flex; flex-wrap: wrap; gap: 8px; align-items: center } .A .gcd span { display: grid; justify-items: center; min-width: 58px; padding: 8px 10px; border-radius: 14px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.16) } .A .gcd b { font: 700 22px/1.1 var(--f-sfd); font-variant-numeric: tabular-nums } .A .gcd small { font: 500 10px/1 var(--f-sf); letter-spacing: .1em; text-transform: uppercase; opacity: .7 }
+  @container app (min-width: 900px) { .A .gpage { padding: 32px 64px 64px } .A .ggrid { grid-template-columns: repeat(4, 1fr); gap: 24px } .A .ghead .gemo { font-size: 88px } }
+
+  /* ===== the menu (three lines, top right) ===== */
+  .A .hbg, .hbfab { width: 44px; height: 44px; flex: none; display: grid; place-content: center; gap: 5px; border-radius: 50%; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.12); cursor: pointer; padding: 0 }
+  .A .hbg span, .hbfab span { display: block; width: 18px; height: 2px; border-radius: 2px; background: #fff; transition: transform .3s, opacity .2s }
+  .A .topin .rgt { display: flex; align-items: center; gap: 8px }
+  .hbfab { position: fixed; z-index: 45; top: max(12px, env(safe-area-inset-top)); right: 12px; width: 48px; height: 48px; background: rgba(12,15,26,.6); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); box-shadow: 0 8px 24px rgba(0,0,0,.3) }
+  .hbfab .dotg { position: absolute; right: 2px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: #ffae55; box-shadow: 0 0 0 2px #0b1534 }
+  @media (min-width: 900px) { .hbfab { display: none } }
+  .mwrap[hidden] { display: none } .mwrap { position: fixed; inset: 0; z-index: 70 }
+  .mwrap .mscrim { position: absolute; inset: 0; background: rgba(3,6,16,.35); opacity: 0; transition: opacity .25s }
+  .mwrap.on .mscrim { opacity: 1 }
+  .mmenu { position: absolute; color: #fff; font-family: var(--f-sf); background: rgba(14,18,32,.95); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(32px) saturate(170%); -webkit-backdrop-filter: blur(32px) saturate(170%); overflow: auto; box-shadow: 0 30px 80px rgba(0,0,0,.5) }
+  .mmenu .mgrp { display: grid; padding: 6px } .mmenu .mgrp + .mgrp { border-top: 1px solid rgba(255,255,255,.1) }
+  .mmenu .mgt { padding: 10px 12px 4px; font: 600 12px/16px var(--f-sf); letter-spacing: .06em; text-transform: uppercase; opacity: .6 }
+  .mmenu .mi { display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 12px; min-height: 50px; padding: 0 12px; border-radius: 14px; border: 0; background: transparent; color: #fff; text-decoration: none; text-align: left; font: 500 16px/20px var(--f-sf); cursor: pointer; width: 100% }
+  .mmenu .mi:hover, .mmenu .mi:focus-visible { background: rgba(255,255,255,.1) }
+  .mmenu .mi .mic { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: rgba(255,255,255,.1) } .mmenu .mi .mic .ic { width: 18px; height: 18px }
+  .mmenu .mi .em { font-size: 20px; line-height: 1 }
+  .mmenu .mi small { display: block; font: 400 13px/16px var(--f-sf); opacity: .65 }
+  .mmenu .mi .chev { width: 16px; height: 16px; opacity: .5 }
+  .mmenu .mi .tag { padding: 4px 8px; border-radius: 999px; background: #ffae55; color: #2a1300; font: 700 11px/1 var(--f-sf) }
+  .mmenu .mi.gold .mic { background: linear-gradient(180deg, rgba(255,210,154,.35), rgba(255,174,85,.25)) }
+  .mmenu .mi.quiet { min-height: 44px; font-size: 15px; opacity: .85 }
+  .mmenu .mme { display: flex; align-items: center; gap: 12px; padding: 16px 18px 12px } .mmenu .mme b { display: block; font: 700 17px/20px var(--f-sfd) } .mmenu .mme small { font: 400 13px/16px var(--f-sf); opacity: .7 }
+  .mmenu .mme .uav { width: 44px; height: 44px; font-size: 18px }
+  /* M1 (Nico): a glass panel that drops from the button */
+  .mmenu.m1 { top: 76px; right: max(16px, calc((100vw - 1152px) / 2 + 8px)); width: 360px; max-height: calc(100vh - 96px); border-radius: 26px; transform-origin: top right; transform: scale(.92) translateY(-8px); opacity: 0; transition: transform .28s cubic-bezier(.2,.9,.2,1.1), opacity .2s }
+  .mwrap.on .mmenu.m1 { transform: none; opacity: 1 }
+  @media (min-width: 900px) { .mwrap .mscrim.m1s { background: transparent } }
+  @media (max-width: 899px) { .mmenu.m1 { top: calc(max(12px, env(safe-area-inset-top)) + 56px); right: 12px; left: 12px; width: auto; max-height: calc(100vh - 140px) } }
+  @media (prefers-reduced-motion: reduce) { .A .giftc .gemo { animation: none } .mmenu.m1 { transition: none } }
+</style>
 <script is:inline define:vars={{ SVG, BADGES }}>
 window.__T3M = { SVG, BADGES };
 </script>
@@ -272,6 +431,14 @@ const P = {
 };
   const ic = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${P[n] || ''}</svg>`
   P.down = '<path d="M12 4v12M6 11l6 6 6-6M5 20h14"/>'
+  P.bubble = '<path d="M20 11.5a8 8 0 0 1-11.7 7.1L4 20l1.3-4A8 8 0 1 1 20 11.5z"/>'
+  P.send = '<path d="M21 3L10 14"/><path d="M21 3l-7 18-4-7-7-4z"/>'
+  P.cam = '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'
+  P.feed = '<rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9.5" cy="9.5" r="1.8"/><path d="M20 15l-4.5-4.5L7 19"/>'
+  P.phone = '<rect x="7" y="2.5" width="10" height="19" rx="3"/><path d="M11 18.5h2"/>'
+  P.mail = '<rect x="3.5" y="5.5" width="17" height="13" rx="3"/><path d="M4 7l8 6 8-6"/>'
+  P.undo = '<path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>'
+  P.door = '<path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M3 21h18"/><circle cx="14.5" cy="12" r="1" fill="currentColor"/>'
   const fl = f => `<a class="fl" href="${esc(f.href)}"${f.zip ? ' download' : ' target="_blank" rel="noopener"'}><b>${f.zip ? 'ZIP' : 'PDF'}</b><span>${esc(f.name)}</span>${ic('down')}</a>`
   const post = (u, b) => fetch(u, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json().catch(() => ({})).then(d => ({ ok: r.ok, d })))
   const toastEl = $('[data-toast]'); let tt; const toast = t => { toastEl.textContent = t; toastEl.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => toastEl.classList.remove('on'), 2600) }
@@ -308,10 +475,207 @@ const P = {
   const svgOf = k => { const n = ++bn; return SVG[k].replace(/id="([^"]+)"/g, `id="$1-${n}"`).replace(/url\(#([^)]+)\)/g, `url(#$1-${n})`).replace(/href="#([^"]+)"/g, `href="#$1-${n}"`) }
   const medal = ([k, t, how], on) => `<div class="medal2 ${on ? '' : 'off'}" title="${esc(how)}"><span class="bdg">${svgOf(k)}${on ? '' : `<span class="lk">${ic('lock')}</span>`}</span><b>${esc(t)}</b><small>${on ? 'Earned' : esc(how)}</small></div>`
   const incoming = (img, pill, k, n, u, sub, go) => `<a class="inc" href="#${go}" data-go="${go}"><img src="${img}" alt="" loading="lazy"><span class="gz"></span><span class="ip">${ic('spark')}${pill}</span><span class="ik">${k}</span><span class="in"><b>${n}</b>${u ? `<small>${u}</small>` : ''}</span><span class="is">${sub}</span></a>`
-  const BG = { home: '/club/burj-1080.webp', course: '/club/join-1.webp', vault: '/club/bg-towers-top.webp', chal: '/club/join-3.webp', me: '/club/profile-cover-800.webp' }
+  const BG = { home: '/club/burj-1080.webp', course: '/club/join-1.webp', vault: '/club/bg-towers-top.webp', feed: '/club/join-3.webp', gifts: '/club/bg-mesa-dusk.webp', me: '/club/profile-cover-800.webp' }
   /* 25/11 Nico («B, vai»): five tabs, the courses have their own (a new course comes every Friday) */
-  const TABS = [['home', 'home', 'Home'], ['course', 'play', 'Courses'], ['vault', 'grid', 'Vault'], ['chal', 'trophy', 'Build'], ['me', 'person', 'Profile']]
+  const TABS = [['home', 'home', 'Home'], ['course', 'play', 'Courses'], ['vault', 'grid', 'Vault'], ['feed', 'feed', 'Feed'], ['me', 'person', 'Profile']]
   const GO_COURSE = 'course' // the course card in Home opens the Courses tab
+
+  /* ===== 26/11 (Nico: F1 P1 C1 H3 G2 M1, every menu item): the builds feed, the founders' gift page and the menu ===== */
+  let CTX = { d: {}, founder: false, open: false, first: '' }
+  let FEED = null
+  const ago = iso => { const s = (Date.now() - Date.parse(iso)) / 1000; return s < 60 ? 'now' : s < 3600 ? Math.floor(s / 60) + ' min' : s < 86400 ? Math.floor(s / 3600) + ' h' : s < 7 * 86400 ? Math.floor(s / 86400) + ' d' : new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' }).format(new Date(iso)) }
+  const avc = n => 'f' + ([...String(n)].reduce((a, c) => a + c.charCodeAt(0), 0) % 5) + 'c'
+  const av = n => `<span class="uav ${avc(n)}" aria-hidden="true">${esc((String(n || '·')[0]).toUpperCase())}</span>`
+  const byId = id => FEED && FEED.posts.find(p => p.id === id)
+  function openSheet(h) { $('[data-sheetbody]').innerHTML = h; if (sheet.hidden) { sheet.hidden = false; requestAnimationFrame(() => sheet.classList.add('on')); document.documentElement.style.overflow = 'hidden' } }
+
+  /* the founders' gift (G2): one card «Redeem your gifts» at the end of Home and in the Vault, a page of its own (#gifts) */
+  function giftItems() { const { d, open } = CTX; return open ? (d.gifts || []).map(g => ({ name: g.name, href: g.href, cover: g.cover })) : (d.giftList || (d.giftNames || []).map(n => ({ name: n }))) }
+  function giftCard() {
+    const { d, founder, open } = CTX; if (!founder) return ''
+    const its = giftItems(), covers = its.filter(it => it.cover).map(it => `<img src="${esc(it.cover)}" alt="">`).join('')
+    return `<button type="button" class="giftc" data-gifts aria-label="Redeem your gifts">
+      <span class="gemo" aria-hidden="true">🎁</span>
+      <span class="gtx"><span class="gk">${open ? '' : ic('lock')}Founder #${esc(d.founder)}</span><span class="gt">Redeem your <em>gifts</em></span>
+        <span class="gs">${open ? `${its.length} gifts for the first 100 who reserved: three playbooks and the full 3D AI Mastery course. Yours to keep.` : 'Yours, only yours. They unlock here on Saturday 28 November at 9:00 (Rome).'}</span>
+        <span class="gfan ph" aria-hidden="true">${covers}</span>
+        <span class="btn">${open ? 'Redeem your gifts' : 'See your gifts'}${ic('arrow')}</span></span>
+      <span class="gfan" aria-hidden="true">${covers}</span></button>`
+  }
+  function giftsView() {
+    const { d, open } = CTX, its = giftItems()
+    const left = Math.max(0, OPENS - Date.now()), u = [Math.floor(left / 864e5), Math.floor(left / 36e5) % 24, Math.floor(left / 6e4) % 60]
+    const cov = it => it.cover ? `<img src="${esc(it.cover)}" alt="" loading="lazy">` : ''
+    return `<div data-v="gifts"><div class="mtop"><div class="ghead"><span class="gemo" aria-hidden="true">🎁</span><div><p class="eyebrow">Founder #${esc(d.founder)}</p><h1>Your gifts</h1><p class="msub">${open ? 'For the first 100 who reserved. Yours to keep.' : 'Yours, only yours. They unlock on Saturday 28 November at 9:00 (Rome).'}</p></div></div></div>
+      <div class="gpage">${open || !left ? '' : `<div class="gcd" aria-label="Unlocks in">${[['days', u[0]], ['hours', u[1]], ['min', u[2]]].map(([l, n]) => `<span><b>${n}</b><small>${l}</small></span>`).join('')}</div>`}
+        <div class="ggrid">${its.map(it => open
+          ? `<a class="glass gitem" href="${esc(it.href)}" target="_blank" rel="noopener"><span class="gcov">${cov(it)}</span><b>${esc(it.name)}</b><span class="gdl">${ic('down')}Download</span></a>`
+          : `<div class="glass gitem lockd"><span class="gcov">${cov(it)}<span class="lk glock" role="img" aria-label="Locked">${LOCK}</span></span><b>${esc(it.name)}</b><span class="gdl">${ic('lock')}${left ? 'Saturday, 9:00' : 'With your first month'}</span></div>`).join('')}</div>
+        ${open ? '<p class="gnote">Download them now and keep them: they are yours.</p>' : ''}</div></div>`
+  }
+
+  /* the feed (F1): one column like Instagram; on the computer «Post your build» and how it works on the side */
+  const canPostMsg = () => Date.now() < OPENS ? 'You can post from Saturday 28 November, 9:00' : 'You can post once your first month starts'
+  const acts = p => `<button type="button" data-like="${p.id}" aria-pressed="${!!p.liked}" aria-label="Like">${ic('heart')}<b>${p.likes || ''}</b></button><button type="button" data-cmt="${p.id}" aria-label="Comments">${ic('bubble')}<b>${p.comments || ''}</b></button><button type="button" data-share="${p.id}" aria-label="Share">${ic('send')}<b>${p.shares || ''}</b></button><span class="sp"></span>${FEED && FEED.me.nico ? `<button type="button" class="fhide" data-hide="${p.id}" data-on="${p.hidden ? '0' : '1'}">${p.hidden ? ic('eye') + 'Show' : ic('x') + 'Hide'}</button>` : ''}`
+  const who2 = p => `${esc(p.name)}${p.nico ? '<span class="fnico">Nico</span>' : ''}`
+  const postCard = p => `<article class="glass fp${p.hidden ? ' hid' : ''}" data-post="${p.id}">
+      <header class="fph">${av(p.name)}<span class="fpn"><b>${who2(p)}</b><small>${ago(p.at)}${p.founder ? '<span class="fdot"></span>Founding member' : ''}${p.hidden ? '<span class="fdot"></span>Hidden from the club' : ''}</small></span><a class="fpo" href="${esc(p.link)}" target="_blank" rel="noopener">${ic('eye')}Open the build</a></header>
+      ${p.img ? `<a class="fpimg" href="${esc(p.link)}" target="_blank" rel="noopener" aria-label="Open ${esc(p.name)}'s build"><img src="${esc(p.img)}" alt="" loading="lazy"></a>` : ''}
+      <div class="fpa">${acts(p)}</div>
+      ${p.caption ? `<p class="fpc"><b>${esc(p.name)}</b>${esc(p.caption)}</p>` : ''}
+      <button class="fpm" type="button" data-cmt="${p.id}">${p.comments ? (p.comments === 1 ? 'See the comment' : `See all ${p.comments} comments`) : 'Add a comment'}</button></article>`
+  function compBar() {
+    const me = (FEED && FEED.me) || {}
+    return `<button type="button" class="glass fcomp" data-compose${me.canPost ? '' : ' aria-disabled="true"'}>${av(CTX.first)}<span class="fake">${me.canPost ? 'Post your build…' : canPostMsg()}</span><span class="btn cta">${ic('plus')}<span>Post</span></span></button>`
+  }
+  const howW = () => `<div class="glass fhow"><span class="k">${ic('spark')}How the feed works</span><ol><li><i>1</i><span>Paste the link of your build, then add a photo of it</span></li><li><i>2</i><span>Everyone in the club sees it, likes it and comments</span></li><li><i>3</i><span>I look at every post and write to you privately with what works and what I'd change</span></li></ol></div>`
+  function emptyW() {
+    const me = (FEED && FEED.me) || {}
+    return `<div class="glass fempty"><span class="fe3d"><img src="/club/knot-360.webp" alt=""></span><h2>The feed starts with you</h2><p>Post the first build of the club. Everyone inside sees it, and I write to you privately with what works and what I'd change.</p>${me.canPost ? `<button class="btn cta" type="button" data-compose>${ic('plus')}<span>Post your build</span></button>` : `<p class="msmall">${canPostMsg()}.</p>`}</div>`
+  }
+  function paintFeed() {
+    const box = $('[data-feed]'); if (!box || !FEED) return
+    const ps = FEED.posts
+    box.innerHTML = `<div class="fw1"><div class="fside">${compBar()}${howW()}</div><div class="fcol">${ps.length ? ps.map(postCard).join('') : emptyW()}</div></div>`
+  }
+  function loadFeed() {
+    const fail = t => { const b = $('[data-feed]'); if (b) b.innerHTML = `<p class="msub" style="padding:24px">${esc(t)}</p>` }
+    fetch('/api/club/feed?m=' + encodeURIComponent(m)).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => {
+      if (!ok) return fail(d.error || 'Could not load the feed, try again in a minute.')
+      FEED = d; paintFeed()
+    }).catch(() => fail('Could not load the feed, try again in a minute.'))
+  }
+  function paint(id) {
+    const p = byId(id); if (!p) return
+    $$(`[data-like="${id}"]`).forEach(b => { b.setAttribute('aria-pressed', String(!!p.liked)); const n = $('b', b); if (n) n.textContent = p.likes || '' })
+    $$(`button[data-cmt="${id}"]`).forEach(b => { const n = $('b', b); if (n) n.textContent = p.comments || ''; else if (b.classList.contains('fpm')) b.textContent = p.comments ? (p.comments === 1 ? 'See the comment' : `See all ${p.comments} comments`) : 'Add a comment' })
+    $$(`[data-share="${id}"] b`).forEach(n => { n.textContent = p.shares || '' })
+  }
+  function doLike(id, btn) {
+    const p = byId(id); if (!p) return
+    p.liked = !p.liked; p.likes = Math.max(0, (p.likes || 0) + (p.liked ? 1 : -1)); paint(id)
+    if (btn && p.liked) { btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('pop') }
+    post('/api/club/like', { m, id, on: p.liked }).then(r => { if (r.ok) { p.likes = r.d.likes; p.liked = r.d.liked; paint(id) } })
+  }
+  async function doShare(id) {
+    const p = byId(id); if (!p) return
+    let ok = false
+    try { if (navigator.share) { await navigator.share({ title: `${p.name}'s build`, text: `${p.name}'s build, made in THE 3D FUTURE`, url: p.link }); ok = true } else throw 0 }
+    catch (e) { if (e && e.name === 'AbortError') return; try { await navigator.clipboard.writeText(p.link); toast('Link copied'); ok = true } catch (_) { toast(p.link) } }
+    if (ok) post('/api/club/share', { m, id }).then(r => { if (r.ok) { p.shares = r.d.shares; paint(id) } })
+  }
+  /* H2 (Nico, H3): on his own page (the preview link) every post has Hide / Show */
+  function doHide(id, on) {
+    post('/api/club/hide', { m, id, hidden: on }).then(r => { if (!r.ok) { toast(r.d.error || 'Something went wrong, try again'); return }
+      const p = byId(id); if (p) p.hidden = r.d.hidden; paintFeed(); toast(r.d.hidden ? 'Hidden. Nobody in the club sees it now.' : 'Back in the feed.') })
+  }
+  const cRow = c => `<div class="crow">${av(c.name)}<p><b>${esc(c.name)}${c.nico ? '<span class="fnico">Nico</span>' : ''}</b>${esc(c.text)}<small>${ago(c.at)}</small></p></div>`
+  function postSheet(id) {
+    const p = byId(id); if (!p) return
+    openSheet(`<div class="fp2"><p class="s-eyebrow">${esc(p.name)}'s build</p><h3 class="s-title" id="t3m-sh">Comments</h3>
+      ${p.caption ? `<div class="crow">${av(p.name)}<p><b>${esc(p.name)}</b>${esc(p.caption)}</p></div>` : ''}
+      <div class="clist" data-clist><p class="snote">Loading…</p></div>
+      <form class="cform" data-cform="${p.id}"><label class="sr" for="t3m-c">Your comment</label><input id="t3m-c" name="t" maxlength="1000" placeholder="Add a comment…" autocomplete="off"><button type="submit">Send</button></form></div>`)
+    fetch(`/api/club/comments?m=${encodeURIComponent(m)}&id=${encodeURIComponent(id)}`).then(r => r.json()).then(d => { const l = $('[data-clist]'); if (l) l.innerHTML = (d.comments || []).length ? d.comments.map(cRow).join('') : '<p class="snote">No comments yet. Be the first.</p>' }).catch(() => {})
+  }
+  /* the photo is made small on the phone before it leaves (about 1600 px, JPEG) */
+  function shrink(file) {
+    return new Promise((res, rej) => { const u = URL.createObjectURL(file), im = new Image()
+      im.onload = () => { const c = document.createElement('canvas'); let s = Math.min(1, 1600 / Math.max(im.naturalWidth, im.naturalHeight)), qy = .85, out = ''
+        for (let i = 0; i < 6; i++) { c.width = Math.round(im.naturalWidth * s); c.height = Math.round(im.naturalHeight * s); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); out = c.toDataURL('image/jpeg', qy); if (out.length < 650000) break; qy -= .1; s *= .85 }
+        URL.revokeObjectURL(u); res({ data: out, w: c.width, h: c.height }) }
+      im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('img')) }; im.src = u })
+  }
+  /* C1: post in two steps, the link and then the photo with a line about it */
+  function compose() {
+    const me = (FEED && FEED.me) || {}
+    if (!FEED) { toast('One second, the feed is loading'); return }
+    if (!me.canPost) { toast(canPostMsg()); return }
+    const st = { link: '', img: '', w: 0, h: 0, cap: '' }
+    const one = () => { openSheet(`<p class="s-eyebrow">Post your build</p><div class="fsteps" aria-hidden="true"><i class="on"></i><i></i></div><h3 class="s-title" id="t3m-sh">The link of your build</h3>
+        <label class="lbl" for="t3m-fl">Where it's online</label><input id="t3m-fl" class="finp" data-flink type="url" inputmode="url" maxlength="300" placeholder="https://your-tower.netlify.app" value="${esc(st.link)}">
+        <p class="ferr" role="status" data-ferr></p><button class="bigb blue" type="button" data-fnext>Next${ic('arrow')}</button>`)
+      const i = $('[data-flink]'); setTimeout(() => i && i.focus(), 300)
+      i.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('[data-fnext]').click() } })
+      $('[data-fnext]').addEventListener('click', () => { const v = i.value.trim(); if (!/^https?:\/\/[^\s]+\.[^\s]+$/i.test(v)) { $('[data-ferr]').textContent = 'Paste the link of your build, like https://your-tower.netlify.app'; return } st.link = v; two() }) }
+    const two = () => { openSheet(`<p class="s-eyebrow">Post your build</p><div class="fsteps" aria-hidden="true"><i class="on"></i><i class="on"></i></div><h3 class="s-title" id="t3m-sh">Add a photo of it</h3>
+        <label class="drop2">${st.img ? `<img src="${st.img}" alt="">` : `${ic('cam')}<span>Choose a photo</span><small>A screenshot of your build is perfect</small>`}<input type="file" accept="image/*" data-fimg aria-label="Choose a photo of your build"></label>
+        <label class="lbl" for="t3m-cap">Say something about it (optional)</label><textarea id="t3m-cap" rows="3" maxlength="600" data-fcap placeholder="What you built, what you'd like people to look at">${esc(st.cap)}</textarea>
+        <p class="ferr" role="status" data-ferr></p><div class="sbtns"><button class="bigb ghost" type="button" data-fback>Back</button><button class="bigb blue" type="button" data-fpost>${ic('send')}Post it</button></div>
+        <p class="snote">Everyone in the club sees it. I look at every post and write to you privately with what works and what I'd change.</p>`)
+      const f = $('[data-fimg]'), err = $('[data-ferr]'), cap = $('[data-fcap]')
+      f.addEventListener('change', () => { const x = f.files && f.files[0]; if (!x) return; err.textContent = 'Getting your photo ready…'; err.className = 'ferr ok'
+        shrink(x).then(r => { st.img = r.data; st.w = r.w; st.h = r.h; st.cap = cap.value; two() }).catch(() => { err.className = 'ferr'; err.textContent = 'That photo did not open, try a JPG or PNG' }) })
+      $('[data-fback]').addEventListener('click', () => { st.cap = cap.value; one() })
+      $('[data-fpost]').addEventListener('click', e => { const b = e.currentTarget; st.cap = cap.value.trim()
+        if (!st.img) { err.className = 'ferr'; err.textContent = 'Add a photo of your build'; return }
+        b.disabled = true; err.className = 'ferr ok'; err.textContent = 'Posting…'
+        post('/api/club/post', { m, link: st.link, caption: st.cap, img: st.img, w: st.w, h: st.h }).then(r => {
+          if (!r.ok) { err.className = 'ferr'; err.textContent = r.d.error || 'Something went wrong, try again'; b.disabled = false; return }
+          closeSheet(); FEED.posts.unshift(r.d.post); paintFeed(); show('feed'); toast('Posted. I write to you privately soon.')
+        }).catch(() => { err.className = 'ferr'; err.textContent = 'Something went wrong, try again'; b.disabled = false }) }) }
+    one()
+  }
+
+  /* the menu (M1): three lines at the top right, a glass panel that drops from the button */
+  function menuHTML() {
+    const { d, founder, open, first } = CTX
+    const row = (act, icon, label, sub = '', cls = '', href = '') => {
+      const inner = `<span class="mic">${icon}</span><span>${label}${sub ? `<small>${sub}</small>` : ''}</span>${ic('chev', 'chev')}`
+      return href ? `<a class="mi ${cls}" href="${esc(href)}"${/^https?:/.test(href) ? ' target="_blank" rel="noopener"' : ''}>${inner}</a>` : `<button type="button" class="mi ${cls}" data-mgo="${act}">${inner}</button>` }
+    const rl = founder ? 'Founding member' : d.state === 'waiting' ? 'Seat reserved' : 'Member'
+    const gift = founder ? `<div class="mgrp">${row('gifts', '<span class="em" aria-hidden="true">🎁</span>', "Your founders' gift", open ? `${giftItems().length} gifts, yours to keep` : 'Unlocks Saturday, 9:00', 'gold')}</div>` : ''
+    return `<div class="mme">${av(first)}<span><b>${esc(first)}</b><small>${rl}${founder ? ' · #' + esc(d.founder) : ''}</small></span></div>
+      ${gift}
+      <div class="mgrp"><span class="mgt">The club</span>${row('compose', ic('plus'), 'Post your build')}${row('guides', ic('doc'), 'Every Full guide', open ? `${(d.guides || []).length} guides` : 'Opens Saturday, 9:00')}${row('skills', ic('code'), 'Your skills', open ? 'Tower Builder and House Builder' : 'Opens Saturday, 9:00')}</div>
+      <div class="mgrp"><span class="mgt">For you</span>${row('remind', ic('cal'), "Friday's new course", 'Remind me')}${row('link', ic('copy'), 'Your link to the club')}${row('phone', ic('phone'), 'Add the club to your phone')}${row('write', ic('mail'), 'Write to Nico')}</div>
+      <div class="mgrp"><span class="mgt">Membership</span>${d.portal ? row('', ic('door'), 'Cancel your membership', 'One tap, at the end of the paid month', '', d.portal) : ''}${row('', ic('undo'), 'Withdraw within 14 days', '', 'quiet', '/withdraw')}${row('', ic('doc'), 'Club terms', '', 'quiet', '/the-3d-future/terms')}</div>`
+  }
+  function openMenu() {
+    const w = $('[data-mwrap]'), pn = $('[data-mpanel]'); if (!w) return
+    pn.innerHTML = menuHTML(); w.hidden = false; requestAnimationFrame(() => w.classList.add('on'))
+    $$('[data-menu]').forEach(b => b.setAttribute('aria-expanded', 'true'))
+  }
+  function closeMenu() { const w = $('[data-mwrap]'); if (!w || w.hidden) return; w.classList.remove('on'); $$('[data-menu]').forEach(b => b.setAttribute('aria-expanded', 'false')); setTimeout(() => { w.hidden = true }, 300) }
+  const menuOpen = () => { const w = $('[data-mwrap]'); return w && !w.hidden }
+  function menuGo(a) {
+    closeMenu()
+    if (a === 'gifts') return show('gifts')
+    if (a === 'compose') { show('feed'); return setTimeout(compose, 120) }
+    if (a === 'guides' || a === 'skills') return show(a)
+    if (a === 'link') return linkSheet()
+    if (a === 'remind') return remindSheet()
+    if (a === 'phone') return phoneSheet()
+    if (a === 'write') return writeSheet()
+  }
+  function linkSheet() {
+    const url = location.origin + location.pathname + '?m=' + encodeURIComponent(m)
+    openSheet(`<p class="s-eyebrow">Your link</p><h3 class="s-title" id="t3m-sh">Your own link to the club</h3><p class="s-text">It opens your club page on any phone or computer. It's yours, keep it for you.</p><div class="linkbox">${esc(url)}</div>
+      <div class="sbtns"><button class="bigb blue" type="button" data-copylink>${ic('copy')}Copy the link</button><button class="bigb ghost" type="button" data-maillink>${ic('mail')}Email it to me</button></div><p class="ferr" role="status" data-ferr></p>`)
+    $('[data-copylink]').addEventListener('click', () => navigator.clipboard.writeText(url).then(() => toast('Link copied'), () => toast(url)))
+    $('[data-maillink]').addEventListener('click', e => { e.currentTarget.disabled = true; post('/api/club/link', { email: CTX.d.email }).then(r => { const x = $('[data-ferr]'); x.className = r.ok ? 'ferr ok' : 'ferr'; x.textContent = r.ok ? 'On its way to your inbox.' : (r.d.error || 'Something went wrong, try again') }) })
+  }
+  /* N1 + N2: an email when Friday's course is out (on unless they turn it off) and the Fridays in their calendar */
+  function remindSheet() {
+    const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Omnya Lab//THE 3D FUTURE//EN', 'BEGIN:VEVENT', 'UID:fridays-3d-future@omnyalab.com', 'DTSTAMP:20261126T090000Z', 'DTSTART;VALUE=DATE:20261204', 'RRULE:FREQ=WEEKLY;BYDAY=FR', 'SUMMARY:THE 3D FUTURE · a new course', 'DESCRIPTION:A new course with the build of the week', 'URL:' + location.origin + location.pathname + '?m=' + encodeURIComponent(m), 'END:VEVENT', 'END:VCALENDAR'].join('\r\n')
+    openSheet(`<p class="s-eyebrow">Every Friday</p><h3 class="s-title" id="t3m-sh">A new course every Friday</h3><p class="s-text">The next one comes on Friday 4 December, with the build of the week.</p>
+      <label class="tog"><span>Email me when it's out<small>One email when the course is online, nothing else</small></span><input type="checkbox" data-remind${CTX.d.remind === false ? '' : ' checked'}></label>
+      <a class="bigb ghost" href="data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}" download="the-3d-future-fridays.ics">${ic('cal')}Add Fridays to my calendar</a>`)
+    $('[data-remind]').addEventListener('change', e => { const on = e.target.checked
+      post('/api/club/remind', { m, on }).then(r => { if (r.ok) { CTX.d.remind = r.d.on; toast(r.d.on ? 'We email you when the course is out' : 'No email on Friday') } else { e.target.checked = !on; toast(r.d.error || 'Something went wrong, try again') } }) })
+  }
+  function phoneSheet() {
+    const ios = /iP(hone|ad|od)/.test(navigator.userAgent)
+    const a = `<p class="lbl">On iPhone (Safari)</p><ol class="stepl"><li><i>1</i><span>Tap ${ic('share')} at the bottom of Safari</span></li><li><i>2</i><span>Tap <b>Add to Home Screen</b></span></li></ol>`
+    const b = `<p class="lbl">On Android (Chrome)</p><ol class="stepl"><li><i>1</i><span>Tap the three dots at the top right</span></li><li><i>2</i><span>Tap <b>Add to Home screen</b></span></li></ol>`
+    openSheet(`<p class="s-eyebrow">On your phone</p><h3 class="s-title" id="t3m-sh">The club as an app</h3><p class="s-text">One tap from your home screen, with your own link inside.</p>${ios ? a + b : b + a}`)
+  }
+  function writeSheet() {
+    openSheet(`<p class="s-eyebrow">Write to Nico</p><h3 class="s-title" id="t3m-sh">What do you want to ask me?</h3><label class="sr" for="t3m-w">Your message</label><textarea id="t3m-w" rows="5" maxlength="2000" data-wtext placeholder="Write here, I answer you by email"></textarea>
+      <button class="bigb blue" type="button" data-wsend>${ic('send')}Send it to Nico</button><p class="ferr" role="status" data-ferr></p>`)
+    $('[data-wsend]').addEventListener('click', e => { const b = e.currentTarget, t = $('[data-wtext]').value.trim(), x = $('[data-ferr]'); if (t.length < 2) { x.className = 'ferr'; x.textContent = 'Write your message first'; return }
+      b.disabled = true; post('/api/club/msg', { m, text: t }).then(r => { x.className = r.ok ? 'ferr ok' : 'ferr'; x.textContent = r.ok ? 'Sent. I answer you by email.' : (r.d.error || 'Something went wrong, try again'); if (!r.ok) b.disabled = false }) })
+  }
 
   function render(d) {
     const first = String(d.name || '').trim().split(/\s+/)[0] || 'friend', init = (first[0] || '·').toUpperCase()
@@ -319,14 +683,15 @@ const P = {
     // reservations) sees the gift as theirs already; the files come only when the page is open (card charged), as 1-day links
     const nGift = (d.gifts && d.gifts.length) || (d.giftNames && d.giftNames.length) || 0
     const founder = nGift > 0, before = Date.now() < OPENS, open = d.state === 'open'
-    const earned = BADGES.map(([k]) => k === 'founder' && founder), nOn = earned.filter(Boolean).length
+    const earned = BADGES.map(([k]) => (k === 'founder' && founder) || (k === 'first' && !!d.posted)), nOn = earned.filter(Boolean).length
     const now = new Date(), hr = +new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Europe/Rome' }).format(now)
     const greet = hr < 5 ? 'Good evening' : hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening'
     const today = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Europe/Rome' }).format(now)
     const since = d.since && !isNaN(Date.parse(d.since)) ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', timeZone: 'Europe/Rome' }).format(new Date(d.since)) : ''
     const role = founder ? 'Founding member' : d.state === 'waiting' ? 'Seat reserved' : 'Member'
+    CTX = { d, founder, open, first }
     const top = `<nav class="top mnav" aria-label="THE 3D FUTURE"><div class="topin"><a class="lockup" href="/the-3d-future"><img src="/club/knot-96.webp" alt="" width="32" height="32"><span class="wm">THE <b>3D</b> FUTURE</span></a>
-      <div class="links">${TABS.map(([k, , t]) => `<a href="#${k}" data-go="${k}">${t}</a>`).join('')}</div><span class="mav" aria-hidden="true">${init}</span></div></nav>`
+      <div class="links">${TABS.map(([k, , t]) => `<a href="#${k}" data-go="${k}">${t}</a>`).join('')}</div><span class="rgt"><span class="mav" aria-hidden="true">${init}</span><button type="button" class="hbg" data-menu aria-label="Open the menu" aria-expanded="false"><span></span><span></span><span></span></button></span></div></nav>`
     const courseBlock = `<section class="course" data-course hidden>
         <div class="chead"><span class="eyebrow">Your first course</span><h2>SAMAR, <span class="g">floor by floor</span></h2>
           <p>Eleven steps, from an empty folder to a tower online where buyers choose their floor, built the real way we build them for our clients.</p>
@@ -354,9 +719,10 @@ const P = {
           <div class="yt" data-hello><video playsinline preload="metadata" poster="/club/intro-nico-cover.webp" tabindex="0" aria-label="Play the welcome from Nico"><source src="/club/intro-nico-v2-720.mp4" media="(max-width: 700px)" type="video/mp4"><source src="/club/intro-nico-v2.mp4" type="video/mp4"></video></div></div>
         <div class="glass w span lvl lvl2"><span class="k">${ic('spark')}Your badges<span class="r">${nOn} of ${BADGES.length}</span></span><div class="lvlrow">${ring(nOn / BADGES.length, 104, 12, 'url(#rg)', 'rgba(255,255,255,.14)', `<b class="rn">${nOn}<small>/${BADGES.length}</small></b>`)}<div class="medals">${BADGES.map((b, i) => medal(b, earned[i])).join('')}</div></div></div>
         ${incoming('/club/v-stadium-760.webp', 'Incoming', 'New in the Vault', '4', 'Dec', 'A new build every Friday', 'vault')}
-        ${incoming('/club/v-house-760.webp', 'Every week', 'My comments on your builds', 'Mon', '', 'Send me your build', 'chal')}
+        ${incoming('/club/v-house-760.webp', 'Every week', 'My comments on your builds', 'Mon', '', 'Post your build', 'feed')}
         ${founder ? incoming('/club/v-towers-760.webp', open ? 'Yours' : 'Founder ' + (d.founder ? '#' + d.founder : ''), "Your founders' gift", String(nGift), 'files', open ? 'Yours to keep' : 'Unlocks Saturday, 9:00', 'gift') : incoming('/club/v-plane-760.webp', 'Yours', 'Your skills', '2', 'skills', 'Yours to keep', 'vault')}
         ${incoming('/club/v-miami-760.webp', 'Open', 'Every Full guide', String(d.guides ? d.guides.length : ''), 'guides', 'In the Vault', 'vault')}
+        ${giftCard()}
       </div>
     </div>`
     const courseV = `<div data-v="course"><div class="mtop"><div><h1>Courses</h1><p class="msub">A new course every Friday, with the build of the week</p></div></div>
@@ -371,23 +737,19 @@ const P = {
       <div class="mtop"><div><h1>The Vault</h1><p class="msub">${(d.vault || []).length} open · a new one every Friday</p></div></div>
       ${open ? `<div class="wrap vwrap"><div class="deck">${deck}</div></div>
       <div class="mgrid">
-        ${founder ? `<div class="glass w span full wf fgw" id="gift"><span class="k">${ic('spark')}Your founders' gift<span class="r">yours to keep</span></span><p class="lede2">You reserved your seat among the first 100, so these are yours to keep.</p><div class="files">${d.gifts.map(fl).join('')}</div></div>` : ''}
-        <div class="glass w span full wf"><span class="k">${ic('doc')}Every Full guide<span class="r">${(d.guides || []).length} guides</span></span><div class="files">${(d.guides || []).map(fl).join('')}</div></div>
-        <div class="glass w span full wf"><span class="k">${ic('code')}Your skills<span class="r">yours to keep</span></span><div class="files">${d.skill ? fl(d.skill) : ''}${d.house ? fl(d.house) : ''}</div></div>
-      </div>` : `<div class="mgrid">${founder ? `<div class="glass w span full wf fgw" id="gift"><span class="k">${ic('lock')}Your founders' gift<span class="r">${d.founder ? 'founder #' + esc(d.founder) : 'yours to keep'}</span></span><p class="lede2">You're one of the first 100 who reserved, so these are yours, only yours. They unlock here on Saturday 28 November at 9:00 (Rome), when your first month starts.</p><div class="files">${(d.giftNames || []).map(n => `<span class="fl lockd"><b>${ic('lock')}</b><span>${esc(n)}</span></span>`).join('')}</div></div>` : ''}<div class="glass w span full"><span class="k">${ic('lock')}Opens Saturday 28 November</span><p class="lede2">Your seat is reserved. The Vault, every Full guide and your skills open here on Saturday 28 November at 9:00 (Rome), when your first month starts.</p></div></div>`}
+        ${founder ? `<div class="cherow span full" id="gift">${giftCard()}</div>` : ''}
+        <div class="glass w span full wf" id="guides"><span class="k">${ic('doc')}Every Full guide<span class="r">${(d.guides || []).length} guides</span></span><div class="files">${(d.guides || []).map(fl).join('')}</div></div>
+        <div class="glass w span full wf" id="skills"><span class="k">${ic('code')}Your skills<span class="r">yours to keep</span></span><div class="files">${d.skill ? fl(d.skill) : ''}${d.house ? fl(d.house) : ''}</div></div>
+      </div>` : `<div class="mgrid">${founder ? `<div class="cherow span full" id="gift">${giftCard()}</div>` : ''}<div class="glass w span full"><span class="k">${ic('lock')}Opens Saturday 28 November</span><p class="lede2">Your seat is reserved. The Vault, every Full guide and your skills open here on Saturday 28 November at 9:00 (Rome), when your first month starts.</p></div></div>`}
     </div>`
-    function sendW() { return `<div class="glass w span full" id="send-w"><span class="k">${ic('trophy')}Send me your build<span class="r">I answer every Monday</span></span>
-        <p class="lede2">When your tower is online, paste its link here. I look at every first build myself and I answer you by email every Monday.</p>
-        <form class="bform" data-build novalidate><label for="t3m-l">The link of your build</label><input id="t3m-l" name="link" type="url" inputmode="url" maxlength="300" placeholder="https://your-tower.netlify.app" required>
-        <label for="t3m-n">A note for me (optional)</label><textarea id="t3m-n" name="note" rows="3" maxlength="1500" placeholder="What you'd like me to look at"></textarea>
-        <button class="btn cta" type="submit">${ic('plus')}<span>Send it to Nico</span></button><p class="err" role="status" data-build-msg></p></form></div>` }
-    const chal = `<div data-v="chal"><div class="mtop"><div><h1>Your build</h1><p class="msub">Every Monday I answer every build you send me</p></div></div><div class="mgrid chalg">${sendW()}</div></div>`
+    const chal = `<div data-v="feed"><div class="mtop"><div><h1>Feed</h1><p class="msub">Every build of the club. I look at every post.</p></div></div><div data-feed><p class="msub" style="padding:24px">Loading the feed…</p></div></div>`
+    const gifts = founder ? giftsView() : ''
     const me = `<div data-v="me"><div class="prof m3">
       <div class="pcard">
         <div class="ptone" aria-hidden="true"><div class="pbw"><img class="pblur" src="/club/profile-cover-800.webp" alt=""></div></div>
         <div class="pphoto"><img class="pimg" src="/club/profile-cover.webp" alt="" style="object-position:50% 40%"><div class="pfade"></div>
           <div class="pname"><span class="mav big" aria-hidden="true">${init}</span><h1>${esc(first)}</h1><p>${role}${since ? ' · since ' + since : ''}</p></div></div>
-        <div class="pact"><a class="btn cta" href="#chal" data-go="chal">${ic('plus')}<span>Send me your build</span></a><a class="pcam ctr" href="#vault" data-go="vault" aria-label="Open the Vault">${ic('grid')}</a></div>
+        <div class="pact"><button type="button" class="btn cta" data-compose>${ic('plus')}<span>Post your build</span></button><a class="pcam ctr" href="#vault" data-go="vault" aria-label="Open the Vault">${ic('grid')}</a></div>
         <div class="pstat">${[[(d.lessons || []).length, 'steps'], [(d.vault || []).length, 'builds'], [(d.guides || []).length, 'guides']].filter(x => x[0]).map(([n, l]) => `<span><b>${n}</b><small>${l}</small></span>`).join('')}</div>
       </div>
       <div class="pmain">
@@ -399,20 +761,24 @@ const P = {
     const tabs = `<div class="tabbar"><div class="tabin t${TABS.length}" role="tablist">${TABS.map(([k, i, t]) => `<button type="button" data-go="${k}">${ic(i)}<span>${t}</span></button>`).join('')}</div></div>`
     app.insertAdjacentHTML('afterbegin', '') // keep the background first
     root.insertAdjacentHTML('beforebegin', top)
-    root.innerHTML = home + courseV + vault + chal + me
+    root.innerHTML = home + courseV + vault + chal + gifts + me
     app.insertAdjacentHTML('beforeend', tabs)
     if (d.lessons) course_(d.lessons)
+    document.body.insertAdjacentHTML('beforeend', `<button type="button" class="hbfab" data-menu aria-label="Open the menu" aria-expanded="false"><span></span><span></span><span></span>${founder ? '<i class="dotg" aria-hidden="true"></i>' : ''}</button>`)
     wire()
+    loadFeed()
   }
   const course_ = ls => course(ls)
 
   /* the screens: a tap on the bar shows one (board A), the address keeps it (#vault) */
-  const SCREENS = ['home', 'course', 'vault', 'chal', 'me']
+  const SCREENS = ['home', 'course', 'vault', 'feed', 'gifts', 'me']
   function show(k, push) {
     let target = null
     if (k === 'course-list') { k = 'course'; target = 'course-list' }
     if (k === 'send') { k = 'home'; target = 'send' }
-    if (k === 'gift') { k = 'vault'; target = 'gift' }
+    if (k === 'chal') k = 'feed'
+    if (k === 'gift') k = 'gifts'
+    if (k === 'guides' || k === 'skills') { target = k; k = 'vault' }
     if (!SCREENS.includes(k) || !$(`[data-v="${k}"]`)) k = 'home'
     app.dataset.screen = k
     $$('.links [data-go], .tabin [data-go]').forEach(a => { if (a.dataset.go === k) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current') })
@@ -424,7 +790,16 @@ const P = {
   }
   function wire() {
     document.addEventListener('click', e => {
-      const g = e.target.closest('[data-go]'); if (g) { e.preventDefault(); show(g.dataset.go); return }
+      const mb = e.target.closest('[data-menu]'); if (mb) { menuOpen() ? closeMenu() : openMenu(); return }
+      if (e.target.closest('[data-mclose]')) { closeMenu(); return }
+      const mg = e.target.closest('[data-mgo]'); if (mg) { menuGo(mg.dataset.mgo); return }
+      const g = e.target.closest('[data-go]'); if (g) { e.preventDefault(); closeMenu(); show(g.dataset.go); return }
+      if (e.target.closest('[data-gifts]')) { show('gifts'); return }
+      const hd = e.target.closest('[data-hide]'); if (hd) { doHide(hd.dataset.hide, hd.dataset.on === '1'); return }
+      if (e.target.closest('[data-compose]')) { compose(); return }
+      const lk = e.target.closest('[data-like]'); if (lk) { doLike(lk.dataset.like, lk); return }
+      const cm = e.target.closest('[data-cmt]'); if (cm) { postSheet(cm.dataset.cmt); return }
+      const sh = e.target.closest('[data-share]'); if (sh) { doShare(sh.dataset.share); return }
       const b = e.target.closest("[data-vb]"); if (b) { openBuild(+b.dataset.vb); return }
       if (e.target.closest('[data-next]')) { toast('The next build opens Friday 4 December'); return }
       if (e.target.closest('[data-sheetx]')) closeSheet()
@@ -434,6 +809,12 @@ const P = {
     $$('.vcard').forEach(c => c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click() } }))
     $$('[data-hello] video').forEach(v => { const go = () => { if (!v.controls) { v.controls = true; v.play().catch(() => {}) } }
       v.addEventListener('click', go); v.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go() } }) })
+    document.addEventListener('submit', e => { const f = e.target.closest('[data-cform]'); if (!f) return; e.preventDefault()
+      const id = f.dataset.cform, t = f.t.value.trim(), b = $('button', f); if (!t) return; b.disabled = true
+      post('/api/club/comment', { m, id, text: t }).then(r => { b.disabled = false; if (!r.ok) { toast(r.d.error || 'Something went wrong, try again'); return }
+        f.reset(); const l = $('[data-clist]'); if (l) { if (!$('.crow', l)) l.innerHTML = ''; l.insertAdjacentHTML('beforeend', cRow(r.d.comment)); l.scrollTop = l.scrollHeight }
+        const p = byId(id); if (p) { p.comments = r.d.comments; paint(id) } }) })
+    addEventListener('keydown', e => { if (e.key === 'Escape' && menuOpen()) closeMenu() })
     $$('[data-build]').forEach(f => f.tagName === 'FORM' && f.addEventListener('submit', e => {
       e.preventDefault(); const msg = $('[data-build-msg]', f), btn = $('button', f), link = f.link.value.trim()
       if (!/^https?:\/\/[^\s]+\.[^\s]+$/i.test(link)) { msg.className = 'err'; msg.textContent = 'Paste the link of your build, like https://your-tower.netlify.app'; return }

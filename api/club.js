@@ -28,6 +28,8 @@ import {
   limited, ipOf, receiptEmail, isBuyerEmail, isWaitlisted, fillWaitlist, backfill, lists, KEYS, PORTAL_URL,
   readMember, insideData, insideUrl, PREVIEW_EMAIL, noteBuild, sendInsideLink,
 } from './_lib/club.js';
+import { feedMember, feed, addPost, like, comments, addComment, share, setHidden, photo, noteMessage, hideOk, setRemind, notifyCourse, LINK, MAX_IMG } from './_lib/club-feed.js';
+import { markMailed } from './_lib/drip.js';
 
 const SITE = 'https://www.omnyalab.com';
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
@@ -54,6 +56,9 @@ export async function GET(req) {
   if (a === 'seats') return getSeats(req);
   if (a === 'welcome') return welcome(req);
   if (a === 'inside') return inside(req);
+  if (a === 'feed' || a === 'comments') return feedGet(req, a);
+  if (a === 'img') return img(req);
+  if (a === 'hide') return hideFromMail(req);
   if (a === 'preview') {
     if (!admin(req)) return new Response('Not found', { status: 404 });
     return json({ url: insideUrl(PREVIEW_EMAIL) });
@@ -72,6 +77,14 @@ export async function POST(req) {
   if (a === 'withdraw') return withdraw(req);
   if (a === 'link') return lostLink(req);
   if (a === 'build') return sendBuild(req);
+  if (['post', 'like', 'comment', 'share', 'msg', 'hide', 'remind'].includes(a)) return feedPost(req, a);
+  if (a === 'notify') {
+    // N1: Friday's course is online, Nico says so (admin key): { subject, text with {name} and {link}, test? }
+    if (!admin(req)) return new Response('Not found', { status: 404 });
+    const b = await body(req);
+    if (!b || !String(b.subject || '').trim() || !String(b.text || '').trim()) return fail(400, 'bad_request', 'subject and text needed');
+    return json(await notifyCourse({ subject: String(b.subject).trim(), text: String(b.text), test: b.test ? String(b.test) : '' }, markMailed));
+  }
   if (a === 'backfill') {
     if (!admin(req)) return new Response('Not found', { status: 404 });
     if (!stripe) return notConfigured();
@@ -210,6 +223,79 @@ async function sendBuild(req) {
   const link = String(b.link || '').trim().slice(0, 300), note = String(b.note || '').trim().slice(0, 1500);
   if (!/^https?:\/\/[^\s]+\.[^\s]+$/i.test(link)) return fail(400, 'bad_request', 'Paste the link of your build, like https://your-tower.netlify.app');
   try { await noteBuild(email, link, note); return json({ ok: true }); } catch (e) { console.error('[club] build', e.message); return fail(502, 'mail', 'Could not send it right now, try again in a minute.'); }
+}
+
+// 26/11 (Nico): the builds feed, «an Instagram made only of 3D» (api/_lib/club-feed.js)
+//   GET  /api/club/feed?m=            → { posts, me }        GET /api/club/comments?m=&id= → { comments }
+//   GET  /api/club/img?id=            → the photo of a post (kept by the CDN, it never changes)
+//   GET  /api/club/hide?id=&t=        → Nico hides a post from the link in his email (&show=1 puts it back)
+//   POST /api/club/post    { m, link, caption?, img?, w?, h? }   POST /api/club/like { m, id, on }
+//   POST /api/club/comment { m, id, text }   POST /api/club/share { m, id }   POST /api/club/msg { m, text }
+//   POST /api/club/hide    { m, id, hidden } (Nico's own page, the preview link) or ?key=IG_ADMIN_KEY
+//   POST /api/club/remind  { m, on }  → Friday's course email on/off      POST /api/club/notify?key= { subject, text, test? } → send it (N1)
+const who = async (m) => { const email = readMember(m); return email ? feedMember(email) : null; };
+async function feedGet(req, a) {
+  const u = new URL(req.url), me = await who(u.searchParams.get('m'));
+  if (!me) return fail(403, 'bad_link', 'Open the club from your own link.');
+  try {
+    if (a === 'feed') return json(await feed(me));
+    const c = await comments(me, u.searchParams.get('id'));
+    return c ? json({ comments: c }) : fail(404, 'not_found', 'This post is not there any more.');
+  } catch (e) { console.error('[club] feed', e.message); return fail(502, 'store', 'Could not load the feed, try again in a minute.'); }
+}
+async function img(req) {
+  try {
+    const r = await photo(new URL(req.url).searchParams.get('id'));
+    if (!r) return new Response('Not found', { status: 404 });
+    return new Response(r[1], { headers: { 'Content-Type': r[0], 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex' } });
+  } catch (e) { console.error('[club] img', e.message); return new Response('Error', { status: 502 }); }
+}
+async function hideFromMail(req) {
+  const u = new URL(req.url), id = u.searchParams.get('id') || '', show = u.searchParams.get('show') === '1';
+  if (!hideOk(id, u.searchParams.get('t') || '') && !admin(req)) return new Response('Not found', { status: 404 });
+  const r = await setHidden(id, !show).catch(() => null);
+  const back = `/api/club/hide?id=${encodeURIComponent(id)}&t=${encodeURIComponent(u.searchParams.get('t') || '')}${show ? '' : '&show=1'}`;
+  const msg = !r ? 'This post is not there any more.' : r.hidden ? 'Hidden. Nobody in the club sees this post now.' : 'Back in the feed. Everyone in the club sees it again.';
+  return new Response(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>THE 3D FUTURE</title><body style="margin:0;min-height:100vh;display:grid;place-items:center;background:#0b1534;color:#fff;font:17px/1.5 -apple-system,system-ui,sans-serif;text-align:center;padding:24px"><div><p style="font-size:22px;font-weight:700;margin:0 0 12px">${msg}</p>${r ? `<a style="color:#8cc4ff" href="${back}">${r.hidden ? 'Undo, put it back' : 'Hide it again'}</a>` : ''}</div></body>`, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
+}
+async function feedPost(req, a) {
+  const b = await body(req);
+  if (!b) return fail(400, 'bad_request', 'bad request');
+  const me = await who(b.m);
+  if (a === 'hide' && (admin(req) || me?.nico)) { const r = await setHidden(String(b.id || ''), b.hidden !== false); return r ? json(r) : fail(404, 'not_found', 'not found'); }
+  if (!me) return fail(403, 'bad_link', 'Open the club from your own link.');
+  const lim = { post: [10, 3600], like: [200, 600], comment: [40, 600], share: [60, 600], msg: [5, 3600], hide: [20, 600], remind: [20, 600] }[a];
+  if (await limited(req, a, lim[0], lim[1])) return tooMany();
+  try {
+    if (a === 'post') {
+      if (!me.open) return fail(403, 'not_yet', 'You can post from Saturday 28 November at 9:00 (Rome), when the club opens.');
+      const link = String(b.link || '').trim().slice(0, 300), caption = String(b.caption || '').trim().replace(/\s+\n/g, '\n').slice(0, 600);
+      if (!LINK.test(link)) return fail(400, 'bad_request', 'Paste the link of your build, like https://your-tower.netlify.app');
+      if (b.img && (typeof b.img !== 'string' || b.img.length > MAX_IMG)) return fail(400, 'bad_image', 'That photo is too big, try another one.');
+      return json({ post: await addPost(me, { link, caption, img: b.img || '', w: b.w, h: b.h }) });
+    }
+    if (a === 'msg') {
+      const text = String(b.text || '').trim().slice(0, 2000);
+      if (text.length < 2) return fail(400, 'bad_request', 'Write your message first.');
+      await noteMessage(me, text); return json({ ok: true });
+    }
+    if (a === 'hide') return fail(403, 'not_allowed', 'Only Nico can hide a post.');
+    if (a === 'remind') return json(await setRemind(me, b.on !== false));
+    const id = String(b.id || '');
+    let r = null;
+    if (a === 'like') r = await like(me, id, b.on !== false);
+    if (a === 'share') r = await share(me, id);
+    if (a === 'comment') {
+      const text = String(b.text || '').trim().slice(0, 1000);
+      if (!text) return fail(400, 'bad_request', 'Write your comment first.');
+      r = await addComment(me, id, text);
+    }
+    return r ? json(r) : fail(404, 'not_found', 'This post is not there any more.');
+  } catch (e) {
+    if (e.code === 'bad_image') return fail(400, 'bad_image', 'That photo did not work, try another one.');
+    console.error('[club] feed', a, e.message);
+    return fail(502, 'store', 'Something went wrong, try again in a minute.');
+  }
 }
 
 async function welcome(req) {
