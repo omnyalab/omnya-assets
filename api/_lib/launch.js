@@ -11,6 +11,10 @@ export const LAUNCH = [
   // 25/11 Nico «basta contatore, solo sempre meno posti disponibili»: no number and no counter words in the mails, one fixed
   // sentence about the 100 founders' gifts; seats: true only so that who already reserved is skipped
   { id: 'e2', at: '2026-11-25T17:00:00Z', list: 'consent', seats: true },
+  // 26/11 (Nico: «remember to pre sub so you won't miss the pack», gentle, alla Hormozi): the list and who opened the card step
+  // without finishing (Daksh: Amazon Pay sent him back with nothing saved) hear that only the card saves the seat and the gift.
+  // First of its day, so e2b skips whoever got it (never two launch mails on the same day); held until &lgo=r2
+  { id: 'r2', at: '2026-11-26T08:00:00Z', list: 'reserve', seats: true, hold: true },
   // 23/11 (Nico: «mandami tutto così vediamo»): the rest of the launch, each held until &lgo=<id>
   { id: 'e2b', at: '2026-11-26T17:00:00Z', list: 'consent', seats: true, hold: true },
   { id: 'e3b', at: '2026-11-27T17:00:00Z', list: 'consent', seats: true, hold: true }, // everyone, before the club list of the same day
@@ -27,6 +31,22 @@ const PAGE = 'omnyalab.com/the-3d-future';
 // 20/11 evening (Nico): «testi più fluidi e umani», subjects with a capital first letter and the club's name in capitals.
 // Same facts as the approved brief, written as one person talking, no bullet lists.
 const TEXTS = {
+  r2: {
+    subject: "Your seat isn't saved yet",
+    img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
+    body: `Hey {name},
+
+Quick one, so you don't miss the gift: being on the list, or opening the reservation, doesn't save your seat yet. Only your card does.
+
+You add your card, nothing is charged today, and on Saturday at 9:00 (Rome) your €9 month starts by itself, locked for as long as you stay. It's also the only way to get the founders' gift, our three playbooks and the full 3D AI Mastery course, yours to keep. It goes only to the first 100 who reserve, and fewer of them are left every day.
+
+{img}
+
+If the payment page didn't take it last time, that's fixed now: card, Apple Pay and Google Pay all work. It takes a minute, and if you change your mind before Saturday you cancel and pay nothing:
+{link}
+
+Nico`,
+  },
   e1: {
     subject: { a: 'THE 3D FUTURE opens Saturday', b: '3D THAT SELLS opens Saturday' },
     body: `Hey {name},
@@ -260,9 +280,12 @@ export function renderLaunch(id, p, { seatsLeft, listCount } = {}) {
   if (v === 'b') body = body.replace(/THE 3D FUTURE/g, '3D THAT SELLS');
   const subject = typeof t.subject === 'string' ? t.subject : t.subject[v];
   const off = unsubUrl(p.email);
-  const why = LAUNCH.find((x) => x.id === id)?.list === 'club' // the club list's own mails (e3, e4a)
+  const list = LAUNCH.find((x) => x.id === id)?.list;
+  const why = list === 'club' // the club list's own mails (e3, e4a)
     ? `You're getting this because you joined the list of ${v === 'b' ? '3D THAT SELLS' : 'THE 3D FUTURE'}. Omnya Lab, Venice, Italy.`
-    : "You're getting this because you asked for one of our guides on omnyalab.com and said yes to updates. Omnya Lab, Venice, Italy.";
+    : list === 'reserve' // 26/11: r2, the list and the reservations left halfway
+      ? "You're getting this because you joined the list of THE 3D FUTURE or started reserving your seat. Omnya Lab, Venice, Italy."
+      : "You're getting this because you asked for one of our guides on omnyalab.com and said yes to updates. Omnya Lab, Venice, Italy.";
   const paras = body.split('\n\n');
   const pic = t.img ? `<p><img src="https://www.omnyalab.com${t.img.src}" alt="${esc(t.img.alt)}" width="560" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:12px"></p>` : '';
   const html = paras.map((para) => (para.trim() === '{img}' ? pic : para.trim() === '{bar}' ? bar : `<p>${esc(para).replace(/\n/g, '<br>').replace('{link}', `<a href="${url}">${PAGE}</a>`)}</p>`)).filter(Boolean).join('\n');

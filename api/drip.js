@@ -26,7 +26,9 @@ import { redis, hasStore, storeDown } from './_lib/store.js';
 import { OFF_KEY } from './_lib/newsletter.js';
 import { sendResend, hasResend } from './_lib/mail.js';
 import { host } from './_lib/config.js';
+import Stripe from 'stripe';
 import { LAUNCH, renderLaunch, variantOf } from './_lib/launch.js';
+import { CLUB, RESERVE_FROM } from './_lib/club.js';
 import { renderNote, readToken, markMailed, OFFSETS, GUIDES, TARGETS, SITE, STEPS } from './_lib/drip.js';
 
 const K = 'omnya:drip:';
@@ -146,6 +148,22 @@ async function loadOld(now) {
 const LK = 'omnya:launch:';
 const isTest = (o, email) => /^check$/i.test(String(o.name || '').trim()) || /@omnyalab\.com$/i.test(email);
 
+// 26/11: who opened the club's card step and never finished (Daksh: Amazon Pay sent him back with nothing saved), from
+// Stripe: club checkouts since the reservations opened, by email, minus every email with a finished one. The members are
+// taken off again by launchList (seats: true), the tests by isTest.
+async function unfinished() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) return [];
+  const stripe = new Stripe(key), open = new Map(), done = new Set();
+  for await (const s of stripe.checkout.sessions.list({ limit: 100, created: { gte: Math.floor(RESERVE_FROM / 1000) } })) {
+    if (s.metadata?.club !== CLUB) continue;
+    const email = String(s.customer_details?.email || s.customer_email || '').trim().toLowerCase();
+    if (!email || isTest({ name: s.metadata?.name }, email)) continue;
+    if (s.status === 'complete') done.add(email); else if (!open.has(email)) open.set(email, s.metadata?.name || '');
+  }
+  return [...open].filter(([e]) => !done.has(e));
+}
+
 async function launchList(m) {
   const rows = new Map(); // email → name, the latest sign-up first
   for (let page = 0; page < 50; page++) {
@@ -155,15 +173,16 @@ async function launchList(m) {
       let o; try { o = JSON.parse(r); } catch { continue; }
       const email = String(o.email || '').trim().toLowerCase();
       if (!email || rows.has(email) || isTest(o, email)) continue;
-      const fits = m.list === 'club' ? o.free === 'waitlist-3d-future' : !!o.consent?.newsletter && o.free !== 'waitlist-3d-future';
+      const fits = m.list === 'club' || m.list === 'reserve' ? o.free === 'waitlist-3d-future' : !!o.consent?.newsletter && o.free !== 'waitlist-3d-future';
       if (fits) rows.set(email, o.name);
     }
     if (raw.length < 1000) break;
   }
-  if (m.list === 'club') { // the people who asked on WhatsApp (Nico's CSV), loaded with &clubextra=
+  if (m.list === 'club' || m.list === 'reserve') { // the people who asked on WhatsApp (Nico's CSV), loaded with &clubextra=
     const ex = await redis('HGETALL', `${LK}club:extra`);
     for (let i = 0; i < (ex?.length || 0); i += 2) if (!rows.has(ex[i])) rows.set(ex[i], ex[i + 1]);
   }
+  if (m.list === 'reserve') for (const [e, n] of await unfinished()) if (!rows.has(e)) rows.set(e, n);
   let emails = [...rows.keys()];
   if (!emails.length) return [];
   const checks = await pipe(emails.flatMap((e) => [['SISMEMBER', OFF_KEY, e], ...(m.seats ? [['HGET', 'omnya:club:members', e]] : [])]));
@@ -245,9 +264,14 @@ async function launchTick(now) {
   const d = dayOf(now);
   // 23/11: a day can have two mails (the club list and everyone): the first one not done yet, in the order of LAUNCH
   let m = null;
-  for (const x of LAUNCH.filter((y) => y.at.slice(0, 10) === d)) if (!(await redis('GET', `${LK}${x.id}:done`))) { m = x; break; }
-  if (!m) return null;
-  if (m.hold && (await redis('GET', `${LK}${m.id}:go`)) !== '1') return { launch: m.id, held: true }; // waits for Nico's go (&lgo=<id>)
+  // 26/11: a held mail (no &lgo= yet) no longer stops the next one of its day: r2 waiting for Nico must not keep e2b back
+  let held = null;
+  for (const x of LAUNCH.filter((y) => y.at.slice(0, 10) === d)) {
+    if (await redis('GET', `${LK}${x.id}:done`)) continue;
+    if (x.hold && (await redis('GET', `${LK}${x.id}:go`)) !== '1') { held = held || x.id; continue; }
+    m = x; break;
+  }
+  if (!m) return held ? { launch: held, held: true } : null; // waits for Nico's go (&lgo=<id>)
   if (Number(await redis('SET', `${LK}lock`, String(now), 'NX', 'EX', 55)) !== 1 && (await redis('GET', `${LK}lock`)) !== String(now)) return { launch: m.id, busy: true };
   try {
     const marked = await redis('GET', `${LK}${m.id}:marked`);
@@ -276,6 +300,8 @@ async function launchTick(now) {
     }
     // 23/11 (Nico): every mail says how many are really on the club list today, read at send time
     const listCount = (await launchList({ list: 'club' }).catch(() => [])).length || null;
+    // 26/11: never two launch mails to one person on one day (r2 goes to part of e2b's list on the same day)
+    for (const x of LAUNCH) if (x.id !== m.id && x.at.slice(0, 10) === d) for (const e of (await redis('SMEMBERS', `${LK}${x.id}:sent`)) || []) mailedToday.add(e);
     const r = await sendLaunch(m, people.filter((p) => !mailedToday.has(p.email)), seatsLeft, listCount);
     if (r.error) return { launch: m.id, ...r };
     const sent = r.sent, todo = { length: r.sent + r.left };
@@ -466,7 +492,7 @@ export async function GET(request) {
   if (q.get('lhold')) await redis('DEL', `${LK}${q.get('lhold')}:go`); // 23/11: a launch mail rewritten after the go waits again for Nico
   if (q.get('ltest')) { // one launch mail to one address (Nico's), outside the counts
     const m = LAUNCH.find((x) => x.id === q.get('ltest'));
-    if (!m) return json({ error: 'ltest = e1..e7' }, 400);
+    if (!m) return json({ error: 'ltest = ' + LAUNCH.map((x) => x.id).join(', ') }, 400);
     const to = String(q.get('to') || host.email).trim().toLowerCase();
     const listCount = Number(q.get('list')) || (await launchList({ list: 'club' }).catch(() => [])).length || null;
     const r = renderLaunch(m.id, { email: q.get('as') || to, name: q.get('name') || 'Nico' }, { seatsLeft: Number(q.get('seats')) || 100, listCount });

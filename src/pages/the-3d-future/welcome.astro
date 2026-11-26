@@ -1,14 +1,29 @@
 ---
 // /the-3d-future/welcome?session_id=cs_… (20/11, Nico): where the club checkout comes back (api/club.js, return_url).
 // "You're in" and the same three steps as the welcome email W1 (api/_lib/club.js). The links come from
-// /api/club/welcome only once Stripe says this session is a paid club checkout; otherwise the steps are written without
-// links and the page says they are in the email. Simple, dark, the club's blue: the visual designer restyles it later.
+// /api/club/welcome only once Stripe says this session is a paid club checkout. Simple, dark, the club's blue.
+// 26/11 (Nico, Daksh on WhatsApp: «I signed up but never got a welcome email»): Amazon Pay sent him back here twice with
+// the card NOT saved, and the page still said «You're in, your welcome email is on its way». Now the page says nothing
+// until Stripe answers: reserved → «Your seat is reserved», paid → «You're in», not paid → «didn't go through» with the
+// way back to the card, can't check → the email decides. «You're in» is never written for a payment that did not happen.
 import Club from '../../layouts/Club.astro';
 ---
-<Club title="You're in" noindex>
-  <h1 data-hi>You're in.</h1>
-  <p class="lead" data-state data-checking="Checking your payment…" data-fail="Your welcome email is on its way, with every link in it (subject: you're in)." data-ok="Three steps, and you're building.">Your welcome email is on its way, with every link in it (subject: you're in).</p>
+<Club title="THE 3D FUTURE" noindex>
+  <h1 data-hi>One second…</h1>
+  <p class="lead" data-state data-ok="Three steps, and you're building." data-paid="Your welcome email is on its way, with every link in it (subject: you're in).">Checking your payment…</p>
 
+  {/* 26/11: who comes back without a finished payment (Amazon Pay or Satispay given up, a card refused, no session) */}
+  <div class="box" data-nopay hidden>
+    <p>Nothing was charged and your card wasn't saved, so your seat isn't reserved yet. It takes a minute: try again with your card, Apple Pay or Google Pay.</p>
+    <a class="btn" href="/the-3d-future">Try again →</a>
+  </div>
+  {/* 26/11: Stripe could not be asked right now: the email is the proof */}
+  <div class="box" data-unsure hidden>
+    <p>If your payment went through, an email from us arrives within a few minutes (subject: your seat is reserved, or you're in). If nothing arrives, the payment didn't go through: write to us at <a href="mailto:info@omnyalab.com">info@omnyalab.com</a> and we sort it out.</p>
+    <a class="btn btn--line" href="" data-again>Check again</a>
+  </div>
+
+  <div data-in hidden>
   {/* 25/11 (Nico): his thank-you video, the first thing they see after joining */}
   <div class="hello" data-hello>
     <video playsinline preload="metadata" poster="/club/intro-nico-cover.webp" tabindex="0" aria-label="Play the welcome from Nico" style="cursor:pointer">
@@ -45,6 +60,7 @@ import Club from '../../layouts/Club.astro';
 
   {/* the one-tap cancel link: the Stripe customer portal (api/_lib/club.js PORTAL_URL), as in the email */}
   <p class="mute small"><span data-cancel>To cancel, reply to the welcome email.</span> To withdraw within 14 days: <a href="/withdraw">omnyalab.com/withdraw</a>.</p>
+  </div>
   <p class="mute">Nico</p>
 </Club>
 
@@ -58,29 +74,39 @@ import Club from '../../layouts/Club.astro';
   .small{font-size:14.5px}
   .hello{margin:22px 0 26px;aspect-ratio:16/9;border-radius:20px;overflow:hidden;background:#000;border:1px solid #ffffff1f;box-shadow:0 30px 70px -30px #000c}.hello video{display:block;width:100%;height:100%;object-fit:cover}
   .res{margin:26px 0 30px}.res h2{margin:4px 0 8px;font-size:18px}.res p{margin:0 0 12px}.res p:last-child{margin:0}
+  [data-nopay] p,[data-unsure] p{margin:0 0 18px}
 </style>
 
 <script is:inline>
-{ const id = new URLSearchParams(location.search).get('session_id') || '', st = document.querySelector('[data-state]')
-  const show = (sel, href) => { const a = document.querySelector(sel); if (a && href) { a.href = href; a.hidden = false } }
-  if (/^cs_(live|test)_[A-Za-z0-9]{8,200}$/.test(id)) {
-    st.textContent = st.dataset.checking
-    fetch('/api/club/welcome?session_id=' + encodeURIComponent(id)).then(r => r.ok ? r.json() : Promise.reject()).then(d => {
+{ const id = new URLSearchParams(location.search).get('session_id') || '', st = document.querySelector('[data-state]'), hi = document.querySelector('[data-hi]')
+  const $ = (sel) => document.querySelector(sel)
+  const show = (sel, href) => { const a = $(sel); if (a && href) { a.href = href; a.hidden = false } }
+  // 26/11: not paid (Stripe says the session is not complete), no such session, or no session at all
+  const noPay = () => { hi.textContent = 'Your payment didn’t go through'; st.hidden = true; $('[data-nopay]').hidden = false; document.title = 'Try again · Omnya Lab' }
+  const unsure = () => { hi.textContent = 'Almost there'; st.hidden = true; $('[data-unsure]').hidden = false; $('[data-again]').href = location.href }
+  if (!/^cs_(live|test)_[A-Za-z0-9]{8,200}$/.test(id)) noPay()
+  else fetch('/api/club/welcome?session_id=' + encodeURIComponent(id)).then(r => r.json().catch(() => ({})).then(d => {
+      // only Stripe's own answer «not paid / no such payment» (api/club.js welcome) says it didn't go through; any other error is «can't check»
+      if (!r.ok && ['not_paid', 'not_found', 'bad_request'].includes(d.code)) { noPay(); return null }
+      return r.ok ? d : Promise.reject()
+    })).then(d => {
+      if (!d) return
+      $('[data-in]').hidden = false
       if (d.reserved) { // 25/11: the reservation
-        document.querySelector('[data-hi]').textContent = 'Your seat is reserved' + (d.name && d.name !== 'there' ? ', ' + d.name : '') + '.'
-        document.querySelector('.steps').hidden = true; document.querySelector('[data-res]').hidden = false
-        if (d.gift) { document.querySelector('[data-rank]').textContent = 'number ' + d.rank; document.querySelector('[data-gift]').hidden = false }
-        else document.querySelector(d.rank ? '[data-nogift]' : '[data-wait]').hidden = false   /* rank 0: Stripe's message has not reached us yet */
-        if (d.portal) { const c = document.querySelector('[data-cancel]'), a = document.createElement('a'); a.href = d.portal; a.textContent = 'cancel here'; c.textContent = 'Changed your mind before Saturday? '; c.append(a, ' and you pay nothing.') }
+        hi.textContent = 'Your seat is reserved' + (d.name && d.name !== 'there' ? ', ' + d.name : '') + '.'; document.title = 'Your seat is reserved · Omnya Lab'
+        $('.steps').hidden = true; $('[data-res]').hidden = false
+        if (d.gift) { $('[data-rank]').textContent = 'number ' + d.rank; $('[data-gift]').hidden = false }
+        else $(d.rank ? '[data-nogift]' : '[data-wait]').hidden = false   /* rank 0: Stripe's message has not reached us yet */
+        if (d.portal) { const c = $('[data-cancel]'), a = document.createElement('a'); a.href = d.portal; a.textContent = 'cancel here'; c.textContent = 'Changed your mind before Saturday? '; c.append(a, ' and you pay nothing.') }
         st.textContent = 'We sent you an email with all of this (subject: your seat is reserved).'; return
       }
-      if (d.name && d.name !== 'there') document.querySelector('[data-hi]').textContent = 'You’re in, ' + d.name + '.'
-      if (d.email) document.querySelector('[data-email]').textContent = ' (' + d.email + ')'
+      hi.textContent = 'You’re in' + (d.name && d.name !== 'there' ? ', ' + d.name : '') + '.'; document.title = 'You’re in · Omnya Lab'
+      if (d.email) $('[data-email]').textContent = ' (' + d.email + ')'
       show('[data-skool]', d.inside); show('[data-skill]', d.skill)   /* 25/11: the club page, no Skool */
-      if (d.portal) { const c = document.querySelector('[data-cancel]'), a = document.createElement('a'); a.href = d.portal; a.textContent = 'here'; c.textContent = 'If you ever want to cancel, it’s one tap '; c.append(a, '.') }
-      st.textContent = d.inside ? st.dataset.ok : st.dataset.fail
-    }).catch(() => { st.textContent = st.dataset.fail })
-  } }
+      if (d.portal) { const c = $('[data-cancel]'), a = document.createElement('a'); a.href = d.portal; a.textContent = 'here'; c.textContent = 'If you ever want to cancel, it’s one tap '; c.append(a, '.') }
+      st.textContent = d.inside ? st.dataset.ok : st.dataset.paid
+    }).catch(unsure)
+}
 
 // 25/11 (Nico): his welcome video shows the cover first (A welcome from Nico · Play); the player bar appears on the first tap
 document.querySelectorAll('[data-hello] video').forEach(v => { const go = () => { if (!v.controls) { v.controls = true; v.play().catch(() => {}) } }
