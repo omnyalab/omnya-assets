@@ -37,8 +37,8 @@
   },
   "watch": {
     "title": "Step 2: see how we built <u class=\"hb2\">ancient Rome</u> with Claude",
-    "vsl": "vsl_riyadh.mp4?v=1",
-    "vsl_poster": "/learn/watch/vsl_poster_riyadh.jpg",
+    "vsl": "vsl_rome.mp4?v=1",
+    "vsl_poster": "/learn/watch/vsl_poster_rome.jpg",
     "hook": "<b class=\"hb\">Stop selling renders</b>clients pay for this now",
     "reel": "r_rome.mp4",
     "reel_poster": "p_rome.jpg",
@@ -55,7 +55,7 @@
     ],
     "launch_end": "2026-11-28T23:59:59+01:00",
     "day2": "Sunday",
-    "about": "25/11: the generic VSL with Nico and the tower (like the villa before its own video), and the first 10 s of our split reel (3D on top, real below, hook «Claude + Higgsfield just rebuilt ancient Rome»), 540x960 24 fps, until the real reel is out"
+    "about": "26/11: Nico's VSL with the Rome cutaways (VideoHub films/VSL-ROME, copy of VSL-VILLA; Nico: «bisogna farlo tipo a Roma», ok in VideoHub), and the first 10 s of our split reel (3D on top, real below, hook «Claude + Higgsfield just rebuilt ancient Rome»), 540x960 24 fps, until the real reel is out"
   },
   "kit": null,
   "products": {
