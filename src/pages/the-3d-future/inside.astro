@@ -80,7 +80,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .steps2 li > *{position:relative;z-index:2}
   .steps2 li > .sbg{position:absolute;z-index:0;inset:-12px;background-size:cover;background-position:center;opacity:.95;transform:scale(1.06)}
   .steps2 li > .sveil{position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,#05091588 0%,#05091555 38%,#050915e0 100%)}
-  .steps2 li > .sgrain{position:absolute;z-index:1;inset:0;opacity:.09;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+  .steps2 li > .sgrain{position:absolute;z-index:1;inset:0;opacity:.045;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
   .steps2 .stop{display:flex;justify-content:space-between;align-items:flex-start}
   .steps2 .no{font:700 54px/.85 Geist,sans-serif;letter-spacing:-.06em;color:#fff;text-shadow:0 4px 30px #0008;font-variant-numeric:tabular-nums}
   .steps2 h3{margin:auto 0 8px;font:700 26px/1.04 Geist,sans-serif;letter-spacing:-.035em;text-wrap:balance;text-shadow:0 3px 24px #0009}
@@ -198,7 +198,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .A .chero > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -3; transform: scale(1.04) }
   .A .chero .gz { z-index: -2; height: 70% }
   .A .chero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(5,8,18,.2), rgba(5,8,18,0) 30%, rgba(5,8,18,.55) 70%, rgba(5,8,18,.88)) }
-  .A .chero .grain2 { position: absolute; inset: 0; z-index: -1; opacity: .1; mix-blend-mode: overlay; pointer-events: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>") }
+  .A .chero .grain2 { position: absolute; inset: 0; z-index: -1; opacity: .05; mix-blend-mode: overlay; pointer-events: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>") }
   .A .chero .ip { left: 16px; top: 16px; height: 32px; padding: 0 12px; font-size: 12px }
   .A .chno { position: absolute; right: 22px; top: 14px; display: flex; align-items: baseline; gap: 4px }
   .A .chno b { font: 700 84px/1 var(--f-sfd); letter-spacing: -.06em; text-shadow: 0 6px 36px rgba(0,0,0,.45) }
@@ -488,7 +488,7 @@ const P = {
   const svgOf = k => { const n = ++bn; return SVG[k].replace(/id="([^"]+)"/g, `id="$1-${n}"`).replace(/url\(#([^)]+)\)/g, `url(#$1-${n})`).replace(/href="#([^"]+)"/g, `href="#$1-${n}"`) }
   const medal = ([k, t, how], on) => `<div class="medal2 ${on ? '' : 'off'}" title="${esc(how)}"><span class="bdg">${svgOf(k)}${on ? '' : `<span class="lk">${ic('lock')}</span>`}</span><b>${esc(t)}</b><small>${on ? 'Earned' : esc(how)}</small></div>`
   const incoming = (img, pill, k, n, u, sub, go) => `<a class="inc" href="#${go}" data-go="${go}"><img src="${img}" alt="" loading="lazy"><span class="gz"></span><span class="ip">${ic('spark')}${pill}</span><span class="ik">${k}</span><span class="in"><b>${n}</b>${u ? `<small>${u}</small>` : ''}</span><span class="is">${sub}</span></a>`
-  const BG = { home: '/club/burj-1080.webp', course: '/club/join-1.webp', vault: '/club/bg-towers-top.webp', feed: '/club/join-3.webp', gifts: '/club/bg-mesa-dusk.webp', me: '/club/profile-cover-800.webp' }
+  const BG = { home: '/club/burj-1080.webp', course: '/club/join-1.webp', vault: '/club/bg-towers-top.webp', feed: '/club/join-3.webp', gifts: '/club/bg-mesa-dusk.webp', me: '/club/profile-cover.webp' }  /* 26/11 (Nico: blur sgranati): the 1600 px photo, the 800 px one blocked up at full screen */
   /* 25/11 Nico («B, vai»): five tabs, the courses have their own (a new course comes every Friday) */
   const TABS = [['home', 'home', 'Home'], ['course', 'play', 'Courses'], ['vault', 'grid', 'Vault'], ['feed', 'feed', 'Feed'], ['me', 'person', 'Profile']]
   const GO_COURSE = 'course' // the course card in Home opens the Courses tab
