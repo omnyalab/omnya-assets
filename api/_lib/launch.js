@@ -42,7 +42,7 @@ You add your card, nothing is charged today, and on Saturday at 9:00 (Rome) your
 
 {img}
 
-If the payment page didn't take it last time, that's fixed now: card, Apple Pay and Google Pay all work. It takes a minute, and if you change your mind before Saturday you cancel and pay nothing:
+If the payment page didn't take it last time, try again with your card, Apple Pay or Google Pay. It takes a minute, and if you change your mind before Saturday you cancel and pay nothing:
 {link}
 
 Nico`,
