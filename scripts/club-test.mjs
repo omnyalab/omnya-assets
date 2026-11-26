@@ -46,7 +46,8 @@ eq(decide({ now: Date.parse('2026-12-04T23:59:59+01:00'), taken: 300, plan: 'mon
 eq(decide({ now: RESERVE_FROM - 1, plan: 'month' }), { ok: false, phase: 'before', error: 'closed' }, 'before the reservations: closed');
 eq(decide({ now: Date.parse('2026-11-25T10:00:00+01:00'), plan: 'month' }), { ok: true, phase: 'before', key: 'M9', eur: 9, reserve: true }, '25/11: a reservation at €9');
 eq(decide({ now: EARLY, waitlisted: true, plan: 'month' }).reserve, undefined, '28/11 09:00: no more reservations, a normal join');
-eq(reservedText({ name: 'Marco', rank: 7, portal: 'P' }).includes("You're number 7 of the first 100 who reserved"), true, 'R1 with the gift');
+eq(reservedText({ name: 'Marco', rank: 7, portal: 'P' }).includes("You're one of the first 100 who reserved"), true, 'R1 with the gift');
+eq(/number|#\d|\b7\b/.test(reservedText({ name: 'Marco', rank: 7, portal: 'P' })), false, 'R1 never says the place in line (26/11)');
 eq(reservedText({ name: 'Marco', rank: 101, portal: 'P' }).includes('were all taken'), true, 'R1 after the 100 gifts');
 eq(reservedText({ name: 'Marco', rank: 3, portal: 'P' }).startsWith('Your seat is reserved, Marco.\n\nNothing was charged today.'), true, 'R1 opening');
 eq(decide({ now: at.after, taken: 0, plan: 'month' }).key, 'M19', 'Sat 5/12 00:00: €19 a month, the doors are open (24/11)');

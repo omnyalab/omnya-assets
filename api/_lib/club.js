@@ -156,8 +156,12 @@ export const insideUrl = (email) => `${SITE_URL}/the-3d-future/inside?m=${member
     blurred, under the card (Nico, B3). aff = the Higgsfield affiliate line under the video (26/11, Nico: step 2 says «it's right
     here on screen and under this video»). src = the video once it is online; until then the page shows the step locked, opening on Saturday 28/11.
     No lengths yet: the films are not cut (Nico: no made-up numbers). */
+/** 26/11 (Nico: «prepara tutto su Vercel»): the films as HLS streams (1080p + 720p, 6 s pieces, scripts made by
+    corso-step/v3/hls.sh) in a folder with a random name, given only to members; src = its master playlist, '' = not online yet */
+const COURSE_V = '/club/course/v/c9fbc31edcc1ce9e/';
+const hls = (n) => `${COURSE_V}${String(n).padStart(2, '0')}/master.m3u8`;
 export const LESSONS = [
-  { n: 1, t: "What you'll build", p: "The tower we're building together, why developers pay over $6,000 for a page like this, and everything you need before you start.", k: "build", s: "The tower we build together, and why developers pay for it.", img: '/club/course/step-01.webp', src: '' },
+  { n: 1, t: "What you'll build", p: "The tower we're building together, why developers pay over $6,000 for a page like this, and everything you need before you start.", k: "build", s: "The tower we build together, and why developers pay for it.", img: '/club/course/step-01.webp', src: hls(1) },
   { n: 2, t: 'Set up your kit', p: "What's inside the kit, how to open it on Mac or Windows with one double click, and your first test run.", k: "kit", s: "What's in the kit, and your first run with one double click.", img: '/club/course/step-02.webp', src: '', aff: true },
   { n: 3, t: 'Inside the engine', p: 'A tour of the engine piece by piece, so you know exactly what every part does and how to drive it.', k: "engine", s: "Every part of the engine, and how to drive it.", img: '/club/course/step-03.webp', src: '' },
   { n: 4, t: 'References and real measures', p: 'How to collect the real photos from every side, pick your main photo, and give every number a source.', k: "real measures", s: "Real photos from every side, and a source for every number.", img: '/club/course/step-04.webp', src: '' },
@@ -191,8 +195,8 @@ export async function insideData(email) {
   if (m.status === 'canceled') return { ...base, state: 'ended' };
   const founder = m.reserved && Number(m.rank) > 0 && Number(m.rank) <= CHEAP_SEATS ? Number(m.rank) : 0;
   // 25/11: the course shows, locked; 26/11: a founder sees the gift waiting for them (no files until the card is charged)
-  if (m.reserved && !m.welcomed) return { ...base, state: 'waiting', opens: new Date(EARLY).toISOString(), lessons: LESSONS, founder, giftNames: founder ? FOUNDERS_GIFTS.map((g) => g.name) : [], giftList: founder ? FOUNDERS_GIFTS.map((g) => ({ name: g.name, cover: giftCover(g.file) })) : [] };
-  return { ...openData(base, !!founder), founder };
+  if (m.reserved && !m.welcomed) return { ...base, state: 'waiting', opens: new Date(EARLY).toISOString(), lessons: LESSONS.map((l) => ({ ...l, src: '' })), /* no stream before the doors open */ founder: !!founder, giftNames: founder ? FOUNDERS_GIFTS.map((g) => g.name) : [], giftList: founder ? FOUNDERS_GIFTS.map((g) => ({ name: g.name, cover: giftCover(g.file) })) : [] };
+  return { ...openData(base, !!founder), founder: !!founder }; // 26/11 (Nico): yes or no, never the number
 }
 function openData(base, gift) {
   return {
@@ -409,7 +413,7 @@ export function welcomeText({ name, inside, skill, portal, founder }) {
   // 23/11: the first 100 of the founders' round also get the founders' gift, theirs to keep. 26/11 (Nico: «i regali si
   // sbloccano solo da dentro la pagina quando uno è founder»): no gift links in the email any more (a link in an email can
   // be forwarded to anyone), only the line that says where they are: the members' page shows them to the founder alone
-  const gift = founder ? `\n\nYou're founder number ${founder}, so your founders' gift is unlocked inside your club page, only for you: our three playbooks and the full 3D AI Mastery course, yours to keep.` : '';
+  const gift = founder ? `\n\nYou're one of our founders, so your founders' gift is unlocked inside your club page, only for you: our three playbooks and the full 3D AI Mastery course, yours to keep.` : '';
   // 25/11 (Nico: «tutto nel sito»): the club is our own page, the link below is the member's own (no Skool)
   return `You're in, ${name}.\n\nThis is your link to the club, it's yours so keep it: your courses, the Vault with every build and its files, and the Full guides are all there:\n${inside}\n\nYour House Builder skill is yours to keep, here:\n${skill}${gift}\n\nStart with the first video course, your own tower step by step, and when it's done send it to me from the club page: I look at every first build myself.\n\n${cancel}\n\nTo withdraw within 14 days: ${WITHDRAW}\n\nNico`;
 }
@@ -417,7 +421,7 @@ export function welcomeText({ name, inside, skill, portal, founder }) {
     9:00 Rome; the first 100 who reserve get the founders' gift, unlocked inside their club page once the card is charged. */
 export function reservedText({ name, rank, portal }) {
   const gift = rank && rank <= CHEAP_SEATS
-    ? `You're number ${rank} of the first 100 who reserved, so the founders' gift is yours: our three playbooks and the full 3D AI Mastery course, yours to keep. It unlocks on Saturday inside your club page, only for you, and your welcome email brings you the link to it, together with your House Builder skill.`
+    ? `You're one of the first 100 who reserved, so the founders' gift is yours: our three playbooks and the full 3D AI Mastery course, yours to keep. It unlocks on Saturday inside your club page, only for you, and your welcome email brings you the link to it, together with your House Builder skill.`
     : `The 100 founders' gifts were all taken before you reserved, but your €9 price is yours, locked for as long as you stay. On Saturday your welcome email brings your link to the club and your House Builder skill.`;
   const cancel = portal ? `If you change your mind before Saturday, cancel here and you pay nothing: ${portal}` : `If you change your mind before Saturday, reply to this email and you pay nothing.`;
   return `Your seat is reserved, ${name}.\n\nNothing was charged today. On Saturday 28 November at 9:00 (Rome) the doors of THE 3D FUTURE open, your first month starts and your card is charged €9, the founders' price that stays locked for as long as you stay.\n\n${gift}\n\n${cancel}\n\nTo withdraw within 14 days: ${WITHDRAW}\n\nNico`;

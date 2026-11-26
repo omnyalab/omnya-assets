@@ -53,7 +53,7 @@ import Club from '../../layouts/Club.astro';
   <div class="box res" data-res hidden>
     <h2>Nothing was charged today</h2>
     <p>On Saturday 28 November at 9:00 (Rome) the doors open, your first month starts and your card is charged €9, the founders' price that stays locked for as long as you stay.</p>
-    <p data-gift hidden>You're <b data-rank></b> of the first 100 who reserved, so the founders' gift is yours: our three playbooks and the full 3D AI Mastery course. It unlocks on Saturday inside your club page, only for you, and your welcome email brings you the link to it, together with your House Builder skill.</p>
+    <p data-gift hidden>You're one of the first 100 who reserved, so the founders' gift is yours: our three playbooks and the full 3D AI Mastery course. It unlocks on Saturday inside your club page, only for you, and your welcome email brings you the link to it, together with your House Builder skill.</p>
     <p data-nogift hidden>On Saturday your welcome email brings your link to the club and your House Builder skill.</p>
     <p data-wait hidden>Your email tells you if you're one of the first 100 who reserved and get the founders' gift. On Saturday your welcome email brings your link to the club and your House Builder skill.</p>
   </div>
@@ -95,8 +95,8 @@ import Club from '../../layouts/Club.astro';
       if (d.reserved) { // 25/11: the reservation
         hi.textContent = 'Your seat is reserved' + (d.name && d.name !== 'there' ? ', ' + d.name : '') + '.'; document.title = 'Your seat is reserved · Omnya Lab'
         $('.steps').hidden = true; $('[data-res]').hidden = false
-        if (d.gift) { $('[data-rank]').textContent = 'number ' + d.rank; $('[data-gift]').hidden = false }
-        else $(d.rank ? '[data-nogift]' : '[data-wait]').hidden = false   /* rank 0: Stripe's message has not reached us yet */
+        if (d.gift) $('[data-gift]').hidden = false   /* 26/11 (Nico): never the place in line */
+        else $(d.counted ? '[data-nogift]' : '[data-wait]').hidden = false   /* not counted yet: Stripe's message has not reached us yet */
         if (d.portal) { const c = $('[data-cancel]'), a = document.createElement('a'); a.href = d.portal; a.textContent = 'cancel here'; c.textContent = 'Changed your mind before Saturday? '; c.append(a, ' and you pay nothing.') }
         st.textContent = 'We sent you an email with all of this (subject: your seat is reserved).'; return
       }

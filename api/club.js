@@ -108,7 +108,8 @@ async function getSeats(req) {
     // 25/11: before the opening the counter is the founders' gifts, given in the order of the reservations (rank)
     const taken = phase === 'before' ? Number(await kv('GET', KEYS.reserved)) || 0 : await seats(stripe);
     // the CDN keeps it 30 s too (the doors open with a crowd); a preview is never kept
-    return json({ taken, left: Math.max(0, CHEAP_SEATS - taken), phase }, 200, preview ? 'no-store' : 'public, max-age=0, s-maxage=30');
+    // 26/11 (Nico: «non si deve sapere quante persone sono dentro»): the count never leaves the server, only whether the 100 founders' gifts are gone
+    return json({ giftsLeft: taken < CHEAP_SEATS, phase }, 200, preview ? 'no-store' : 'public, max-age=0, s-maxage=30');
   } catch (e) {
     if (e.code === 'not_configured') return notConfigured({ phase });
     console.error('[club] seats', e.message);
@@ -309,7 +310,8 @@ async function welcome(req) {
     // 25/11: a reservation shows "your seat is reserved" (Skool and the skill come on Saturday, when the card is charged)
     if (s.metadata?.reserve === '1') {
       const rank = Number(await kv('HGET', KEYS.rank, s.id).catch(() => 0)) || 0;
-      return json({ reserved: true, name: firstName(s.metadata?.name || s.customer_details?.name), email: cleanEmail(s.customer_details?.email || s.customer_email), rank, gift: rank > 0 && rank <= CHEAP_SEATS, portal: PORTAL_URL });
+      // 26/11 (Nico: «non si deve sapere quante persone sono dentro»): never the place in line, only gift yes/no and whether it is counted yet
+      return json({ reserved: true, name: firstName(s.metadata?.name || s.customer_details?.name), email: cleanEmail(s.customer_details?.email || s.customer_email), counted: rank > 0, gift: rank > 0 && rank <= CHEAP_SEATS, portal: PORTAL_URL });
     }
     let skill = '';
     try { skill = SITE + signedHref(HOUSE_SKILL_FILE, PAGE_TTL); } catch {}

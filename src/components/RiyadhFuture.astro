@@ -52,12 +52,7 @@ const after = at >= Date.parse(FOUNDERS_END);
     <p class="ryf__sub">The club where you learn to build the 3D that sells</p>
     <ul class="ryfm__li ryf__chk"><li>Step-by-step video courses on our builds</li><li>Six builds from our reels, with files, prompts and Claude skills</li><li>My comments on your builds every Monday</li></ul>
     {!href && <p class="ryf__lock">You bought this guide, so your price stays €9 a month, even after the first 100</p>}
-    {/* 20/11 (Nico: only the real number): the seats left come from /api/club/seats (Stripe, 60 s); until it answers, or
-        if it cannot count, the counter stays hidden. ?seats=<n> previews a number */}
-    <div class="ryf__seats" data-ryf-seats-box hidden>
-      <p><b data-ryf-seats></b> of 100 seats left</p>
-      <span class="ryf__bar" aria-hidden="true"><i data-ryf-bar style="width:0%"></i></span>
-    </div>
+    {/* 26/11 (Nico: «non si deve sapere quante persone sono dentro»): no seats counter here any more */}
     {/* TODO: the Stripe subscription link (€9/month) goes here */}
     <a class="ryf__btn ryf__btn--card ryf__btn--join" href={href || '#join'} data-ryf-join data-after={href ? 'Join for €19/month' : ''}>{href && after ? 'Join for €19/month' : 'Join for €9/month'}</a>
     <p class="ryf__note">Cancel in one tap</p>
@@ -150,12 +145,6 @@ const after = at >= Date.parse(FOUNDERS_END);
     box.querySelectorAll('[data-ryf-state]').forEach(a => { a.hidden = a.dataset.ryfState !== state })
     const jb = box.querySelector('[data-ryf-join]')
     if (jb && jb.dataset.after) jb.textContent = after ? jb.dataset.after : 'Join for €9/month'
-    // 20/11: the real counter (api/club.js, seats of round 1 read from Stripe); ?seats=<n> is the preview
-    const sb = box.querySelector('[data-ryf-seats-box]'), sn = box.querySelector('[data-ryf-seats]'), bar = box.querySelector('[data-ryf-bar]')
-    const seats = n => { n = Math.max(0, Math.min(100, n)); if (sn) sn.textContent = String(n); if (bar) bar.style.width = (100 - n) + '%'; if (sb) sb.hidden = false } // the bar fills with the seats taken
-    const raw = q.get('seats')
-    if (raw !== null) seats(parseInt(raw, 10) || 0)
-    else if (state === 'open' && !after) fetch('/api/club/seats').then(r => r.ok ? r.json() : null).then(d => { if (d && typeof d.left === 'number') seats(d.left) }).catch(() => {})
   }
   if (m && f) {
     const open = () => { m.hidden = false; setTimeout(() => f.name.focus(), 50) }, close = () => { m.hidden = true }

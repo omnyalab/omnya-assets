@@ -64,7 +64,7 @@
     var live = function () { return false; }; // 25/11 Nico «basta contatore»: no number on the page (the seat box stays hidden)
     if (!live()) return renderSeats();
     fetch('/api/club/seats' + atQ).then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (d) { if (d && typeof d.taken === 'number') taken = d.taken; renderSeats(); })
+      .then(function () { renderSeats(); })   // 26/11: the API no longer gives the count (Nico: nobody must know how many are inside)
       .catch(function () { renderSeats(); });
     if (!seatsTimer) seatsTimer = setInterval(function () { if (live()) loadSeats(); }, 60000);
   }
