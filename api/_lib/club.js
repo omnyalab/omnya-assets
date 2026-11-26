@@ -151,11 +151,12 @@ export const insideUrl = (email) => `${SITE_URL}/the-3d-future/inside?m=${member
 
 /** The first course, SAMAR in eleven steps (25/11, titles and intros from the course scripts, «Corso SAMAR - copioni degli
     11 step.md»). k = the word in azure and s = the short line, both from the approved step covers; img = the cover photo,
-    blurred, under the card (Nico, B3). src = the video once it is online; until then the page shows the step locked, opening on Saturday 28/11.
+    blurred, under the card (Nico, B3). aff = the Higgsfield affiliate line under the video (26/11, Nico: step 2 says «it's right
+    here on screen and under this video»). src = the video once it is online; until then the page shows the step locked, opening on Saturday 28/11.
     No lengths yet: the films are not cut (Nico: no made-up numbers). */
 export const LESSONS = [
   { n: 1, t: "What you'll build", p: "The tower we're building together, why developers pay over $6,000 for a page like this, and everything you need before you start.", k: "build", s: "The tower we build together, and why developers pay for it.", img: '/club/course/step-01.webp', src: '' },
-  { n: 2, t: 'Set up your kit', p: "What's inside the kit, how to open it on Mac or Windows with one double click, and your first test run.", k: "kit", s: "What's in the kit, and your first run with one double click.", img: '/club/course/step-02.webp', src: '' },
+  { n: 2, t: 'Set up your kit', p: "What's inside the kit, how to open it on Mac or Windows with one double click, and your first test run.", k: "kit", s: "What's in the kit, and your first run with one double click.", img: '/club/course/step-02.webp', src: '', aff: true },
   { n: 3, t: 'Inside the engine', p: 'A tour of the engine piece by piece, so you know exactly what every part does and how to drive it.', k: "engine", s: "Every part of the engine, and how to drive it.", img: '/club/course/step-03.webp', src: '' },
   { n: 4, t: 'References and real measures', p: 'How to collect the real photos from every side, pick your main photo, and give every number a source.', k: "real measures", s: "Real photos from every side, and a source for every number.", img: '/club/course/step-04.webp', src: '' },
   { n: 5, t: 'The tower in 3D', p: 'Your tower built from the main photo and checked with numbers, not with hope: overlay, silhouette score and an honest critic.', k: "in 3D", s: "Your tower in 3D, checked with numbers, not with hope.", img: '/club/course/step-05.webp', src: '' },

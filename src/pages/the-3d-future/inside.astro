@@ -86,6 +86,9 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .steps2 .sfl{display:block;height:1px;margin:2px 0 10px;background:linear-gradient(90deg,#6fb6ff00,#8cc4ffcc 40%,#dceeff 50%,#8cc4ffcc 60%,#6fb6ff00);opacity:.7}
   .steps2 p{margin:0 0 14px;color:#ffffffcc;font-size:15px;line-height:1.4;max-width:34ch}
   .steps2 video{display:block;width:100%;aspect-ratio:16/9;margin-top:4px;border-radius:14px;background:#000}
+  .steps2 .aff{position:relative;margin:12px 0 0;font-size:15px;line-height:1.45;color:rgba(255,255,255,.78)}
+  .steps2 .aff a{color:#6fb6ff;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+  .steps2 .aff span{color:rgba(255,255,255,.5)}
   .lk{position:relative;flex:none;width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(70% 70% at 35% 25%,#ffffff40,#ffffff10 60%);border:1px solid #ffffff38;backdrop-filter:blur(10px);box-shadow:0 0 0 6px #5aa8ff14,0 10px 30px -8px #2a74ffaa}
   .lk svg{width:22px;height:22px;filter:drop-shadow(0 0 6px #5aa8ffaa)}
   .lk::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:1px solid #8cc4ff;opacity:0;animation:lkring 3.2s ease-out infinite;animation-delay:var(--d,0s)}
@@ -280,12 +283,14 @@ const P = {
   // 25/11 (Nico, L2): the course as eleven cards, locked until each video is online; live countdown to Saturday 9:00 Rome
   const OPENS = Date.parse('2026-11-28T08:00:00Z')
   const LOCK = '<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="lkg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eaf4ff"/><stop offset="1" stop-color="#7fb8ff"/></linearGradient></defs><path d="M7.5 10.5V8a4.5 4.5 0 0 1 9 0v2.5" fill="none" stroke="url(#lkg)" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="10.5" width="14" height="10" rx="3" fill="url(#lkg)"/><circle cx="12" cy="15.2" r="1.6" fill="#1b4fae"/><path d="M12 16.4v1.8" stroke="#1b4fae" stroke-width="1.6" stroke-linecap="round"/></svg>'
+  // 26/11 (Nico): the Higgsfield affiliate link under the step 2 video, as the video says
+  const AFF = '<p class="aff">Make your Higgsfield account with <a href="https://higgsfield.ai?fpr=omnya-5b7f71" target="_blank" rel="noopener sponsored">our link</a>: 3 days of unlimited generations, inside Claude and on Higgsfield, and 50% off Plus and Ultra. <span>Affiliate link, it costs you nothing more.</span></p>'
   function course(ls) {
     const before = Date.now() < OPENS, ol = $('[data-lessons]')
     const no = l => String(l.n).padStart(2, '0'), ttl = l => { const t = esc(l.t), k = esc(l.k || ''); return k && t.includes(k) ? t.replace(k, '<em>' + k + '</em>') : t }
     const bg = l => l.img ? `<span class="sbg" style="background-image:url(${esc(l.img)})"></span><span class="sveil"></span><span class="sgrain"></span>` : ''
     ol.innerHTML = ls.map((l, i) => l.src
-      ? `<li>${bg(l)}<div class="stop"><span class="no">${no(l)}</span></div><h3>${ttl(l)}</h3><span class="sfl"></span><p>${esc(l.s || l.p)}</p><video controls playsinline preload="metadata"${l.poster ? ` poster="${esc(l.poster)}"` : ''} src="${esc(l.src)}"></video></li>`
+      ? `<li>${bg(l)}<div class="stop"><span class="no">${no(l)}</span></div><h3>${ttl(l)}</h3><span class="sfl"></span><p>${esc(l.s || l.p)}</p><video controls playsinline preload="metadata"${l.poster ? ` poster="${esc(l.poster)}"` : ''} src="${esc(l.src)}"></video>${l.aff ? AFF : ''}</li>`
       : `<li class="locked" style="--d:${(i * .35).toFixed(2)}s">${bg(l)}<div class="stop"><span class="no">${no(l)}</span><span class="lk" role="img" aria-label="Locked">${LOCK}</span></div><h3>${ttl(l)}</h3><span class="sfl"></span><p>${esc(l.s || l.p)}</p><span class="lk-pill"><i></i>${before ? 'Opens 28 November' : 'Coming soon'}</span></li>`).join('')
     $('[data-course]').hidden = false
     // the cards come in as they scroll into view (and are all there without the observer)
