@@ -496,7 +496,7 @@ const P = {
     const its = giftItems(), covers = its.filter(it => it.cover).map(it => `<img src="${esc(it.cover)}" alt="">`).join('')
     return `<button type="button" class="giftc" data-gifts aria-label="Redeem your gifts">
       <span class="gemo" aria-hidden="true">🎁</span>
-      <span class="gtx"><span class="gk">${open ? '' : ic('lock')}Founder #${esc(d.founder)}</span><span class="gt">Redeem your <em>gifts</em></span>
+      <span class="gtx"><span class="gk">${open ? "" : ic("lock")}Founder${d.founder ? " #" + esc(d.founder) : ""}</span><span class="gt">Redeem your <em>gifts</em></span>
         <span class="gs">${open ? `${its.length} gifts for the first 100 who reserved: three playbooks and the full 3D AI Mastery course. Yours to keep.` : 'Yours, only yours. They unlock here on Saturday 28 November at 9:00 (Rome).'}</span>
         <span class="gfan ph" aria-hidden="true">${covers}</span>
         <span class="btn">${open ? 'Redeem your gifts' : 'See your gifts'}${ic('arrow')}</span></span>
@@ -506,7 +506,7 @@ const P = {
     const { d, open } = CTX, its = giftItems()
     const left = Math.max(0, OPENS - Date.now()), u = [Math.floor(left / 864e5), Math.floor(left / 36e5) % 24, Math.floor(left / 6e4) % 60]
     const cov = it => it.cover ? `<img src="${esc(it.cover)}" alt="" loading="lazy">` : ''
-    return `<div data-v="gifts"><div class="mtop"><div class="ghead"><span class="gemo" aria-hidden="true">🎁</span><div><p class="eyebrow">Founder #${esc(d.founder)}</p><h1>Your gifts</h1><p class="msub">${open ? 'For the first 100 who reserved. Yours to keep.' : 'Yours, only yours. They unlock on Saturday 28 November at 9:00 (Rome).'}</p></div></div></div>
+    return `<div data-v="gifts"><div class="mtop"><div class="ghead"><span class="gemo" aria-hidden="true">🎁</span><div><p class="eyebrow">Founder${d.founder ? " #" + esc(d.founder) : ""}</p><h1>Your gifts</h1><p class="msub">${open ? 'For the first 100 who reserved. Yours to keep.' : 'Yours, only yours. They unlock on Saturday 28 November at 9:00 (Rome).'}</p></div></div></div>
       <div class="gpage">${open || !left ? '' : `<div class="gcd" aria-label="Unlocks in">${[['days', u[0]], ['hours', u[1]], ['min', u[2]]].map(([l, n]) => `<span><b>${n}</b><small>${l}</small></span>`).join('')}</div>`}
         <div class="ggrid">${its.map(it => open
           ? `<a class="glass gitem" href="${esc(it.href)}" target="_blank" rel="noopener"><span class="gcov">${cov(it)}</span><b>${esc(it.name)}</b><span class="gdl">${ic('down')}Download</span></a>`
@@ -625,7 +625,7 @@ const P = {
       return href ? `<a class="mi ${cls}" href="${esc(href)}"${/^https?:/.test(href) ? ' target="_blank" rel="noopener"' : ''}>${inner}</a>` : `<button type="button" class="mi ${cls}" data-mgo="${act}">${inner}</button>` }
     const rl = founder ? 'Founding member' : d.state === 'waiting' ? 'Seat reserved' : 'Member'
     const gift = founder ? `<div class="mgrp">${row('gifts', '<span class="em" aria-hidden="true">🎁</span>', "Your founders' gift", open ? `${giftItems().length} gifts, yours to keep` : 'Unlocks Saturday, 9:00', 'gold')}</div>` : ''
-    return `<div class="mme">${av(first)}<span><b>${esc(first)}</b><small>${rl}${founder ? ' · #' + esc(d.founder) : ''}</small></span></div>
+    return `<div class="mme">${av(first)}<span><b>${esc(first)}</b><small>${rl}${founder && d.founder ? " · #" + esc(d.founder) : ""}</small></span></div>
       ${gift}
       <div class="mgrp"><span class="mgt">The club</span>${row('compose', ic('plus'), 'Post your build')}${row('guides', ic('doc'), 'Every Full guide', open ? `${(d.guides || []).length} guides` : 'Opens Saturday, 9:00')}${row('skills', ic('code'), 'Your skills', open ? 'Tower Builder and House Builder' : 'Opens Saturday, 9:00')}</div>
       <div class="mgrp"><span class="mgt">For you</span>${row('remind', ic('cal'), "Friday's new course", 'Remind me')}${row('link', ic('copy'), 'Your link to the club')}${row('phone', ic('phone'), 'Add the club to your phone')}${row('write', ic('mail'), 'Write to Nico')}</div>
