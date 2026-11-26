@@ -143,12 +143,37 @@ function paidFiles() {
     text.textContent = text.dataset.closed!;
     btns.append(tpl('help').cloneNode(true));
   };
-  const id = new URLSearchParams(location.search).get('session_id');
+  // 26/11: the payment was never finished (a Satispay, Klarna or Amazon Pay left halfway comes back here all the same):
+  // say so, with «Try again» back to the funnel page they came from, and WhatsApp/email under it
+  const unpaid = () => {
+    text.textContent = text.dataset.unpaid!;
+    box.classList.add('is-unpaid'); // a red "!" instead of the green check (global.css)
+    box.closest('.oto')?.classList.add('is-unpaid'); // and no «✓ Paid» steps on top
+    const wa = (f: DocumentFragment) => f.querySelectorAll<HTMLAnchorElement>('a[href^="https://wa.me/"]').forEach((a) => { a.href = a.href.split('?')[0] + '?text=' + encodeURIComponent(text.dataset.waUnpaid!); });
+    const from = new URLSearchParams(location.search).get('from') || '';
+    if (/^\/(it\/)?[a-z0-9-]+\/watch$/.test(from)) {
+      const a = tpl('file').firstElementChild!.cloneNode(true) as HTMLAnchorElement;
+      a.removeAttribute('download');
+      a.href = `${from}#buy`;
+      a.querySelector('span')!.textContent = text.dataset.again!;
+      btns.append(a);
+      const help = tpl('help').cloneNode(true) as DocumentFragment;
+      help.querySelectorAll('.btn--fill').forEach((b) => b.classList.remove('btn--fill'));
+      wa(help);
+      btns.append(help);
+    } else {
+      const help = tpl('help').cloneNode(true) as DocumentFragment;
+      wa(help);
+      btns.append(help);
+    }
+  };
+  const params = new URLSearchParams(location.search);
+  const id = params.get('session_id');
   if (!id) return closed();
   // the page is written with the "in your inbox" line: "Checking…" is said only here, when there is a payment to check
   text.textContent = text.dataset.checking!;
   fetch(`/api/files?session_id=${encodeURIComponent(id)}&lang=${box.dataset.dl}`)
-    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    .then((r) => (r.ok ? r.json() : r.status === 402 ? r.json().then((j: { state?: string }) => Promise.reject(j.state === 'open' || j.state === 'expired' ? 'unpaid' : 402), () => Promise.reject(402)) : Promise.reject(r.status)))
     .then((j: { files?: { name: string; href: string; kind?: string; note?: string }[]; pack?: boolean; skill?: boolean; email?: string }) => {
       const files = (j.files || []).filter((f) => f.href.startsWith('/api/file?'));
       if (!files.length) return closed();
@@ -186,7 +211,7 @@ function paidFiles() {
         btns.after(note);
       }
     })
-    .catch(closed);
+    .catch((why) => (why === 'unpaid' ? unpaid() : closed()));
 }
 
 // Learn: "Buy" on a playbook first asks "Are you sure?" (7/11): the big button takes the pack,

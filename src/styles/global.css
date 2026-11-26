@@ -3108,6 +3108,9 @@ html[data-page='thanks'] .oto-dl {
 }
 html[data-page='thanks'] .oto-dl [data-dl-text], html[data-page='thanks'] .oto-dl > .t-sub { margin: 0; font-size: clamp(1.15rem, 2.2vw, 1.5rem); font-weight: 600; letter-spacing: -0.02em; color: #111; }
 html[data-page='thanks'] .oto-dl [data-dl-text]::before, html[data-page='thanks'] .oto-dl > .t-sub::before { content: '✓'; display: inline-grid; place-items: center; width: 28px; height: 28px; margin-right: 10px; border-radius: 50%; background: #1f6b35; color: #fff; font-size: 15px; vertical-align: 2px; }
+/* 26/11: the payment was never finished (learn.ts unpaid): a red "!" instead of the green check, no "✓ Paid" steps */
+html[data-page='thanks'] .oto-dl.is-unpaid [data-dl-text]::before { content: '!'; background: #c0392b; font-weight: 800; }
+html[data-page='thanks'] .oto.is-unpaid .oto__steps { display: none; }
 html[data-page='thanks'] .oto-dl__btns .btn { min-height: 52px; }
 html[data-page='thanks'] .oto-dl__btns .btn--fill { background: #1f6b35; border-color: #1f6b35; }
 html[data-page='thanks'] .oto-dl__note { flex: none; }

@@ -76,15 +76,22 @@ export async function POST(request) {
   const p = P[body.p];
   if (!p) return json({ error: 'unknown product' }, 400);
   if (p.until && Date.now() > p.until) return json({ error: 'offer ended' }, 410);
+  // 26/11: the funnel page they pay from (the watch page sends its address as Referer). Who leaves Satispay, Klarna or
+  // Amazon Pay halfway is sent back to the thanks page all the same, and that page uses it to say the payment did not
+  // go through, with a button back to this page
+  let from = '';
+  try { const u = new URL(request.headers.get('referer') || ''); if (/^\/(it\/)?[a-z0-9-]+\/watch$/.test(u.pathname)) from = u.pathname; } catch (e) {}
   try {
     const session = await stripe.checkout.sessions.create({
       // 13/11 (Nico): "elements" = Stripe's card fields inside OUR checkout (black and blue), not Stripe's white page
       ui_mode: 'elements',
       mode: 'payment',
       line_items: p.items.map((price) => ({ price, quantity: 1 })),
-      return_url: `${SITE}/learn/thanks/${p.back}?session_id={CHECKOUT_SESSION_ID}`,
-      // 13/11 (Nico): "like Stripe": only the card (logos turning in the number), and the cardholder's name
-      ...(body.card ? { allowed_payment_method_types: ['card'], name_collection: { individual: { enabled: true, optional: true } } } : {}),
+      return_url: `${SITE}/learn/thanks/${p.back}?session_id={CHECKOUT_SESSION_ID}${from ? `&from=${encodeURIComponent(from)}` : ''}`,
+      // 13/11 (Nico): the cardholder's name. 26/11 (Nico: «metti tutto, più c'è roba più comprano»): no more card only,
+      // every method switched on in Stripe (card, Apple Pay, Google Pay, Klarna, Satispay, Amazon Pay…), Stripe shows
+      // the ones that fit each buyer
+      ...(body.card ? { name_collection: { individual: { enabled: true, optional: true } } } : {}),
       // 16/11 (Nico, T1/T2): on the stadium the card is kept for the one-tap offer on the thanks page (api/upsell.js).
       // Stripe writes the line that says so under the card fields
       ...(p.save ? { customer_creation: 'always', payment_intent_data: { setup_future_usage: 'off_session' } } : {}),

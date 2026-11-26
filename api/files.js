@@ -38,7 +38,9 @@ export async function GET(request) {
   try {
     const session = await stripe.checkout.sessions.retrieve(id, { expand: ['line_items.data.price.product'] });
     const paid = session.status === 'complete' && (session.payment_status === 'paid' || session.payment_status === 'no_payment_required');
-    if (!paid) return json({ error: 'not paid' }, 402);
+    // 26/11: `state` 'open' or 'expired' = the buyer never finished (a Satispay, Klarna or Amazon Pay left halfway still
+    // comes back here), so the thanks page says the payment did not go through instead of «Paid, thank you»
+    if (!paid) return json({ error: 'not paid', state: session.status }, 402);
     if (session.created * 1000 < Date.now() - DAYS * DAY * 1000) return json({ error: 'too old' }, 410);
     // the Omnya City products are houses, not PDFs (the webhook handles them before the files too)
     const names = (session.line_items?.data || []).map((it) => it.price?.product?.name || it.description || '').filter((n) => n && !/^omnya city/i.test(n));
