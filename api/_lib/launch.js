@@ -32,25 +32,31 @@ const PAGE = 'omnyalab.com/the-3d-future';
 // Same facts as the approved brief, written as one person talking, no bullet lists.
 const TEXTS = {
   r2: {
-    // 26/11 third round (Nico picks A, «Your seat is one step away»): say what they ALWAYS find inside, not only on day one
-    // (a new course with the build of the week every Friday, my comments every Monday), and end on «remember to reserve your
-    // spot with your card, or the founders' gift goes to someone else». Every fact is the club page's or the approved launch
-    // mails' (e4); €215 = the three playbooks one by one in learn.ts
+    // 26/11 fourth round (Nico, M1 on board SycwEeXgJPv3fh9ACHRJJA): what they always find inside, the club as an Instagram made
+    // only of 3D (Nico looks at every post and writes privately), «Step inside» before the €9 (S1, the real club page on a phone,
+    // example name Alex), no money but the €9, fewer founder spots every day, AI is the future, «remember to reserve your spot
+    // with your card» at the end. NOTE: the feed with likes, comments and shares is not in the club page yet: it must be
+    // online before &lgo=r2. Sent only as a test to Nico (&ltest=r2) until he says ok
     subject: 'Your seat is one step away',
+    img2: { src: '/club/mail/step-inside.jpg', alt: 'Step inside: the club page from the inside, your courses, the Vault and my comments' },
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name},
 
-You put your name down for THE 3D FUTURE, and I don't want you to lose the founders' gift over a small detail: the list keeps your place in line, but only your card saves the seat.
+You put your name down for THE 3D FUTURE, and I don't want you to lose your spot over a small detail: the list keeps your place in line, but only your card saves the seat.
 
-Here's what's waiting for you inside. On Saturday you start with your own tower, the kind where buyers pick their floor, in 11 short video steps where you see every click, and next to it you get six builds from our reels with their files, prompts and Claude skills, and every Full guide. And it doesn't stop there: every Friday a new course comes in with the build of the week, and every Monday I look at the builds you send me and tell you what I'd change. Every week there's something new to build, and it's the kind of 3D that sells.
+Here's what's waiting for you inside. On Saturday you start with your own tower, the kind where buyers pick their floor, in 11 short video steps where you see every click, and next to it you get six builds from our reels with their files, prompts and Claude skills. And it doesn't stop there: every Friday a new course comes in with the build of the week, so there's always something new to build.
 
-All of it is €9 a month, locked for as long as you stay. You add your card today and nothing is charged, your first month starts on Saturday at 9:00 (Rome), and if you change your mind before then you cancel in one tap and pay nothing.
+Everything you build, you post inside the club. Think of it as an Instagram made only of 3D: towers, villas and stadiums made by the people in the club. Everyone sees what you can do, you get likes, comments and shares, and I look at every single post and write to you privately with what works and what I'd change.
 
-The first 100 people who reserve also get the founders' gift: our three playbooks (€215 if you bought them one by one on our site) and the full 3D AI Mastery course, unlocked inside your own club page and yours to keep. There are fewer of them left every day, and once they're gone they don't come back.
+{img2}
+
+These tutorials will keep paying off for years, because AI is the future of 3D, and the earlier you learn it the further ahead you are. It's €9 a month, locked for as long as you stay. You add your card today and nothing is charged, your first month starts on Saturday at 9:00 (Rome), and if you change your mind before then you cancel in one tap.
+
+The first 100 who reserve also get the founders' gift: our three playbooks and the full 3D AI Mastery course, unlocked inside your own club page and yours to keep. There are fewer founder spots left every day, so take this as a friendly reminder not to let it slip.
 
 {img}
 
-So remember to reserve your spot with your card, because without it your seat isn't saved and the founders' gift goes to someone else. It takes a minute (and if the page didn't take your card last time, try again with a card, Apple Pay or Google Pay):
+Remember to reserve your spot with your card: without it your seat isn't saved, and the founders' gift goes to someone else. It takes a minute (and if the page didn't take your card last time, try again with a card, Apple Pay or Google Pay):
 {link}
 
 Nico`,
@@ -295,9 +301,10 @@ export function renderLaunch(id, p, { seatsLeft, listCount } = {}) {
       ? "You're getting this because you joined the list of THE 3D FUTURE or started reserving your seat. Omnya Lab, Venice, Italy."
       : "You're getting this because you asked for one of our guides on omnyalab.com and said yes to updates. Omnya Lab, Venice, Italy.";
   const paras = body.split('\n\n');
-  const pic = t.img ? `<p><img src="https://www.omnyalab.com${t.img.src}" alt="${esc(t.img.alt)}" width="560" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:12px"></p>` : '';
-  const html = paras.map((para) => (para.trim() === '{img}' ? pic : para.trim() === '{bar}' ? bar : `<p>${esc(para).replace(/\n/g, '<br>').replace('{link}', `<a href="${url}">${PAGE}</a>`)}</p>`)).filter(Boolean).join('\n');
-  body = body.replace(/\n\n\{img\}(?=\n\n)/, '');
+  const picOf = (im) => (im ? `<p><img src="https://www.omnyalab.com${im.src}" alt="${esc(im.alt)}" width="560" style="display:block;width:100%;max-width:560px;height:auto;border:0;border-radius:12px"></p>` : '');
+  const pic = picOf(t.img), pic2 = picOf(t.img2); // 26/11: r2 has two pictures, «Step inside» ({img2}) and the gifts ({img})
+  const html = paras.map((para) => (para.trim() === '{img}' ? pic : para.trim() === '{img2}' ? pic2 : para.trim() === '{bar}' ? bar : `<p>${esc(para).replace(/\n/g, '<br>').replace('{link}', `<a href="${url}">${PAGE}</a>`)}</p>`)).filter(Boolean).join('\n');
+  body = body.replace(/\n\n\{img\}(?=\n\n)/, '').replace(/\n\n\{img2\}(?=\n\n)/, '');
   body = body.replace(/(:?)\n\n\{bar\}(?=\n\n)/, (_, c) => (c ? '.' : '')); // in the text version the sentence before the picture ends with a full stop
   return {
     subject,
