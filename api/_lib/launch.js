@@ -32,23 +32,25 @@ const PAGE = 'omnyalab.com/the-3d-future';
 // Same facts as the approved brief, written as one person talking, no bullet lists.
 const TEXTS = {
   r2: {
-    // 26/11 second round (Nico: «la mail gentile e figa alla hormozi»): one small step stands between them and the gift, the
-    // value is the site's own (three playbooks €215 one by one, learn.ts), the risk is ours, one link
-    subject: "Don't miss your founders' gift",
+    // 26/11 third round (Nico picks A, «Your seat is one step away»): say what they ALWAYS find inside, not only on day one
+    // (a new course with the build of the week every Friday, my comments every Monday), and end on «remember to reserve your
+    // spot with your card, or the founders' gift goes to someone else». Every fact is the club page's or the approved launch
+    // mails' (e4); €215 = the three playbooks one by one in learn.ts
+    subject: 'Your seat is one step away',
     img: { src: '/club/mail/gifts.jpg', alt: "The founders' gift for the first 100: our three playbooks and the full 3D AI Mastery course" },
     body: `Hey {name},
 
-You told us you want in, so I don't want you to miss the best part over one small step: being on the list doesn't save your seat. Your card does.
+You put your name down for THE 3D FUTURE, and I don't want you to lose the founders' gift over a small detail: the list keeps your place in line, but only your card saves the seat.
 
-It takes a minute. You add your card, nothing is charged today, and on Saturday at 9:00 (Rome) your first month starts at €9, locked for as long as you stay.
+Here's what's waiting for you inside. On Saturday you start with your own tower, the kind where buyers pick their floor, in 11 short video steps where you see every click, and next to it you get six builds from our reels with their files, prompts and Claude skills, and every Full guide. And it doesn't stop there: every Friday a new course comes in with the build of the week, and every Monday I look at the builds you send me and tell you what I'd change. Every week there's something new to build, and it's the kind of 3D that sells.
 
-That minute is also what makes you a founder. The first 100 who reserve get the founders' gift: our three playbooks (€215 if you buy them one by one on our site) and the full 3D AI Mastery course, unlocked inside your own club page and yours to keep. Every day there are fewer of them left, and once the 100 are gone they don't come back.
+All of it is €9 a month, locked for as long as you stay. You add your card today and nothing is charged, your first month starts on Saturday at 9:00 (Rome), and if you change your mind before then you cancel in one tap and pay nothing.
+
+The first 100 people who reserve also get the founders' gift: our three playbooks (€215 if you bought them one by one on our site) and the full 3D AI Mastery course, unlocked inside your own club page and yours to keep. There are fewer of them left every day, and once they're gone they don't come back.
 
 {img}
 
-And you risk nothing: if you change your mind before Saturday, you cancel in one tap and pay nothing. If the payment page didn't take your card last time, try again with your card, Apple Pay or Google Pay.
-
-Save your seat here:
+So remember to reserve your spot with your card, because without it your seat isn't saved and the founders' gift goes to someone else. It takes a minute (and if the page didn't take your card last time, try again with a card, Apple Pay or Google Pay):
 {link}
 
 Nico`,
