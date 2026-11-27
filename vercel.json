@@ -537,6 +537,16 @@
       "source": "/kit/it/omnya-lab-listino-2026-it.pdf",
       "destination": "/kit/it/omnya-lab-2026-it.pdf",
       "permanent": false
+    },
+    {
+      "source": "/club",
+      "destination": "/the-3d-future",
+      "permanent": false
+    },
+    {
+      "source": "/login",
+      "destination": "/the-3d-future/inside",
+      "permanent": false
     }
   ],
   "headers": [

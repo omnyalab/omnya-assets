@@ -24,11 +24,12 @@ import { sendMail } from './_lib/mail.js';
 import { host } from './_lib/config.js';
 import { signedHref, PAGE_TTL, HOUSE_SKILL_FILE } from './_lib/learn-files.js';
 import {
-  hlsCookie,
+  hlsCookie, LESSONS,
   CLUB, ROUND, CHEAP_SEATS, EARLY, phaseAt, decide, priceId, seats, EMAIL, cleanEmail, cleanReceipt, firstName, signToken, readToken,
   limited, ipOf, receiptEmail, isBuyerEmail, isWaitlisted, fillWaitlist, backfill, lists, KEYS, PORTAL_URL,
   readMember, insideData, insideUrl, PREVIEW_EMAIL, noteBuild, sendInsideLink,
 } from './_lib/club.js';
+import { saveProgress, saveProfile, avatar, MAX_AVATAR } from './_lib/club-me.js';
 import { feedMember, feed, addPost, like, comments, addComment, share, setHidden, photo, noteMessage, hideOk, setRemind, notifyCourse, LINK, MAX_IMG } from './_lib/club-feed.js';
 import { markMailed } from './_lib/drip.js';
 
@@ -58,6 +59,8 @@ export async function GET(req) {
   if (a === 'welcome') return welcome(req);
   if (a === 'inside') return inside(req);
   if (a === 'feed' || a === 'comments') return feedGet(req, a);
+  if (a === 'avatar') return avatarGet(req);
+  if (a === 'manifest') return manifest(req);
   if (a === 'img') return img(req);
   if (a === 'hide') return hideFromMail(req);
   if (a === 'preview') {
@@ -79,6 +82,7 @@ export async function POST(req) {
   if (a === 'link') return lostLink(req);
   if (a === 'build') return sendBuild(req);
   if (['post', 'like', 'comment', 'share', 'msg', 'hide', 'remind'].includes(a)) return feedPost(req, a);
+  if (a === 'progress' || a === 'profile') return mePost(req, a);
   if (a === 'notify') {
     // N1: Friday's course is online, Nico says so (admin key): { subject, text with {name} and {link}, test? }
     if (!admin(req)) return new Response('Not found', { status: 404 });
@@ -305,6 +309,53 @@ async function feedPost(req, a) {
     console.error('[club] feed', a, e.message);
     return fail(502, 'store', 'Something went wrong, try again in a minute.');
   }
+}
+
+// 27/11 (Nico, board «Il club, com'è quando entri»): each member's own progress and profile (api/_lib/club-me.js)
+//   POST /api/club/progress { m, n, t?, done? } → { d, t }   a step opens only after the one before is finished
+//   POST /api/club/profile  { m, name, ig?, bio?, img?, noimg? } → the profile
+//   GET  /api/club/avatar?id=   → a member's photo         GET /api/club/manifest?m= → the home-screen app of that member
+async function mePost(req, a) {
+  const b = await body(req);
+  if (!b) return fail(400, 'bad_request', 'bad request');
+  const email = readMember(b.m);
+  if (!email) return fail(403, 'bad_link', 'Open the club from your own link.');
+  if (await limited(req, a, a === 'progress' ? 240 : 20, 600)) return tooMany();
+  try {
+    const d = await insideData(email);
+    if (a === 'progress') {
+      if (d.state !== 'open') return fail(403, 'not_yet', 'The course opens on Saturday 28 November at 9:00 (Rome).');
+      if (d.allOpen) return json({ d: [], t: {}, preview: true }); // Nico's preview: every step open, nothing saved
+      const p = await saveProgress(email, b.n, { t: b.t, done: b.done === true }, LESSONS.length);
+      return p ? json(p) : fail(403, 'locked', 'Finish the step before this one first.');
+    }
+    if (b.img && String(b.img).length > MAX_AVATAR) return fail(400, 'bad_image', 'That photo is too big, try another one.');
+    return json({ profile: await saveProfile(email, b) });
+  } catch (e) {
+    if (e.code === 'bad_request' || e.code === 'bad_image') return fail(400, e.code, e.message);
+    console.error('[club] me', a, e.message);
+    return fail(502, 'store', 'Something went wrong, try again in a minute.');
+  }
+}
+async function avatarGet(req) {
+  try {
+    const r = await avatar(new URL(req.url).searchParams.get('id'));
+    if (!r) return new Response('Not found', { status: 404 });
+    return new Response(r[1], { headers: { 'Content-Type': r[0], 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff', 'X-Robots-Tag': 'noindex' } });
+  } catch (e) { console.error('[club] avatar', e.message); return new Response('Error', { status: 502 }); }
+}
+/** The home-screen app (web app manifest) of one member: it opens straight into their own page, already in. */
+async function manifest(req) {
+  const m = new URL(req.url).searchParams.get('m') || '';
+  if (!readMember(m)) return new Response('Not found', { status: 404 });
+  const start = `/the-3d-future/inside?m=${encodeURIComponent(m)}&app=1`;
+  return new Response(JSON.stringify({
+    name: 'THE 3D FUTURE', short_name: '3D Future', description: 'The club of Omnya Lab: courses, the Vault, the feed.',
+    id: '/the-3d-future/inside', start_url: start, scope: '/', display: 'standalone', orientation: 'portrait',
+    background_color: '#0a1533', theme_color: '#0b1534',
+    icons: [{ src: '/club/app-icon-192.png', sizes: '192x192', type: 'image/png' }, { src: '/club/app-icon-512.png', sizes: '512x512', type: 'image/png' },
+      { src: '/club/app-icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }],
+  }), { headers: { 'Content-Type': 'application/manifest+json; charset=utf-8', 'Cache-Control': 'private, no-store', 'X-Robots-Tag': 'noindex' } });
 }
 
 async function welcome(req) {

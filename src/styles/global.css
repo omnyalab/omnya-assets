@@ -392,6 +392,16 @@ html.menu-open .hdr .logo__img--light { opacity: 0; }
 }
 .menu__list a[aria-current='page'] { color: var(--mute); }
 .menu__list small { font-size: var(--fs-small); letter-spacing: 0; color: var(--mute); }
+/* 27/11: The 3D Future in the phone menu, a small dark-blue glass card */
+.menu__list .menu__club { border-bottom: 0; margin: 12px 0; }
+.menu__list .menu__club a {
+  display: flex; padding: 16px 20px 18px; border-radius: 20px; color: #fff;
+  background: radial-gradient(120% 120% at 0% 0%, #2a4fb8, #0a1533 70%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 10px 28px rgba(10, 21, 51, 0.28);
+  font-size: clamp(2rem, 10vw, 4rem);
+}
+.menu__list .menu__club b { font-weight: inherit; color: #8fc3ff; }
+.menu__list .menu__club a[aria-current='page'] { color: #fff; }
 .menu__foot { display: grid; gap: 22px; }
 .menu__meta { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; font-size: var(--fs-small); }
 .menu__meta a { display: flex; align-items: center; min-height: 44px; overflow-wrap: anywhere; }

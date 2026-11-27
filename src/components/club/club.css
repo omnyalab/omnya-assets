@@ -327,9 +327,15 @@ form.opts { gap: 16px }
 .toast { position: fixed; z-index: 200; left: 50%; top: 64px; transform: translate(-50%, -24px); opacity: 0; pointer-events: none; max-width: calc(100% - 48px); padding: 12px 20px; border-radius: 999px; background: rgba(28,28,30,.92); color: #fff; font: 600 15px/20px var(--f-sf); text-align: center; -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); transition: transform .35s cubic-bezier(.2,.9,.2,1.2), opacity .25s }
 .toast.on { opacity: 1; transform: translate(-50%, 0) }
 
+/* 27/11: the top bar of the hero, only the white «Log in» pill (or «Open your club») at the top right */
+.ctop { position: absolute; z-index: 3; top: 0; left: 0; right: 0; display: flex; justify-content: flex-end; padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 0 16px; pointer-events: none }
+.clogin { pointer-events: auto; display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; border-radius: 999px; background: #fff; color: #0a1533; font: 600 15px/1 var(--f-sf); text-decoration: none; white-space: nowrap; box-shadow: 0 6px 18px rgba(0,0,0,.22); transition: transform .2s cubic-bezier(.2,.8,.2,1), background-color .3s }
+.clogin:hover { background: #eef3ff }
+.clogin:active { transform: scale(.97) }
 /* ===== computer ===== */
 @media (min-width: 900px) {
   .wrap { padding-inline: 64px }
+  .ctop { padding: 24px 32px 0 }
   .sec { padding-top: 96px }
   .club h2 { font-size: 48px; line-height: 56px }
   .hx { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); align-items: center; gap: 24px; text-align: left; justify-items: start; width: min(1120px, 100%); padding: 0 24px }

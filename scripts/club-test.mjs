@@ -153,5 +153,25 @@ try {
   const c = hlsCookie().split(';')[0], bad = c.slice(0, -2) + (c.endsWith('AA') ? 'BB' : 'AA');
   eq([await allowed(c), await allowed('x=1; ' + c + '; y=2'), await allowed(bad), await allowed(''), await allowed(c, Date.now() + 9 * 86400e3)], [true, true, false, false, false], 'films: the member cookie opens them, a changed, missing or old one does not'); }
 
+// 27/11: each member's progress (a step opens only after the one before) and profile, then the feed shows the new name
+{ const { saveProgress, getProgress, saveProfile, getProfile, avatar, isOpen } = await import('../api/_lib/club-me.js');
+  const E = 'p@test.club';
+  eq([await saveProgress(E, 2, { done: true })], [null], 'progress: step 2 is closed before step 1 is finished');
+  await saveProgress(E, 1, { t: 80 }); let p = await getProgress(E);
+  eq([p.d, p.t[1]], [[], 80], 'progress: the second where the member stopped');
+  await saveProgress(E, 1, { done: true }); await saveProgress(E, 2, { t: 3 }); p = await getProgress(E);
+  eq([p.d, p.t[1], p.t[2], isOpen(p.d, 2), isOpen(p.d, 3)], [[1], undefined, undefined, true, false], 'progress: step 1 done opens step 2 (under 5 s is not kept)');
+  eq([await saveProgress(E, 12, { done: true }, 11), await saveProgress(E, 0, {}, 11)], [null, null], 'progress: only steps 1-11');
+  let err = ''; try { await saveProfile(E, { name: ' ' }); } catch (e) { err = e.code; } eq(err, 'bad_request', 'profile: a name is needed');
+  err = ''; try { await saveProfile(E, { name: 'Ana', ig: 'not valid!' }); } catch (e) { err = e.code; } eq(err, 'bad_request', 'profile: a wrong Instagram name');
+  const px = 'data:image/jpeg;base64,' + Buffer.from('fake-jpeg').toString('base64');
+  const pr = await saveProfile(E, { name: '  Ana   Rossi ', ig: '@ana.3d', bio: 'Towers in Milan', img: px });
+  eq([pr.name, pr.ig, pr.bio, /^\/api\/club\/avatar\?id=[A-Za-z0-9_-]{12}$/.test(pr.av)], ['Ana Rossi', 'ana.3d', 'Towers in Milan', true], 'profile: saved clean, with the photo');
+  const a1 = await avatar(pr.av.split('=')[1]); eq([a1[0], a1[1].toString()], ['image/jpeg', 'fake-jpeg'], 'profile: the photo comes back');
+  const pr2 = await saveProfile(E, { name: 'Ana', noimg: true }); eq([pr2.av, await avatar(pr.av.split('=')[1])], ['', null], 'profile: the photo removed');
+  const { kv } = await import('../api/_lib/store.js'); const { KEYS } = await import('../api/_lib/club.js'); const F = await import('../api/_lib/club-feed.js');
+  await kv('HSET', KEYS.members, E, JSON.stringify({ email: E, name: 'Ana Old', status: 'active', round: '1', at: '2026-11-28T10:00:00.000Z' }));
+  eq((await F.feedMember(E)).name, 'Ana', 'feed: the name of the profile wins'); }
+
 console.log(fail ? `\n${fail} of ${n} checks FAILED` : `\nall ${n} checks passed`);
 process.exit(fail ? 1 : 0);

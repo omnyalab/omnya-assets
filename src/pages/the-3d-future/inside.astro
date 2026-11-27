@@ -34,7 +34,11 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#0b1534">
 <link rel="icon" href="/favicon.svg">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="/club/app-icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="3D Future">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -99,6 +103,89 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .lk-pill i{width:7px;height:7px;border-radius:50%;background:#5ab8ff;box-shadow:0 0 0 4px #5ab8ff2a}
   @media (max-width:600px){.cd .num span{min-width:54px}.cd .num b{font-size:21px}}
   @media (prefers-reduced-motion:reduce){.lk::after{animation:none}.steps2.rv li{opacity:1;transform:none}}
+  /* 27/11 (Nico, board «Il club, com'è quando entri», A «Player e scaletta»): the player of the step you are on and the
+     eleven steps as a list beside it (under it on the phone); a step opens when the one before is finished */
+  .cprog{display:flex;align-items:center;gap:12px;font:600 15px Geist,sans-serif;color:#e6eefc;margin-top:4px}
+  .cprog .bar{flex:1;max-width:320px;height:6px;border-radius:3px;background:#ffffff24;overflow:hidden}
+  .cprog .bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#b9ddff,#5aa8ff 55%,#2a74ff);transition:width .6s ease}
+  .cA{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);gap:22px;align-items:start}
+  @media (max-width:900px){.cA{grid-template-columns:minmax(0,1fr)}}
+  .cnow{display:grid;gap:14px;min-width:0;position:sticky;top:96px}
+  @media (max-width:900px){.cnow{position:static}}
+  .cplay{position:relative;aspect-ratio:16/9;border-radius:20px;overflow:hidden;background:#000;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+  .cplay video{display:block;width:100%;height:100%;background:#000}
+  .csoon{position:absolute;left:12px;right:12px;bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 14px;border-radius:999px;background:rgba(8,18,46,.75);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);font:600 14px Geist,sans-serif;text-align:center}
+  .csoon .ic{width:16px;height:16px;flex:none}
+  .cmeta{display:grid;gap:8px;min-width:0}
+  .cmeta .cno{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:600 13px Geist,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--mute2)}
+  .cmeta .okc{display:inline-flex;align-items:center;gap:4px;color:#30d158;text-transform:none;letter-spacing:0}
+  .cmeta .okc .ic{width:15px;height:15px}
+  .cmeta h3{margin:0;font:700 clamp(22px,3vw,30px)/1.1 Geist,sans-serif;letter-spacing:-.03em;text-wrap:balance}
+  .cmeta h3 em{font-style:normal;background:linear-gradient(100deg,#e2f1ff 0%,#8ccaff 45%,#5a9dff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .cmeta p{margin:0;color:#cfdcf2;font-size:16px;line-height:1.5;max-width:62ch}
+  .cmeta .aff{margin:4px 0 0;font-size:15px;line-height:1.45;color:rgba(255,255,255,.78)}
+  .cmeta .aff a{display:inline-block;padding:10px 0;margin:-10px 0;color:#6fb6ff;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+  .cmeta .aff span{color:rgba(255,255,255,.5)}
+  .cmeta .cnext{justify-self:start;margin-top:6px}
+  .clist{display:grid;gap:6px;padding:8px;border-radius:24px;background:rgba(8,18,46,.5);border:1px solid rgba(170,205,255,.16);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+  .crow{appearance:none;border:0;background:none;color:#fff;font:inherit;text-align:left;width:100%;display:grid;grid-template-columns:96px minmax(0,1fr) 32px;align-items:center;gap:12px;padding:8px;border-radius:16px;cursor:pointer;min-height:64px;transition:background .25s,opacity .25s}
+  .crow:hover{background:rgba(255,255,255,.06)}
+  .crow:focus-visible{outline:3px solid #5aa8ff;outline-offset:2px}
+  .crow .cth{aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000}
+  .crow .cth img{display:block;width:100%;height:100%;object-fit:cover}
+  .crow .ctx{display:grid;gap:3px;min-width:0}
+  .crow small{font:600 11.5px Geist,sans-serif;letter-spacing:.06em;color:var(--mute2)}
+  .crow b{font:600 15px/1.25 Geist,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .crow i{font-style:normal;font-size:12.5px;color:var(--mute2)}
+  .crow .cst{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.12)}
+  .crow .cst .ic{width:15px;height:15px}
+  .crow.done .cst{background:#30d158}
+  .crow.now .cst{background:#fff;color:#0b1534}
+  .crow.lock{opacity:.55}
+  .crow.lock .cth img{filter:blur(3px) grayscale(.4) brightness(.6)}
+  .crow.sel{background:rgba(90,168,255,.16);box-shadow:inset 0 0 0 1px rgba(120,180,255,.45)}
+  .crow.fresh{animation:crfresh 1.6s ease}
+  @keyframes crfresh{0%{background:rgba(48,209,88,.4)}100%{background:transparent}}
+  .chdots i.cur{background:#fff}
+  /* the profile: photo, Instagram and one line */
+  .uav.ph,.mav.ph{background-size:cover;background-position:center;color:transparent}
+  .pbio{margin:6px 0 0;font-size:15px;color:#dbe6f7;max-width:40ch}
+  .pig{display:inline-flex;align-items:center;min-height:44px;color:#8fc3ff;font-weight:600;text-decoration:none}
+  .pedit{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:#fff;font:600 15px Geist,sans-serif;cursor:pointer}
+  .pform{display:grid;gap:14px}
+  .pform label{display:grid;gap:6px;font:600 13px Geist,sans-serif;color:var(--mute2)}
+  .pform input,.pform textarea{font:500 16px Geist,sans-serif;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:12px 14px;min-height:48px}
+  .pphotoed{justify-self:center;position:relative;width:104px;height:104px;border-radius:50%;cursor:pointer;display:grid;place-items:center;font:700 44px Geist,sans-serif;background:linear-gradient(145deg,#5aa8ff,#1d4fd6) center/cover}
+  .pphotoed span{position:absolute;right:-2px;bottom:-2px;width:36px;height:36px;border-radius:50%;background:#fff;color:#0b1534;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+  .pphotoed span .ic{width:18px;height:18px}
+  .pphotoed input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  /* the home-screen card (iPhone: an arrow to Share; Android: Install) */
+  .a2hs{position:fixed;z-index:60;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:calc(84px + env(safe-area-inset-bottom));max-width:460px;margin:0 auto;padding:18px 18px 18px;border-radius:24px;background:#f8f9fd;color:#0b1534;box-shadow:0 18px 50px rgba(0,0,0,.5);display:grid;gap:12px;transform:translateY(20px);opacity:0;transition:all .45s cubic-bezier(.2,.7,.2,1)}
+  .a2hs.on{transform:none;opacity:1}
+  .a2hs .ax{position:absolute;top:8px;right:8px;width:44px;height:44px;border:0;border-radius:50%;background:transparent;color:#5b6477;display:grid;place-items:center;cursor:pointer}
+  .a2hs .ax .ic{width:18px;height:18px}
+  .a2hs .ahd{display:flex;align-items:center;gap:12px;padding-right:36px}
+  .a2hs .ahd img{width:52px;height:52px;border-radius:13px;flex:none;box-shadow:0 4px 12px rgba(10,21,51,.3)}
+  .a2hs .ahd b{display:block;font:700 17px/1.2 Geist,sans-serif;letter-spacing:-.01em}
+  .a2hs .ahd small{display:block;margin-top:3px;font-size:13.5px;line-height:1.35;color:#5b6477}
+  .a2hs ol{margin:0;padding:0;list-style:none;display:grid;gap:9px}
+  .a2hs li{display:grid;grid-template-columns:26px 1fr;align-items:center;gap:10px;font:500 15px/1.3 Geist,sans-serif}
+  .a2hs li i{width:26px;height:26px;border-radius:50%;background:#0071e3;color:#fff;display:grid;place-items:center;font:700 13px Geist,sans-serif;font-style:normal}
+  .a2hs li .ic{display:inline-block;width:17px;height:17px;vertical-align:-3px;color:#0071e3}
+  body.a2open .tabbar{opacity:0;pointer-events:none;transition:opacity .3s}
+  body.a2open .a2hs{bottom:calc(64px + env(safe-area-inset-bottom))}
+  .a2hs .abtn{min-height:48px;border:0;border-radius:999px;background:#0071e3;color:#fff;font:600 16px Geist,sans-serif;cursor:pointer}
+  .a2arrow{position:fixed;z-index:61;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));width:40px;height:40px;margin-left:-20px;color:#fff;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6));animation:a2bob 1.3s ease-in-out infinite;pointer-events:none}
+  .a2arrow .ic{width:40px;height:40px;stroke-width:2.6}
+  @keyframes a2bob{50%{transform:translateY(8px)}}
+  @media (prefers-reduced-motion:reduce){.a2arrow{animation:none}.a2hs{transition:none}.crow.fresh{animation:none}}
+  /* QA 27/11: the last items of the menu clear the tab bar; links big enough to tap */
+  .mmenu{padding-bottom:calc(110px + env(safe-area-inset-bottom)) !important}
+  .mfooter nav a{display:inline-flex;align-items:center;min-height:44px}
+  .msmall a{display:inline-block;padding:12px 0;margin:-12px 0}
+  .lostjoin{margin:4px 0 0;color:#cfdcf2;font-size:15px}
+  .lostjoin a{color:#8fc3ff;font-weight:600;text-decoration:underline;text-underline-offset:3px;display:inline-block;padding:12px 0;margin:-12px 0}
+
 </style>
 <style is:global>
   /* ===== the page around board A's member area (the board drew it inside a phone or a browser frame) ===== */
@@ -431,6 +518,7 @@ const P = {
 };
   const ic = (n, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${P[n] || ''}</svg>`
   P.down = '<path d="M12 4v12M6 11l6 6 6-6M5 20h14"/>'
+  P.arrdown = '<path d="M12 4v15M5 12l7 7 7-7"/>'
   P.bubble = '<path d="M20 11.5a8 8 0 0 1-11.7 7.1L4 20l1.3-4A8 8 0 1 1 20 11.5z"/>'
   P.send = '<path d="M21 3L10 14"/><path d="M21 3l-7 18-4-7-7-4z"/>'
   P.cam = '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'
@@ -439,7 +527,7 @@ const P = {
   P.mail = '<rect x="3.5" y="5.5" width="17" height="13" rx="3"/><path d="M4 7l8 6 8-6"/>'
   P.undo = '<path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>'
   P.door = '<path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M3 21h18"/><circle cx="14.5" cy="12" r="1" fill="currentColor"/>'
-  const fl = f => `<a class="fl" href="${esc(f.href)}"${f.zip ? ' download' : ' target="_blank" rel="noopener"'}><b>${f.zip ? 'ZIP' : 'PDF'}</b><span>${esc(f.name)}</span>${ic('down')}</a>`
+  const fl = f => `<a class="fl" href="${esc(f.zip ? f.href : f.href + (/\?/.test(f.href) ? '&' : '?') + 'dl=1')}" download><b>${f.zip ? 'ZIP' : 'PDF'}</b><span>${esc(f.name)}</span>${ic('down')}</a>`
   const post = (u, b) => fetch(u, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json().catch(() => ({})).then(d => ({ ok: r.ok, d })))
   const toastEl = $('[data-toast]'); let tt; const toast = t => { toastEl.textContent = t; toastEl.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => toastEl.classList.remove('on'), 2600) }
   /* board A's ring (the badges earned) */
@@ -464,24 +552,92 @@ const P = {
       hlsLib().then(Hls => { if (Hls && Hls.isSupported()) { const h = new Hls({ capLevelToPlayerSize: true }); h.loadSource(u); h.attachMedia(v) } else v.src = u }).catch(() => { v.src = u })
     })
   }
+  /* 27/11 (Nico, board «Il club, com'è quando entri», A «Player e scaletta»): one big player for the step you are on and
+     the eleven steps as a list beside it (under it on the phone). A step opens when the one before is finished (90% of its
+     video), saved by /api/club/progress so it follows the member on every device; the video starts again where they
+     stopped. hls.js loads nothing before play (QA: the old cards loaded all eleven films). Nico's preview has every step open. */
+  let PROG = { d: [], t: {} }, ALL = false, LS = [], SEL = 1, HLS = null, lastSave = 0, finishing = 0
+  const nn = n => String(n).padStart(2, '0')
+  const isDone = n => PROG.d.includes(n)
+  const isOpenS = n => { const l = LS[n - 1]; return !!(l && l.src) && (ALL || n === 1 || isDone(n - 1)) }
+  const curStep = () => { const l = LS.find(x => isOpenS(x.n) && !isDone(x.n)); return l ? l.n : (LS.length && LS.every(x => isDone(x.n)) ? LS.length : 1) }
+  const ttlA = l => { const t = esc(l.t), k = esc(l.k || ''); return k && t.includes(k) ? t.replace(k, '<em>' + k + '</em>') : t }
+  function rowsHTML() {
+    return LS.map(l => { const o = isOpenS(l.n), dn = isDone(l.n), st = dn ? 'done' : o ? 'now' : 'lock'
+      const why = !l.src ? (Date.now() < OPENS ? 'Opens Saturday, 9:00' : 'Coming soon') : `Finish step ${nn(l.n - 1)} to open it`
+      return `<button type="button" class="crow ${st}${l.n === SEL ? ' sel' : ''}" data-step="${l.n}" aria-current="${l.n === SEL}" aria-label="Step ${nn(l.n)}, ${esc(l.t)}${dn ? ', watched' : o ? '' : ', locked'}">
+        <span class="cth"><img src="${esc(l.thumb || l.img)}" alt="" loading="lazy"></span>
+        <span class="ctx"><small>STEP ${nn(l.n)}${l.len ? ' · ' + esc(l.len) : ''}</small><b>${esc(l.t)}</b>${o || dn ? '' : `<i>${why}</i>`}</span>
+        <span class="cst">${ic(dn ? 'check' : o ? 'play' : 'lock')}</span></button>` }).join('')
+  }
+  function metaHTML(l) {
+    const nx = LS[l.n], canNext = nx && isOpenS(nx.n) && isDone(l.n)
+    return `<span class="cno">Step ${nn(l.n)} of ${LS.length}${l.len ? ' · ' + esc(l.len) : ''}${isDone(l.n) ? `<span class="okc">${ic('check')}Watched</span>` : ''}</span><h3>${ttlA(l)}</h3><p>${esc(l.s || l.p)}</p>${l.aff ? AFF : ''}${canNext ? `<button type="button" class="btn cta cnext" data-nextstep="${nx.n}">${ic('play')}<span>Next: step ${nn(nx.n)}</span></button>` : ''}`
+  }
+  const progHTML = () => `<span>${PROG.d.length ? `${PROG.d.length} of ${LS.length} steps watched` : `${LS.length} steps · start with step 01`}</span><span class="bar"><i style="width:${(PROG.d.length / Math.max(1, LS.length) * 100).toFixed(1)}%"></i></span>`
   function course(ls) {
-    const before = Date.now() < OPENS, ol = $('[data-lessons]')
-    const no = l => String(l.n).padStart(2, '0'), ttl = l => { const t = esc(l.t), k = esc(l.k || ''); return k && t.includes(k) ? t.replace(k, '<em>' + k + '</em>') : t }
-    const bg = l => l.img ? `<span class="sbg" style="background-image:url(${esc(l.img)})"></span><span class="sveil"></span><span class="sgrain"></span>` : ''
-    ol.innerHTML = ls.map((l, i) => l.src
-      ? `<li>${bg(l)}<div class="stop"><span class="no">${no(l)}</span></div><h3>${ttl(l)}</h3><span class="sfl"></span><p>${esc(l.s || l.p)}</p><video controls playsinline preload="metadata"${(l.poster || l.img) ? ` poster="${esc(l.poster || l.img)}"` : ''} ${/\.m3u8$/.test(l.src) ? 'data-hls' : 'src'}="${esc(l.src)}"></video>${l.aff ? AFF : ''}</li>`
-      : `<li class="locked" style="--d:${(i * .35).toFixed(2)}s">${bg(l)}<div class="stop"><span class="no">${no(l)}</span><span class="lk" role="img" aria-label="Locked">${LOCK}</span></div><h3>${ttl(l)}</h3><span class="sfl"></span><p>${esc(l.s || l.p)}</p><span class="lk-pill"><i></i>${before ? 'Opens 28 November' : 'Coming soon'}</span></li>`).join('')
+    LS = ls; const box = $('[data-lessons]'); if (!box) return
+    const live = ls.some(l => l.src); SEL = curStep()
+    box.innerHTML = `<div class="cnow"><div class="cplay"><video playsinline controls preload="none" data-player aria-label="The video of the step"></video>${live ? '' : `<span class="csoon">${ic('lock')}Opens on Saturday 28 November at 9:00 (Rome)</span>`}</div><div class="cmeta" data-cmeta></div></div>
+      <div class="clist" data-clist>${rowsHTML()}</div>`
+    const pg = $('[data-cprog]'); if (pg) pg.innerHTML = progHTML()
     $('[data-course]').hidden = false
-    streams(ol)
-    // the cards come in as they scroll into view (and are all there without the observer)
-    if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      ol.classList.add('rv'); const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target) } }), { rootMargin: '0px 0px -8% 0px' })
-      ol.querySelectorAll('li').forEach((li, i) => { li.style.transitionDelay = (i % 3) * 90 + 'ms'; io.observe(li) })
-    }
-    const cd = $('[data-cd]'), tick = () => { const s = Math.max(0, Math.floor((OPENS - Date.now()) / 1000)); if (!s) { cd.hidden = true; return }
+    box.addEventListener('click', e => {
+      const nx = e.target.closest('[data-nextstep]'); if (nx) { pick(+nx.dataset.nextstep, true, true); return }
+      const r = e.target.closest('[data-step]'); if (!r) return
+      const n = +r.dataset.step
+      if (!isOpenS(n)) { toast(!LS[n - 1].src ? 'This step opens on Saturday 28 November at 9:00' : `Finish step ${nn(n - 1)} to open it`); return }
+      pick(n, true, true)
+    })
+    pick(SEL, false, false); track()
+    const cd = $('[data-cd]'), before = Date.now() < OPENS, tick = () => { const s = Math.max(0, Math.floor((OPENS - Date.now()) / 1000)); if (!s) { cd.hidden = true; return }
       const u = { d: Math.floor(s / 86400), h: Math.floor(s % 86400 / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 }
       cd.querySelectorAll('[data-u]').forEach(b => { b.textContent = b.dataset.u === 'd' ? u.d : String(u[b.dataset.u]).padStart(2, '0') }) }
-    tick(); if (before) setInterval(tick, 1000); else cd.hidden = true
+    if (cd) { tick(); if (before) setInterval(tick, 1000); else cd.hidden = true }
+  }
+  function pick(n, play, scroll) {
+    const l = LS[n - 1], v = $('[data-player]'); if (!l || !v) return
+    SEL = n; $('[data-cmeta]').innerHTML = metaHTML(l)
+    $$('[data-clist] .crow').forEach(r => { const on = +r.dataset.step === n; r.classList.toggle('sel', on); r.setAttribute('aria-current', String(on)) })
+    if (HLS) { HLS.destroy(); HLS = null }
+    v.pause(); v.removeAttribute('src'); v.load(); v.poster = l.poster || l.img || ''
+    if (scroll && innerWidth <= 900) v.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    if (!l.src || !isOpenS(n)) return
+    const resume = isDone(n) ? 0 : (PROG.t[n] || 0)
+    const seek = () => { if (resume > 5) { const set = () => { try { v.currentTime = resume } catch (e) {} }; v.readyState >= 1 ? set() : v.addEventListener('loadedmetadata', set, { once: true }) } }
+    if (v.canPlayType('application/vnd.apple.mpegurl') || !/\.m3u8$/.test(l.src)) { v.src = l.src; seek(); if (play) v.play().catch(() => {}); return }
+    hlsLib().then(Hls => {
+      if (!Hls || !Hls.isSupported()) { v.src = l.src; seek(); if (play) v.play().catch(() => {}); return }
+      if (SEL !== n) return
+      HLS = new Hls({ capLevelToPlayerSize: true, autoStartLoad: false, startPosition: resume > 5 ? resume : -1 }); HLS.loadSource(l.src); HLS.attachMedia(v)
+      const h = HLS, start = () => { if (h === HLS) h.startLoad(resume > 5 ? resume : -1) }
+      if (play) { start(); v.play().catch(() => {}) } else v.addEventListener('play', start, { once: true })
+    }).catch(() => { v.src = l.src; seek() })
+  }
+  const saveAt = (n, t) => { PROG.t[n] = t; if (!ALL) post('/api/club/progress', { m, n, t }).catch(() => {}) }
+  function track() {
+    const v = $('[data-player]'); if (!v) return
+    v.addEventListener('timeupdate', () => {
+      const n = SEL, d = v.duration; if (!d || !isFinite(d) || !isOpenS(n) || isDone(n)) return
+      if (v.currentTime / d >= 0.9) return finish(n)
+      if (Date.now() - lastSave > 15000 && v.currentTime > 5) { lastSave = Date.now(); saveAt(n, Math.floor(v.currentTime)) }
+    })
+    v.addEventListener('pause', () => { const n = SEL; if (!isDone(n) && v.currentTime > 5 && v.duration && v.currentTime / v.duration < 0.9) saveAt(n, Math.floor(v.currentTime)) })
+  }
+  function finish(n) {
+    if (finishing === n || isDone(n)) return; finishing = n
+    const done = () => { finishing = 0; afterFinish(n) }
+    if (ALL) { PROG.d.push(n); delete PROG.t[n]; return done() }
+    post('/api/club/progress', { m, n, done: true }).then(r => { if (r.ok && Array.isArray(r.d.d)) { PROG = { d: r.d.d, t: r.d.t || {} }; done() } else finishing = 0 }).catch(() => { finishing = 0 })
+  }
+  function afterFinish(n) {
+    const nx = LS[n]
+    $('[data-clist]').innerHTML = rowsHTML(); $('[data-cmeta]').innerHTML = metaHTML(LS[SEL - 1])
+    const pg = $('[data-cprog]'); if (pg) pg.innerHTML = progHTML()
+    if (nx) { const r = $(`[data-clist] [data-step="${nx.n}"]`); if (r) r.classList.add('fresh') }
+    paintHero()
+    if (!nx || LS.every(x => isDone(x.n))) { toast('Course finished · the Tower badge is yours'); if (!ALL) setTimeout(() => location.reload(), 2600); return }
+    toast(isOpenS(nx.n) ? `Step ${nn(nx.n)} unlocked` : 'Step finished')
   }
   /* every copy of a badge gets its own ids (the same badge is in Home and in Profile; shared ids lose their colours) */
   let bn = 0
@@ -498,7 +654,8 @@ const P = {
   let FEED = null
   const ago = iso => { const s = (Date.now() - Date.parse(iso)) / 1000; return s < 60 ? 'now' : s < 3600 ? Math.floor(s / 60) + ' min' : s < 86400 ? Math.floor(s / 3600) + ' h' : s < 7 * 86400 ? Math.floor(s / 86400) + ' d' : new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short' }).format(new Date(iso)) }
   const avc = n => 'f' + ([...String(n)].reduce((a, c) => a + c.charCodeAt(0), 0) % 5) + 'c'
-  const av = n => `<span class="uav ${avc(n)}" aria-hidden="true">${esc((String(n || '·')[0]).toUpperCase())}</span>`
+  const av = (n, ph) => ph ? `<span class="uav ph" style="background-image:url(${esc(ph)})" aria-hidden="true"></span>` : `<span class="uav ${avc(n)}" aria-hidden="true">${esc((String(n || '·')[0]).toUpperCase())}</span>`
+  const mavH = (first, cls) => PROF.av ? `<span class="mav ${cls} ph" data-mav style="background-image:url(${esc(PROF.av)})" aria-hidden="true"></span>` : `<span class="mav ${cls}" data-mav aria-hidden="true">${esc((String(PROF.name || first || '·')[0]).toUpperCase())}</span>`
   const byId = id => FEED && FEED.posts.find(p => p.id === id)
   function openSheet(h) { $('[data-sheetbody]').innerHTML = h; if (sheet.hidden) { sheet.hidden = false; requestAnimationFrame(() => sheet.classList.add('on')); document.documentElement.style.overflow = 'hidden' } }
 
@@ -507,12 +664,12 @@ const P = {
   function giftCard() {
     const { d, founder, open } = CTX; if (!founder) return ''
     const its = giftItems(), covers = its.filter(it => it.cover).map(it => `<img src="${esc(it.cover)}" alt="">`).join('')
-    return `<button type="button" class="giftc" data-gifts aria-label="Redeem your gifts">
+    return `<button type="button" class="giftc" data-gifts aria-label="Open your gifts">
       <span class="gemo" aria-hidden="true">🎁</span>
-      <span class="gtx"><span class="gk">${open ? "" : ic("lock")}Founder</span><span class="gt">Redeem your <em>gifts</em></span>
+      <span class="gtx"><span class="gk">${open ? "" : ic("lock")}Founder</span><span class="gt">Open your <em>gifts</em></span>
         <span class="gs">${open ? `${its.length} gifts for the first 100 who reserved: three playbooks and the full 3D AI Mastery course. Yours to keep.` : 'Yours, only yours. They unlock here on Saturday 28 November at 9:00 (Rome).'}</span>
         <span class="gfan ph" aria-hidden="true">${covers}</span>
-        <span class="btn">${open ? 'Redeem your gifts' : 'See your gifts'}${ic('arrow')}</span></span>
+        <span class="btn">${open ? 'Open your gifts' : 'See your gifts'}${ic('arrow')}</span></span>
       <span class="gfan" aria-hidden="true">${covers}</span></button>`
   }
   function giftsView() {
@@ -522,7 +679,7 @@ const P = {
     return `<div data-v="gifts"><div class="mtop"><div class="ghead"><span class="gemo" aria-hidden="true">🎁</span><div><p class="eyebrow">Founder</p><h1>Your gifts</h1><p class="msub">${open ? 'For the first 100 who reserved. Yours to keep.' : 'Yours, only yours. They unlock on Saturday 28 November at 9:00 (Rome).'}</p></div></div></div>
       <div class="gpage">${open || !left ? '' : `<div class="gcd" aria-label="Unlocks in">${[['days', u[0]], ['hours', u[1]], ['min', u[2]]].map(([l, n]) => `<span><b>${n}</b><small>${l}</small></span>`).join('')}</div>`}
         <div class="ggrid">${its.map(it => open
-          ? `<a class="glass gitem" href="${esc(it.href)}" target="_blank" rel="noopener"><span class="gcov">${cov(it)}</span><b>${esc(it.name)}</b><span class="gdl">${ic('down')}Download</span></a>`
+          ? `<a class="glass gitem" href="${esc(it.href + (/\?/.test(it.href) ? '&' : '?') + 'dl=1')}" download><span class="gcov">${cov(it)}</span><b>${esc(it.name)}</b><span class="gdl">${ic('down')}Download</span></a>`
           : `<div class="glass gitem lockd"><span class="gcov">${cov(it)}<span class="lk glock" role="img" aria-label="Locked">${LOCK}</span></span><b>${esc(it.name)}</b><span class="gdl">${ic('lock')}${left ? 'Saturday, 9:00' : 'With your first month'}</span></div>`).join('')}</div>
         ${open ? '<p class="gnote">Download them now and keep them: they are yours.</p>' : ''}</div></div>`
   }
@@ -532,7 +689,7 @@ const P = {
   const acts = p => `<button type="button" data-like="${p.id}" aria-pressed="${!!p.liked}" aria-label="Like">${ic('heart')}<b>${p.likes || ''}</b></button><button type="button" data-cmt="${p.id}" aria-label="Comments">${ic('bubble')}<b>${p.comments || ''}</b></button><button type="button" data-share="${p.id}" aria-label="Share">${ic('send')}<b>${p.shares || ''}</b></button><span class="sp"></span>${FEED && FEED.me.nico ? `<button type="button" class="fhide" data-hide="${p.id}" data-on="${p.hidden ? '0' : '1'}">${p.hidden ? ic('eye') + 'Show' : ic('x') + 'Hide'}</button>` : ''}`
   const who2 = p => `${esc(p.name)}${p.nico ? '<span class="fnico">Nico</span>' : ''}`
   const postCard = p => `<article class="glass fp${p.hidden ? ' hid' : ''}" data-post="${p.id}">
-      <header class="fph">${av(p.name)}<span class="fpn"><b>${who2(p)}</b><small>${ago(p.at)}${p.founder ? '<span class="fdot"></span>Founding member' : ''}${p.hidden ? '<span class="fdot"></span>Hidden from the club' : ''}</small></span><a class="fpo" href="${esc(p.link)}" target="_blank" rel="noopener">${ic('eye')}Open the build</a></header>
+      <header class="fph">${av(p.name, p.av)}<span class="fpn"><b>${who2(p)}</b><small>${ago(p.at)}${p.founder ? '<span class="fdot"></span>Founding member' : ''}${p.hidden ? '<span class="fdot"></span>Hidden from the club' : ''}</small></span><a class="fpo" href="${esc(p.link)}" target="_blank" rel="noopener">${ic('eye')}Open the build</a></header>
       ${p.img ? `<a class="fpimg" href="${esc(p.link)}" target="_blank" rel="noopener" aria-label="Open ${esc(p.name)}'s build"><img src="${esc(p.img)}" alt="" loading="lazy"></a>` : ''}
       <div class="fpa">${acts(p)}</div>
       ${p.caption ? `<p class="fpc"><b>${esc(p.name)}</b>${esc(p.caption)}</p>` : ''}
@@ -592,9 +749,9 @@ const P = {
     fetch(`/api/club/comments?m=${encodeURIComponent(m)}&id=${encodeURIComponent(id)}`).then(r => r.json()).then(d => { const l = $('[data-clist]'); if (l) l.innerHTML = (d.comments || []).length ? d.comments.map(cRow).join('') : '<p class="snote">No comments yet. Be the first.</p>' }).catch(() => {})
   }
   /* the photo is made small on the phone before it leaves (about 1600 px, JPEG) */
-  function shrink(file) {
+  function shrink(file, max = 1600) {
     return new Promise((res, rej) => { const u = URL.createObjectURL(file), im = new Image()
-      im.onload = () => { const c = document.createElement('canvas'); let s = Math.min(1, 1600 / Math.max(im.naturalWidth, im.naturalHeight)), qy = .85, out = ''
+      im.onload = () => { const c = document.createElement('canvas'); let s = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight)), qy = .85, out = ''
         for (let i = 0; i < 6; i++) { c.width = Math.round(im.naturalWidth * s); c.height = Math.round(im.naturalHeight * s); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); out = c.toDataURL('image/jpeg', qy); if (out.length < 650000) break; qy -= .1; s *= .85 }
         URL.revokeObjectURL(u); res({ data: out, w: c.width, h: c.height }) }
       im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('img')) }; im.src = u })
@@ -640,9 +797,9 @@ const P = {
     const gift = founder ? `<div class="mgrp">${row('gifts', '<span class="em" aria-hidden="true">🎁</span>', "Your founders' gift", open ? `${giftItems().length} gifts, yours to keep` : 'Unlocks Saturday, 9:00', 'gold')}</div>` : ''
     return `<div class="mme">${av(first)}<span><b>${esc(first)}</b><small>${rl}</small></span></div>
       ${gift}
-      <div class="mgrp"><span class="mgt">The club</span>${row('compose', ic('plus'), 'Post your build')}${row('guides', ic('doc'), 'Every Full guide', open ? `${(d.guides || []).length} guides` : 'Opens Saturday, 9:00')}${row('skills', ic('code'), 'Your skills', open ? 'Tower Builder and House Builder' : 'Opens Saturday, 9:00')}</div>
+      <div class="mgrp"><span class="mgt">The club</span>${row('compose', ic('plus'), 'Post your build')}${row('guides', ic('doc'), 'All the full guides', open ? `${(d.guides || []).length} guides` : 'Opens Saturday, 9:00')}${row('skills', ic('code'), 'Your skills', open ? 'Tower Builder and House Builder' : 'Opens Saturday, 9:00')}</div>
       <div class="mgrp"><span class="mgt">For you</span>${row('remind', ic('cal'), "Friday's new course", 'Remind me')}${row('link', ic('copy'), 'Your link to the club')}${row('phone', ic('phone'), 'Add the club to your phone')}${row('write', ic('mail'), 'Write to Nico')}</div>
-      <div class="mgrp"><span class="mgt">Membership</span>${d.portal ? row('', ic('door'), 'Cancel your membership', 'One tap, at the end of the paid month', '', d.portal) : ''}${row('', ic('undo'), 'Withdraw within 14 days', '', 'quiet', '/withdraw')}${row('', ic('doc'), 'Club terms', '', 'quiet', '/the-3d-future/terms')}</div>`
+      <div class="mgrp"><span class="mgt">Membership</span>${d.portal ? row('', ic('door'), 'Cancel your membership', 'On Stripe: your email, then a code', '', d.portal) : ''}${row('', ic('undo'), 'Withdraw within 14 days', '', 'quiet', '/withdraw')}${row('', ic('doc'), 'Club terms', '', 'quiet', '/the-3d-future/terms')}</div>`
   }
   function openMenu() {
     const w = $('[data-mwrap]'), pn = $('[data-mpanel]'); if (!w) return
@@ -658,7 +815,7 @@ const P = {
     if (a === 'guides' || a === 'skills') return show(a)
     if (a === 'link') return linkSheet()
     if (a === 'remind') return remindSheet()
-    if (a === 'phone') return phoneSheet()
+    if (a === 'phone') return standalone() ? toast('The club is already on your Home Screen') : a2hs(true)
     if (a === 'write') return writeSheet()
   }
   function linkSheet() {
@@ -690,68 +847,148 @@ const P = {
       b.disabled = true; post('/api/club/msg', { m, text: t }).then(r => { x.className = r.ok ? 'ferr ok' : 'ferr'; x.textContent = r.ok ? 'Sent. I answer you by email.' : (r.d.error || 'Something went wrong, try again'); if (!r.ok) b.disabled = false }) })
   }
 
+  /* the course card of Home: the step you are on, the steps you watched (27/11) */
+  function heroHTML() {
+    const ls = LS, live = ls.some(l => l.src), before = Date.now() < OPENS, n = curStep(), cur = ls[n - 1] || { n: 1, t: '' }, k = PROG.d.length
+    const left = Math.max(0, OPENS - Date.now()), dd = Math.floor(left / 864e5), hh = Math.floor(left / 36e5) % 24, mm = Math.floor(left / 6e4) % 60
+    const tt = (l) => { const t = esc(l.t), w = esc(l.k || ''); return w && t.includes(w) ? t.replace(w, '<em class="kw">' + w + '</em>') : t }
+    const all = ls.length && ls.every(l => PROG.d.includes(l.n))
+    return `<a class="chero" href="#course" data-go="${GO_COURSE}" aria-label="SAMAR, floor by floor: ${k} of ${ls.length} steps watched, open the course">
+        <img src="${esc(cur.img || '/club/course/step-01.webp')}" alt=""><span class="gz"></span><span class="grain2"></span>
+        <span class="ip">${ic('play')}${live ? 'Your course' : 'Your first course'}</span>
+        <span class="chno"><b>${nn(cur.n)}</b><small>/${ls.length}</small></span>
+        <span class="chbody">
+          <span class="cht">SAMAR, <em class="kw">floor by floor</em></span>
+          <span class="chs">${all ? 'Course finished · watch any step again' : `${k ? 'Next' : 'Start with'} step ${nn(cur.n)} · ${tt(cur)}`}</span>
+          <span class="chdots" aria-hidden="true">${ls.map(l => `<i class="${PROG.d.includes(l.n) ? 'on' : l.n === cur.n && live && !all ? 'cur' : ''}"></i>`).join('')}</span>
+          <span class="chfoot"><span class="chcd">${before ? `Opens in <b>${dd ? `${dd}d ${hh}h` : `${hh}h ${String(mm).padStart(2, '0')}m`}</b> · Saturday 28 November, 9:00 (Rome)` : `${k} of ${ls.length} steps watched`}</span><span class="btn cta">${ic('play')}<span>${before ? `See the ${ls.length} steps` : all ? 'Watch again' : k ? `Continue · step ${nn(cur.n)}` : 'Start the course'}</span></span></span>
+        </span></a>`
+  }
+  function paintHero() { $$('.chero').forEach(h => { const w = document.createElement('div'); w.innerHTML = heroHTML().trim(); h.replaceWith(w.firstChild) }) }
+  let PROF = {}
+
+  /* 27/11: Edit profile (photo, name, Instagram, one line), saved by /api/club/profile */
+  function editProfile() {
+    const pr = PROF || {}, st = { img: '', noimg: false }
+    const face = () => st.img || (!st.noimg && pr.av) ? `style="background-image:url(${esc(st.img || pr.av)})"` : ''
+    openSheet(`<p class="s-eyebrow">Your profile</p><h3 class="s-title" id="t3m-sh">Edit profile</h3>
+      <form class="pform" data-pform novalidate>
+        <label class="pphotoed" data-pface ${face()} aria-label="Choose a photo">${st.img || pr.av ? '' : esc((pr.name || CTX.first || '·')[0].toUpperCase())}<span>${ic('cam')}</span><input type="file" accept="image/*" data-pfile></label>
+        <label>Name<input name="name" maxlength="40" autocomplete="name" value="${esc(pr.name || CTX.first || '')}" required></label>
+        <label>Instagram<input name="ig" maxlength="40" autocapitalize="none" autocomplete="off" placeholder="@yourname" value="${pr.ig ? '@' + esc(pr.ig) : ''}"></label>
+        <label>One line about you<input name="bio" maxlength="120" placeholder="Architect in Milan, towers and villas" value="${esc(pr.bio || '')}"></label>
+        <button class="bigb blue" type="submit">Save</button><p class="ferr" role="status" data-ferr></p></form>`)
+    const f = $('[data-pform]'), x = $('[data-ferr]')
+    $('[data-pfile]').addEventListener('change', e => { const file = e.target.files && e.target.files[0]; if (!file) return; x.className = 'ferr ok'; x.textContent = 'Getting your photo ready…'
+      shrink(file, 512).then(r => { st.img = r.data; st.noimg = false; const fc = $('[data-pface]'); fc.style.backgroundImage = `url(${r.data})`; fc.firstChild && fc.firstChild.nodeType === 3 && (fc.firstChild.textContent = ''); x.textContent = '' })
+        .catch(() => { x.className = 'ferr'; x.textContent = 'That photo did not open, try a JPG or PNG' }) })
+    f.addEventListener('submit', e => { e.preventDefault(); const b = $('button', f); b.disabled = true; x.textContent = ''
+      post('/api/club/profile', { m, name: f.name.value, ig: f.ig.value, bio: f.bio.value, ...(st.img ? { img: st.img } : {}) })
+        .then(r => { b.disabled = false; if (!r.ok) { x.className = 'ferr'; x.textContent = r.d.error || 'Something went wrong, try again'; return }
+          PROF = r.d.profile; if (CTX.d) CTX.d.profile = PROF; paintMe(); closeSheet(); toast('Profile saved') })
+        .catch(() => { b.disabled = false; x.className = 'ferr'; x.textContent = 'Something went wrong, try again' }) })
+  }
+  function paintMe() {
+    const first = CTX.first
+    $$('[data-mav]').forEach(el => { const big = el.classList.contains('big'), w = document.createElement('div'); w.innerHTML = mavH(first, big ? 'big' : ''); el.replaceWith(w.firstChild) })
+    const pn = $('[data-pn]'); if (pn) pn.textContent = PROF.name || first
+    const pb = $('[data-pbio]'); if (pb) { pb.textContent = PROF.bio || ''; pb.hidden = !PROF.bio }
+    const pi = $('[data-pig]'); if (pi) { pi.hidden = !PROF.ig; if (PROF.ig) { pi.href = 'https://instagram.com/' + encodeURIComponent(PROF.ig); pi.textContent = '@' + PROF.ig } }
+    const h1 = $('[data-v="home"] .mtop h1'); if (h1 && PROF.name) h1.textContent = h1.textContent.replace(/, .*$/, ', ' + PROF.name.split(' ')[0])
+    if (FEED) loadFeed()
+  }
+
+  /* 27/11 (Nico: «un piccolo tutorial per aggiungerla come app… e non serve che lo rifa ogni volta, personalizzato per ogni
+     membro»): the member's own manifest (start_url = their link), and once on a phone a card that shows how to add it to the
+     Home Screen. iPhone Safari: an arrow to Share and three steps; inside Instagram/Gmail/Facebook first «open in Safari»;
+     Android: the browser's own Install. Never again after it is added (standalone) or after the ×. */
+  let BIP = null
+  addEventListener('beforeinstallprompt', e => { e.preventDefault(); BIP = e })
+  const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true
+  function appSetup() {
+    try { localStorage.setItem('t3f-m', m) } catch (e) {}
+    if (!document.querySelector('link[rel="manifest"]')) { const l = document.createElement('link'); l.rel = 'manifest'; l.href = '/api/club/manifest?m=' + encodeURIComponent(m); document.head.appendChild(l) }
+    let seen = ''; try { seen = localStorage.getItem('t3f-a2hs') || '' } catch (e) {}
+    const ua = navigator.userAgent, phone = /iPhone|iPod|Android/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1 && innerWidth < 900)
+    if (standalone()) { try { localStorage.setItem('t3f-a2hs', 'app') } catch (e) {} return }
+    if (!phone || seen) return
+    setTimeout(() => a2hs(false), 2500)
+  }
+  function a2hs(fromMenu) {
+    closeA2hs()
+    const ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)
+    const inapp = /Instagram|FBAN|FBAV|FB_IAB|GSA\/|Line\/|LinkedInApp|TikTok|Snapchat|Twitter/i.test(ua) || (ios && !/Safari\//.test(ua))
+    const head = (t, sub) => `<div class="ahd"><img src="/club/app-icon-180.png" alt=""><div><b>${t}</b><small>${sub}</small></div></div>`
+    let body = ''
+    if (ios && inapp) body = head('Open the club in Safari first', 'From this app you can\'t add it to your Home Screen.') + `<ol><li><i>1</i><span>Tap <b>···</b> or ${ic('share')} in this app</span></li><li><i>2</i><span>Tap <b>Open in Safari</b></span></li><li><i>3</i><span>Then this card shows you the rest</span></li></ol>`
+    else if (ios) body = head('Put the club on your Home Screen', 'One tap and you\'re in, every time. No link to look for.') + `<ol><li><i>1</i><span>Tap ${ic('share')} <b>Share</b> below (on new iPhones it's in ··· )</span></li><li><i>2</i><span>Tap <b>Add to Home Screen</b></span></li><li><i>3</i><span>Tap <b>Add</b>. Done.</span></li></ol>`
+    else if (BIP) body = head('Install the club on your phone', 'It opens straight into your page, like an app.') + '<button class="abtn" type="button" data-ainstall>Install the app</button>'
+    else body = head('Put the club on your Home Screen', 'It opens straight into your page, like an app.') + '<ol><li><i>1</i><span>Tap <b>⋮</b> at the top right</span></li><li><i>2</i><span>Tap <b>Add to Home screen</b> or <b>Install app</b></span></li></ol>'
+    const c = document.createElement('div'); c.className = 'a2hs'; c.setAttribute('role', 'dialog'); c.setAttribute('aria-label', 'Add the club to your phone')
+    c.innerHTML = `<button class="ax" type="button" data-ax aria-label="Close">${ic('x')}</button>${body}`
+    document.body.appendChild(c); document.body.classList.add('a2open'); requestAnimationFrame(() => c.classList.add('on'))
+    if (ios && !inapp) { const a = document.createElement('span'); a.className = 'a2arrow'; a.innerHTML = ic('arrdown'); document.body.appendChild(a) }
+    c.querySelector('[data-ax]').addEventListener('click', () => { if (!fromMenu) try { localStorage.setItem('t3f-a2hs', 'closed') } catch (e) {}; closeA2hs() })
+    const ib = c.querySelector('[data-ainstall]'); if (ib) ib.addEventListener('click', () => { BIP.prompt(); BIP.userChoice.then(ch => { if (ch.outcome === 'accepted') { try { localStorage.setItem('t3f-a2hs', 'app') } catch (e) {} } BIP = null; closeA2hs() }) })
+  }
+  function closeA2hs() { $$('.a2hs, .a2arrow').forEach(x => x.remove()); document.body.classList.remove('a2open') }
+  addEventListener('appinstalled', () => { try { localStorage.setItem('t3f-a2hs', 'app') } catch (e) {}; closeA2hs() })
   function render(d) {
     const first = String(d.name || '').trim().split(/\s+/)[0] || 'friend', init = (first[0] || '·').toUpperCase()
     // 26/11 (Nico: «i regali si sbloccano solo da dentro la pagina quando uno è founder»): a founder (one of the first 100
     // reservations) sees the gift as theirs already; the files come only when the page is open (card charged), as 1-day links
     const nGift = (d.gifts && d.gifts.length) || (d.giftNames && d.giftNames.length) || 0
     const founder = nGift > 0, before = Date.now() < OPENS, open = d.state === 'open'
-    const earned = BADGES.map(([k]) => (k === 'founder' && founder) || (k === 'first' && !!d.posted)), nOn = earned.filter(Boolean).length
+    // 27/11: progress and profile of this member (api/_lib/club-me.js); the Founder badge only for who has it (QA: a grey one
+    // reminds a member they came late); Tower = the eleven steps watched
+    PROG = { d: (d.progress && d.progress.d) || [], t: (d.progress && d.progress.t) || {} }; ALL = !!d.allOpen; LS = d.lessons || []
+    const BL = BADGES.filter(([k]) => k !== 'founder' || founder), courseDone = LS.length > 0 && LS.every(l => PROG.d.includes(l.n))
+    const earned = BL.map(([k]) => (k === 'founder' && founder) || (k === 'first' && !!d.posted) || (k === 'tower' && courseDone)), nOn = earned.filter(Boolean).length
     const now = new Date(), hr = +new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Europe/Rome' }).format(now)
     const greet = hr < 5 ? 'Good evening' : hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening'
     const today = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Europe/Rome' }).format(now)
     const since = d.since && !isNaN(Date.parse(d.since)) ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', timeZone: 'Europe/Rome' }).format(new Date(d.since)) : ''
     const role = founder ? 'Founding member' : d.state === 'waiting' ? 'Seat reserved' : 'Member'
     CTX = { d, founder, open, first }
+    PROF = d.profile || {}
     const top = `<nav class="top mnav" aria-label="THE 3D FUTURE"><div class="topin"><a class="lockup" href="/the-3d-future"><img src="/club/knot-96.webp" alt="" width="32" height="32"><span class="wm">THE <b>3D</b> FUTURE</span></a>
-      <div class="links">${TABS.map(([k, , t]) => `<a href="#${k}" data-go="${k}">${t}</a>`).join('')}</div><span class="rgt"><span class="mav" aria-hidden="true">${init}</span><button type="button" class="hbg" data-menu aria-label="Open the menu" aria-expanded="false"><span></span><span></span><span></span></button></span></div></nav>`
+      <div class="links">${TABS.map(([k, , t]) => `<a href="#${k}" data-go="${k}">${t}</a>`).join('')}</div><span class="rgt">${mavH(first, '')}<button type="button" class="hbg" data-menu aria-label="Open the menu" aria-expanded="false"><span></span><span></span><span></span></button></span></div></nav>`
     const courseBlock = `<section class="course" data-course hidden>
         <div class="chead"><span class="eyebrow">Your first course</span><h2>SAMAR, <span class="g">floor by floor</span></h2>
           <p>Eleven steps, from an empty folder to a tower online where buyers choose their floor, built the real way we build them for our clients.</p>
+          <div class="cprog" data-cprog></div>
           <div class="cd" data-cd><div class="num"><span><b data-u="d">0</b><small>days</small></span><span><b data-u="h">00</b><small>hours</small></span><span><b data-u="m">00</b><small>min</small></span><span><b data-u="s">00</b><small>sec</small></span></div><span class="when">Every step opens on Saturday 28 November at 9:00 (Rome)</span></div></div>
-        <ol class="steps2" data-lessons></ol>
+        <div class="cA" data-lessons></div>
         ${open && d.skill ? `<div class="mfile">${fl(d.skill)}<p class="snote">${esc(d.skill.name)} ${esc(d.skill.note)}</p></div>` : ''}</section>`
     const left = Math.max(0, OPENS - Date.now()), dd = Math.floor(left / 864e5), hh = Math.floor(left / 36e5) % 24
-    const ls = d.lessons || [], cur = ls.find(l => l.src) || ls[0] || { n: 1, t: '' }, live = ls.filter(l => l.src).length
-    const tt = (l) => { const t = esc(l.t), k = esc(l.k || ''); return k && t.includes(k) ? t.replace(k, '<em class="kw">' + k + '</em>') : t }
-    const hero = `<a class="chero" href="#course" data-go="${GO_COURSE}" aria-label="SAMAR, floor by floor: open the ${ls.length} steps">
-        <img src="${esc(cur.img || '/club/course/step-01.webp')}" alt=""><span class="gz"></span><span class="grain2"></span>
-        <span class="ip">${ic('play')}${live ? 'Your course' : 'Your first course'}</span>
-        <span class="chno"><b>${String(cur.n).padStart(2, '0')}</b><small>/${ls.length}</small></span>
-        <span class="chbody">
-          <span class="cht">SAMAR, <em class="kw">floor by floor</em></span>
-          <span class="chs">${live ? 'Next' : 'Starts with'} step ${String(cur.n).padStart(2, '0')} · ${tt(cur)}</span>
-          <span class="chdots" aria-hidden="true">${ls.map(l => `<i class="${l.src ? 'on' : ''}"></i>`).join('')}</span>
-          <span class="chfoot"><span class="chcd">${before ? `Opens in <b>${dd}d ${hh}h</b> · Saturday 28 November, 9:00 (Rome)` : `${live} of ${ls.length} steps online`}</span><span class="btn cta">${ic('play')}<span>See the ${ls.length} steps</span></span></span>
-        </span></a>`
+    const hero = heroHTML()
     const home = `<div data-v="home">
       <div class="mtop"><div><p class="eyebrow">${esc(today)}</p><h1>${greet}, ${esc(first)}</h1></div></div>
       <div class="mgrid">
         <div class="cherow span full">${hero}</div>
         <div class="glass w span"><span class="k">${ic('play')}A welcome from Nico<span class="r">1:58</span></span>
           <div class="yt" data-hello><video playsinline preload="metadata" poster="/club/intro-nico-cover.webp" tabindex="0" aria-label="Play the welcome from Nico"><source src="/club/intro-nico-v2-720.mp4" media="(max-width: 700px)" type="video/mp4"><source src="/club/intro-nico-v2.mp4" type="video/mp4"></video></div></div>
-        <div class="glass w span lvl lvl2"><span class="k">${ic('spark')}Your badges<span class="r">${nOn} of ${BADGES.length}</span></span><div class="lvlrow">${ring(nOn / BADGES.length, 104, 12, 'url(#rg)', 'rgba(255,255,255,.14)', `<b class="rn">${nOn}<small>/${BADGES.length}</small></b>`)}<div class="medals">${BADGES.map((b, i) => medal(b, earned[i])).join('')}</div></div></div>
+        <div class="glass w span lvl lvl2"><span class="k">${ic('spark')}Your badges<span class="r">${nOn} of ${BL.length}</span></span><div class="lvlrow">${ring(nOn / BL.length, 104, 12, 'url(#rg)', 'rgba(255,255,255,.14)', `<b class="rn">${nOn}<small>/${BL.length}</small></b>`)}<div class="medals">${BL.map((b, i) => medal(b, earned[i])).join('')}</div></div></div>
         ${incoming('/club/v-stadium-760.webp', 'Incoming', 'New in the Vault', '4', 'Dec', 'A new build every Friday', 'vault')}
         ${incoming('/club/v-house-760.webp', 'Every week', 'My comments on your builds', 'Mon', '', 'Post your build', 'feed')}
-        ${founder ? incoming('/club/v-towers-760.webp', open ? 'Yours' : 'Founder', "Your founders' gift", String(nGift), 'files', open ? 'Yours to keep' : 'Unlocks Saturday, 9:00', 'gift') : incoming('/club/v-plane-760.webp', 'Yours', 'Your skills', '2', 'skills', 'Yours to keep', 'vault')}
-        ${incoming('/club/v-miami-760.webp', 'Open', 'Every Full guide', String(d.guides ? d.guides.length : ''), 'guides', 'In the Vault', 'vault')}
+        ${founder ? incoming('/club/v-towers-760.webp', open ? 'Yours' : 'Founder', "Your founders' gift", String(nGift), 'gifts', open ? 'Yours to keep' : 'Unlocks Saturday, 9:00', 'gift') : incoming('/club/v-plane-760.webp', open ? 'Yours' : 'Saturday', 'Your skills', '2', 'skills', open ? 'Yours to keep' : 'Opens Saturday, 9:00', 'vault')}
+        ${incoming('/club/v-miami-760.webp', open ? 'Open' : 'Saturday', 'All the full guides', String(d.guides ? d.guides.length : (d.counts && d.counts.guides) || ''), 'guides', open ? 'In the Vault' : 'Open Saturday, 9:00', 'vault')}
         ${giftCard()}
       </div>
     </div>`
     const courseV = `<div data-v="course"><div class="mtop"><div><h1>Courses</h1><p class="msub">A new course every Friday, with the build of the week</p></div></div>
-      <div class="mgrid"><div class="cherow span full">${hero.replace('data-go="course"', 'data-go="course-list"')}</div>
-        <div class="glass w span nextc"><span class="k">${ic('lock')}Next course<span class="r">Friday 4 December</span></span><span class="big">4<small>Dec</small></span><p class="lede2">The next course comes with the build of the week.</p></div></div>
-      <div class="ccourse" id="course-list">${courseBlock}</div></div>`
+      <div class="ccourse" id="course-list">${courseBlock}</div>
+      <div class="mgrid"><div class="glass w span nextc"><span class="k">${ic('lock')}Next course<span class="r">Friday 4 December</span></span><span class="big">4<small>Dec</small></span><p class="lede2">The next course comes with the build of the week.</p></div></div></div>`
     const deck = (d.vault || []).map((b, i) => `<article class="vcard ${i === 0 ? 'open' : ''}" data-vb="${i}" tabindex="0" role="button" aria-label="${esc(b.t)}, open its files">
         <img src="/club/v-${esc(b.img)}-760.webp" alt="" loading="lazy"><span class="gz"></span>
         <div class="vt"><span class="pill">${ic('doc')}${esc(b.type)}</span><span class="go ctr">${ic('chev')}</span></div>
         <span class="word">${esc(b.t.replace(/^The /, '').split(' ')[0])}</span></article>`).join('') + `<article class="vcard lock soon" tabindex="0" data-next aria-label="Next build, Friday 4 December"><span class="mystery"></span><div class="vt"><span class="pill">${ic('lock')}Fri 4 Dec</span><span class="go ctr">${ic('lock')}</span></div><span class="word">Next build</span><span class="sub2">Friday 4 December</span></article>`
     const vault = `<div data-v="vault">
-      <div class="mtop"><div><h1>The Vault</h1><p class="msub">${(d.vault || []).length} open · a new one every Friday</p></div></div>
+      <div class="mtop"><div><h1>The Vault</h1><p class="msub">${open ? `${(d.vault || []).length} builds open · a new one every Friday` : `${(d.counts && d.counts.vault) || ''} builds · they open Saturday at 9:00`}</p></div></div>
       ${open ? `<div class="wrap vwrap"><div class="deck">${deck}</div></div>
       <div class="mgrid">
         ${founder ? `<div class="cherow span full" id="gift">${giftCard()}</div>` : ''}
-        <div class="glass w span full wf" id="guides"><span class="k">${ic('doc')}Every Full guide<span class="r">${(d.guides || []).length} guides</span></span><div class="files">${(d.guides || []).map(fl).join('')}</div></div>
+        <div class="glass w span full wf" id="guides"><span class="k">${ic('doc')}All the full guides<span class="r">${(d.guides || []).length} guides</span></span><div class="files">${(d.guides || []).map(fl).join('')}</div></div>
         <div class="glass w span full wf" id="skills"><span class="k">${ic('code')}Your skills<span class="r">yours to keep</span></span><div class="files">${d.skill ? fl(d.skill) : ''}${d.house ? fl(d.house) : ''}</div></div>
       </div>` : `<div class="mgrid">${founder ? `<div class="cherow span full" id="gift">${giftCard()}</div>` : ''}<div class="glass w span full"><span class="k">${ic('lock')}Opens Saturday 28 November</span><p class="lede2">Your seat is reserved. The Vault, every Full guide and your skills open here on Saturday 28 November at 9:00 (Rome), when your first month starts.</p></div></div>`}
     </div>`
@@ -761,15 +998,14 @@ const P = {
       <div class="pcard">
         <div class="ptone" aria-hidden="true"><div class="pbw"><img class="pblur" src="/club/profile-cover-800.webp" alt=""></div></div>
         <div class="pphoto"><img class="pimg" src="/club/profile-cover.webp" alt="" style="object-position:50% 40%"><div class="pfade"></div>
-          <div class="pname"><span class="mav big" aria-hidden="true">${init}</span><h1>${esc(first)}</h1><p>${role}${since ? ' · since ' + since : ''}</p></div></div>
-        <div class="pact"><button type="button" class="btn cta" data-compose>${ic('plus')}<span>Post your build</span></button><a class="pcam ctr" href="#vault" data-go="vault" aria-label="Open the Vault">${ic('grid')}</a></div>
-        <div class="pstat">${[[(d.lessons || []).length, 'steps'], [(d.vault || []).length, 'builds'], [(d.guides || []).length, 'guides']].filter(x => x[0]).map(([n, l]) => `<span><b>${n}</b><small>${l}</small></span>`).join('')}</div>
+          <div class="pname">${mavH(first, 'big')}<h1 data-pn>${esc(PROF.name || first)}</h1><p>${role}${since ? (d.state === 'waiting' ? ' · starts ' : ' · since ') + since : ''}</p><p class="pbio" data-pbio${PROF.bio ? '' : ' hidden'}>${esc(PROF.bio || '')}</p>${PROF.ig ? `<a class="pig" data-pig href="https://instagram.com/${encodeURIComponent(PROF.ig)}" target="_blank" rel="noopener">@${esc(PROF.ig)}</a>` : '<a class="pig" data-pig hidden></a>'}</div></div>
+        <div class="pact"><button type="button" class="pedit" data-editp>${ic('pen')}Edit profile</button><button type="button" class="btn cta" data-compose>${ic('plus')}<span>Post your build</span></button><a class="pcam ctr" href="#vault" data-go="vault" aria-label="Open the Vault">${ic('grid')}</a></div>
       </div>
       <div class="pmain">
-        <div class="glass w wide2 badgesw"><span class="k">${ic('trophy')}Badges<span class="r">${nOn} of ${BADGES.length}</span></span><div class="medals lg">${BADGES.map((b, i) => medal(b, earned[i])).join('')}</div></div>
+        <div class="glass w wide2 badgesw"><span class="k">${ic('trophy')}Badges<span class="r">${nOn} of ${BL.length}</span></span><div class="medals lg">${BL.map((b, i) => medal(b, earned[i])).join('')}</div></div>
         ${open ? `<div class="objs">${[['/club/course/step-05.webp', (d.lessons || []).length, 'course steps', GO_COURSE], ['/club/v-towers-760.webp', (d.vault || []).length, 'Vault builds', 'vault'], [founder ? '/club/v-plane-760.webp' : '/club/v-miami-760.webp', founder ? d.gifts.length : (d.guides || []).length, founder ? "founders' gifts" : 'Full guides', founder ? 'gift' : 'vault']].map(([im, n, l, go]) => `<a class="glass obj" href="#${go}" data-go="${go}"><img src="${im}" alt=""><b>${n}</b><span>${l}</span></a>`).join('')}</div>` : ''}
         <div class="glass w wide2"><span class="k">${ic('person')}Your membership</span>
-          <p class="msmall">${d.portal ? `To cancel: <a href="${esc(d.portal)}">one tap here</a>. ` : ''}To withdraw within 14 days: <a href="/withdraw">omnyalab.com/withdraw</a>.</p></div>
+          <p class="msmall">${d.portal ? `To cancel: <a href="${esc(d.portal)}" target="_blank" rel="noopener">open Stripe</a> (your email, then a code). ` : ''}To withdraw within 14 days: <a href="/withdraw">omnyalab.com/withdraw</a>.</p></div>
       </div></div></div>`
     const tabs = `<div class="tabbar"><div class="tabin t${TABS.length}" role="tablist">${TABS.map(([k, i, t]) => `<button type="button" data-go="${k}">${ic(i)}<span>${t}</span></button>`).join('')}</div></div>`
     app.insertAdjacentHTML('afterbegin', '') // keep the background first
@@ -780,6 +1016,7 @@ const P = {
     document.body.insertAdjacentHTML('beforeend', `<button type="button" class="hbfab" data-menu aria-label="Open the menu" aria-expanded="false"><span></span><span></span><span></span>${founder ? '<i class="dotg" aria-hidden="true"></i>' : ''}</button>`)
     wire()
     loadFeed()
+    appSetup()
   }
   const course_ = ls => course(ls)
 
@@ -796,7 +1033,7 @@ const P = {
     app.dataset.screen = k
     $$('.links [data-go], .tabin [data-go]').forEach(a => { if (a.dataset.go === k) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current') })
     const bg = $('[data-mbg]'); if (bg && BG[k] && !bg.src.endsWith(BG[k])) bg.src = BG[k]
-    if (push !== false) try { history.replaceState(null, '', '#' + k) } catch (e) {}
+    if (push !== false && location.hash !== '#' + k) try { history.pushState(null, '', '#' + k) } catch (e) {}
     // the cards of a screen that was hidden come in when it shows
     setTimeout(() => $$(`[data-v="${k}"] .steps2 li`).forEach(li => li.classList.add('in')), 350)
     if (target) setTimeout(() => { const el = document.getElementById(target); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }) }, 40); else if (push !== false) scrollTo({ top: 0 })
@@ -810,6 +1047,7 @@ const P = {
       if (e.target.closest('[data-gifts]')) { show('gifts'); return }
       const hd = e.target.closest('[data-hide]'); if (hd) { doHide(hd.dataset.hide, hd.dataset.on === '1'); return }
       if (e.target.closest('[data-compose]')) { compose(); return }
+      if (e.target.closest('[data-editp]')) { editProfile(); return }
       const lk = e.target.closest('[data-like]'); if (lk) { doLike(lk.dataset.like, lk); return }
       const cm = e.target.closest('[data-cmt]'); if (cm) { postSheet(cm.dataset.cmt); return }
       const sh = e.target.closest('[data-share]'); if (sh) { doShare(sh.dataset.share); return }
@@ -836,6 +1074,9 @@ const P = {
         .catch(() => { msg.className = 'err'; msg.textContent = 'Something went wrong, try again' }).then(() => { btn.disabled = false })
     }))
     const start = (location.hash || '').slice(1); show(SCREENS.includes(start) ? start : 'home', false)
+    addEventListener('popstate', () => { const h = (location.hash || '').slice(1); closeMenu(); if (!sheet.hidden) closeSheet(); show(SCREENS.includes(h) ? h : 'home', false) })
+    // the file links last one day: a page kept open (the app on the Home Screen) gets fresh ones when it comes back after hours
+    let away = 0; document.addEventListener('visibilitychange', () => { if (document.hidden) away = Date.now(); else if (away && Date.now() - away > 6 * 36e5) location.reload() })
   }
   let DATA = null
   const sheet = $('[data-sheet]')
@@ -851,9 +1092,9 @@ const P = {
   /* states before the member area: no link, the link went bad, the membership ended */
   const stateH = $('[data-state-h]')
   function lost(msg) {
-    root.innerHTML = `<div class="mtop"><div><h1>Get your link to the club</h1></div></div><form class="glass mbox" data-lost novalidate><p>${esc(msg || 'Write the email you paid with and we send you your own link.')}</p>
+    root.innerHTML = `<div class="mtop"><div><p class="eyebrow">THE 3D FUTURE</p><h1>Log in to the club</h1></div></div><form class="glass mbox" data-lost novalidate><p>${esc(msg || 'Write the email you joined with. Your link to the club arrives in a minute, no password.')}</p>
       <label for="t3m-e" class="sr">Email</label><input id="t3m-e" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@studio.com" required>
-      <button class="btn cta wide" type="submit">Send me my link</button><p class="err" role="status" data-lost-msg></p></form>`
+      <button class="btn cta wide" type="submit">Send my link</button><p class="err" role="status" data-lost-msg></p><p class="lostjoin">Not a member yet? <a href="/the-3d-future">Join for €9/month</a></p></form>`
     $('[data-lost]').addEventListener('submit', e => {
       e.preventDefault(); const f = e.currentTarget, msg = $('[data-lost-msg]'), btn = $('button', f), email = f.email.value.trim()
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.textContent = 'That email does not look right'; return }
@@ -862,9 +1103,9 @@ const P = {
         .catch(() => { msg.textContent = 'Something went wrong, try again' }).then(() => { btn.disabled = false })
     })
   }
-  if (!m) lost()
+  if (!m) { let k = ''; try { k = localStorage.getItem('t3f-m') || '' } catch (e) {}; if (k) location.replace(location.pathname + '?m=' + encodeURIComponent(k) + location.hash); else lost() }
   else fetch('/api/club/inside?m=' + encodeURIComponent(m)).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => {
-    if (!ok) return lost(d.error)
+    if (!ok) { try { if (localStorage.getItem('t3f-m') === m) localStorage.removeItem('t3f-m') } catch (e) {}; return lost(d.error) }
     if (d.state === 'none') { stateH.textContent = 'We are getting your seat ready. Refresh this page in a minute.'; return }
     if (d.state === 'ended') { root.innerHTML = `<div class="mtop"><div><h1>Your membership has ended</h1></div></div><div class="glass mbox"><p>Thank you for being part of it. If you want to come back, the doors are always open: <a href="/the-3d-future">omnyalab.com/the-3d-future</a>.</p></div>`; return }
     DATA = d; render(d)

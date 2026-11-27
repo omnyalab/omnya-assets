@@ -7,6 +7,8 @@
 // The PDF is streamed: a streamed answer has no 4.5 MB limit on Vercel (the playbooks are up to 8 MB).
 // 10/11: one file is not a PDF, the Towers scene (en/the-towers-scene.zip). Same signature, same end date, same
 // folder; it goes out as application/zip and as a download with its own clean name, the PDFs as before.
+// 27/11: &dl=1 (outside the signature, so it can be added to any signed link) sends a PDF as a download too, with its
+// own clean name: the «Download» buttons of the club's gifts and Vault; without it a PDF opens in the browser as before.
 import { createReadStream } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { Readable } from 'node:stream';
@@ -42,10 +44,11 @@ export async function GET(request) {
     return closed(404);
   }
   const zip = file.endsWith('.zip');
+  const dl = zip || q.get('dl') === '1';
   return new Response(Readable.toWeb(createReadStream(path)), {
     headers: {
       'Content-Type': zip ? 'application/zip' : 'application/pdf',
-      'Content-Disposition': `${zip ? 'attachment' : 'inline'}; filename="${real.split('/').pop()}"`,
+      'Content-Disposition': `${dl ? 'attachment' : 'inline'}; filename="${real.split('/').pop()}"`,
       'Cache-Control': 'private, no-store',
       'X-Robots-Tag': 'noindex, nofollow',
     },

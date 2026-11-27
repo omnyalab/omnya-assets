@@ -17,6 +17,7 @@ const pages = [
   ['/studio', T.nav.studio],
   ['/pricing', T.nav.pricing],
   ['/learn', T.nav.learn],
+  ['/the-3d-future', T.nav.club],
   ['/contact', T.nav.contact],
 ] as const;
 ---
@@ -29,7 +30,7 @@ const pages = [
     <div class="ftr__grid">
       <div>
         <h2>{F.pages}</h2>
-        <ul>{pages.map(([h, n]) => <li><a class="u" href={localize(h, lang)}>{n}</a></li>)}</ul>
+        <ul>{pages.map(([h, n]) => <li>{h === '/the-3d-future' ? <a class="u" href={h} data-astro-reload>{n}</a> : <a class="u" href={localize(h, lang)}>{n}</a>}</li>)}</ul>
       </div>
       <div>
         <h2>{F.learn}</h2>

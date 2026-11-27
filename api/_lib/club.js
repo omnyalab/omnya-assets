@@ -17,6 +17,7 @@ import { kv } from './store.js';
 import { sendMail } from './mail.js';
 import { host } from './config.js';
 import { fixEmail } from './mail-fix.js';
+import { getProgress, getProfile } from './club-me.js';
 import { signedHref, isGuideProduct, HOUSE_SKILL_FILE, FOUNDERS_GIFTS, DAY, CLUB_VAULT, CLUB_GUIDES, CLUB_COURSE_SKILL } from './learn-files.js';
 
 export const ROUND = '1';
@@ -163,23 +164,23 @@ export const insideUrl = (email) => `${SITE_URL}/the-3d-future/inside?m=${member
     11 step.md»). k = the word in azure and s = the short line, both from the approved step covers; img = the cover photo,
     blurred, under the card (Nico, B3). aff = the Higgsfield affiliate line under the video (26/11, Nico: step 2 says «it's right
     here on screen and under this video»). src = the video once it is online; until then the page shows the step locked, opening on Saturday 28/11.
-    No lengths yet: the films are not cut (Nico: no made-up numbers). */
+    27/11: poster and thumb = the cover frame of each rendered film (0.6 s), len = the real length of the film. */
 /** 26/11 (Nico: «prepara tutto su Vercel»): the films as HLS streams (1080p + 720p, 6 s pieces, scripts made by
     corso-step/v3/hls.sh) in a folder with a random name, given only to members; src = its master playlist, '' = not online yet */
 const COURSE_V = '/club/course/v/c9fbc31edcc1ce9e/';
 const hls = (n) => `${COURSE_V}${String(n).padStart(2, '0')}/master.m3u8`;
 export const LESSONS = [
-  { n: 1, t: "What you'll build", p: "The tower we're building together, why developers pay over $6,000 for a page like this, and everything you need before you start.", k: "build", s: "The tower we build together, and why developers pay for it.", img: '/club/course/step-01.webp', src: hls(1) },
-  { n: 2, t: 'Set up your kit', p: "What's inside the kit, how to open it on Mac or Windows with one double click, and your first test run.", k: "kit", s: "What's in the kit, and your first run with one double click.", img: '/club/course/step-02.webp', src: hls(2), aff: true },
-  { n: 3, t: 'Inside the engine', p: 'A tour of the engine piece by piece, so you know exactly what every part does and how to drive it.', k: "engine", s: "Every part of the engine, and how to drive it.", img: '/club/course/step-03.webp', src: hls(3) },
-  { n: 4, t: 'References and real measures', p: 'How to collect the real photos from every side, pick your main photo, and give every number a source.', k: "real measures", s: "Real photos from every side, and a source for every number.", img: '/club/course/step-04.webp', src: hls(4) },
-  { n: 5, t: 'The tower in 3D', p: 'Your tower built from the main photo and checked with numbers, not with hope: overlay, silhouette score and an honest critic.', k: "in 3D", s: "Your tower in 3D, checked with numbers, not with hope.", img: '/club/course/step-05.webp', src: hls(5) },
-  { n: 6, t: 'The apartment inside', p: 'The home at real size, laid out like the real photos, full of life and clean before any AI touches it.', k: "inside", s: "The home at real size, full of life, clean before any AI.", img: '/club/course/step-06.webp', src: hls(6) },
-  { n: 7, t: 'The camera', p: 'The tour written like a story, one straight move per shot, and the judge that tells you when a move is ready.', k: "camera", s: "The tour written as a story, one straight move per shot.", img: '/club/course/step-07.webp', src: hls(7) },
-  { n: 8, t: 'The photos', p: 'The cover that makes people ask «is that real?», and every room made in a chain so it all stays the same.', k: "photos", s: "The cover that makes people ask «wait, is that real?»", img: '/club/course/step-08.webp', src: hls(8) },
-  { n: 9, t: 'The clips', p: 'From one photo to the next with Kling, one clip at a time, with the trick that cuts your credits almost in half.', k: "clips", s: "One clip at a time, and the trick that halves your credits.", img: '/club/course/step-09.webp', src: hls(9) },
-  { n: 10, t: 'The real page', p: 'Photos and clips inside the real page, a name for every floor, online with Netlify and tested on the phone.', k: "real page", s: "Your tower online, with a name and a light for every floor.", img: '/club/course/step-10.webp', src: hls(10) },
-  { n: 11, t: 'The reel and the sale', p: 'The reel that gets the views, the caption that gets the comments, and how to sell your tower to a developer.', k: "the sale", s: "The reel that gets the views, and how to sell your tower.", img: '/club/course/step-11.webp', src: hls(11) },
+  { n: 1, t: "What you'll build", p: "The tower we're building together, why developers pay over $6,000 for a page like this, and everything you need before you start.", k: "build", s: "The tower we build together, and why developers pay for it.", img: '/club/course/step-01.webp', src: hls(1), poster: '/club/course/poster-01.webp', thumb: '/club/course/thumb-01.webp', len: '2:38' },
+  { n: 2, t: 'Set up your kit', p: "What's inside the kit, how to open it on Mac or Windows with one double click, and your first test run.", k: "kit", s: "What's in the kit, and your first run with one double click.", img: '/club/course/step-02.webp', src: hls(2), poster: '/club/course/poster-02.webp', thumb: '/club/course/thumb-02.webp', len: '4:31', aff: true },
+  { n: 3, t: 'Inside the engine', p: 'A tour of the engine piece by piece, so you know exactly what every part does and how to drive it.', k: "engine", s: "Every part of the engine, and how to drive it.", img: '/club/course/step-03.webp', src: hls(3), poster: '/club/course/poster-03.webp', thumb: '/club/course/thumb-03.webp', len: '3:12' },
+  { n: 4, t: 'References and real measures', p: 'How to collect the real photos from every side, pick your main photo, and give every number a source.', k: "real measures", s: "Real photos from every side, and a source for every number.", img: '/club/course/step-04.webp', src: hls(4), poster: '/club/course/poster-04.webp', thumb: '/club/course/thumb-04.webp', len: '2:20' },
+  { n: 5, t: 'The tower in 3D', p: 'Your tower built from the main photo and checked with numbers, not with hope: overlay, silhouette score and an honest critic.', k: "in 3D", s: "Your tower in 3D, checked with numbers, not with hope.", img: '/club/course/step-05.webp', src: hls(5), poster: '/club/course/poster-05.webp', thumb: '/club/course/thumb-05.webp', len: '4:12' },
+  { n: 6, t: 'The apartment inside', p: 'The home at real size, laid out like the real photos, full of life and clean before any AI touches it.', k: "inside", s: "The home at real size, full of life, clean before any AI.", img: '/club/course/step-06.webp', src: hls(6), poster: '/club/course/poster-06.webp', thumb: '/club/course/thumb-06.webp', len: '3:57' },
+  { n: 7, t: 'The camera', p: 'The tour written like a story, one straight move per shot, and the judge that tells you when a move is ready.', k: "camera", s: "The tour written as a story, one straight move per shot.", img: '/club/course/step-07.webp', src: hls(7), poster: '/club/course/poster-07.webp', thumb: '/club/course/thumb-07.webp', len: '3:05' },
+  { n: 8, t: 'The photos', p: 'The cover that makes people ask «is that real?», and every room made in a chain so it all stays the same.', k: "photos", s: "The cover that makes people ask «wait, is that real?»", img: '/club/course/step-08.webp', src: hls(8), poster: '/club/course/poster-08.webp', thumb: '/club/course/thumb-08.webp', len: '4:08' },
+  { n: 9, t: 'The clips', p: 'From one photo to the next with Kling, one clip at a time, with the trick that cuts your credits almost in half.', k: "clips", s: "One clip at a time, and the trick that halves your credits.", img: '/club/course/step-09.webp', src: hls(9), poster: '/club/course/poster-09.webp', thumb: '/club/course/thumb-09.webp', len: '3:26' },
+  { n: 10, t: 'The real page', p: 'Photos and clips inside the real page, a name for every floor, online with Netlify and tested on the phone.', k: "real page", s: "Your tower online, with a name and a light for every floor.", img: '/club/course/step-10.webp', src: hls(10), poster: '/club/course/poster-10.webp', thumb: '/club/course/thumb-10.webp', len: '2:37' },
+  { n: 11, t: 'The reel and the sale', p: 'The reel that gets the views, the caption that gets the comments, and how to sell your tower to a developer.', k: "the sale", s: "The reel that gets the views, and how to sell your tower.", img: '/club/course/step-11.webp', src: hls(11), poster: '/club/course/poster-11.webp', thumb: '/club/course/thumb-11.webp', len: '2:32' },
 ];
 const fileLink = (f, ttl) => ({ name: f.name, href: `${SITE_URL}${signedHref(f.file, ttl)}`, zip: f.kind === 'zip', note: f.note || '' });
 /** 26/11 (Nico, G2): the cover of each founders' gift, the real covers of the files, on the page «Your gifts» */
@@ -195,15 +196,18 @@ export const PREVIEW_EMAIL = 'preview@omnyalab.com';
  */
 export async function insideData(email) {
   // since: the day the membership starts (a reservation starts with the doors, Sat 28/11 9:00 Rome), for the profile card
-  if (cleanEmail(email) === PREVIEW_EMAIL) return openData({ name: 'Nico', email: PREVIEW_EMAIL, portal: PORTAL_URL, since: new Date(EARLY).toISOString(), ...(await feedFlags(PREVIEW_EMAIL)) }, true);
+  // 27/11: everyone's own progress in the course and profile (api/_lib/club-me.js); Nico's preview has every step open
+  const mine = async (e) => { const [progress, profile] = await Promise.all([getProgress(e).catch(() => ({ d: [], t: {} })), getProfile(e).catch(() => ({}))]); return { progress, profile }; };
+  if (cleanEmail(email) === PREVIEW_EMAIL) return openData({ name: 'Nico', email: PREVIEW_EMAIL, portal: PORTAL_URL, since: new Date(EARLY).toISOString(), ...(await feedFlags(PREVIEW_EMAIL)), ...(await mine(PREVIEW_EMAIL)), allOpen: true }, true);
   let m = null; try { m = JSON.parse((await kv('HGET', K.members, cleanEmail(email))) || 'null'); } catch {}
   if (!m) return { state: 'none' };
   const at = Date.parse(m.at || '') || 0;
-  const base = { name: m.name, email: m.email, portal: PORTAL_URL, since: new Date(m.reserved ? Math.max(EARLY, at) : at || Date.now()).toISOString(), ...(await feedFlags(cleanEmail(email))) };
+  const me = await mine(cleanEmail(email));
+  const base = { name: me.profile.name || m.name, email: m.email, portal: PORTAL_URL, since: new Date(m.reserved ? Math.max(EARLY, at) : at || Date.now()).toISOString(), ...(await feedFlags(cleanEmail(email))), ...me };
   if (m.status === 'canceled') return { ...base, state: 'ended' };
   const founder = m.reserved && Number(m.rank) > 0 && Number(m.rank) <= CHEAP_SEATS ? Number(m.rank) : 0;
   // 25/11: the course shows, locked; 26/11: a founder sees the gift waiting for them (no files until the card is charged)
-  if (m.reserved && !m.welcomed) return { ...base, state: 'waiting', opens: new Date(EARLY).toISOString(), lessons: LESSONS.map((l) => ({ ...l, src: '' })), /* no stream before the doors open */ founder: !!founder, giftNames: founder ? FOUNDERS_GIFTS.map((g) => g.name) : [], giftList: founder ? FOUNDERS_GIFTS.map((g) => ({ name: g.name, cover: giftCover(g.file) })) : [] };
+  if (m.reserved && !m.welcomed) return { ...base, state: 'waiting', opens: new Date(EARLY).toISOString(), lessons: LESSONS.map((l) => ({ ...l, src: '' })), /* no stream before the doors open */ counts: { guides: CLUB_GUIDES.length, vault: CLUB_VAULT.length }, founder: !!founder, giftNames: founder ? FOUNDERS_GIFTS.map((g) => g.name) : [], giftList: founder ? FOUNDERS_GIFTS.map((g) => ({ name: g.name, cover: giftCover(g.file) })) : [] };
   return { ...openData(base, !!founder), founder: !!founder }; // 26/11 (Nico): yes or no, never the number
 }
 function openData(base, gift) {

@@ -43,8 +43,8 @@ const en = {
   ctaShort: 'Try the free demo',
   ctaNote: 'A tower with floors you can click, live in your browser.',
   categories: { luxury: 'Luxury', 'real-estate': 'Real estate' } as Record<Project['category'], string>,
-  nav: { work: 'Work', studio: 'Studio', pricing: 'Pricing', learn: 'Learn', contact: 'Contact', home: 'Omnya Lab, home', menu: 'Open the menu', close: 'Close the menu', lang: 'Language' },
-  navNotes: { work: '2026', studio: 'How we work', pricing: 'Try one floor from €490', learn: 'PDFs and private lessons', contact: 'Same-day answer' },
+  nav: { work: 'Work', studio: 'Studio', pricing: 'Pricing', learn: 'Learn', club: 'The 3D Future', contact: 'Contact', home: 'Omnya Lab, home', menu: 'Open the menu', close: 'Close the menu', lang: 'Language' },
+  navNotes: { work: '2026', studio: 'How we work', pricing: 'Try one floor from €490', learn: 'PDFs and private lessons', club: 'The club: courses, the Vault, my comments', contact: 'Same-day answer' },
   cursor: { view: 'View', next: 'Next', play: 'Play' },
   transitions: {
     home: ['Omnya', 'Lab'],
@@ -707,8 +707,8 @@ const it: Dict = {
   ctaShort: 'Prova la demo gratis',
   ctaNote: 'Una torre con i piani da cliccare, dal vivo nel tuo browser.',
   categories: { luxury: 'Lusso', 'real-estate': 'Immobiliare' },
-  nav: { work: 'Lavori', studio: 'Studio', pricing: 'Prezzi', learn: 'Impara', contact: 'Contatti', home: 'Omnya Lab, home', menu: 'Apri il menu', close: 'Chiudi il menu', lang: 'Lingua' },
-  navNotes: { work: '2026', studio: 'Come lavoriamo', pricing: 'Prova un piano da 490 €', learn: 'PDF e lezioni private', contact: 'Rispondiamo in giornata' },
+  nav: { work: 'Lavori', studio: 'Studio', pricing: 'Prezzi', learn: 'Impara', club: 'The 3D Future', contact: 'Contatti', home: 'Omnya Lab, home', menu: 'Apri il menu', close: 'Chiudi il menu', lang: 'Lingua' },
+  navNotes: { work: '2026', studio: 'Come lavoriamo', pricing: 'Prova un piano da 490 €', learn: 'PDF e lezioni private', club: 'Il club: corsi, il Vault, i miei commenti', contact: 'Rispondiamo in giornata' },
   cursor: { view: 'Guarda', next: 'Avanti', play: 'Play' },
   transitions: {
     home: ['Omnya', 'Lab'],

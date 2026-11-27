@@ -86,6 +86,13 @@ const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
           var p = v.play(); if (p && p.catch) p.catch(function () {}); })();
       </script>
       <span class="hfade" aria-hidden="true"></span>
+      {/* 27/11 (Nico, board): members get in from the top right; with their link saved in this browser it opens their club */}
+      <div class="ctop"><a class="clogin" href="/the-3d-future/inside" data-login>Log in</a></div>
+      <script is:inline>
+        (function () { var a = document.querySelector('[data-login]'); if (!a) return; var m = '';
+          try { m = localStorage.getItem('t3f-m') || ''; } catch (e) {}
+          if (m) { a.href = '/the-3d-future/inside?m=' + encodeURIComponent(m); a.textContent = 'Open your club'; } })();
+      </script>
       <div class="hx">
         <div class="h6l">
           <h1>

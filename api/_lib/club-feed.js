@@ -5,6 +5,7 @@
 // Nothing here is invented: the feed is only what members posted. Few Redis commands per call (the free plan counts them):
 //   posts  HASH  id → post JSON            counts HASH  l:<id> likes · c:<id> comments · s:<id> shares
 //   liked  SET   per member, the ids they like      cmts LIST per post, comment JSON      img STRING per post, the photo
+import { profilesOf } from './club-me.js';
 import { createHmac, randomBytes } from 'node:crypto';
 import { kv } from './store.js';
 import { sendMail } from './mail.js';
@@ -39,11 +40,13 @@ export async function feedMember(email) {
   // 27/11 (Nico: never anyone's place in line): founder is yes/no, the rank stays on the server
   const founder = m.reserved && Number(m.rank) > 0 && Number(m.rank) <= 100;
   // a reservation reads the feed; posting starts when the doors open and the first month is paid (welcomed)
-  return { email: e, name: firstName(m.name), nico: false, founder, open: !m.reserved || !!m.welcomed };
+  // 27/11: the name the member chose in their profile (api/_lib/club-me.js) wins over the one of the payment
+  const prof = (await profilesOf([e]))[e];
+  return { email: e, name: prof?.name || firstName(m.name), nico: false, founder, open: !m.reserved || !!m.welcomed };
 }
 
 const pub = (p, counts, mine, me) => ({
-  id: p.id, at: p.at, name: p.name, link: p.link, caption: p.caption || '', founder: !!p.founder, nico: !!p.nico,
+  email: p.email, id: p.id, at: p.at, name: p.name, link: p.link, caption: p.caption || '', founder: !!p.founder, nico: !!p.nico,
   img: p.img ? `/api/club/img?id=${p.id}` : '', w: p.w || 0, h: p.h || 0,
   likes: Number(counts[`l:${p.id}`]) || 0, comments: Number(counts[`c:${p.id}`]) || 0, shares: Number(counts[`s:${p.id}`]) || 0,
   liked: mine.has(p.id), mine: p.email === me.email, ...(me.nico ? { hidden: !!p.hidden } : {}),
@@ -56,7 +59,10 @@ export async function feed(me) {
   const posts = [];
   for (const v of Object.values(rows)) { try { const p = JSON.parse(v); if (!p.hidden || me.nico) posts.push(pub(p, counts, liked, me)); } catch {} }
   posts.sort((a, b) => (a.at < b.at ? 1 : -1));
-  return { posts: posts.slice(0, 200), me: { name: me.name, founder: me.founder, nico: me.nico, canPost: me.open } };
+  const top = posts.slice(0, 200), pr = await profilesOf(top.map((p) => p.email)).catch(() => ({}));
+  // 27/11: the name and photo each member has now in their profile (an old post follows a new name)
+  for (const p of top) { const x = pr[p.email]; if (x) { if (x.name) p.name = x.name; p.av = x.av; } delete p.email; }
+  return { posts: top, me: { name: me.name, founder: me.founder, nico: me.nico, canPost: me.open, av: (await profilesOf([me.email]).catch(() => ({})))[me.email]?.av || '' } };
 }
 
 /** A new post: link (required), photo (data URL, optional but asked by the page), caption. Nico gets it by email. */
@@ -73,7 +79,7 @@ export async function addPost(me, { link, caption, img, w, h }) {
   const text = `${me.name} <${me.email}> posted a build in the club feed:\n${link}\n\n${caption || '(no caption)'}\n${photo ? `\nPhoto: ${SITE_URL}/api/club/img?id=${id}\n` : ''}\nReply to this email to answer them privately.\n\nHide this post from the feed: ${hide}`;
   await sendMail({ to: host.email, replyTo: me.email, subject: `[club] post from ${me.name}`, text }).catch((e) => console.error('[club] post mail', e.message));
   const [counts] = [asMap(await kv('HGETALL', FK.n))];
-  return pub(p, counts, new Set(), me);
+  const out = pub(p, counts, new Set(), me); delete out.email; return out;
 }
 
 async function getPost(id) {

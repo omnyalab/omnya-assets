@@ -92,6 +92,7 @@ function memRedis([c, ...a]) {
     case 'HSET': { const h = hash(k); let n = 0; for (let i = 1; i < a.length; i += 2) { if (!h.has(String(a[i]))) n++; h.set(String(a[i]), String(a[i + 1])); } return n; }
     case 'HINCRBY': { const h = hash(k); const n = Number(h.get(String(a[1])) || 0) + Number(a[2]); h.set(String(a[1]), String(n)); return n; }
     case 'HGETALL': return [...hash(k)].flat();
+    case 'HMGET': { const h = hash(k); return a.slice(1).map((f) => { const v = h.get(String(f)); return v == null ? null : v; }); }
     case 'HGET': { const v = hash(k).get(String(a[1])); return v == null ? null : v; }
     case 'HDEL': { const h = hash(k); let n = 0; for (const f of a.slice(1)) if (h.delete(String(f))) n++; return n; }
     case 'HLEN': return hash(k).size;

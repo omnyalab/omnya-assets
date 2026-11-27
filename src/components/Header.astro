@@ -16,6 +16,8 @@ const links = [
   { href: localize('/studio', lang), label: T.nav.studio, key: 'studio', note: T.navNotes.studio },
   { href: localize('/pricing', lang), label: T.nav.pricing, key: 'pricing', note: T.navNotes.pricing },
   { href: localize('/learn', lang), label: T.nav.learn, key: 'learn', note: T.navNotes.learn },
+  // 27/11 (Nico, board): the club in the main menu, one page in English for every language (its own document, so a full load)
+  { href: '/the-3d-future', label: T.nav.club, key: 'club', note: T.navNotes.club, reload: true },
   { href: localize('/contact', lang), label: T.nav.contact, key: 'contact', note: T.navNotes.contact },
 ];
 const current = (key: string) => (page === key ? 'page' : undefined);
@@ -28,7 +30,7 @@ const startsDark = page === 'home' || page === 'project' || page === 'studio' ||
     <Logo light lightNow={startsDark} />
   </a>
   <nav class="hdr__nav" aria-label="Main">
-    {links.map((l) => <a href={l.href} class="u" aria-current={current(l.key)}>{l.label}</a>)}
+    {links.map((l) => <a href={l.href} class="u" aria-current={current(l.key)} data-astro-reload={l.reload}>{l.label}</a>)}
     {/* 10/11 (Nico): "Try the free demo" goes to the live demo; data-sample stays for the button's look */}
     <a class="btn btn--sm" href={demoHref(lang)} data-astro-reload data-sample title={T.ctaNote}>{T.ctaShort}</a>
   </nav>
@@ -55,13 +57,22 @@ const startsDark = page === 'home' || page === 'project' || page === 'studio' ||
 <div class="menu" id="menu" aria-hidden="true" data-menu>
   <ul class="menu__list">
     {
-      links.map((l) => (
-        <li>
-          <a href={l.href} aria-current={current(l.key)} data-m>
-            <span>{l.label}</span>
-          </a>
-        </li>
-      ))
+      links.map((l) =>
+        l.key === 'club' ? (
+          // the club stands out in the phone menu: a small dark-blue glass card, the "3D" in light blue
+          <li class="menu__club">
+            <a href={l.href} aria-current={current(l.key)} data-astro-reload data-m>
+              <span>{l.label.split('3D').map((x, i) => <>{i > 0 && <b>3D</b>}{x}</>)}</span>
+            </a>
+          </li>
+        ) : (
+          <li>
+            <a href={l.href} aria-current={current(l.key)} data-m>
+              <span>{l.label}</span>
+            </a>
+          </li>
+        )
+      )
     }
   </ul>
   <div class="menu__foot">
