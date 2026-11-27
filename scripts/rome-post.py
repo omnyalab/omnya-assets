@@ -64,7 +64,37 @@ def post(text, C):
     if n == 0:
         raise SystemExit('FERMO: rome-post.py non trova testi bianchi su fondo giallo (è cambiata la pagina del Build?)')
     note = f'/* rome-post.py (25/11, oro di Roma come la villa): {n} testi bianchi su fondo giallo portati a #111 */\n'
-    return text.replace('</style></head><body>', note + '</style></head><body>', 1)
+    return club(text.replace('</style></head><body>', note + '</style></head><body>', 1))
+
+
+def club(text):
+    """27/11 (Nico: «nessuno ha comprato, mettiamo il funnel per entrare nella community… lasci solo il pdf gratis», board H2,
+    «più attaccato… non così staccato dal pdf gratis», «senza join for 9 month»): the page keeps only the free guide, then the
+    hook «You got the guide / now learn to build it» and the THE 3D FUTURE card, whose button opens the club page (no price on
+    the button: the club page says it at the end). The video, the reel, the Full, the €59 card, Stripe and the timer are hidden
+    with CSS and left in the HTML, so the page script keeps finding its pieces."""
+    def rep(t, old, new):
+        if t.count(old) != 1:
+            raise SystemExit(f'FERMO rome-post.py (club): «{old[:80]}» trovato {t.count(old)} volte invece di 1')
+        return t.replace(old, new)
+    if not text.startswith('---\n'):
+        raise SystemExit('FERMO rome-post.py (club): la pagina non inizia col frontmatter')
+    text = text.replace('---\n', "---\nimport RiyadhFuture from '../../components/RiyadhFuture.astro';\n", 1)
+    m = re.search(r'<div class="steps">.*?</div>', text)
+    if not m:
+        raise SystemExit('FERMO rome-post.py (club): riga degli step non trovata')
+    text = text.replace(m.group(0), '<div class="steps"><span class="ok"><em>✓</em>Free blueprint</span><hr class="ok"><span class="now"><em>2</em>Join THE 3D FUTURE</span></div>', 1)
+    text = rep(text, '  <section class="big c1">', '  <section class="big c1 hook"><p class="b2h"><b class="hb">You got the guide</b>now learn to build it</p><p class="sub">Every step of Rome on video, inside THE 3D FUTURE</p><span class="ar">↓</span></section>\n'
+               '  <div class="clubw" id="club" data-clubw><RiyadhFuture kind="rome" bg="stadium" href="/the-3d-future?ig=rome" cta="Join THE 3D FUTURE →" /></div>\n'
+               '  <section class="big c1 reel">')
+    css = ('/* rome-post.py club (27/11, Nico): only the free guide, the hook and the club */\n'
+           '.offer,.join,.cta,.ctop,.csub,.bar .lbl,.bar .tm,.bar a,.hero h1,.hero .watch,.hero .vsl,.big.reel,.rov{display:none!important}'
+           '.hero{padding-bottom:0!important}.clubw{margin:0 auto 10px;max-width:980px}'
+           '.big.c1.hook{padding-top:6px!important;margin-top:0!important;text-align:center}.hook .b2h{margin:0}'
+           '.hook .sub{margin:12px auto 0;max-width:30ch;font:600 clamp(15px,2.2vw,18px)/1.4 Inter,sans-serif;color:#c9d2e3}'
+           '.hook .ar{display:block;margin:10px auto 0;font:800 30px/1 Inter,sans-serif;color:#f5b83d;animation:hkb 1.4s ease-in-out infinite}@keyframes hkb{50%{transform:translateY(6px)}}'
+           '.hook+.clubw .ryfw{padding-top:12px;margin-bottom:24px}\n')
+    return rep(text, '</style></head><body>', css + '</style></head><body>')
 
 
 def bf59(text):

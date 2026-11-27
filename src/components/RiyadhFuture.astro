@@ -23,7 +23,9 @@
 // href (20/11, Nico, Riyadh video page): the same card before the purchase; its buttons open the club page
 // (/the-3d-future does the pre-registration, then the join) instead of the pop-up, and the "you bought this guide" line
 // is left out. Without href the card is exactly the one of the thanks pages.
-const { kind = 'riyadh', bg = 'burj', panel = false, href = '' } = Astro.props as { kind?: 'riyadh' | 'build' | 'stadium' | 'plane' | 'mastery' | 'villa' | 'rome'; bg?: 'towers' | 'burj' | 'stadium'; panel?: boolean; href?: string };
+// cta (27/11, Nico on the Rome page: «senza join for 9 month… te lo dice alla fine dopo le card»): a button label with no
+// price, the club page says the price at the end. Without cta the button is the one of before.
+const { kind = 'riyadh', bg = 'burj', panel = false, href = '', cta = '' } = Astro.props as { kind?: 'riyadh' | 'build' | 'stadium' | 'plane' | 'mastery' | 'villa' | 'rome'; bg?: 'towers' | 'burj' | 'stadium'; panel?: boolean; href?: string; cta?: string };
 const what = kind === 'build' ? 'these 3D houses' : kind === 'stadium' ? 'these 3D stadiums' : kind === 'plane' ? 'these 3D planes' : kind === 'mastery' ? 'any 3D like this' : kind === 'villa' ? 'villas like this' : kind === 'rome' ? 'cities like this' : 'these 3D towers';
 // Rome is on +01:00 for the whole window (CET), so the two instants are fixed
 const OPEN = '2026-11-28T09:00:00+01:00', FOUNDERS_END = '2026-12-05T00:00:00+01:00';
@@ -54,7 +56,7 @@ const after = at >= Date.parse(FOUNDERS_END);
     {!href && <p class="ryf__lock">You bought this guide, so your price stays €9 a month, even after the first 100</p>}
     {/* 26/11 (Nico: «non si deve sapere quante persone sono dentro»): no seats counter here any more */}
     {/* TODO: the Stripe subscription link (€9/month) goes here */}
-    <a class="ryf__btn ryf__btn--card ryf__btn--join" href={href || '#join'} data-ryf-join data-after={href ? 'Join for €19/month' : ''}>{href && after ? 'Join for €19/month' : 'Join for €9/month'}</a>
+    <a class="ryf__btn ryf__btn--card ryf__btn--join" href={href || '#join'} data-ryf-join data-after={cta ? '' : href ? 'Join for €19/month' : ''}>{cta || (href && after ? 'Join for €19/month' : 'Join for €9/month')}</a>
     <p class="ryf__note">Cancel in one tap</p>
   </article>
 </section>
