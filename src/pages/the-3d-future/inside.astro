@@ -171,7 +171,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .mhd { display: none }
   @media (max-width: 899px) {
     .mhd { display: flex; position: fixed; z-index: 44; left: 0; right: 0; top: 0; height: calc(env(safe-area-inset-top, 0px) + 64px); padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); align-items: center; pointer-events: none;
-      background: #0b1534; box-shadow: 0 1px 0 rgba(255,255,255,.08), 0 10px 24px rgba(5,9,21,.35) }
+      background: #0b1534; box-shadow: 0 1px 0 rgba(255,255,255,.1) } /* 27/11 sera (Nico: «quel blur di merda sopra»): no soft shadow under the bar, a clean edge */
     .mhd a { pointer-events: auto; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: #fff; text-decoration: none; font: 700 15px/1 var(--f-sfd); letter-spacing: .02em }
     .mhd a img { width: 28px; height: 28px; filter: drop-shadow(0 3px 10px rgba(40,110,255,.45)) }
     .mhd a b { background: linear-gradient(180deg, #f2f9ff 0%, #a6d4ff 36%, #3f8cff 70%, #2457e0 100%); -webkit-background-clip: text; background-clip: text; color: transparent }
