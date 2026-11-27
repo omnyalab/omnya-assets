@@ -491,7 +491,11 @@ export async function clubJoined(stripe, session) {
     welcome email W1 with the club link and the skill (26/11: the founders' gift opens inside the club page, not in the email). Throws to make Stripe
     retry (missing Skool link, mail down); safe to repeat. */
 export async function clubCharged(stripe, charge) {
-  if (!charge || charge.status !== 'succeeded' || charge.currency !== 'eur' || ![900, 9000].includes(charge.amount)) return null;
+  if (!charge || charge.status !== 'succeeded' || !(charge.amount > 0)) return null;
+  // 27/11: with Adaptive Pricing (26/11, «paga in qualsiasi valuta») the Saturday charge can be in dollars, pounds…: in euro it
+  // must be the €9 / €90 of the club; in another currency it must be the invoice of a subscription (the club's, checked below
+  // through the member: a reserved, not yet welcomed member of this Stripe customer)
+  if (charge.currency === 'eur' ? ![900, 9000].includes(charge.amount) : !charge.invoice) return null;
   const cus = typeof charge.customer === 'string' ? charge.customer : charge.customer?.id;
   const email = cus ? await kv('HGET', K.byCustomer, cus) : null;
   if (!email) return null;

@@ -134,5 +134,18 @@ try {
   const nt = await F.notifyCourse({ subject: 's', text: 'Hi {name} {link}' }, async () => {});
   eq([nt.members, nt.sent], [1, 1], 'Friday email: members who are in, minus who turned it off'); }
 
+// 27/11: the Saturday charge welcomes the reservation in any currency (Adaptive Pricing), never a charge that is not the club's
+{ const { kv } = await import('../api/_lib/store.js');
+  const { KEYS, clubCharged } = await import('../api/_lib/club.js');
+  process.env.FILES_SECRET = process.env.FILES_SECRET || 'test-only';
+  const res = async (email, cus) => { await kv('HSET', KEYS.members, email, JSON.stringify({ email, name: 'R', status: 'active', round: '1', reserved: true, rank: 4, session: 'cs_' + cus, at: '2026-11-25T10:00:00.000Z' })); await kv('HSET', KEYS.byCustomer, cus, email); };
+  const welcomed = async (email) => !!JSON.parse(await kv('HGET', KEYS.members, email)).welcomed;
+  await res('eur@test.club', 'cus_eur'); await res('usd@test.club', 'cus_usd'); await res('odd@test.club', 'cus_odd');
+  await clubCharged(null, { status: 'succeeded', currency: 'eur', amount: 900, customer: 'cus_eur', invoice: 'in_1' });
+  await clubCharged(null, { status: 'succeeded', currency: 'usd', amount: 1049, customer: 'cus_usd', invoice: 'in_2' });
+  await clubCharged(null, { status: 'succeeded', currency: 'usd', amount: 1049, customer: 'cus_odd' });   // no invoice: not a subscription charge
+  await clubCharged(null, { status: 'succeeded', currency: 'eur', amount: 4700, customer: 'cus_odd', invoice: 'in_3' });   // euro but not €9 / €90
+  eq([await welcomed('eur@test.club'), await welcomed('usd@test.club'), await welcomed('odd@test.club')], [true, true, false], 'W1: €9 and the dollar invoice welcome, odd charges do not'); }
+
 console.log(fail ? `\n${fail} of ${n} checks FAILED` : `\nall ${n} checks passed`);
 process.exit(fail ? 1 : 0);
