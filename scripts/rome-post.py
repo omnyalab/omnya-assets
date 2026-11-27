@@ -86,9 +86,9 @@ def club(text):
     text = text.replace(m.group(0), '<div class="steps"><span class="ok"><em>✓</em>Free blueprint</span><hr class="ok"><span class="now"><em>2</em>Join THE 3D FUTURE</span></div>', 1)
     text = rep(text, '  <section class="big c1">', '  <section class="big c1 hook"><p class="b2h"><b class="hb">You got the guide</b>now learn to build it</p><p class="sub">Every step of Rome on video, inside THE 3D FUTURE</p><span class="ar">↓</span></section>\n'
                '  <div class="clubw" id="club" data-clubw><RiyadhFuture kind="rome" bg="stadium" href="/the-3d-future?ig=rome" cta="Join THE 3D FUTURE →" /></div>\n'
-               '  <section class="big c1 reel">')
+               '  <section class="big c1 oldreel">')
     css = ('/* rome-post.py club (27/11, Nico): only the free guide, the hook and the club */\n'
-           '.offer,.join,.cta,.ctop,.csub,.bar .lbl,.bar .tm,.bar a,.hero h1,.hero .watch,.hero .vsl,.big.reel,.rov{display:none!important}'
+           '.offer,.join,.cta,.ctop,.csub,.bar .lbl,.bar .tm,.bar a,.hero h1,.hero .watch,.hero .vsl,.big.oldreel,.rov{display:none!important}'
            '.hero{padding-bottom:0!important}.clubw{margin:0 auto 10px;max-width:980px}'
            '.big.c1.hook{padding-top:6px!important;margin-top:0!important;text-align:center}.hook .b2h{margin:0}'
            '.hook .sub{margin:12px auto 0;max-width:30ch;font:600 clamp(15px,2.2vw,18px)/1.4 Inter,sans-serif;color:#c9d2e3}'
