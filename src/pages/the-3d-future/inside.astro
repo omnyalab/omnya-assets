@@ -159,6 +159,24 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .pphotoed span{position:absolute;right:-2px;bottom:-2px;width:36px;height:36px;border-radius:50%;background:#fff;color:#0b1534;display:grid;place-items:center;box-shadow:0 4px 14px rgba(0,0,0,.35)}
   .pphotoed span .ic{width:18px;height:18px}
   .pphotoed input{position:absolute;inset:0;opacity:0;cursor:pointer}
+
+  /* 27/11 (Nico on his iPhone): Safari 26 blurs the top edge of the page while it scrolls; the menu button sat on that
+     edge and could not be tapped. On the phone the club has its own bar: logo on the left, menu on the right, well
+     inside the screen, so Safari's blur falls on our bar and not on the page */
+  .mhd { display: none }
+  @media (max-width: 899px) {
+    .mhd { display: flex; position: fixed; z-index: 44; left: 0; right: 0; top: 0; height: calc(env(safe-area-inset-top, 0px) + 64px); padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); align-items: center; pointer-events: none;
+      background: linear-gradient(180deg, rgba(11,21,52,.94) 0%, rgba(11,21,52,.86) 70%, rgba(11,21,52,0) 100%); -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%) }
+    .mhd a { pointer-events: auto; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: #fff; text-decoration: none; font: 700 15px/1 var(--f-sfd); letter-spacing: .02em }
+    .mhd a img { width: 28px; height: 28px; filter: drop-shadow(0 3px 10px rgba(40,110,255,.45)) }
+    .mhd a b { background: linear-gradient(180deg, #f2f9ff 0%, #a6d4ff 36%, #3f8cff 70%, #2457e0 100%); -webkit-background-clip: text; background-clip: text; color: transparent }
+    .hbfab { top: calc(env(safe-area-inset-top, 0px) + 8px) !important; right: max(12px, env(safe-area-inset-right, 0px)) !important; z-index: 46 !important }
+    .A .member { padding-top: calc(env(safe-area-inset-top, 0px) + 56px) }
+    .A .mtop { padding-top: 16px }
+    .mmenu.m1 { top: calc(env(safe-area-inset-top, 0px) + 64px) !important }
+  }
+  /* iPhone Safari does not clip a scaled photo to rounded corners (WebKit): the mask makes the corners round again */
+  .A .chero, .A .inc, .A .vcard, .A .giftc, .crow .cth, .cplay { -webkit-mask-image: -webkit-radial-gradient(white, black); isolation: isolate }
   /* the home-screen card (iPhone: an arrow to Share; Android: Install) */
   .a2hs{position:fixed;z-index:60;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:calc(84px + env(safe-area-inset-bottom));max-width:460px;margin:0 auto;padding:18px 18px 18px;border-radius:24px;background:#f8f9fd;color:#0b1534;box-shadow:0 18px 50px rgba(0,0,0,.5);display:grid;gap:12px;transform:translateY(20px);opacity:0;transition:all .45s cubic-bezier(.2,.7,.2,1)}
   .a2hs.on{transform:none;opacity:1}
@@ -177,6 +195,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .a2hs .abtn{min-height:48px;border:0;border-radius:999px;background:#0071e3;color:#fff;font:600 16px Geist,sans-serif;cursor:pointer}
   .a2arrow{position:fixed;z-index:61;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));width:40px;height:40px;margin-left:-20px;color:#fff;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6));animation:a2bob 1.3s ease-in-out infinite;pointer-events:none}
   .a2arrow .ic{width:40px;height:40px;stroke-width:2.6}
+  .a2arrow.left{left:26%}
   @keyframes a2bob{50%{transform:translateY(8px)}}
   @media (prefers-reduced-motion:reduce){.a2arrow{animation:none}.a2hs{transition:none}.crow.fresh{animation:none}}
   /* QA 27/11: the last items of the menu clear the tab bar; links big enough to tap */
@@ -918,16 +937,19 @@ const P = {
     closeA2hs()
     const ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)
     const inapp = /Instagram|FBAN|FBAV|FB_IAB|GSA\/|Line\/|LinkedInApp|TikTok|Snapchat|Twitter/i.test(ua) || (ios && !/Safari\//.test(ua))
+    // Safari 26 (Version/26 in the agent): the address bar has ≡ on its left and Share lives in that menu
+    const ver = +((/Version\/(\d+)/.exec(ua) || [])[1] || 0), saf26 = ver >= 26
     const head = (t, sub) => `<div class="ahd"><img src="/club/app-icon-180.png" alt=""><div><b>${t}</b><small>${sub}</small></div></div>`
     let body = ''
     if (ios && inapp) body = head('Open the club in Safari first', 'From this app you can\'t add it to your Home Screen.') + `<ol><li><i>1</i><span>Tap <b>···</b> or ${ic('share')} in this app</span></li><li><i>2</i><span>Tap <b>Open in Safari</b></span></li><li><i>3</i><span>Then this card shows you the rest</span></li></ol>`
-    else if (ios) body = head('Put the club on your Home Screen', 'One tap and you\'re in, every time. No link to look for.') + `<ol><li><i>1</i><span>Tap ${ic('share')} <b>Share</b> below (on new iPhones it's in ··· )</span></li><li><i>2</i><span>Tap <b>Add to Home Screen</b></span></li><li><i>3</i><span>Tap <b>Add</b>. Done.</span></li></ol>`
+    else if (ios && saf26) body = head('Put the club on your Home Screen', 'One tap and you\'re in, every time. No link to look for.') + `<ol><li><i>1</i><span>Tap <b>≡</b> next to omnyalab.com below</span></li><li><i>2</i><span>Tap ${ic('share')} <b>Share</b></span></li><li><i>3</i><span>Tap <b>View More</b>, then <b>Add to Home Screen</b> and <b>Add</b></span></li></ol>`
+    else if (ios) body = head('Put the club on your Home Screen', 'One tap and you\'re in, every time. No link to look for.') + `<ol><li><i>1</i><span>Tap ${ic('share')} <b>Share</b> below</span></li><li><i>2</i><span>Tap <b>Add to Home Screen</b></span></li><li><i>3</i><span>Tap <b>Add</b>. Done.</span></li></ol>`
     else if (BIP) body = head('Install the club on your phone', 'It opens straight into your page, like an app.') + '<button class="abtn" type="button" data-ainstall>Install the app</button>'
     else body = head('Put the club on your Home Screen', 'It opens straight into your page, like an app.') + '<ol><li><i>1</i><span>Tap <b>⋮</b> at the top right</span></li><li><i>2</i><span>Tap <b>Add to Home screen</b> or <b>Install app</b></span></li></ol>'
     const c = document.createElement('div'); c.className = 'a2hs'; c.setAttribute('role', 'dialog'); c.setAttribute('aria-label', 'Add the club to your phone')
     c.innerHTML = `<button class="ax" type="button" data-ax aria-label="Close">${ic('x')}</button>${body}`
     document.body.appendChild(c); document.body.classList.add('a2open'); requestAnimationFrame(() => c.classList.add('on'))
-    if (ios && !inapp) { const a = document.createElement('span'); a.className = 'a2arrow'; a.innerHTML = ic('arrdown'); document.body.appendChild(a) }
+    if (ios && !inapp) { const a = document.createElement('span'); a.className = 'a2arrow' + (saf26 ? ' left' : ''); a.innerHTML = ic('arrdown'); document.body.appendChild(a) }
     c.querySelector('[data-ax]').addEventListener('click', () => { if (!fromMenu) try { localStorage.setItem('t3f-a2hs', 'closed') } catch (e) {}; closeA2hs() })
     const ib = c.querySelector('[data-ainstall]'); if (ib) ib.addEventListener('click', () => { BIP.prompt(); BIP.userChoice.then(ch => { if (ch.outcome === 'accepted') { try { localStorage.setItem('t3f-a2hs', 'app') } catch (e) {} } BIP = null; closeA2hs() }) })
   }
@@ -959,7 +981,7 @@ const P = {
           <div class="cprog" data-cprog></div>
           <div class="cd" data-cd><div class="num"><span><b data-u="d">0</b><small>days</small></span><span><b data-u="h">00</b><small>hours</small></span><span><b data-u="m">00</b><small>min</small></span><span><b data-u="s">00</b><small>sec</small></span></div><span class="when">Every step opens on Saturday 28 November at 9:00 (Rome)</span></div></div>
         <div class="cA" data-lessons></div>
-        ${open && d.skill ? `<div class="mfile">${fl(d.skill)}<p class="snote">${esc(d.skill.name)} ${esc(d.skill.note)}</p></div>` : ''}</section>`
+        </section>`
     const left = Math.max(0, OPENS - Date.now()), dd = Math.floor(left / 864e5), hh = Math.floor(left / 36e5) % 24
     const hero = heroHTML()
     const home = `<div data-v="home">
@@ -1009,7 +1031,7 @@ const P = {
       </div></div></div>`
     const tabs = `<div class="tabbar"><div class="tabin t${TABS.length}" role="tablist">${TABS.map(([k, i, t]) => `<button type="button" data-go="${k}">${ic(i)}<span>${t}</span></button>`).join('')}</div></div>`
     app.insertAdjacentHTML('afterbegin', '') // keep the background first
-    root.insertAdjacentHTML('beforebegin', top)
+    root.insertAdjacentHTML('beforebegin', top + `<div class="mhd"><a href="#home" data-go="home" aria-label="THE 3D FUTURE, Home"><img src="/club/knot-96.webp" alt="" width="28" height="28">THE <b>3D</b> FUTURE</a></div>`)
     root.innerHTML = home + courseV + vault + chal + gifts + me
     app.insertAdjacentHTML('beforeend', tabs)
     if (d.lessons) course_(d.lessons)

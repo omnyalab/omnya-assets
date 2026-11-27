@@ -116,7 +116,8 @@ const PLANE_SKILL = {
 // install it), given only to the members on /the-3d-future/inside
 const TOWER_SKILL = {
   name: 'The Tower Builder skill', file: 'en/tower-builder-skill.zip', kind: 'zip',
-  note: `is the skill of your first course: ${ON_CLAUDE_AI}, or unzip it into ~/.claude/skills for Claude Code. Lesson 2 shows every step, and the README inside has them too.`,
+  // 27/11: the SAMAR course is built on its own kit (Choose Your Floor), so this skill is no longer «the skill of your first course»
+  note: `is our skill to build towers with Claude: ${ON_CLAUDE_AI}, or unzip it into ~/.claude/skills for Claude Code. The README inside shows every step.`,
 };
 
 // 25/11 (Nico): the Dubai Villa Builder skill, a zip for Claude that rebuilds the same «choose your villa» page of the
