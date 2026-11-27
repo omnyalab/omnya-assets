@@ -33,16 +33,17 @@ export const hideOk = (id, sig) => !!sig && ID.test(id) && hideSig(id) === sig;
 /** Who is asking: the member behind a link, with what the feed shows of them. null = no feed (left, or not a member). */
 export async function feedMember(email) {
   const e = cleanEmail(email);
-  if (e === PREVIEW_EMAIL) return { email: e, name: 'Nico', nico: true, founder: 0, open: true };
+  if (e === PREVIEW_EMAIL) return { email: e, name: 'Nico', nico: true, founder: false, open: true };
   let m = null; try { m = JSON.parse((await kv('HGET', KEYS.members, e)) || 'null'); } catch {}
   if (!m || m.status === 'canceled') return null;
-  const founder = m.reserved && Number(m.rank) > 0 && Number(m.rank) <= 100 ? Number(m.rank) : 0;
+  // 27/11 (Nico: never anyone's place in line): founder is yes/no, the rank stays on the server
+  const founder = m.reserved && Number(m.rank) > 0 && Number(m.rank) <= 100;
   // a reservation reads the feed; posting starts when the doors open and the first month is paid (welcomed)
   return { email: e, name: firstName(m.name), nico: false, founder, open: !m.reserved || !!m.welcomed };
 }
 
 const pub = (p, counts, mine, me) => ({
-  id: p.id, at: p.at, name: p.name, link: p.link, caption: p.caption || '', founder: p.founder || 0, nico: !!p.nico,
+  id: p.id, at: p.at, name: p.name, link: p.link, caption: p.caption || '', founder: !!p.founder, nico: !!p.nico,
   img: p.img ? `/api/club/img?id=${p.id}` : '', w: p.w || 0, h: p.h || 0,
   likes: Number(counts[`l:${p.id}`]) || 0, comments: Number(counts[`c:${p.id}`]) || 0, shares: Number(counts[`s:${p.id}`]) || 0,
   liked: mine.has(p.id), mine: p.email === me.email, ...(me.nico ? { hidden: !!p.hidden } : {}),

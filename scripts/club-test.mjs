@@ -109,13 +109,13 @@ try {
   await mem('w@test.club', { name: 'Wait', reserved: true, rank: 5 });
   await mem('c@test.club', { name: 'Gone', status: 'canceled' });
   const A = await F.feedMember('a@test.club'), B = await F.feedMember('b@test.club'), Wt = await F.feedMember('w@test.club'), N = await F.feedMember(PREVIEW_EMAIL);
-  eq([A.name, A.founder, A.open, B.open, Wt.open, N.nico], ['Ana', 3, true, true, false, true], 'feed: who can post (a reservation only after its first month)');
+  eq([A.name, A.founder, A.open, B.open, Wt.open, N.nico], ['Ana', true, true, true, false, true], 'feed: who can post (a reservation only after its first month)');
   eq([await F.feedMember('c@test.club'), await F.feedMember('nobody@test.club')], [null, null], 'feed: no feed for who left or is not a member');
   eq((await F.feed(B)).posts.length, 0, 'feed: empty at the start, nothing invented');
   const img = 'data:image/jpeg;base64,' + Buffer.from('fakejpeg').toString('base64');
   const p1 = await F.addPost(A, { link: 'https://ana-tower.netlify.app', caption: 'My tower', img, w: 10, h: 12 });
   eq([p1.name, p1.mine, p1.likes, p1.img.startsWith('/api/club/img?id='), 'email' in p1], ['Ana', true, 0, true, false], 'feed: a post, its photo, no email shown');
-  const fb = await F.feed(B); eq([fb.posts.length, fb.posts[0].mine, fb.posts[0].founder], [1, false, 3], 'feed: everyone sees it');
+  const fb = await F.feed(B); eq([fb.posts.length, fb.posts[0].mine, fb.posts[0].founder], [1, false, true], 'feed: everyone sees it');
   eq((await F.like(B, p1.id, true)).likes, 1, 'like'); eq((await F.like(B, p1.id, true)).likes, 1, 'like twice counts once'); eq((await F.like(B, p1.id, false)).likes, 0, 'unlike');
   await F.like(B, p1.id, true); eq((await F.feed(B)).posts[0].liked, true, 'feed: my like shows');
   const c = await F.addComment(B, p1.id, 'Great'); eq([c.comments, c.comment.name, c.comment.mine], [1, 'Ben', true], 'comment');

@@ -86,7 +86,7 @@ body { background: var(--b-bg); color: var(--b-fg); font-family: var(--f-sf); -w
 .btn:active { transform: scale(.97) }
 .btn.wide { width: 100% }
 :focus-visible { outline: 3px solid var(--b-acc); outline-offset: 2px }
-.toast { position: absolute; z-index: 60; left: 50%; top: 64px; transform: translate(-50%, -24px); opacity: 0; pointer-events: none; max-width: calc(100% - 48px); padding: 12px 20px; border-radius: 999px; background: rgba(28,28,30,.92); color: #fff; font: 600 15px/20px var(--f-sf); text-align: center; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); transition: transform .35s cubic-bezier(.2,.9,.2,1.2), opacity .25s }
+.toast { position: absolute; z-index: 60; left: 50%; top: 64px; transform: translate(-50%, -24px); opacity: 0; pointer-events: none; max-width: calc(100% - 48px); padding: 12px 20px; border-radius: 999px; background: rgba(28,28,30,.92); color: #fff; font: 600 15px/20px var(--f-sf); text-align: center; -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); transition: transform .35s cubic-bezier(.2,.9,.2,1.2), opacity .25s }
 .frame.dk .toast { top: 72px }
 .toast.on { opacity: 1; transform: translate(-50%, 0) }
 .sheetwrap { position: absolute; inset: 0; z-index: 50 }
@@ -265,7 +265,7 @@ img{max-width:100%}
 .A .secbg img { width: 100%; height: 100%; object-fit: cover; display: block }
 .A .secbg.soft img { filter: blur(24px) saturate(1.3); transform: scale(1.15) }
 .A .secbg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, var(--ground) 0%, color-mix(in srgb, var(--ground) 88%, transparent) 14%, color-mix(in srgb, var(--ground) 62%, transparent) 34%, color-mix(in srgb, var(--ground) 56%, transparent) 64%, var(--ground) 100%) }
-.A .glass { background: var(--glass); border: 1px solid var(--edge); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%); border-radius: 32px }
+.A .glass { background: var(--glass); border: 1px solid var(--edge); -webkit-backdrop-filter: blur(28px) saturate(170%); backdrop-filter: blur(28px) saturate(170%); border-radius: 32px }
 .A .eyebrow { margin: 0; font: 600 13px/16px var(--f-sf); letter-spacing: .08em; text-transform: uppercase; color: var(--fg); opacity: .86 }
 .A h1, .A h2, .A h3 { margin: 0; text-wrap: balance; font-family: var(--f-sfd) }
 .A h2 { font: 700 34px/40px var(--f-sfd); letter-spacing: -.025em }
@@ -273,14 +273,14 @@ img{max-width:100%}
 .A .head { display: grid; gap: 16px; margin-bottom: 32px }
 .A .thin { font-family: var(--f-sfd); font-weight: 200; letter-spacing: -.04em; font-variant-numeric: tabular-nums; line-height: 1 }
 .A .btn.cta { background: var(--cta); color: var(--cta-fg) }
-.A .btn.glassbtn { background: var(--glass-2); color: var(--fg); border: 1px solid var(--edge); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px) }
-.A .pill { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; font: 600 13px/1 var(--f-sf); background: rgba(0,0,0,.82); color: #fff; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px) }
+.A .btn.glassbtn { background: var(--glass-2); color: var(--fg); border: 1px solid var(--edge); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px) }
+.A .pill { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; font: 600 13px/1 var(--f-sf); background: rgba(0,0,0,.82); color: #fff; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px) }
 .A .pill .ic { width: 16px; height: 16px }
 .A .pill.free { background: #fff; color: #0c0f1a }
 
 /* top bar */
 .A .top { position: sticky; top: 56px; z-index: 20; display: flex; justify-content: center; padding: 8px 16px 0; pointer-events: none }
-.A .topin { pointer-events: auto; width: 100%; max-width: 1152px; height: 56px; padding: 0 6px 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-radius: 999px; background: rgba(12,15,26,.66); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); color: #fff }
+.A .topin { pointer-events: auto; width: 100%; max-width: 1152px; height: 56px; padding: 0 6px 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-radius: 999px; background: rgba(12,15,26,.66); border: 1px solid rgba(255,255,255,.16); -webkit-backdrop-filter: blur(24px) saturate(160%); backdrop-filter: blur(24px) saturate(160%); color: #fff }
 .A .mark { font: 700 15px/1 var(--f-sfd); letter-spacing: .06em; white-space: nowrap }
 .A .mark small { font-weight: 500; opacity: .7; letter-spacing: 0 }
 .A .links { display: none; gap: 4px }
@@ -300,7 +300,7 @@ img{max-width:100%}
 .A .hero .intro { display: grid; gap: 16px }
 .A .hero .side { display: grid; gap: 16px }
 .A .hero .eyebrow { color: rgba(255,255,255,.8) }
-.A .cd { display: grid; grid-template-columns: repeat(4, 1fr); padding: 16px 8px; border-radius: 28px; background: rgba(12,15,26,.34); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%) }
+.A .cd { display: grid; grid-template-columns: repeat(4, 1fr); padding: 16px 8px; border-radius: 28px; background: rgba(12,15,26,.34); border: 1px solid rgba(255,255,255,.18); -webkit-backdrop-filter: blur(28px) saturate(170%); backdrop-filter: blur(28px) saturate(170%) }
 .A .cd > div { display: grid; justify-items: center; gap: 8px }
 .A .cd > div + div { box-shadow: -1px 0 0 rgba(255,255,255,.14) }
 .A .cd b { font: 200 40px/40px var(--f-sfd); letter-spacing: -.03em; font-variant-numeric: tabular-nums }
@@ -330,7 +330,7 @@ img{max-width:100%}
 .A .vcard::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.2) 28%, rgba(0,0,0,.3) 50%, rgba(0,0,0,.88) 100%) }
 .A .vcard .word { position: absolute; z-index: 2; left: 20px; bottom: 56px; font: 600 64px/56px var(--f-sfd); letter-spacing: -.04em; color: #fff; white-space: nowrap }
 .A .vcard .vt { position: absolute; z-index: 2; left: 16px; right: 16px; top: 16px; display: flex; align-items: center; justify-content: space-between }
-.A .vcard .go { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.22); color: #fff; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px) }
+.A .vcard .go { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.22); color: #fff; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px) }
 .A .vcard .go .ic { width: 20px; height: 20px }
 .A .vcard:hover { transform: translateY(-8px) }
 .A .vcard:last-child .word { bottom: 24px }
@@ -376,7 +376,7 @@ img{max-width:100%}
 .A .joinbg img { width: 100%; height: 100%; object-fit: cover }
 .A .joinbg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.05) 40%, rgba(0,0,0,.35)) }
 .A .joinwrap { position: relative; z-index: 1; min-height: 844px; display: grid; align-content: center; padding: 72px 16px 32px }
-.A .panel { position: relative; width: 100%; max-width: 480px; margin: 0 auto; padding: 16px 24px 24px; display: grid; gap: 24px; border-radius: 40px; color: #fff; background: rgba(24,16,12,.52); border: 1px solid rgba(255,255,255,.22); backdrop-filter: blur(32px) saturate(170%); -webkit-backdrop-filter: blur(32px) saturate(170%) }
+.A .panel { position: relative; width: 100%; max-width: 480px; margin: 0 auto; padding: 16px 24px 24px; display: grid; gap: 24px; border-radius: 40px; color: #fff; background: rgba(24,16,12,.52); border: 1px solid rgba(255,255,255,.22); -webkit-backdrop-filter: blur(32px) saturate(170%); backdrop-filter: blur(32px) saturate(170%) }
 .A .pbar { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 8px }
 .A .pbar button { width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,.14); color: #fff; cursor: pointer }
 .A .pbar .ic { width: 20px; height: 20px }
@@ -434,7 +434,7 @@ img{max-width:100%}
 .A .lesson b { font: 600 17px/22px var(--f-sf) }
 .A .lesson .btn { min-height: 44px; font-size: 15px; padding: 0 16px; justify-self: start; background: var(--cta); color: var(--cta-fg) }
 .A .tabbar { position: sticky; bottom: 0; z-index: 20; padding: 0 16px 24px; display: flex; justify-content: center }
-.A .tabin { width: 100%; max-width: 420px; height: 64px; padding: 4px; display: grid; grid-template-columns: repeat(4, 1fr); border-radius: 999px; background: rgba(14,16,24,.46); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(24px) saturate(170%); -webkit-backdrop-filter: blur(24px) saturate(170%) }
+.A .tabin { width: 100%; max-width: 420px; height: 64px; padding: 4px; display: grid; grid-template-columns: repeat(4, 1fr); border-radius: 999px; background: rgba(14,16,24,.46); border: 1px solid rgba(255,255,255,.18); -webkit-backdrop-filter: blur(24px) saturate(170%); backdrop-filter: blur(24px) saturate(170%) }
 :root[data-theme="light"] .A .tabin { background: rgba(255,255,255,.7); border-color: rgba(255,255,255,.9) }
 @media (prefers-color-scheme: light) { :root:not([data-theme]) .A .tabin { background: rgba(255,255,255,.7); border-color: rgba(255,255,255,.9) } }
 .A .tabin button { display: grid; justify-items: center; align-content: center; gap: 2px; border: 0; border-radius: 999px; background: transparent; color: var(--mute); font: 600 11px/12px var(--f-sf); cursor: pointer }
@@ -445,12 +445,12 @@ img{max-width:100%}
 .A .mbg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, color-mix(in srgb, var(--ground) 72%, transparent), color-mix(in srgb, var(--ground) 55%, transparent) 40%, var(--ground) 92%) }
 .A .member { position: relative; z-index: 1 }
 .A .chips { display: flex; gap: 8px; padding: 24px 24px 0; overflow-x: auto; scrollbar-width: none }
-.A .chips button { flex: none; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.18); background: rgba(10,12,20,.62); color: #fff; font: 600 15px/1 var(--f-sf); cursor: pointer; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px) }
+.A .chips button { flex: none; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.18); background: rgba(10,12,20,.62); color: #fff; font: 600 15px/1 var(--f-sf); cursor: pointer; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px) }
 .A .chips button[aria-pressed="true"] { background: var(--cta); color: var(--cta-fg); border-color: transparent }
 .A .entries { display: grid; grid-template-columns: 1fr 1fr; gap: 16px }
 .A .entry { position: relative; aspect-ratio: 3/4; border-radius: 24px; overflow: hidden; border: 1px solid var(--edge) }
 .A .entry img { width: 100%; height: 100%; object-fit: cover }
-.A .entry .eb { position: absolute; left: 8px; right: 8px; bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 0 0 12px; height: 44px; border-radius: 999px; background: rgba(10,12,20,.5); color: #fff; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); font: 600 13px/1 var(--f-sf) }
+.A .entry .eb { position: absolute; left: 8px; right: 8px; bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 0 0 12px; height: 44px; border-radius: 999px; background: rgba(10,12,20,.5); color: #fff; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); font: 600 13px/1 var(--f-sf) }
 .A .heart { display: inline-flex; align-items: center; justify-content: center; gap: 4px; height: 44px; padding: 0 12px; border-radius: 999px; border: 0; background: rgba(255,255,255,.16); color: #fff; font: 600 13px/1 var(--f-sf); cursor: pointer; min-width: 44px }
 .A .heart .ic { width: 16px; height: 16px } .A .heart.on { background: #ff375f }
 .A .heart.on .ic path { fill: currentColor }
@@ -469,7 +469,7 @@ img{max-width:100%}
 .A .pstats span { font: 500 12px/16px var(--f-sf); color: var(--mute) }
 .A .badges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 0 24px 128px }
 .A .badge { position: relative; aspect-ratio: 1; border: 0; padding: 0; background: none; color: var(--fg); cursor: pointer; perspective: 600px }
-.A .badge .fc { position: absolute; inset: 0; border-radius: 28px; display: grid; place-items: center; align-content: center; gap: 8px; padding: 8px; text-align: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform .6s cubic-bezier(.2,.8,.2,1); background: var(--glass); border: 1px solid var(--edge); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px) }
+.A .badge .fc { position: absolute; inset: 0; border-radius: 28px; display: grid; place-items: center; align-content: center; gap: 8px; padding: 8px; text-align: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform .6s cubic-bezier(.2,.8,.2,1); background: var(--glass); border: 1px solid var(--edge); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px) }
 .A .badge .fc.bk { transform: rotateY(180deg); font: 500 12px/16px var(--f-sf); color: var(--fg) }
 .A .badge.flipped .fc.fr { transform: rotateY(-180deg) } .A .badge.flipped .fc.bk { transform: rotateY(0) }
 .A .badge .medal { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(135deg, #ffe2a8, #ff8a3c); color: #2a1404 }
@@ -534,7 +534,7 @@ img{max-width:100%}
 .A .top .lockup { color: #fff }
 .A .joinbg.deep img { filter: blur(22px) saturate(1.2); transform: scale(1.12) }
 .A .joinbg.deep::after { background: radial-gradient(90% 70% at 50% 40%, rgba(5,8,18,.15), rgba(5,8,18,.75)) }
-.A .invite { background: linear-gradient(180deg, rgba(30,42,70,.25), rgba(14,20,36,.78) 55%, rgba(10,14,26,.92)); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(28px) saturate(160%); -webkit-backdrop-filter: blur(28px) saturate(160%); box-shadow: 0 40px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.04) inset }
+.A .invite { background: linear-gradient(180deg, rgba(30,42,70,.25), rgba(14,20,36,.78) 55%, rgba(10,14,26,.92)); border: 1px solid rgba(255,255,255,.18); -webkit-backdrop-filter: blur(28px) saturate(160%); backdrop-filter: blur(28px) saturate(160%); box-shadow: 0 40px 80px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.04) inset }
 .A .invite > img { -webkit-mask-image: linear-gradient(180deg, #000 40%, transparent 92%); mask-image: linear-gradient(180deg, #000 40%, transparent 92%) }
 .A .invite .cdn b { font-size: 40px; line-height: 40px } .A .invite .cdn > i { font-size: 32px; line-height: 36px }
 .A .w .k .r { margin-left: auto; font: 500 12px/16px var(--f-sf); color: var(--mute) }
@@ -571,7 +571,7 @@ img{max-width:100%}
 .A .pimg { width: 100%; height: 100%; object-fit: cover; object-position: 58% 22%; display: block }
 .A .pfade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.25) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 48%, color-mix(in srgb, var(--ground) 70%, transparent) 76%, var(--ground) 100%) }
 .A .ptop { position: absolute; left: 16px; right: 16px; top: 64px; display: flex; justify-content: space-between }
-.A .ptop button { width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(0,0,0,.36); color: #fff; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px) }
+.A .ptop button { width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(0,0,0,.36); color: #fff; cursor: pointer; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px) }
 .A .ptop .ic { width: 20px; height: 20px }
 .A .pname { position: absolute; left: 0; right: 0; bottom: 16px; display: grid; gap: 4px; justify-items: center; padding: 0 24px }
 .A .pname h1 { font: 700 40px/44px var(--f-sfd); letter-spacing: -.03em; color: var(--fg) }
@@ -581,7 +581,7 @@ img{max-width:100%}
 .A .pcam { width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--edge); background: var(--glass-2); color: var(--fg); cursor: pointer }
 .A .pstat { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; padding: 0 24px }
 .A .pstat span { display: grid; gap: 2px; justify-items: center } .A .pstat b { font: 600 28px/32px var(--f-sfd) } .A .pstat small { font: 500 13px/16px var(--f-sf); color: var(--mute) }
-.A .pbio { margin: 0 24px; padding: 16px; border-radius: 20px; background: var(--glass); border: 1px solid var(--edge); font: 400 15px/20px var(--f-sf); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px) }
+.A .pbio { margin: 0 24px; padding: 16px; border-radius: 20px; background: var(--glass); border: 1px solid var(--edge); font: 400 15px/20px var(--f-sf); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px) }
 .A .pmain { display: grid; gap: 16px; padding: 0 24px }
 .A .objs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px }
 .A .obj { display: grid; justify-items: center; gap: 4px; padding: 12px 8px 16px; text-align: center; border-radius: 24px }
@@ -601,7 +601,7 @@ img{max-width:100%}
   .A .cdn b { font-size: 64px; line-height: 64px } .A .cdn > i { font-size: 52px; line-height: 60px } .A .cdn > span { min-width: 88px }
   .A .hero .side { justify-items: center } .A .hero .ctas { width: 100% }
   .A .prof { grid-template-columns: 420px minmax(0, 1fr); gap: 32px; align-items: start; max-width: 1280px; margin: 0 auto; padding: 104px 64px 64px }
-  .A .pcard { position: sticky; top: 104px; padding-bottom: 24px; border-radius: 32px; overflow: hidden; background: var(--glass); border: 1px solid var(--edge); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px) }
+  .A .pcard { position: sticky; top: 104px; padding-bottom: 24px; border-radius: 32px; overflow: hidden; background: var(--glass); border: 1px solid var(--edge); -webkit-backdrop-filter: blur(28px); backdrop-filter: blur(28px) }
   .A .pphoto { height: 460px } .A .ptop { top: 16px }
   .A .pmain { padding: 0; grid-template-columns: 1fr 1fr; gap: 24px }
   .A .pmain .objs, .A .pmain .fav, .A .pmain .pgrid { grid-column: 1 / -1 }
@@ -646,7 +646,7 @@ img{max-width:100%}
 /* member home: video thumb with a YouTube-style bar */
 .A .yt { position: relative; border-radius: 20px; overflow: hidden; aspect-ratio: 16/9; background: #000 }
 .A .yt img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: .9 }
-.A .ytp { position: absolute; left: 50%; top: 42%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%; border: 0; background: rgba(0,0,0,.55); color: #fff; cursor: pointer; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px) }
+.A .ytp { position: absolute; left: 50%; top: 42%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%; border: 0; background: rgba(0,0,0,.55); color: #fff; cursor: pointer; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px) }
 .A .ytp .ic { width: 24px; height: 24px; margin-left: 3px }
 .A .ytb { position: absolute; left: 0; right: 0; bottom: 0; padding: 24px 12px 10px; background: linear-gradient(180deg, transparent, rgba(0,0,0,.75)); display: grid; gap: 6px }
 .A .ytt { position: relative; height: 4px; border-radius: 2px; background: rgba(255,255,255,.3) }
@@ -702,7 +702,7 @@ img{max-width:100%}
 .A .hx .hmk .mk { filter: drop-shadow(0 16px 40px rgba(0,0,0,.5)) }
 .A .hx .ctas { width: 100%; max-width: 360px }
 .A .hx.h2 h1.stack { display: grid; font-size: 72px; line-height: 64px; letter-spacing: -.04em }
-.A .hcard { display: grid; justify-items: center; gap: 16px; width: 100%; max-width: 420px; padding: 32px 24px; border-radius: 40px; background: rgba(12,15,26,.42); border: 1px solid rgba(255,255,255,.2); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%) }
+.A .hcard { display: grid; justify-items: center; gap: 16px; width: 100%; max-width: 420px; padding: 32px 24px; border-radius: 40px; background: rgba(12,15,26,.42); border: 1px solid rgba(255,255,255,.2); -webkit-backdrop-filter: blur(28px) saturate(170%); backdrop-filter: blur(28px) saturate(170%) }
 .A .hcard h1 { font-size: 40px; line-height: 40px }
 @container app (min-width: 900px) {
   .A .hx h1 { font-size: 112px; line-height: 104px; letter-spacing: -.035em } .A .hx .hsub { font-size: 24px; line-height: 32px; max-width: none }

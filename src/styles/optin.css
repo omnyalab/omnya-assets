@@ -22,7 +22,7 @@ html:has(.oidim:not([hidden])),html:has(.oidim:not([hidden])) body{overflow:hidd
 @media (width>=900px){
  .oidim::before{background-image:var(--oi-hero)}
 }
-.oidim{position:fixed;inset:0;background:#05070a9e;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:40;display:grid;place-items:center;padding:170px 16px 24px}
+.oidim{position:fixed;inset:0;background:#05070a9e;-webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);z-index:40;display:grid;place-items:center;padding:170px 16px 24px}
 .oisheet{width:min(520px,100%);background:linear-gradient(170deg,#163266 0%,#0b1630 38%,#070b14 70%,#05070a 100%);border-radius:30px;padding:0 34px 30px;box-shadow:0 60px 120px -40px #2997ffa6,inset 0 1px #ffffff2e;text-align:center;position:relative;isolation:isolate}
 .oisheet::after{content:"";position:absolute;left:50%;bottom:-60px;width:520px;max-width:130%;height:240px;transform:translateX(-50%);background:radial-gradient(closest-side,#2997ff66,#2997ff1f 60%,transparent);filter:blur(20px);z-index:-1;pointer-events:none}
 .oisheet::before{content:"";position:absolute;left:50%;top:-170px;width:560px;max-width:150%;height:300px;transform:translateX(-50%);background:radial-gradient(closest-side,#2997ffa8,#2997ff33 55%,transparent);filter:blur(18px);z-index:-1;pointer-events:none}
@@ -86,7 +86,7 @@ html:has(.oidim:not([hidden])),html:has(.oidim:not([hidden])) body{overflow:hidd
 /* After "Send me the blueprint" (7/11, K1 on the board): free, step by step, sent, then a gentle line about the course */
 .oil{position:fixed;inset:0;z-index:80;display:grid;justify-items:center;align-content:start;padding:clamp(90px,20vh,190px) 28px 40px;text-align:center;color:#fff;font-family:Montserrat,-apple-system,sans-serif}
 .oil[hidden]{display:none}
-.oil__bg{position:absolute;inset:0;background:radial-gradient(60% 45% at 50% 35%,#2997ff40,transparent 70%),#05070af2;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.oil__bg{position:absolute;inset:0;background:radial-gradient(60% 45% at 50% 35%,#2997ff40,transparent 70%),#05070af2;-webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px)}
 .oil__in{position:relative;width:min(380px,100%);display:grid;justify-items:center;gap:16px}
 .oil__k{font:800 12px Montserrat,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#2997ff;margin:0}
 .oil__t{font:900 32px/1 Montserrat,sans-serif;text-transform:uppercase;margin:0}
@@ -132,7 +132,7 @@ html:has(.oidim:not([hidden])),html:has(.oidim:not([hidden])) body{overflow:hidd
    scrolls as usual, the blurred picture behind is the page's own, the book still stands out of the top of the card and
    the small footer still hangs under it. Nothing here touches a card that is not .oi--inline. */
 html:has(.oidim.oi--inline:not([hidden])),html:has(.oidim.oi--inline:not([hidden])) body{overflow:visible;height:auto}
-.oidim.oi--inline{position:static;z-index:auto;background:none;backdrop-filter:none;-webkit-backdrop-filter:none;overflow:visible;padding:174px 0 0}
+.oidim.oi--inline{position:static;z-index:auto;background:none;-webkit-backdrop-filter: none; backdrop-filter: none;overflow:visible;padding:174px 0 0}
 html.ocb-on .oidim.oi--inline{padding-bottom:0}
 .oidim.oi--inline::before{display:none}
 @media (width<=899px){

@@ -322,7 +322,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
 
   /* ===== the founders' gift (G2, Nico): the card «Redeem your gifts» and the page of the gifts ===== */
   .A .giftc { position: relative; isolation: isolate; overflow: hidden; grid-column: 1 / -1; display: grid; grid-template-columns: 1fr; gap: 18px; min-height: 280px; padding: 28px 24px; border-radius: 32px; border: 1px solid rgba(255,214,150,.45); color: #fff; text-align: left; cursor: pointer; font: inherit; width: 100%;
-    background: radial-gradient(120% 90% at 0% 0%, rgba(255,190,110,.32), rgba(255,190,110,0) 55%), radial-gradient(90% 80% at 100% 100%, rgba(59,130,255,.45), rgba(59,130,255,0) 60%), rgba(16,20,34,.66); backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%);
+    background: radial-gradient(120% 90% at 0% 0%, rgba(255,190,110,.32), rgba(255,190,110,0) 55%), radial-gradient(90% 80% at 100% 100%, rgba(59,130,255,.45), rgba(59,130,255,0) 60%), rgba(16,20,34,.66); -webkit-backdrop-filter: blur(28px) saturate(170%); backdrop-filter: blur(28px) saturate(170%);
     box-shadow: 0 0 40px 2px rgba(255,180,90,.18), inset 0 1px 0 rgba(255,255,255,.2); transition: transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s }
   .A .giftc:hover { transform: translateY(-3px); border-color: rgba(255,214,150,.8) }
   .A .giftc .gemo { font-size: 84px; line-height: 1; filter: drop-shadow(0 12px 28px rgba(255,160,60,.45)); animation: gbob 3.6s ease-in-out infinite }
@@ -364,13 +364,13 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .A .hbg, .hbfab { width: 44px; height: 44px; flex: none; display: grid; place-content: center; gap: 5px; border-radius: 50%; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.12); cursor: pointer; padding: 0 }
   .A .hbg span, .hbfab span { display: block; width: 18px; height: 2px; border-radius: 2px; background: #fff; transition: transform .3s, opacity .2s }
   .A .topin .rgt { display: flex; align-items: center; gap: 8px }
-  .hbfab { position: fixed; z-index: 45; top: max(12px, env(safe-area-inset-top)); right: 12px; width: 48px; height: 48px; background: rgba(12,15,26,.6); backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%); box-shadow: 0 8px 24px rgba(0,0,0,.3) }
+  .hbfab { position: fixed; z-index: 45; top: max(12px, env(safe-area-inset-top)); right: 12px; width: 48px; height: 48px; background: rgba(12,15,26,.6); -webkit-backdrop-filter: blur(24px) saturate(160%); backdrop-filter: blur(24px) saturate(160%); box-shadow: 0 8px 24px rgba(0,0,0,.3) }
   .hbfab .dotg { position: absolute; right: 2px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: #ffae55; box-shadow: 0 0 0 2px #0b1534 }
   @media (min-width: 900px) { .hbfab { display: none } }
   .mwrap[hidden] { display: none } .mwrap { position: fixed; inset: 0; z-index: 70 }
   .mwrap .mscrim { position: absolute; inset: 0; background: rgba(3,6,16,.35); opacity: 0; transition: opacity .25s }
   .mwrap.on .mscrim { opacity: 1 }
-  .mmenu { position: absolute; color: #fff; font-family: var(--f-sf); background: rgba(14,18,32,.95); border: 1px solid rgba(255,255,255,.18); backdrop-filter: blur(32px) saturate(170%); -webkit-backdrop-filter: blur(32px) saturate(170%); overflow: auto; box-shadow: 0 30px 80px rgba(0,0,0,.5) }
+  .mmenu { position: absolute; color: #fff; font-family: var(--f-sf); background: rgba(14,18,32,.95); border: 1px solid rgba(255,255,255,.18); -webkit-backdrop-filter: blur(32px) saturate(170%); backdrop-filter: blur(32px) saturate(170%); overflow: auto; box-shadow: 0 30px 80px rgba(0,0,0,.5) }
   .mmenu .mgrp { display: grid; padding: 6px } .mmenu .mgrp + .mgrp { border-top: 1px solid rgba(255,255,255,.1) }
   .mmenu .mgt { padding: 10px 12px 4px; font: 600 12px/16px var(--f-sf); letter-spacing: .06em; text-transform: uppercase; opacity: .6 }
   .mmenu .mi { display: grid; grid-template-columns: 32px 1fr auto; align-items: center; gap: 12px; min-height: 50px; padding: 0 12px; border-radius: 14px; border: 0; background: transparent; color: #fff; text-decoration: none; text-align: left; font: 500 16px/20px var(--f-sf); cursor: pointer; width: 100% }
