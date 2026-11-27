@@ -585,3 +585,33 @@ form.opts { gap: 16px }
 .bud-now > div { display: grid; grid-template-columns: 22px 1fr; align-items: center; gap: 10px; font: 650 15px/1.25 var(--f-sfd) }
 .bud-now > div i { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: #58cc6a; color: #06260d; font: 900 12px/1 var(--f-sfd); font-style: normal }
 @media (prefers-reduced-motion: reduce) { .bud-say img, .bud-big, .jc.cur .bud-conf i { animation: none } .bud-conf { display: none } }
+
+/* ===== 27/11 (Nico, board «Le card del club»: E1 and T2) ===== */
+.bud-login { justify-self: end; display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; margin-bottom: -6px; border-radius: 999px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18); color: #fff; font: 700 14px/1 var(--f-sf); text-decoration: none }
+.bud-hero { position: relative; isolation: isolate; overflow: hidden; aspect-ratio: 4 / 5; max-height: 52vh; border-radius: 26px; box-shadow: 0 18px 40px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.14); -webkit-mask-image: -webkit-radial-gradient(white, black) }
+.bud-hero img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover }
+.bud-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(5,9,21,0) 50%, rgba(5,9,21,.88)) }
+.bud-hero span { position: absolute; left: 18px; right: 18px; bottom: 16px; font: 800 21px/1.18 var(--f-sfd); letter-spacing: -.02em; color: #fff; text-wrap: balance }
+.bud-page { appearance: none; border: 0; background: none; color: rgba(255,255,255,.85); font: 600 15px/1 var(--f-sf); text-decoration: underline; text-underline-offset: 4px; min-height: 44px; cursor: pointer; justify-self: center }
+.bud-proof { display: grid; gap: 10px }
+.bud-proof div { padding: 14px 18px; border-radius: 20px; background: rgba(255,255,255,.07); box-shadow: inset 0 0 0 2px rgba(140,180,255,.18) }
+.bud-proof b { display: block; font: 900 44px/.95 var(--f-sfd); letter-spacing: -.05em; background: linear-gradient(180deg, #fff, #a6d4ff); -webkit-background-clip: text; background-clip: text; color: transparent }
+.bud-proof small { display: block; margin-top: 4px; font: 650 15px/1.2 var(--f-sf); color: rgba(255,255,255,.78) }
+.bud-src { margin: -4px 0 0; text-align: center; font: 500 12.5px/1.3 var(--f-sf); color: rgba(255,255,255,.55) }
+.bud-mock { display: grid; grid-template-columns: 40% minmax(0, 1fr); gap: 16px; align-items: center }
+.bud-mock img { width: 100%; height: auto; border-radius: 18px; box-shadow: 0 10px 28px rgba(0,0,0,.5), 0 0 0 3px #05060a }
+.bud-mock ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px }
+.bud-mock li b { display: block; font: 800 16px/1.15 var(--f-sfd) } .bud-mock li small { display: block; margin-top: 3px; font: 500 13.5px/1.3 var(--f-sf); color: rgba(255,255,255,.72) }
+/* T2: one big photo at a time, the next one peeking, the pills to jump */
+.tb-track { display: grid; grid-auto-flow: column; grid-auto-columns: 86%; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; margin: 0 -2px; padding: 2px 2px 6px }
+.tb-track::-webkit-scrollbar { display: none }
+.tb { appearance: none; position: relative; isolation: isolate; overflow: hidden; aspect-ratio: 1 / 1; max-height: 46vh; border: 0; padding: 0; border-radius: 26px; scroll-snap-align: start; cursor: pointer; background: #0a1428; color: #fff; text-align: left; box-shadow: 0 14px 30px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.14); -webkit-mask-image: -webkit-radial-gradient(white, black); transition: box-shadow .2s }
+.tb img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover }
+.tb::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(5,9,21,0) 45%, rgba(5,9,21,.88)) }
+.tb[aria-checked="true"] { box-shadow: 0 14px 30px rgba(0,0,0,.4), inset 0 0 0 3px #5aa8ff }
+.tb-t { position: absolute; left: 18px; right: 18px; bottom: 16px; display: grid; gap: 4px }
+.tb-t b { font: 800 34px/1 var(--f-sfd); letter-spacing: -.04em } .tb-t small { font: 600 15px/1.25 var(--f-sf); color: rgba(255,255,255,.85) }
+.tb-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px }
+.tb-pills button { appearance: none; min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08); color: #fff; font: 700 14px/1 var(--f-sf); cursor: pointer }
+.tb-pills button[aria-pressed="true"] { background: #fff; color: #0b1534; border-color: #fff }
+@media (max-height: 700px) { .bud-hero { max-height: 40vh } .tb { max-height: 38vh } .bud-proof b { font-size: 36px } }

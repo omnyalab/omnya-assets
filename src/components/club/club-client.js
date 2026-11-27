@@ -257,7 +257,18 @@
   }
   /* the answers: a tap picks and, a moment later, the next card comes in (nothing is required: every question has an
      answer for everyone) */
-  var ans = {};
+  var ans = { build: 'tower' };
+  /* 27/11 (Nico, T2): card 4 is one big photo at a time; the one in front is the answer, the pills jump to the others */
+  (function () {
+    var t = $('[data-tbt]', P); if (!t) return;
+    var cs = $$('[data-tbk]', t), ps = $$('[data-tbgo]', P);
+    function mark(k) { ans.build = k; cs.forEach(function (x) { x.setAttribute('aria-checked', x.dataset.tbk === k ? 'true' : 'false'); }); ps.forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.tbgo === k ? 'true' : 'false'); }); }
+    function front() { var w = cs[0].offsetWidth || 1, gap = cs.length > 1 ? cs[1].offsetLeft - cs[0].offsetLeft : w; return cs[Math.max(0, Math.min(cs.length - 1, Math.round(t.scrollLeft / gap)))]; }
+    function to(k) { var el = cs.filter(function (x) { return x.dataset.tbk === k; })[0]; if (!el) return; t.scrollTo({ left: el.offsetLeft - cs[0].offsetLeft, behavior: RM ? 'auto' : 'smooth' }); mark(k); }
+    t.addEventListener('scroll', function () { var f = front(); if (f && f.dataset.tbk !== ans.build) mark(f.dataset.tbk); }, { passive: true });
+    ps.forEach(function (p) { p.addEventListener('click', function () { to(p.dataset.tbgo); }); });
+    cs.forEach(function (x) { x.addEventListener('click', function () { if (ans.build === x.dataset.tbk) { go(Math.min(cardsJ.length, step + 1)); } else to(x.dataset.tbk); }); });
+  })();
   $$('[data-ask]', P).forEach(function (g) {
     var bs = $$('[data-pick]', g);
     bs.forEach(function (b) { b.addEventListener('click', function () {
@@ -272,7 +283,7 @@
     use: { clients: 'A page developers pay for', projects: 'Your projects shown before they are built', service: 'A 3D service you can sell', learn: 'The 3D that sells, step by step' },
     now: { new: 'You start from step 01, nothing skipped', images: 'Your images become a page buyers use', sell: 'Faster builds, with Claude doing the work' }
   };
-  function plan() { ['build', 'use', 'now'].forEach(function (k) { var el = $('[data-plan="' + k + '"]', P); if (el) el.textContent = PLAN[k][ans[k]] || PLAN[k][Object.keys(PLAN[k])[0]]; }); }
+  function plan() { ['build'].forEach(function (k) { var el = $('[data-plan="' + k + '"]', P); if (el) el.textContent = PLAN[k][ans[k]] || PLAN[k][Object.keys(PLAN[k])[0]]; }); }
   /* card 6: the founders' price ends on Fri 4/12 23:59 Rome (FOUNDERS_END = Sat 5/12 00:00) */
   var FEND = Date.parse('2026-12-05T00:00:00+01:00'), fT = null;
   function fleft() {
@@ -293,7 +304,15 @@
     $$('[data-payeur],[data-payeur2]', P).forEach(function (x) { x.textContent = eur; });
     var th = $('.jthen b', P); if (th) th.textContent = eur + '/month';
   }
-  setTimeout(function () { if (q.get('join') === '1' && P && P.hidden) openPay(); }, 300);
+  /* 27/11 (Nico, E1): whoever arrives from a link (the sticker, a reel, a funnel) lands on Buddy's cards; «See the whole page»
+     closes them. Once per visit, never for a member this phone knows, never with ?page=1 */
+  setTimeout(function () {
+    if (!P || !P.hidden) return;
+    if (q.get('join') === '1') { openPay(); return; }
+    var member = false; try { member = !!localStorage.getItem('t3f-m'); } catch (e) {}
+    if (q.get('page') === '1' || member || ss.get('t3f-e1')) return;
+    ss.set('t3f-e1', 1); openPay('auto');
+  }, 300);
   function openPay(from) {
     payReset();
     $('[data-paid]', P).hidden = !proof;

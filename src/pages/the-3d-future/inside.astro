@@ -149,6 +149,54 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .pbio{margin:6px 0 0;font-size:15px;color:#dbe6f7;max-width:40ch}
   .pig{display:inline-flex;align-items:center;min-height:44px;color:#8fc3ff;font-weight:600;text-decoration:none}
   .A .pact .pedit{grid-column:1 / -1;grid-row:2;justify-content:center;width:100%}
+  /* ===== 27/11 (Nico): Ask Buddy, under the course ===== */
+  .A .bask { margin-top: 20px; display: grid; gap: 12px; padding: 18px; border-radius: 26px; background: rgba(14,22,48,.72); border: 1px solid rgba(140,180,255,.22) }
+  .A .bask-h { display: flex; align-items: center; gap: 12px } .A .bask-h img { width: 52px; height: 52px; filter: drop-shadow(0 6px 14px rgba(40,110,255,.55)) }
+  .A .bask-h b { display: block; font: 700 19px/1.1 var(--f-sfd) } .A .bask-h small { display: block; margin-top: 3px; font: 500 14px/1.3 var(--f-sf); color: rgba(255,255,255,.7) }
+  .A .bask-log { display: grid; gap: 8px; max-height: 360px; overflow-y: auto; overscroll-behavior: contain; padding: 2px }
+  .A .bask-log p { margin: 0; max-width: 88%; padding: 11px 15px; border-radius: 20px; font: 500 16px/1.45 var(--f-sf); white-space: pre-line; overflow-wrap: anywhere }
+  .A .bask-log .bb { justify-self: start; background: #fff; color: #0b1534; border-bottom-left-radius: 6px }
+  .A .bask-log .bu { justify-self: end; background: #1d5bd6; color: #fff; border-bottom-right-radius: 6px }
+  .A .bask-log .wait { animation: bwait 1s ease-in-out infinite } @keyframes bwait { 50% { opacity: .45 } }
+  .A .bask-sug { display: flex; flex-wrap: wrap; gap: 8px }
+  .A .bask-sug button { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.07); color: #fff; font: 600 14px/1.2 var(--f-sf); cursor: pointer; text-align: left }
+  .A .bask-f { display: flex; gap: 8px } .A .bask-f input { flex: 1; min-width: 0; min-height: 50px; padding: 0 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.08); color: #fff; font: 500 17px var(--f-sf) }
+  .A .bask-f input::placeholder { color: rgba(255,255,255,.5) } .A .bask-f input:focus { outline: none; border-color: #8cc4ff }
+  .A .bask-f button { width: 50px; height: 50px; flex: none; border: 0; border-radius: 16px; background: #58cc6a; color: #06260d; cursor: pointer } .A .bask-f button .ic { width: 22px; height: 22px } .A .bask-f button:disabled { opacity: .5 }
+  @media (prefers-reduced-motion: reduce) { .A .bask-log .wait { animation: none } }
+  /* ===== 27/11 (Nico, V2): the Vault, one funnel cover at a time ===== */
+  .A .vxw { display: grid; gap: 14px; padding-block: 8px 24px }
+  .A .vx-head { display: flex; align-items: center; gap: 12px; min-height: 44px }
+  .A .vx-cnt { font: 600 15px/1 var(--f-sf); color: rgba(255,255,255,.72); font-variant-numeric: tabular-nums }
+  .A .vx-hint { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 999px; background: rgba(90,168,255,.18); border: 1px solid rgba(140,190,255,.4); color: #cfe4ff; font: 700 13px/1 var(--f-sf); transition: opacity .3s }
+  .A .vx-hint .ic { width: 16px; height: 16px; animation: vxnudge 1.4s ease-in-out infinite }
+  @keyframes vxnudge { 0%, 100% { transform: translateX(0) } 50% { transform: translateX(5px) } }
+  .A [data-swiped] .vx-hint { opacity: 0; pointer-events: none }
+  .A .vx-arr { margin-left: auto; display: none; gap: 8px }
+  .A .vx-arr button { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.08); color: #fff; cursor: pointer }
+  .A .vx-arr .ic { width: 20px; height: 20px } .A .vx-arr .flip { transform: rotate(180deg) }
+  @media (hover: hover) and (pointer: fine) { .A .vx-arr { display: inline-flex } }
+  .A .vx-track { display: grid; grid-auto-flow: column; grid-auto-columns: min(82%, 340px); gap: 14px; overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 4px 24px 18px; scroll-padding-inline: 24px; max-width: 1280px; margin: 0 auto; width: 100% }
+  .A .vx-track::-webkit-scrollbar { display: none }
+  .A .vx { position: relative; isolation: isolate; overflow: hidden; aspect-ratio: 4 / 5; border-radius: 28px; scroll-snap-align: start; cursor: pointer; color: #fff; background: #12204a; box-shadow: 0 22px 44px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.14); -webkit-mask-image: -webkit-radial-gradient(white, black); transition: transform .25s }
+  .A .vx:active { transform: scale(.985) }
+  .A .vx > img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover }
+  .A .vx-sh { position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(5,9,21,.82) 0%, rgba(5,9,21,.35) 30%, rgba(5,9,21,0) 50%, rgba(5,9,21,.1) 68%, rgba(5,9,21,.88) 100%) }
+  .A .vx-top { position: absolute; top: 16px; left: 16px; right: 16px; display: flex; justify-content: space-between; gap: 8px }
+  .A .vx-n, .A .vx-ty { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 999px; background: rgba(8,12,26,.6); border: 1px solid rgba(255,255,255,.14); font: 700 12px/1 var(--f-sf); letter-spacing: .08em; text-transform: uppercase }
+  .A .vx-ty { color: #cfe4ff } .A .vx-ty .ic { width: 14px; height: 14px }
+  .A .vx-cov { position: absolute; top: 62px; left: 20px; right: 20px; display: grid; justify-items: start; gap: 8px }
+  .A .vx-eb { padding: 7px 11px; border-radius: 8px; background: linear-gradient(90deg, #2563eb, #5aa8ff); font: 800 12px/1 var(--f-sf); letter-spacing: .14em; text-transform: uppercase; box-shadow: 0 6px 18px rgba(37,99,235,.45) }
+  .A .vx-h { font: 800 44px/.92 var(--f-sfd); letter-spacing: -.035em; text-transform: uppercase; text-shadow: 0 4px 26px rgba(0,0,0,.5); text-wrap: balance }
+  .A .vx-p { font: 700 14px/1.25 var(--f-sf); letter-spacing: .12em; text-transform: uppercase; color: #d6e8ff; text-shadow: 0 2px 12px rgba(0,0,0,.6) }
+  .A .vx-bar { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-radius: 20px; background: rgba(10,14,30,.62); border: 1px solid rgba(255,255,255,.14); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px) }
+  .A .vx-bt { flex: 1; min-width: 0; display: grid; gap: 3px } .A .vx-bt b { font: 700 16px/1.1 var(--f-sf) } .A .vx-bt small { font: 500 13px/1.2 var(--f-sf); color: rgba(255,255,255,.72); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+  .A .vx-get { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 14px 0 18px; border-radius: 999px; background: #fff; color: #0b1534; font: 800 15px/1 var(--f-sf) } .A .vx-get .ic { width: 16px; height: 16px }
+  .A .vx-soon { background: radial-gradient(120% 90% at 30% 20%, #2b3a66 0%, #0c1224 60%, #05070d 100%) }
+  .A .vx-mys { position: absolute; inset: 0; z-index: -1; background: repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 2px, transparent 2px 18px) }
+  .A .vx-dots { display: flex; justify-content: center; gap: 6px } .A .vx-dots i { width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.3); transition: width .25s, background .25s } .A .vx-dots i.on { width: 20px; background: #fff }
+  @media (min-width: 900px) { .A .vx-track { grid-auto-columns: 320px; padding-inline: 64px; scroll-padding-inline: 64px } .A .vx-head { padding-inline: 64px } }
+  @media (prefers-reduced-motion: reduce) { .A .vx-hint .ic { animation: none } }
   .kitbtn{display:inline-flex;align-items:center;gap:12px;justify-self:start;width:max-content;max-width:100%;min-height:56px;padding:8px 20px 8px 14px;border-radius:18px;background:#58cc6a;color:#06260d;text-decoration:none;box-shadow:0 5px 0 #3a9e49;margin-top:6px}
   .kitbtn .ic{width:24px;height:24px;flex:none}
   .kitbtn b{display:block;font:800 16px/1.1 Geist,sans-serif}
@@ -607,7 +655,11 @@ const P = {
     LS = ls; const box = $('[data-lessons]'); if (!box) return
     const live = ls.some(l => l.src); SEL = curStep()
     box.innerHTML = `<div class="cnow"><div class="cplay"><video playsinline controls preload="none" data-player aria-label="The video of the step"></video>${live ? '' : `<span class="csoon">${ic('lock')}Opens on Saturday 28 November at 9:00 (Rome)</span>`}</div><div class="cmeta" data-cmeta></div></div>
-      <div class="clist" data-clist>${rowsHTML()}</div>`
+      <div class="clist" data-clist>${rowsHTML()}</div>
+      ${live ? `<div class="bask" data-bask><div class="bask-h"><img src="/club/knot-96.webp" alt="" width="52" height="52"><div><b>Ask Buddy</b><small>Anything about this step or the course</small></div></div>
+        <div class="bask-log" data-blog aria-live="polite"><p class="bb">Hi! I know the SAMAR course by heart. Ask me anything 👇</p></div>
+        <div class="bask-sug" data-bsug>${["What do I need before I start?", "How do I open the kit with Claude?", "How do I check my tower matches the photo?"].map(x => `<button type="button" data-bq>${esc(x)}</button>`).join('')}</div>
+        <form class="bask-f" data-bform novalidate><label class="sr" for="t3m-bq">Your question for Buddy</label><input id="t3m-bq" name="q" maxlength="600" autocomplete="off" placeholder="Ask Buddy…" enterkeyhint="send"><button type="submit" class="ctr" aria-label="Send">${ic('arrow')}</button></form></div>` : ''}`
     const pg = $('[data-cprog]'); if (pg) pg.innerHTML = progHTML()
     $('[data-course]').hidden = false
     box.addEventListener('click', e => {
@@ -617,11 +669,32 @@ const P = {
       if (!isOpenS(n)) { toast(!LS[n - 1].src ? 'This step opens on Saturday 28 November at 9:00' : `Finish step ${nn(n - 1)} to open it`); return }
       pick(n, true, true)
     })
-    pick(SEL, false, false); track()
+    pick(SEL, false, false); track(); askInit()
     const cd = $('[data-cd]'), before = Date.now() < OPENS, tick = () => { const s = Math.max(0, Math.floor((OPENS - Date.now()) / 1000)); if (!s) { cd.hidden = true; return }
       const u = { d: Math.floor(s / 86400), h: Math.floor(s % 86400 / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 }
       cd.querySelectorAll('[data-u]').forEach(b => { b.textContent = b.dataset.u === 'd' ? u.d : String(u[b.dataset.u]).padStart(2, '0') }) }
     if (cd) { tick(); if (before) setInterval(tick, 1000); else cd.hidden = true }
+  }
+  /* 27/11 (Nico): Buddy answers questions about the course (api/club/ask: members only, no tools, a daily cap) */
+  function askInit() {
+    const f = $('[data-bform]'); if (!f) return
+    const log = $('[data-blog]'), inp = f.elements.q, H = []
+    let busy = false
+    const add = (cls, text) => { const p = document.createElement('p'); p.className = cls; p.textContent = text; log.appendChild(p); log.scrollTop = log.scrollHeight; return p }
+    const ask = q => {
+      q = String(q || '').trim(); if (!q || busy) return
+      busy = true; f.querySelector('button').disabled = true; inp.value = ''
+      const sug = $('[data-bsug]'); if (sug) sug.hidden = true
+      add('bu', q); const wait = add('bb wait', '…')
+      post('/api/club/ask', { m, q, step: SEL, history: H.slice(-6) }).then(r => {
+        wait.classList.remove('wait')
+        if (r.ok && r.d.a) { wait.textContent = r.d.a; H.push({ role: 'user', text: q }, { role: 'assistant', text: r.d.a }) }
+        else wait.textContent = (r.d && r.d.error) || "I can't answer right now, try again in a minute."
+      }).catch(() => { wait.classList.remove('wait'); wait.textContent = "I can't answer right now, check your connection and try again." })
+        .then(() => { busy = false; f.querySelector('button').disabled = false; log.scrollTop = log.scrollHeight })
+    }
+    f.addEventListener('submit', e => { e.preventDefault(); ask(inp.value) })
+    $('[data-bask]').addEventListener('click', e => { const b = e.target.closest('[data-bq]'); if (b) ask(b.textContent) })
   }
   function pick(n, play, scroll) {
     const l = LS[n - 1], v = $('[data-player]'); if (!l || !v) return
@@ -1003,26 +1076,34 @@ const P = {
         <div class="glass w span lvl lvl2"><span class="k">${ic('spark')}Your badges<span class="r">${nOn} of ${BL.length}</span></span><div class="lvlrow">${ring(nOn / BL.length, 104, 12, 'url(#rg)', 'rgba(255,255,255,.14)', `<b class="rn">${nOn}<small>/${BL.length}</small></b>`)}<div class="medals">${BL.map((b, i) => medal(b, earned[i])).join('')}</div></div></div>
         ${incoming('/club/v-stadium-760.webp', 'Incoming', 'New in the Vault', '4', 'Dec', 'A new build every Friday', 'vault')}
         ${incoming('/club/v-house-760.webp', 'Every week', 'My comments on your builds', 'Mon', '', 'Post your build', 'feed')}
-        ${founder ? incoming('/club/v-towers-760.webp', open ? 'Yours' : 'Founder', "Your founders' gift", String(nGift), 'gifts', open ? 'Yours to keep' : 'Unlocks Saturday, 9:00', 'gift') : incoming('/club/v-plane-760.webp', open ? 'Yours' : 'Saturday', 'Your skills', '2', 'skills', open ? 'Yours to keep' : 'Opens Saturday, 9:00', 'vault')}
+        ${incoming('/club/v-plane-760.webp', open ? 'Yours' : 'Saturday', 'Your skills', '2', 'skills', open ? 'Yours to keep' : 'Opens Saturday, 9:00', 'vault')}
         ${incoming('/club/v-miami-760.webp', open ? 'Open' : 'Saturday', 'All the full guides', String(d.guides ? d.guides.length : (d.counts && d.counts.guides) || ''), 'guides', open ? 'In the Vault' : 'Open Saturday, 9:00', 'vault')}
-        ${giftCard()}
       </div>
     </div>`
     const courseV = `<div data-v="course"><div class="mtop"><div><h1>Courses</h1><p class="msub">A new course every Friday, with the build of the week</p></div></div>
       <div class="ccourse" id="course-list">${courseBlock}</div>
       <div class="mgrid"><div class="glass w span nextc"><span class="k">${ic('lock')}Next course<span class="r">Friday 4 December</span></span><span class="big">4<small>Dec</small></span><p class="lede2">The next course comes with the build of the week.</p></div></div></div>`
-    const deck = (d.vault || []).map((b, i) => `<article class="vcard ${i === 0 ? 'open' : ''}" data-vb="${i}" tabindex="0" role="button" aria-label="${esc(b.t)}, open its files">
-        <img src="/club/v-${esc(b.img)}-760.webp" alt="" loading="lazy"><span class="gz"></span>
-        <div class="vt"><span class="pill">${ic('doc')}${esc(b.type)}</span><span class="go ctr">${ic('chev')}</span></div>
-        <span class="word">${esc(b.t.replace(/^The /, '').split(' ')[0])}</span></article>`).join('') + `<article class="vcard lock soon" tabindex="0" data-next aria-label="Next build, Friday 4 December"><span class="mystery"></span><div class="vt"><span class="pill">${ic('lock')}Fri 4 Dec</span><span class="go ctr">${ic('lock')}</span></div><span class="word">Next build</span><span class="sub2">Friday 4 December</span></article>`
+    /* 27/11 (Nico, board «Le card del club», V2 «più fighe, da funnel»): each build as the cover of its funnel */
+    const COVER = { towers: ['Three towers', 'You choose the view'], riyadh: ['The Riyadh', 'Mega tower'], stadium: ['A stadium', 'You pick your seat'], house: ['A house', 'That builds itself on scroll'], plane: ['A plane', 'You pick your seat'], miami: ['Miami', 'From the real map'] }
+    const VB = d.vault || []
+    const deck = VB.map((b, i) => { const c = COVER[b.img] || [b.t, ''], nf = (b.files || []).length
+      return `<article class="vx" data-vb="${i}" tabindex="0" role="button" aria-label="${esc(b.t)}, open its files">
+        <img src="/club/vault/${esc(b.img)}-720.webp" srcset="/club/vault/${esc(b.img)}-720.webp 720w, /club/vault/${esc(b.img)}.webp 1088w" sizes="(max-width: 899px) 82vw, 340px" alt="" decoding="async" loading="${i < 2 ? 'eager' : 'lazy'}"><span class="vx-sh"></span>
+        <span class="vx-top"><span class="vx-n">Build ${nn(i + 1)}</span><span class="vx-ty">${esc(b.type)}</span></span>
+        <span class="vx-cov"><span class="vx-eb">How to build</span><b class="vx-h">${esc(c[0])}</b><span class="vx-p">${esc(c[1])}</span></span>
+        <span class="vx-bar"><span class="vx-bt"><b>${nf} files</b><small>Full guide included</small></span><span class="vx-get">Open${ic('chev')}</span></span></article>` }).join('')
+      + `<article class="vx vx-soon" tabindex="0" role="button" data-next aria-label="Next build, Friday 4 December"><span class="vx-mys"></span>
+        <span class="vx-top"><span class="vx-n">Build ${nn(VB.length + 1)}</span><span class="vx-ty">${ic('lock')}Locked</span></span>
+        <span class="vx-cov"><span class="vx-eb">Coming Friday</span><b class="vx-h">Next build</b><span class="vx-p">Friday 4 December</span></span></article>`
+    const vxN = VB.length + 1
     const vault = `<div data-v="vault">
       <div class="mtop"><div><h1>The Vault</h1><p class="msub">${open ? `${(d.vault || []).length} builds open · a new one every Friday` : `${(d.counts && d.counts.vault) || ''} builds · they open Saturday at 9:00`}</p></div></div>
-      ${open ? `<div class="wrap vwrap"><div class="deck">${deck}</div></div>
+      ${open ? `<div class="vxw" data-vx><div class="wrap vx-head"><span class="vx-cnt" data-vxc>1 / ${vxN}</span><span class="vx-hint" data-vxhint>Swipe${ic('arrow')}</span><span class="vx-arr"><button type="button" class="ctr" data-vxgo="-1" aria-label="Previous build">${ic('chev', 'flip')}</button><button type="button" class="ctr" data-vxgo="1" aria-label="Next build">${ic('chev')}</button></span></div>
+      <div class="vx-track" data-vxt>${deck}</div><div class="vx-dots" data-vxd aria-hidden="true">${Array.from({ length: vxN }, (_, k) => `<i${k ? '' : ' class="on"'}></i>`).join('')}</div></div>
       <div class="mgrid">
-        ${founder ? `<div class="cherow span full" id="gift">${giftCard()}</div>` : ''}
         <div class="glass w span full wf" id="guides"><span class="k">${ic('doc')}All the full guides<span class="r">${(d.guides || []).length} guides</span></span><div class="files">${(d.guides || []).map(fl).join('')}</div></div>
         <div class="glass w span full wf" id="skills"><span class="k">${ic('code')}Your skills<span class="r">yours to keep</span></span><div class="files">${d.kit ? `<a class="fl" href="${esc(d.kit.href)}" download><b>ZIP</b><span>${esc(d.kit.name)}</span>${ic('down')}</a>` : ''}${d.skill ? fl(d.skill) : ''}${d.house ? fl(d.house) : ''}</div></div>
-      </div>` : `<div class="mgrid">${founder ? `<div class="cherow span full" id="gift">${giftCard()}</div>` : ''}<div class="glass w span full"><span class="k">${ic('lock')}Opens Saturday 28 November</span><p class="lede2">Your seat is reserved. The Vault, every Full guide and your skills open here on Saturday 28 November at 9:00 (Rome), when your first month starts.</p></div></div>`}
+      </div>` : `<div class="mgrid"><div class="glass w span full"><span class="k">${ic('lock')}Opens Saturday 28 November</span><p class="lede2">Your seat is reserved. The Vault, every Full guide and your skills open here on Saturday 28 November at 9:00 (Rome), when your first month starts.</p></div></div>`}
     </div>`
     const chal = `<div data-v="feed"><div class="mtop"><div><h1>Feed</h1><p class="msub">Every build of the club. I look at every post.</p></div></div><div data-feed><p class="msub" style="padding:24px">Loading the feed…</p></div></div>`
     const gifts = founder ? giftsView() : ''
@@ -1088,8 +1169,8 @@ const P = {
       if (e.target.closest('[data-sheetx]')) closeSheet()
     })
     // the Vault: on the computer the card under the pointer opens (board A)
-    $$('.vcard').forEach(c => c.addEventListener('mouseenter', () => $$('.vcard').forEach(x => x.classList.toggle('open', x === c))))
-    $$('.vcard').forEach(c => c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click() } }))
+    $$('.vx').forEach(c => c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click() } }))
+    vxInit()
     $$('[data-hello] video').forEach(v => { const go = () => { if (!v.controls) { v.controls = true; v.play().catch(() => {}) } }
       v.addEventListener('click', go); v.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go() } }) })
     document.addEventListener('submit', e => { const f = e.target.closest('[data-cform]'); if (!f) return; e.preventDefault()
@@ -1118,6 +1199,21 @@ const P = {
   let DATA = null
   const sheet = $('[data-sheet]')
   $('[data-sheet] .sx').innerHTML = ic('x')
+  /* the Vault carousel: which card is in front, the counter, the dots, «Swipe» until the first swipe, the arrows on the computer */
+  function vxInit() {
+    const t = $('[data-vxt]'); if (!t) return
+    const cards = $$('.vx', t), dots = $$('[data-vxd] i'), cnt = $('[data-vxc]'), w = $('[data-vx]')
+    let seen = false; try { seen = !!localStorage.getItem('t3f-vx') } catch (e) {}
+    if (seen) w.dataset.swiped = '1'
+    const at = () => { const step = cards.length > 1 ? cards[1].offsetLeft - cards[0].offsetLeft : 1; return Math.max(0, Math.min(cards.length - 1, Math.round(t.scrollLeft / step))) }
+    let last = 0
+    t.addEventListener('scroll', () => { const k = at(); if (k !== last) { last = k; cnt.textContent = `${k + 1} / ${cards.length}`; dots.forEach((d, j) => d.classList.toggle('on', j === k)) }
+      if (t.scrollLeft > 30 && !w.dataset.swiped) { w.dataset.swiped = '1'; try { localStorage.setItem('t3f-vx', '1') } catch (e) {} } }, { passive: true })
+    w.addEventListener('click', e => { const b = e.target.closest('[data-vxgo]'); if (!b) return; const k = Math.max(0, Math.min(cards.length - 1, at() + +b.dataset.vxgo)); t.scrollTo({ left: cards[k].offsetLeft - cards[0].offsetLeft, behavior: RMx ? 'auto' : 'smooth' }) })
+    // the first time: the row moves a little and comes back, so it is clear that it scrolls
+    if (!seen && !RMx) setTimeout(() => { if (t.scrollLeft < 5 && $('[data-screen="vault"]')) { t.scrollTo({ left: 64, behavior: 'smooth' }); setTimeout(() => { if (t.scrollLeft < 80) t.scrollTo({ left: 0, behavior: 'smooth' }) }, 650) } }, 900)
+  }
+  const RMx = matchMedia('(prefers-reduced-motion: reduce)').matches
   function openBuild(i) {
     const b = DATA && DATA.vault && DATA.vault[i]; if (!b) return
     $('[data-sheetbody]').innerHTML = `<p class="s-eyebrow">${esc(b.type)}</p><h3 class="s-title" id="t3m-sh">${esc(b.t)}</h3><img class="s-img" src="/club/v-${esc(b.img)}-760.webp" alt="">${b.files.map(f => fl(f) + (f.note ? `<p class="snote">${esc(f.note)}</p>` : '')).join('')}`

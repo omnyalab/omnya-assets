@@ -30,6 +30,7 @@ import {
   readMember, insideData, insideUrl, PREVIEW_EMAIL, noteBuild, sendInsideLink,
 } from './_lib/club.js';
 import { saveProgress, saveProfile, avatar, MAX_AVATAR } from './_lib/club-me.js';
+import { askBuddy } from './_lib/club-ask.js';
 import { feedMember, feed, addPost, like, comments, addComment, share, setHidden, photo, noteMessage, hideOk, setRemind, notifyCourse, LINK, MAX_IMG } from './_lib/club-feed.js';
 import { markMailed } from './_lib/drip.js';
 
@@ -83,6 +84,7 @@ export async function POST(req) {
   if (a === 'build') return sendBuild(req);
   if (['post', 'like', 'comment', 'share', 'msg', 'hide', 'remind'].includes(a)) return feedPost(req, a);
   if (a === 'progress' || a === 'profile') return mePost(req, a);
+  if (a === 'ask') return askPost(req);
   if (a === 'notify') {
     // N1: Friday's course is online, Nico says so (admin key): { subject, text with {name} and {link}, test? }
     if (!admin(req)) return new Response('Not found', { status: 404 });
@@ -334,6 +336,23 @@ async function mePost(req, a) {
   } catch (e) {
     if (e.code === 'bad_request' || e.code === 'bad_image') return fail(400, e.code, e.message);
     console.error('[club] me', a, e.message);
+    return fail(502, 'store', 'Something went wrong, try again in a minute.');
+  }
+}
+/* 27/11: Buddy answers a question about the course (api/_lib/club-ask.js): only an open member, 10 a minute from one place */
+async function askPost(req) {
+  const b = await body(req);
+  if (!b) return fail(400, 'bad_request', 'bad request');
+  const email = readMember(b.m);
+  if (!email) return fail(403, 'bad_link', 'Open the club from your own link.');
+  if (await limited(req, 'ask', 10, 60)) return tooMany();
+  try {
+    const d = await insideData(email);
+    if (d.state !== 'open') return fail(403, 'not_yet', 'Buddy answers once the club is open for you.');
+    const r = await askBuddy(email, { q: b.q, step: b.step, history: b.history });
+    return r.ok ? json({ a: r.a }) : fail(r.status || 502, 'ask', r.error);
+  } catch (e) {
+    console.error('[club] ask', e.message);
     return fail(502, 'store', 'Something went wrong, try again in a minute.');
   }
 }
