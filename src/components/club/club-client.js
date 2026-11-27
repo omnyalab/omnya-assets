@@ -247,8 +247,11 @@
     clearTimeout(nextT); step = n; P.dataset.step = String(n);
     cardsJ.forEach(function (c) { var k = +c.dataset.c; c.classList.toggle('cur', k === n); c.classList.toggle('past', k < n); c.setAttribute('aria-hidden', k === n ? 'false' : 'true'); c.inert = k !== n; });
     bgs.forEach(function (b) { b.classList.toggle('on', +b.dataset.bg === n); });
-    $$('[data-jprog] i', P).forEach(function (i, k) { i.className = k < n ? 'on' : ''; });
-    var pr = $('[data-jprog]', P); pr.setAttribute('aria-valuenow', String(n)); pr.setAttribute('aria-label', 'Card ' + n + ' of 4');
+    // 27/11 (Nico, board «Buddy»): seven cards, one green bar that fills
+    var NC = cardsJ.length, bar = $('[data-jbar]', P); if (bar) bar.style.width = (n / NC * 100).toFixed(1) + '%';
+    var pr = $('[data-jprog]', P); pr.setAttribute('aria-valuenow', String(n)); pr.setAttribute('aria-label', 'Card ' + n + ' of ' + NC);
+    if (n === 5) plan();
+    fleft();
     P.setAttribute('aria-labelledby', 't3f-c' + n); P.scrollTop = 0;
     if (focus !== false) focusHead($('#t3f-c' + n));
   }
@@ -263,16 +266,34 @@
       var n = +g.dataset.c; clearTimeout(nextT); nextT = setTimeout(function () { if (step === n) go(n + 1); }, RM ? 0 : 380);
     }); });
   });
+  /* card 5: the plan, written from the answers (nothing invented: what the club has for that answer) */
+  var PLAN = {
+    build: { tower: 'SAMAR, floor by floor · the 11-step course', stadium: 'The Stadium · its build is in the Vault', house: 'The House Builder skill · yours to keep', own: 'SAMAR, floor by floor · the 11-step course' },
+    use: { clients: 'A page developers pay for', projects: 'Your projects shown before they are built', service: 'A 3D service you can sell', learn: 'The 3D that sells, step by step' },
+    now: { new: 'You start from step 01, nothing skipped', images: 'Your images become a page buyers use', sell: 'Faster builds, with Claude doing the work' }
+  };
+  function plan() { ['build', 'use', 'now'].forEach(function (k) { var el = $('[data-plan="' + k + '"]', P); if (el) el.textContent = PLAN[k][ans[k]] || PLAN[k][Object.keys(PLAN[k])[0]]; }); }
+  /* card 6: the founders' price ends on Fri 4/12 23:59 Rome (FOUNDERS_END = Sat 5/12 00:00) */
+  var FEND = Date.parse('2026-12-05T00:00:00+01:00'), fT = null;
+  function fleft() {
+    var el = $('[data-fleft]', P); if (!el) return;
+    var s = Math.max(0, Math.floor((FEND - Date.now()) / 1000)), box = $('[data-fbox]', P);
+    if (box) box.hidden = !s;
+    el.textContent = Math.floor(s / 86400) + 'd ' + ('0' + Math.floor(s % 86400 / 3600)).slice(-2) + 'h ' + ('0' + Math.floor(s % 3600 / 60)).slice(-2) + 'm';
+    if (!fT) fT = setInterval(fleft, 30000);
+  }
+  P.addEventListener('click', function (e) { if (e.target.closest('[data-jnext]')) { e.preventDefault(); go(Math.min(cardsJ.length, step + 1)); } });
   function setStage(st) { P.dataset.stage = st; pf.hidden = st !== 'ask'; stage.hidden = st !== 'card'; }
   function payReset() {
     if (pel) { try { pel.destroy(); } catch (e) {} pel = null; }
     if (cel) { try { cel.destroy(); } catch (e) {} cel = null; } if (cbox && cbox.parentNode) { cbox.parentNode.removeChild(cbox); } cbox = null;
     actions = null; setStage('ask'); pbox.className = 'paybox'; pbox.innerHTML = ''; perr.textContent = ''; $('[data-early]', P).hidden = true;
-    goBtn.disabled = false; goBtn.textContent = 'Join';
+    goBtn.disabled = false; goBtn.textContent = 'Join the club';
     var eur = phase === 'after' && !proof ? '€19' : '€9';
     $$('[data-payeur],[data-payeur2]', P).forEach(function (x) { x.textContent = eur; });
     var th = $('.jthen b', P); if (th) th.textContent = eur + '/month';
   }
+  setTimeout(function () { if (q.get('join') === '1' && P && P.hidden) openPay(); }, 300);
   function openPay(from) {
     payReset();
     $('[data-paid]', P).hidden = !proof;
@@ -283,7 +304,7 @@
     if (!DEMO) loadStripe().catch(function () {});
   }
   $('[data-jback]', P).addEventListener('click', function () {
-    if (step === 4 && P.dataset.stage === 'card') { payReset(); focusHead($('#t3f-c4')); return; }
+    if (step === cardsJ.length && P.dataset.stage === 'card') { payReset(); focusHead($('#t3f-c' + step)); return; }
     if (step > 1) go(step - 1); else hideOv();
   });
   $('[data-jedit]', P).addEventListener('click', function () { payReset(); pf.elements.name.focus(); });
@@ -337,7 +358,7 @@
         });
       })
       .catch(function (x) { payReset(); perr.textContent = (x && x.message) || FAIL; })
-      .then(function () { opening = false; goBtn.disabled = false; goBtn.textContent = 'Join'; });
+      .then(function () { opening = false; goBtn.disabled = false; goBtn.textContent = 'Join the club'; });
   });
   payBtn.addEventListener('click', function () {
     if (DEMO) { toast('Board preview: nothing is charged'); return; }

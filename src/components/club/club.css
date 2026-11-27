@@ -529,3 +529,59 @@ form.opts { gap: 16px }
 .jsafe { margin: -6px 0 0; text-align: center; font: 500 15px/20px var(--f-sf); color: rgba(255,255,255,.9) }
 .jo, .jtop .rb { -webkit-tap-highlight-color: transparent }
 @media (max-width: 420px) { .jc[data-ask="build"] .jopts.tiles .jo { font-size: 20px } }
+
+/* ===== 27/11 (Nico, board «Buddy», B): the join as seven cards with the club's 3D knot talking (Duolingo, Headspace).
+   The club blue ground, the knot in a speech bubble, chunky buttons that press down, a green bar that fills, confetti on
+   the plan. Only the look changes: the questions, the answers and the Stripe card work as before. ===== */
+.jov.bud { background: radial-gradient(120% 80% at 50% -10%, #2a4fb8, #0b1534 60%, #070d22) }
+.jov.bud .jbgs { display: none }
+.jov.bud .jprog.jbar { display: block; height: 12px; border-radius: 8px; background: rgba(255,255,255,.14); overflow: hidden }
+.jov.bud .jprog.jbar i { display: block; height: 100%; width: 14%; border-radius: inherit; background: linear-gradient(90deg, #58cc6a, #9be15d); box-shadow: inset 0 -3px 0 rgba(0,0,0,.15); transition: width .5s cubic-bezier(.2,.7,.2,1) }
+.jov.bud .jc { background: none; border: 0; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; padding: 8px 2px 16px; gap: 16px }
+.jov.bud .jc.jhook { justify-items: stretch }
+.bud-say { display: flex; align-items: flex-end; gap: 12px }
+.bud-say img { width: 64px; height: 64px; flex: none; filter: drop-shadow(0 8px 16px rgba(40,110,255,.6)); animation: budbob 2.4s ease-in-out infinite }
+@keyframes budbob { 50% { transform: translateY(-6px) rotate(-3deg) } }
+.bud-say p, .bud-say .jq { position: relative; margin: 0; padding: 14px 18px; border-radius: 22px; background: #fff; color: #0b1534 !important; font: 700 19px/1.25 var(--f-sfd) !important; letter-spacing: -.015em !important; text-shadow: none; flex: 1; min-width: 0 }
+.bud-say p::before, .bud-say .jq::before { content: ""; position: absolute; left: -8px; bottom: 16px; border: 9px solid transparent; border-right-color: #fff; border-left: 0 }
+.bud-say .jq .kw, .bud-say .jq em { background: none !important; -webkit-text-fill-color: #1d5bd6; color: #1d5bd6 !important }
+.bud-big { justify-self: center; width: min(220px, 52vw); height: auto; margin: 8px 0; filter: drop-shadow(0 18px 36px rgba(40,110,255,.55)); animation: budbob 3s ease-in-out infinite }
+.jhook > .jq { margin: 0; font: 800 40px/1.02 var(--f-sfd) !important; letter-spacing: -.045em !important; text-align: center }
+.jhook > .jq .kw { background: linear-gradient(100deg, #e2f1ff, #8ccaff 45%, #3f8cff); -webkit-background-clip: text; background-clip: text; color: transparent }
+.bud-sub { margin: -4px 0 4px; text-align: center; font: 500 17px/1.4 var(--f-sf); color: rgba(255,255,255,.78) }
+.bud-go, .btn.cta.bud-go { appearance: none; border: 0; width: 100%; min-height: 58px; border-radius: 18px; background: #58cc6a !important; color: #06260d !important; font: 800 18px/1 var(--f-sfd) !important; letter-spacing: .03em; text-transform: uppercase; box-shadow: 0 6px 0 #3a9e49 !important; cursor: pointer; transition: transform .08s, box-shadow .08s; margin-top: 6px }
+.bud-go:active { transform: translateY(5px); box-shadow: 0 1px 0 #3a9e49 !important }
+.bud-go:disabled { opacity: .7 }
+.jov.bud .jopts:not(.tiles) .jo { min-height: 60px; border-radius: 18px; background: #1b2c61; border: 0; box-shadow: 0 6px 0 #0f1b42, inset 0 0 0 2px rgba(140,180,255,.25); grid-template-columns: 38px minmax(0, 1fr) 24px; font: 700 17px/1.2 var(--f-sfd); padding: 0 16px; transition: transform .08s, box-shadow .08s, background .2s }
+.jov.bud .jopts:not(.tiles) .jo:active { transform: translateY(5px); box-shadow: 0 1px 0 #0f1b42, inset 0 0 0 2px rgba(140,180,255,.25) }
+.jov.bud .jopts:not(.tiles) .jo[aria-checked="true"] { background: #1d5bd6; box-shadow: 0 6px 0 #123b8f, inset 0 0 0 2.5px #8cc4ff }
+.bud-e { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: rgba(255,255,255,.1); font-size: 20px }
+.jov.bud .jopts { gap: 14px }
+.jov.bud .jopts.tiles .jo { border-radius: 18px; box-shadow: 0 6px 0 rgba(0,0,0,.4), inset 0 0 0 2px rgba(255,255,255,.2) }
+.bud-rows { display: grid; gap: 12px }
+.bud-rows div { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 18px; background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 2px rgba(140,180,255,.18) }
+.bud-rows span { font-size: 24px } .bud-rows b { font: 700 16.5px/1.3 var(--f-sfd); color: #fff }
+.bud-conf { position: absolute; inset: -40px 0 0; overflow: hidden; pointer-events: none; z-index: 0 }
+.bud-conf i { position: absolute; width: 8px; height: 13px; border-radius: 2px; opacity: 0 }
+.jc.cur .bud-conf i { animation: budfall 3.2s linear infinite; opacity: 1 }
+@keyframes budfall { from { transform: translateY(-40px) rotate(0) } to { transform: translateY(820px) rotate(540deg) } }
+.jplan > :not(.bud-conf) { position: relative; z-index: 1 }
+.bud-stack { display: grid; gap: 8px; padding: 14px; border-radius: 20px; background: rgba(255,255,255,.07); box-shadow: inset 0 0 0 2px rgba(140,180,255,.2) }
+.bud-stack > div { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; align-items: center; gap: 10px; font: 650 14.5px/1.25 var(--f-sfd); color: #fff }
+.bud-stack > div i { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: #58cc6a; color: #06260d; font: 900 12px/1 var(--f-sfd); font-style: normal }
+.bud-stack s { color: rgba(255,255,255,.55); font: 700 14px/1 var(--f-sfd) } .bud-stack em { font-style: normal; font: 700 12.5px/1 var(--f-sfd); color: #9be15d; text-align: right }
+.bud-stack .bud-tot { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 2px 0; border-top: 1px solid rgba(255,255,255,.1); margin-top: 4px; color: rgba(255,255,255,.75); font-weight: 600 }
+.bud-stack .bud-tot s { font: 800 20px/1 var(--f-sfd) }
+.bud-stack .bud-you { display: flex; justify-content: space-between; align-items: baseline; padding: 0 2px }
+.bud-stack .bud-you span { font: 700 17px/1.2 var(--f-sfd) } .bud-stack .bud-you b { font: 900 54px/.9 var(--f-sfd); letter-spacing: -.06em; color: #fff }
+.bud-stack .bud-you b span { font: inherit; letter-spacing: inherit }
+.bud-stack .bud-you b small { font: 700 16px/1 var(--f-sfd); letter-spacing: 0; color: rgba(255,255,255,.75) }
+.bud-chip { display: flex; align-items: center; gap: 10px; margin: 0; padding: 11px 14px; border-radius: 14px; font: 650 14px/1.3 var(--f-sf) }
+.bud-chip.hot { background: rgba(255,174,85,.16); box-shadow: inset 0 0 0 2px rgba(255,174,85,.45); color: #ffd8a8 }
+.bud-chip.safe { background: rgba(88,204,106,.14); box-shadow: inset 0 0 0 2px rgba(88,204,106,.4); color: #c8f7cf }
+.bud-chip b { font-variant-numeric: tabular-nums }
+.bud-now { display: grid; gap: 9px; padding: 14px 16px; border-radius: 18px; background: rgba(255,255,255,.07); box-shadow: inset 0 0 0 2px rgba(140,180,255,.2) }
+.bud-now .k { font: 800 12px/1 var(--f-sfd); letter-spacing: .1em; text-transform: uppercase; color: #9be15d }
+.bud-now > div { display: grid; grid-template-columns: 22px 1fr; align-items: center; gap: 10px; font: 650 15px/1.25 var(--f-sfd) }
+.bud-now > div i { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: #58cc6a; color: #06260d; font: 900 12px/1 var(--f-sfd); font-style: normal }
+@media (prefers-reduced-motion: reduce) { .bud-say img, .bud-big, .jc.cur .bud-conf i { animation: none } .bud-conf { display: none } }

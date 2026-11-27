@@ -60,22 +60,22 @@ export const ASK = [
     { k: 'own', t: 'My own idea', img: 'miami' },
   ] },
   { k: 'use', t: 'What will you use it for?', kw: 'use it', o: [
-    { k: 'clients', t: 'To win clients' },
-    { k: 'projects', t: 'To sell my own projects' },
-    { k: 'service', t: 'To start a 3D service' },
-    { k: 'learn', t: 'Just to learn' },
+    { k: 'clients', t: 'To win clients', e: '🤝' },
+    { k: 'projects', t: 'To sell my own projects', e: '🏗️' },
+    { k: 'service', t: 'To start a 3D service', e: '🚀' },
+    { k: 'learn', t: 'Just to learn', e: '🎓' },
   ] },
   { k: 'now', t: 'Where are you with 3D today?', kw: '3D', o: [
-    { k: 'new', t: 'Never tried it' },
-    { k: 'images', t: 'I make images, not 3D' },
-    { k: 'sell', t: 'I already sell 3D' },
+    { k: 'new', t: 'Never tried it', e: '🌱' },
+    { k: 'images', t: 'I make images, not 3D', e: '🖼️' },
+    { k: 'sell', t: 'I already sell 3D', e: '💼' },
   ] },
-] as { k: string; t: string; kw: string; o: { k: string; t: string; img?: string }[] }[];
+] as { k: string; t: string; kw: string; o: { k: string; t: string; img?: string; e?: string }[] }[];
 
 export const VALUE: [string, string][] = [
   ['Step-by-step video courses', 'new, only inside'],
   ['Six builds from our reels with files, prompts and Claude skills', '€85+ on our site'],
-  ['Every Full guide', '€53+ on our site'],
+  ['All the full guides', '€53+ on our site'],
   ['House Builder skill, yours to keep', '€14.99'],
   ['A new build every Friday', ''],
   ['My comments on your builds every Monday', ''],

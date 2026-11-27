@@ -54,10 +54,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
 <div class="sheetwrap" data-sheet hidden><div class="scrim" data-sheetx></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="t3m-sh"><div class="grab" aria-hidden="true"></div><button type="button" class="sx ctr" data-sheetx aria-label="Close"></button><div class="sbody" data-sheetbody></div></div></div>
 <div class="toast" role="status" aria-live="polite" data-toast></div>
 <div class="mwrap" data-mwrap hidden><div class="mscrim m1s" data-mclose></div><nav class="mmenu m1" data-mpanel aria-label="Menu"></nav></div>
-<footer class="mfooter">
-  <nav aria-label="Club links"><a href="/the-3d-future/terms">Club terms</a><a class="w" href="/withdraw">Withdraw from contract here</a><a href="/privacy-policy">Privacy</a><a href="mailto:info@omnyalab.com">info@omnyalab.com</a></nav>
-  <span>Omnya Lab · Venice, Italy · VAT IT05578770264</span>
-</footer>
+{/* 27/11 (Nico): no footer in the member area; Club terms, Withdraw and Privacy are in the menu */}
 
 <style is:global>
   /* the course cards (B3) read these */
@@ -151,6 +148,14 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .uav.ph,.mav.ph{background-size:cover;background-position:center;color:transparent}
   .pbio{margin:6px 0 0;font-size:15px;color:#dbe6f7;max-width:40ch}
   .pig{display:inline-flex;align-items:center;min-height:44px;color:#8fc3ff;font-weight:600;text-decoration:none}
+  .A .pact .pedit{grid-column:1 / -1;grid-row:2;justify-content:center;width:100%}
+  .kitbtn{display:inline-flex;align-items:center;gap:12px;justify-self:start;width:max-content;max-width:100%;min-height:56px;padding:8px 20px 8px 14px;border-radius:18px;background:#58cc6a;color:#06260d;text-decoration:none;box-shadow:0 5px 0 #3a9e49;margin-top:6px}
+  .kitbtn .ic{width:24px;height:24px;flex:none}
+  .kitbtn b{display:block;font:800 16px/1.1 Geist,sans-serif}
+  .kitbtn small{display:block;font:600 12.5px/1.2 Geist,sans-serif;opacity:.8}
+  .kitbtn:active{transform:translateY(4px);box-shadow:0 1px 0 #3a9e49}
+  .pform .pphotoed{font:700 44px/1 Geist,sans-serif;color:#fff}
+  .A .pact .btn{white-space:nowrap;min-width:0}
   .pedit{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:#fff;font:600 15px Geist,sans-serif;cursor:pointer}
   .pform{display:grid;gap:14px}
   .pform label{display:grid;gap:6px;font:600 13px Geist,sans-serif;color:var(--mute2)}
@@ -166,7 +171,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .mhd { display: none }
   @media (max-width: 899px) {
     .mhd { display: flex; position: fixed; z-index: 44; left: 0; right: 0; top: 0; height: calc(env(safe-area-inset-top, 0px) + 64px); padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); align-items: center; pointer-events: none;
-      background: linear-gradient(180deg, rgba(11,21,52,.94) 0%, rgba(11,21,52,.86) 70%, rgba(11,21,52,0) 100%); -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%) }
+      background: #0b1534; box-shadow: 0 1px 0 rgba(255,255,255,.08), 0 10px 24px rgba(5,9,21,.35) }
     .mhd a { pointer-events: auto; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: #fff; text-decoration: none; font: 700 15px/1 var(--f-sfd); letter-spacing: .02em }
     .mhd a img { width: 28px; height: 28px; filter: drop-shadow(0 3px 10px rgba(40,110,255,.45)) }
     .mhd a b { background: linear-gradient(180deg, #f2f9ff 0%, #a6d4ff 36%, #3f8cff 70%, #2457e0 100%); -webkit-background-clip: text; background-clip: text; color: transparent }
@@ -175,6 +180,9 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
     .A .mtop { padding-top: 16px }
     .mmenu.m1 { top: calc(env(safe-area-inset-top, 0px) + 64px) !important }
   }
+  /* 27/11 (Nico on the iPhone: the bottom corners of the course card had no edge): the photo, a little bigger than the
+     card, covered the 1px border at the bottom; the edge is drawn again on top of everything, all the way round */
+  .A .chero::before { content: ""; position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(190,220,255,.32) }
   /* iPhone Safari does not clip a scaled photo to rounded corners (WebKit): the mask makes the corners round again */
   .A .chero, .A .inc, .A .vcard, .A .giftc, .crow .cth, .cplay { -webkit-mask-image: -webkit-radial-gradient(white, black); isolation: isolate }
   /* the home-screen card (iPhone: an arrow to Share; Android: Install) */
@@ -591,7 +599,8 @@ const P = {
   }
   function metaHTML(l) {
     const nx = LS[l.n], canNext = nx && isOpenS(nx.n) && isDone(l.n)
-    return `<span class="cno">Step ${nn(l.n)} of ${LS.length}${l.len ? ' · ' + esc(l.len) : ''}${isDone(l.n) ? `<span class="okc">${ic('check')}Watched</span>` : ''}</span><h3>${ttlA(l)}</h3><p>${esc(l.s || l.p)}</p>${l.aff ? AFF : ''}${canNext ? `<button type="button" class="btn cta cnext" data-nextstep="${nx.n}">${ic('play')}<span>Next: step ${nn(nx.n)}</span></button>` : ''}`
+    const kitB = l.n === 2 && CTX.d && CTX.d.kit ? `<a class="kitbtn" href="${esc(CTX.d.kit.href)}" download>${ic('down')}<span><b>Download the kit</b><small>${esc(CTX.d.kit.size)}</small></span></a>` : ''
+    return `<span class="cno">Step ${nn(l.n)} of ${LS.length}${l.len ? ' · ' + esc(l.len) : ''}${isDone(l.n) ? `<span class="okc">${ic('check')}Watched</span>` : ''}</span><h3>${ttlA(l)}</h3><p>${esc(l.s || l.p)}</p>${kitB}${l.aff ? AFF : ''}${canNext ? `<button type="button" class="btn cta cnext" data-nextstep="${nx.n}">${ic('play')}<span>Next: step ${nn(nx.n)}</span></button>` : ''}`
   }
   const progHTML = () => `<span>${PROG.d.length ? `${PROG.d.length} of ${LS.length} steps watched` : `${LS.length} steps · start with step 01`}</span><span class="bar"><i style="width:${(PROG.d.length / Math.max(1, LS.length) * 100).toFixed(1)}%"></i></span>`
   function course(ls) {
@@ -818,7 +827,7 @@ const P = {
       ${gift}
       <div class="mgrp"><span class="mgt">The club</span>${row('compose', ic('plus'), 'Post your build')}${row('guides', ic('doc'), 'All the full guides', open ? `${(d.guides || []).length} guides` : 'Opens Saturday, 9:00')}${row('skills', ic('code'), 'Your skills', open ? 'Tower Builder and House Builder' : 'Opens Saturday, 9:00')}</div>
       <div class="mgrp"><span class="mgt">For you</span>${row('remind', ic('cal'), "Friday's new course", 'Remind me')}${row('link', ic('copy'), 'Your link to the club')}${row('phone', ic('phone'), 'Add the club to your phone')}${row('write', ic('mail'), 'Write to Nico')}</div>
-      <div class="mgrp"><span class="mgt">Membership</span>${d.portal ? row('', ic('door'), 'Cancel your membership', 'On Stripe: your email, then a code', '', d.portal) : ''}${row('', ic('undo'), 'Withdraw within 14 days', '', 'quiet', '/withdraw')}${row('', ic('doc'), 'Club terms', '', 'quiet', '/the-3d-future/terms')}</div>`
+      <div class="mgrp"><span class="mgt">Membership</span>${d.portal ? row('', ic('door'), 'Cancel your membership', 'On Stripe: your email, then a code', '', d.portal) : ''}${row('', ic('undo'), 'Withdraw within 14 days', '', 'quiet', '/withdraw')}${row('', ic('doc'), 'Club terms', '', 'quiet', '/the-3d-future/terms')}${row('', ic('doc'), 'Privacy', '', 'quiet', '/privacy-policy')}</div>`
   }
   function openMenu() {
     const w = $('[data-mwrap]'), pn = $('[data-mpanel]'); if (!w) return
@@ -979,6 +988,7 @@ const P = {
         <div class="chead"><span class="eyebrow">Your first course</span><h2>SAMAR, <span class="g">floor by floor</span></h2>
           <p>Eleven steps, from an empty folder to a tower online where buyers choose their floor, built the real way we build them for our clients.</p>
           <div class="cprog" data-cprog></div>
+          ${open && d.kit ? `<a class="kitbtn" href="${esc(d.kit.href)}" download>${ic('down')}<span><b>Download the kit</b><small>${esc(d.kit.size)} · the course is built on it</small></span></a>` : ''}
           <div class="cd" data-cd><div class="num"><span><b data-u="d">0</b><small>days</small></span><span><b data-u="h">00</b><small>hours</small></span><span><b data-u="m">00</b><small>min</small></span><span><b data-u="s">00</b><small>sec</small></span></div><span class="when">Every step opens on Saturday 28 November at 9:00 (Rome)</span></div></div>
         <div class="cA" data-lessons></div>
         </section>`
@@ -1011,7 +1021,7 @@ const P = {
       <div class="mgrid">
         ${founder ? `<div class="cherow span full" id="gift">${giftCard()}</div>` : ''}
         <div class="glass w span full wf" id="guides"><span class="k">${ic('doc')}All the full guides<span class="r">${(d.guides || []).length} guides</span></span><div class="files">${(d.guides || []).map(fl).join('')}</div></div>
-        <div class="glass w span full wf" id="skills"><span class="k">${ic('code')}Your skills<span class="r">yours to keep</span></span><div class="files">${d.skill ? fl(d.skill) : ''}${d.house ? fl(d.house) : ''}</div></div>
+        <div class="glass w span full wf" id="skills"><span class="k">${ic('code')}Your skills<span class="r">yours to keep</span></span><div class="files">${d.kit ? `<a class="fl" href="${esc(d.kit.href)}" download><b>ZIP</b><span>${esc(d.kit.name)}</span>${ic('down')}</a>` : ''}${d.skill ? fl(d.skill) : ''}${d.house ? fl(d.house) : ''}</div></div>
       </div>` : `<div class="mgrid">${founder ? `<div class="cherow span full" id="gift">${giftCard()}</div>` : ''}<div class="glass w span full"><span class="k">${ic('lock')}Opens Saturday 28 November</span><p class="lede2">Your seat is reserved. The Vault, every Full guide and your skills open here on Saturday 28 November at 9:00 (Rome), when your first month starts.</p></div></div>`}
     </div>`
     const chal = `<div data-v="feed"><div class="mtop"><div><h1>Feed</h1><p class="msub">Every build of the club. I look at every post.</p></div></div><div data-feed><p class="msub" style="padding:24px">Loading the feed…</p></div></div>`

@@ -3,7 +3,7 @@
 // panel; step 3 is the Apple Invites card. The same panel holds the checkout from Saturday 28/11 (name and email, then
 // the Stripe fields of api/club.js inside our page). Driven by club-client.js; both open as full-screen dialogs.
 import Icon from './Icon.astro';
-import { WANTS, ASK, kw, vImg } from './data';
+import { WANTS, ASK, VALUE, kw, vImg } from './data';
 ---
 {/* ---------- pre-registration ---------- */}
 <div class="ov" data-ov="list" data-step="1" role="dialog" aria-modal="true" aria-labelledby="t3f-l1" hidden>
@@ -61,7 +61,10 @@ import { WANTS, ASK, kw, vImg } from './data';
      01-03 one question each (a tap answers and moves on), 04 the card: name and email, «Join», then the Stripe fields of
      api/club.js inside the same card with €0 today. Behind each card its own blurred build: Burj Al Ballur at night,
      the DG tower at sunset, the stadium, the Ballur pool. ?demo=1 shows the card step with a stand-in of the Stripe fields. ---------- */}
-<div class="ov jov" data-ov="pay" data-step="1" data-stage="ask" role="dialog" aria-modal="true" aria-labelledby="t3f-c1" hidden>
+{/* 27/11 (Nico, board «Buddy», B): seven cards with the club's 3D knot talking. 1 the hook, 2-4 the three questions, 5 your plan
+     (written from the answers), 6 the offer (the real values of the site, the founders' price and when it ends, the guarantee:
+     the only card with the price), 7 name and email, «Join», then the Stripe fields as before (no price repeated). */}
+<div class="ov jov bud" data-ov="pay" data-step="1" data-stage="ask" role="dialog" aria-modal="true" aria-labelledby="t3f-c1" hidden>
   <div class="jbgs" aria-hidden="true">
     {[1, 2, 3, 4].map((n) => <img src={`/club/join-${n}.webp`} alt="" decoding="async" class:list={{ on: n === 1 }} data-bg={n} />)}
     <span class="jtint"></span><span class="grain"></span>
@@ -69,45 +72,76 @@ import { WANTS, ASK, kw, vImg } from './data';
   <div class="jwrap">
     <div class="jtop">
       <button type="button" class="rb ctr" data-jback aria-label="Back"><Icon name="back" /></button>
-      <div class="jprog" role="progressbar" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" aria-label="Card 1 of 4" data-jprog><i></i><i></i><i></i><i></i></div>
+      <div class="jprog jbar" role="progressbar" aria-valuemin="1" aria-valuemax="7" aria-valuenow="1" aria-label="Card 1 of 7" data-jprog><i data-jbar></i></div>
       <button type="button" class="rb ctr" data-close aria-label="Close"><Icon name="x" /></button>
     </div>
     <div class="jdeck">
+      <section class="jc cur jhook" data-c="1" aria-labelledby="t3f-c1">
+        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><p>Hi! I'm the club's knot. Let's build your first 3D that sells.</p></div>
+        <img class="bud-big" src="/club/knot-360.webp" alt="" width="220" height="220">
+        <h2 id="t3f-c1" tabindex="-1" class="jq">Build the 3D that <em class="kw">sells</em>.</h2>
+        <p class="bud-sub">Three questions, one minute, and you know exactly what you'll build first.</p>
+        <button type="button" class="bud-go" data-jnext>Let's go</button>
+      </section>
       {ASK.map((a, i) => (
-        <section class:list={['jc', { cur: i === 0 }]} data-c={i + 1} data-ask={a.k} aria-labelledby={`t3f-c${i + 1}`}>
-          <span class="jn">{`0${i + 1}`}</span>
-          <h2 id={`t3f-c${i + 1}`} tabindex="-1" class="jq" set:html={kw(a.t, a.kw)} />
+        <section class="jc" data-c={i + 2} data-ask={a.k} aria-labelledby={`t3f-c${i + 2}`}>
+          <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id={`t3f-c${i + 2}`} tabindex="-1" class="jq" set:html={kw(a.t, a.kw)} /></div>
           <div class:list={['jopts', { tiles: a.k === 'build' }]} role="radiogroup" aria-labelledby={`t3f-c${i + 1}`}>
             {a.o.map((o) => (
               <button type="button" class="jo" role="radio" aria-checked="false" data-pick={o.k}>
                 {o.img && <img src={a.k === 'build' ? `/club/jt-${o.k}.webp` : vImg(o.img)} alt="" loading="lazy" decoding="async" />}
-                <span>{o.t}</span><Icon name="check" class="jok" />
+                {a.k !== 'build' && o.e && <span class="bud-e" aria-hidden="true">{o.e}</span>}<span>{o.t}</span><Icon name="check" class="jok" />
               </button>
             ))}
           </div>
         </section>
       ))}
-      <section class="jc jcard" data-c="4" aria-labelledby="t3f-c4">
-        <span class="jn">04</span>
-        <h2 id="t3f-c4" tabindex="-1" class="j0"><span data-when="before"><b>€0</b> <em class="kw">today</em></span><span data-when="early open after"><b data-payeur>€9</b> <em class="kw">a month</em></span></h2>
-        <p class="jthen" data-when="before">then <b>€9/month</b> from <span class="nw">Saturday 28 November</span></p>
-        <p class="jthen" data-when="early open after">Cancel in one tap, whenever you want</p>
-        <span class="cvl"></span>
+      <section class="jc jplan" data-c="5" aria-labelledby="t3f-c5">
+        <div class="bud-conf" aria-hidden="true">{Array.from({ length: 18 }, (_, k) => <i style={`left:${(k * 37) % 100}%;top:${-((k * 13) % 60)}%;background:${['#58cc6a', '#ffc800', '#5aa8ff', '#ff5f8f'][k % 4]};animation-delay:${(k % 6) * 0.35}s`}></i>)}</div>
+        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c5" tabindex="-1" class="jq">Here is your plan! 🎉</h2></div>
+        <div class="bud-rows">
+          <div><span aria-hidden="true">🏙️</span><b data-plan="build"></b></div>
+          <div><span aria-hidden="true">🎯</span><b data-plan="use"></b></div>
+          <div><span aria-hidden="true">📈</span><b data-plan="now"></b></div>
+          <div><span aria-hidden="true">📅</span><b>A new build every Friday, my comments on your builds every Monday</b></div>
+        </div>
+        <button type="button" class="bud-go" data-jnext>What do I get?</button>
+      </section>
+      <section class="jc joffer" data-c="6" aria-labelledby="t3f-c6">
+        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c6" tabindex="-1" class="jq">Everything you get 👇</h2></div>
+        <div class="bud-stack">
+          {VALUE.map(([t, v]) => <div><i aria-hidden="true">✓</i><span>{t}</span>{/€/.test(v) ? <s>{v.replace(' on our site', '')}</s> : <em>{v || 'weekly'}</em>}</div>)}
+          <div class="bud-tot"><span>On our site</span><s>€150+</s></div>
+          <div class="bud-you"><span data-when="before">You pay today</span><span data-when="early open after">You pay</span><b data-when="before">€0</b><b data-when="early open after"><span data-payeur>€9</span><small>/month</small></b></div>
+        </div>
+        <p class="bud-chip hot" data-when="before">🎁 <span>The first 100 who reserve get the <b>founders' gift</b>. Then <b>€9/month</b> from Saturday 28 November.</span></p>
+        <p class="bud-chip hot" data-when="early open" data-fbox>⏳ <span>Founders' price ends in <b data-fleft>…</b> · then €19</span></p>
+        <p class="bud-chip safe">🛡️ <span data-when="before">Cancel before Saturday and you pay nothing · 14 days to withdraw</span><span data-when="early open after">Cancel whenever you want · 14 days to withdraw</span></p>
+        <button type="button" class="bud-go" data-jnext><span data-when="before">Reserve my seat</span><span data-when="early open after">Lock <span data-payeur>€9</span>/month</span></button>
+      </section>
+      <section class="jc jcard" data-c="7" aria-labelledby="t3f-c7">
+        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c7" tabindex="-1" class="jq"><span data-when="before">Last step! Your seat, nothing charged today 🔑</span><span data-when="early open after">Last step! In a minute you're inside 🔑</span></h2></div>
+        <div class="bud-now">
+          <span class="k" data-when="before">On Saturday at 9:00 (Rome)</span><span class="k" data-when="early open after">Right after you join</span>
+          <div><i aria-hidden="true">✓</i><span>Your own link to the club, by email</span></div>
+          <div><i aria-hidden="true">✓</i><span>The SAMAR course: step 01 opens</span></div>
+          <div><i aria-hidden="true">✓</i><span>The Vault: 6 builds and 9 full guides</span></div>
+          <div><i aria-hidden="true">✓</i><span>Your House Builder skill, yours to keep</span></div>
+        </div>
         <p class="paid" data-paid hidden><Icon name="check" /><span>Guide found · €9 a month for you, after Friday 4 December too</span></p>
         <form class="jform" data-payform novalidate>
           <div class="field"><label for="t3f-pn">Name</label><input id="t3f-pn" name="name" required autocomplete="name" maxlength="60" placeholder="Your name"></div>
           <div class="field"><label for="t3f-pe">Email</label><input id="t3f-pe" name="email" type="email" required autocomplete="email" inputmode="email" maxlength="120" placeholder="you@studio.com"></div>
           <label class="hp" aria-hidden="true">Company<input name="company" tabindex="-1" autocomplete="off"></label>
-          <button class="btn cta wide jgo" type="submit" data-go>Join</button>
+          <button class="btn cta wide jgo bud-go" type="submit" data-go>Join the club</button>
         </form>
         <div class="jpay" data-paystage hidden>
           <p class="jme"><span data-me></span><button type="button" data-jedit>Change</button></p>
           <div class="paybox" data-paybox></div>
-          <button type="button" class="btn cta wide jgo" data-pay><span data-when="before">Reserve my seat · €0 today</span><span data-when="early open after">Pay <span data-payeur2>€9</span> a month</span></button>
+          <button type="button" class="btn cta wide jgo bud-go" data-pay><span data-when="before">Reserve my seat · €0 today</span><span data-when="early open after">Pay <span data-payeur2>€9</span> a month</span></button>
         </div>
         <p class="pnote" data-early hidden>Doors open for everyone at 18:00</p>
         <p class="perr" data-perr role="alert"></p>
-        <p class="jgift" data-when="before"><Icon name="gift" /><span>The first 100 who reserve get the <b>founders' gift</b></span></p>
         <p class="jsafe" data-when="before">Cancel before Saturday and you pay nothing.</p>
         <p class="small"><Icon name="lock" /><span>Secure payment by Stripe · <a href="/the-3d-future/terms" target="_blank" rel="noopener">Terms</a></span></p>
       </section>

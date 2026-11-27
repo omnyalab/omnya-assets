@@ -169,6 +169,8 @@ export const insideUrl = (email) => `${SITE_URL}/the-3d-future/inside?m=${member
     corso-step/v3/hls.sh) in a folder with a random name, given only to members; src = its master playlist, '' = not online yet */
 const COURSE_V = '/club/course/v/c9fbc31edcc1ce9e/';
 const hls = (n) => `${COURSE_V}${String(n).padStart(2, '0')}/master.m3u8`;
+/** 27/11: the Choose Your Floor kit the SAMAR course is built on (step 2 opens it), 66 MB, members only (middleware.js) */
+export const KIT = { name: 'The Choose Your Floor kit', href: `${COURSE_V}kit-choose-your-floor.zip`, size: '66 MB', note: 'everything the SAMAR course uses: the engine, the prompts, SAMAR as a finished example. Unzip it and double click Start (step 2 shows how).' };
 export const LESSONS = [
   { n: 1, t: "What you'll build", p: "The tower we're building together, why developers pay over $6,000 for a page like this, and everything you need before you start.", k: "build", s: "The tower we build together, and why developers pay for it.", img: '/club/course/step-01.webp', src: hls(1), poster: '/club/course/poster-01.webp', thumb: '/club/course/thumb-01.webp', len: '2:38' },
   { n: 2, t: 'Set up your kit', p: "What's inside the kit, how to open it on Mac or Windows with one double click, and your first test run.", k: "kit", s: "What's in the kit, and your first run with one double click.", img: '/club/course/step-02.webp', src: hls(2), poster: '/club/course/poster-02.webp', thumb: '/club/course/thumb-02.webp', len: '4:31', aff: true },
@@ -214,6 +216,7 @@ function openData(base, gift) {
   return {
     ...base, state: 'open',
     lessons: LESSONS,
+    kit: KIT,
     skill: fileLink(CLUB_COURSE_SKILL, DAY),
     house: fileLink({ name: 'The House Builder skill', file: HOUSE_SKILL_FILE, kind: 'zip' }, DAY),
     vault: CLUB_VAULT.map((b) => ({ t: b.t, type: b.type, img: b.img, files: b.files.map((f) => fileLink(f, DAY)) })),
