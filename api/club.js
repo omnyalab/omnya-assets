@@ -24,6 +24,7 @@ import { sendMail } from './_lib/mail.js';
 import { host } from './_lib/config.js';
 import { signedHref, PAGE_TTL, HOUSE_SKILL_FILE } from './_lib/learn-files.js';
 import {
+  hlsCookie,
   CLUB, ROUND, CHEAP_SEATS, EARLY, phaseAt, decide, priceId, seats, EMAIL, cleanEmail, cleanReceipt, firstName, signToken, readToken,
   limited, ipOf, receiptEmail, isBuyerEmail, isWaitlisted, fillWaitlist, backfill, lists, KEYS, PORTAL_URL,
   readMember, insideData, insideUrl, PREVIEW_EMAIL, noteBuild, sendInsideLink,
@@ -211,7 +212,11 @@ async function checkout(req) {
 async function inside(req) {
   const email = readMember(new URL(req.url).searchParams.get('m'));
   if (!email) return fail(403, 'bad_link', 'This link is not right. Write your email and we send you yours.');
-  try { return json(await insideData(email)); } catch (e) { console.error('[club] inside', e.message); return fail(502, 'store', 'Could not open the club right now, try again in a minute.'); }
+  try {
+    const d = await insideData(email), r = json(d);
+    if (d.state === 'open') { const c = hlsCookie(); if (c) r.headers.append('Set-Cookie', c); }   // the key to the course films
+    return r;
+  } catch (e) { console.error('[club] inside', e.message); return fail(502, 'store', 'Could not open the club right now, try again in a minute.'); }
 }
 async function lostLink(req) {
   if (await limited(req, 'link', 5, 600)) return tooMany();

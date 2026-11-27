@@ -113,6 +113,14 @@ const tokenKey = () => {
   return base ? createHmac('sha256', base).update('omnya-club-token').digest('hex') : '';
 };
 const mac = (key, s) => createHmac('sha256', key).update(s).digest('base64url').slice(0, 22);
+/** 27/11 (critic: the course streams were public): the course films are served only with this cookie, given by
+    /api/club/inside to a member whose club is open; middleware.js checks it in front of /club/course/v/. exp.sig, 8 days. */
+export const HLS_COOKIE = 't3f_v';
+export function hlsCookie(now = Date.now()) {
+  const key = tokenKey(); if (!key) return '';
+  const exp = Math.floor(now / 1000) + 8 * 86400;
+  return `${HLS_COOKIE}=${exp}.${mac(key, `hls|${exp}`)}; Path=/club/course/v/; Max-Age=${8 * 86400}; HttpOnly; Secure; SameSite=Lax`;
+}
 /** proof = 'r:<receipt>' or 'e:<email>'. '' when there is no key to sign with. */
 export function signToken(proof, ttl = DAY) {
   const key = tokenKey();

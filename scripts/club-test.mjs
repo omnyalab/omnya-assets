@@ -147,5 +147,11 @@ try {
   await clubCharged(null, { status: 'succeeded', currency: 'eur', amount: 4700, customer: 'cus_odd', invoice: 'in_3' });   // euro but not €9 / €90
   eq([await welcomed('eur@test.club'), await welcomed('usd@test.club'), await welcomed('odd@test.club')], [true, true, false], 'W1: €9 and the dollar invoice welcome, odd charges do not'); }
 
+// 27/11: the course films only with the cookie the member page gives (middleware.js checks what api/_lib/club.js signs)
+{ process.env.STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || 'whsec_test_only';
+  const { hlsCookie } = await import('../api/_lib/club.js'); const { allowed } = await import('../middleware.js');
+  const c = hlsCookie().split(';')[0], bad = c.slice(0, -2) + (c.endsWith('AA') ? 'BB' : 'AA');
+  eq([await allowed(c), await allowed('x=1; ' + c + '; y=2'), await allowed(bad), await allowed(''), await allowed(c, Date.now() + 9 * 86400e3)], [true, true, false, false, false], 'films: the member cookie opens them, a changed, missing or old one does not'); }
+
 console.log(fail ? `\n${fail} of ${n} checks FAILED` : `\nall ${n} checks passed`);
 process.exit(fail ? 1 : 0);
