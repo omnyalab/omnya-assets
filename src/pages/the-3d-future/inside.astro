@@ -1108,7 +1108,12 @@ const P = {
     const start = (location.hash || '').slice(1); show(SCREENS.includes(start) ? start : 'home', false)
     addEventListener('popstate', () => { const h = (location.hash || '').slice(1); closeMenu(); if (!sheet.hidden) closeSheet(); show(SCREENS.includes(h) ? h : 'home', false) })
     // the file links last one day: a page kept open (the app on the Home Screen) gets fresh ones when it comes back after hours
-    let away = 0; document.addEventListener('visibilitychange', () => { if (document.hidden) away = Date.now(); else if (away && Date.now() - away > 6 * 36e5) location.reload() })
+    let away = 0; document.addEventListener('visibilitychange', () => { if (document.hidden) away = Date.now(); else if (away && Date.now() - away > 6 * 36e5) location.reload(); else if (away) fresh() })
+    // 27/11 (Nico saw an old version in the Home Screen app): when the page comes back, a new version of the site reloads it
+    const vOf = () => fetch(location.pathname + '?v=' + Date.now(), { method: 'HEAD', cache: 'no-store' }).then(r => r.headers.get('etag') || '').catch(() => '')
+    let V0 = ''; vOf().then(v => { V0 = v })
+    function fresh() { vOf().then(v => { if (V0 && v && v !== V0) location.reload() }) }
+    setInterval(() => { if (!document.hidden) fresh() }, 10 * 60e3)
   }
   let DATA = null
   const sheet = $('[data-sheet]')
