@@ -48,15 +48,48 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
 <div class="app A" data-screen="home" data-app>
   <div class="mbg" aria-hidden="true"><img src="/club/burj-1080.webp" alt="" data-mbg></div>
   <div class="member" data-root>
-    <div class="mtop"><div><h1 data-state-h>Opening the club…</h1></div></div>
+    <div class="mtop"><div><h1 data-state-h class="sr">Opening the club…</h1></div></div>
   </div>
 </div>
+{/* 28/11 (Nico, board «Le card del club»: A1, «the 3d future un po più basso … con la stessa scritta del logo»): while the club opens */}
+<div class="opn" data-opn aria-hidden="true"><div class="opn-c"><svg class="opn-r" viewBox="0 0 240 240"><defs><linearGradient id="opg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bfe0ff"/><stop offset=".5" stop-color="#5aa8ff"/><stop offset="1" stop-color="#1d5bd6"/></linearGradient></defs><circle cx="120" cy="120" r="112"/></svg><img class="opn-k" src="/club/knot-360.webp" alt="" width="128" height="128" data-opnk></div><span class="opn-w">THE <b>3D</b> FUTURE</span></div>
 <div class="sheetwrap" data-sheet hidden><div class="scrim" data-sheetx></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="t3m-sh"><div class="grab" aria-hidden="true"></div><button type="button" class="sx ctr" data-sheetx aria-label="Close"></button><div class="sbody" data-sheetbody></div></div></div>
 <div class="toast" role="status" aria-live="polite" data-toast></div>
 <div class="mwrap" data-mwrap hidden><div class="mscrim m1s" data-mclose></div><nav class="mmenu m1" data-mpanel aria-label="Menu"></nav></div>
 {/* 27/11 (Nico): no footer in the member area; Club terms, Withdraw and Privacy are in the menu */}
 
 <style is:global>
+  /* 28/11 A1: the opening of the club, in the middle of the screen; the knot then flies to the logo in the bar */
+  .opn { position: fixed; inset: 0; z-index: 200; display: grid; place-content: center; justify-items: center; gap: 40px; padding-bottom: 6vh; transition: opacity .5s ease }
+  .opn::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(120% 70% at 50% 42%, rgba(20,50,120,.35), rgba(8,16,40,.92)), #0b1534; transition: opacity .5s ease .12s }
+  .opn-c { position: relative; width: 240px; height: 240px; display: grid; place-items: center }
+  .opn-r { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible }
+  .opn-r circle { fill: none; stroke: url(#opg); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 704; stroke-dashoffset: 704; filter: drop-shadow(0 0 8px rgba(90,168,255,.55));
+    animation: opn-draw 1.3s cubic-bezier(.6,0,.2,1) .2s forwards, opn-glow 2.4s ease-in-out 1.5s infinite }
+  .opn-k { position: relative; width: 128px; height: 128px; filter: drop-shadow(0 12px 32px rgba(60,130,255,.6)); animation: opn-in .9s cubic-bezier(.2,.8,.2,1) both, opn-bre 2.4s ease-in-out .9s infinite }
+  .opn-w { font: 700 22px/1 var(--f-sfd); letter-spacing: .02em; color: #fff; white-space: nowrap; animation: opn-w 1s ease .7s both }
+  .opn-w b { background: linear-gradient(180deg, #f2f9ff 0%, #a6d4ff 36%, #3f8cff 70%, #2457e0 100%); -webkit-background-clip: text; background-clip: text; color: transparent }
+  .opn.quick .opn-k { animation-duration: .35s, 2.4s; animation-delay: 0s, .35s } .opn.quick .opn-r circle { animation-duration: .5s, 2.4s; animation-delay: 0s, .5s } .opn.quick .opn-w { animation-duration: .35s; animation-delay: .1s }
+  .opn.out { pointer-events: none } .opn.out::before { opacity: 0 } .opn.gone { opacity: 0 }
+  .opn.out .opn-r, .opn.out .opn-w { opacity: 0; transition: opacity .25s ease }
+  @keyframes opn-draw { to { stroke-dashoffset: 0 } }
+  @keyframes opn-glow { 50% { opacity: .55 } }
+  @keyframes opn-in { from { opacity: 0; transform: scale(.5) rotate(-40deg); filter: blur(14px) } to { opacity: 1; transform: none } }
+  @keyframes opn-bre { 50% { transform: scale(1.05) } }
+  @keyframes opn-w { from { opacity: 0; letter-spacing: .4em; filter: blur(6px) } to { opacity: 1; letter-spacing: .02em; filter: none } }
+  @media (prefers-reduced-motion: reduce) { .opn-k, .opn-w, .opn-r circle { animation: none !important; stroke-dashoffset: 0 } }
+  /* 28/11: «Watch before you start the course» at the top of the steps; the certificate of the course */
+  .crow.intro .cth { position: relative } .crow.intro small { color: #8cc4ff } .crow.intro .ctx b { white-space: normal; overflow: visible; text-overflow: clip; display: block }
+  .A .certw { display: grid; gap: 14px }
+  .A .certimg { display: block; position: relative; border-radius: 14px; overflow: hidden; aspect-ratio: 1.414; background: #f3ead6; box-shadow: 0 18px 44px rgba(0,0,0,.45) }
+  .A .certimg img { display: block; width: 100%; height: 100%; object-fit: cover }
+  .A .certw.lockd .certimg img { filter: blur(5px) saturate(.8); transform: scale(1.04) }
+  .A .certw.lockd .certimg::after { content: ""; position: absolute; inset: 0; background: rgba(8,16,40,.35) }
+  .A .certw .lk2 { position: absolute; z-index: 2; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.2); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); color: #fff }
+  .A .certw .lk2 .ic { width: 24px; height: 24px }
+  .A .certb { display: flex; flex-wrap: wrap; gap: 10px }
+  .A .certb .btn { min-height: 48px; font-size: 16px } .A .certb .btn.li { background: #0a66c2; color: #fff }
+  .A .certw p { margin: 0 }
   /* the course cards (B3) read these */
   :root{--line:#ffffff1f;--mute2:#a9b8d0;--blue2:#5ab8ff}
   /* the course (L2): a header with a live countdown, then eleven cards, each with a glass lock until its video is online */
@@ -604,6 +637,22 @@ const P = {
   P.door = '<path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M3 21h18"/><circle cx="14.5" cy="12" r="1" fill="currentColor"/>'
   const fl = f => `<a class="fl" href="${esc(f.zip ? f.href : f.href + (/\?/.test(f.href) ? '&' : '?') + 'dl=1')}" download><b>${f.zip ? 'ZIP' : 'PDF'}</b><span>${esc(f.name)}</span>${ic('down')}</a>`
   const post = (u, b) => fetch(u, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json().catch(() => ({})).then(d => ({ ok: r.ok, d })))
+  /* 28/11 A1: the whole opening the first time of the day, a short one after; never longer than the club takes to load */
+  const OPN = $('[data-opn]'), T0 = Date.now(); let OPN_MIN = 1700
+  try { const t = new Date().toDateString(); if (localStorage.getItem('t3f-opn') === t) { OPN_MIN = 450; OPN && OPN.classList.add('quick') } else localStorage.setItem('t3f-opn', t) } catch (e) {}
+  function opnDone(fly) {
+    if (!OPN || OPN.dataset.done) return; OPN.dataset.done = '1'
+    setTimeout(() => {
+      const k = $('[data-opnk]', OPN), to = fly && $$('.mhd a img, .top .lockup img').find(e => e.getBoundingClientRect().width > 0)
+      if (to && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const a = k.getBoundingClientRect(), b = to.getBoundingClientRect(); to.style.opacity = '0'
+        const from = getComputedStyle(k).transform, end = `translate(${(b.left + b.width / 2 - a.left - a.width / 2).toFixed(1)}px, ${(b.top + b.height / 2 - a.top - a.height / 2).toFixed(1)}px) scale(${(b.width / a.width).toFixed(3)})`
+        k.style.animation = 'none'; OPN.classList.add('out')
+        k.animate([{ transform: from === 'none' ? 'none' : from }, { transform: end }], { duration: 720, easing: 'cubic-bezier(.6,0,.2,1)', fill: 'forwards' })
+        setTimeout(() => { to.style.opacity = ''; OPN.remove() }, 740)
+      } else { OPN.classList.add('out', 'gone'); setTimeout(() => OPN.remove(), 700) }
+    }, Math.max(0, OPN_MIN - (Date.now() - T0)))
+  }
   const toastEl = $('[data-toast]'); let tt; const toast = t => { toastEl.textContent = t; toastEl.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => toastEl.classList.remove('on'), 2600) }
   /* board A's ring (the badges earned) */
   function ring(p, size, sw, col, track = 'rgba(255,255,255,.14)', inner = '') {
@@ -633,12 +682,36 @@ const P = {
      stopped. hls.js loads nothing before play (QA: the old cards loaded all eleven films). Nico's preview has every step open. */
   let PROG = { d: [], t: {} }, ALL = false, LS = [], SEL = 1, HLS = null, lastSave = 0, finishing = 0
   const nn = n => String(n).padStart(2, '0')
+  /* 28/11 (Nico): «all'inizio del corso di samar mettere il mio video … "watch before you start the course"» */
+  const INTRO_SRC = () => innerWidth <= 700 ? '/club/intro-nico-v2-720.mp4' : '/club/intro-nico-v2.mp4'
+  const HELLO = () => { if (PROG.h) return true; try { return !!localStorage.getItem('t3f-hello') } catch (e) { return false } }
+  function markHello() {
+    if (HELLO()) return
+    PROG.h = new Date().toISOString(); try { localStorage.setItem('t3f-hello', String(Date.now())) } catch (e) {}
+    if (!ALL) post('/api/club/progress', { m, hello: true }).catch(() => {})
+    const l = $('[data-clist]'); if (l) l.innerHTML = rowsHTML(); if (SEL === 0 && $('[data-cmeta]')) $('[data-cmeta]').innerHTML = introMeta()
+  }
+  const introRow = () => `<button type="button" class="crow intro ${HELLO() ? 'done' : 'now'}${SEL === 0 ? ' sel' : ''}" data-step="0" aria-current="${SEL === 0}" aria-label="Watch before you start the course, a welcome from Nico${HELLO() ? ', watched' : ''}">
+        <span class="cth"><img src="/club/intro-nico-cover.webp" alt="" loading="lazy"></span>
+        <span class="ctx"><small>START HERE · 1:58</small><b>Watch before you start the course</b></span>
+        <span class="cst">${ic(HELLO() ? 'check' : 'play')}</span></button>`
+  const introMeta = () => `<span class="cno">Before you start · 1:58${HELLO() ? `<span class="okc">${ic('check')}Watched</span>` : ''}</span><h3>Watch before you <em>start</em> the course</h3><p>A welcome from Nico: two minutes before step 01.</p>${isOpenS(1) ? `<button type="button" class="btn cta cnext" data-nextstep="1">${ic('play')}<span>Start step 01</span></button>` : ''}`
+  function pickIntro(play, scroll) {
+    const v = $('[data-player]'); if (!v) return
+    SEL = 0; $('[data-cmeta]').innerHTML = introMeta()
+    $$('[data-clist] .crow').forEach(r => { const on = +r.dataset.step === 0; r.classList.toggle('sel', on); r.setAttribute('aria-current', String(on)) })
+    const so = $('[data-csoon]'); if (so) so.hidden = true
+    if (HLS) { HLS.destroy(); HLS = null }
+    v.pause(); v.removeAttribute('src'); v.load(); v.poster = '/club/intro-nico-cover.webp'; v.src = INTRO_SRC()
+    if (scroll && innerWidth <= 900) v.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    if (play) v.play().catch(() => {})
+  }
   const isDone = n => PROG.d.includes(n)
   const isOpenS = n => { const l = LS[n - 1]; return !!(l && l.src) && (ALL || n === 1 || isDone(n - 1)) }
   const curStep = () => { const l = LS.find(x => isOpenS(x.n) && !isDone(x.n)); return l ? l.n : (LS.length && LS.every(x => isDone(x.n)) ? LS.length : 1) }
   const ttlA = l => { const t = esc(l.t), k = esc(l.k || ''); return k && t.includes(k) ? t.replace(k, '<em>' + k + '</em>') : t }
   function rowsHTML() {
-    return LS.map(l => { const o = isOpenS(l.n), dn = isDone(l.n), st = dn ? 'done' : o ? 'now' : 'lock'
+    return introRow() + LS.map(l => { const o = isOpenS(l.n), dn = isDone(l.n), st = dn ? 'done' : o ? 'now' : 'lock'
       const why = !l.src ? (Date.now() < OPENS ? 'Opens Saturday, 9:00' : 'Coming soon') : `Finish step ${nn(l.n - 1)} to open it`
       return `<button type="button" class="crow ${st}${l.n === SEL ? ' sel' : ''}" data-step="${l.n}" aria-current="${l.n === SEL}" aria-label="Step ${nn(l.n)}, ${esc(l.t)}${dn ? ', watched' : o ? '' : ', locked'}">
         <span class="cth"><img src="${esc(l.thumb || l.img)}" alt="" loading="lazy"></span>
@@ -653,8 +726,8 @@ const P = {
   const progHTML = () => `<span>${PROG.d.length ? `${PROG.d.length} of ${LS.length} steps watched` : `${LS.length} steps · start with step 01`}</span><span class="bar"><i style="width:${(PROG.d.length / Math.max(1, LS.length) * 100).toFixed(1)}%"></i></span>`
   function course(ls) {
     LS = ls; const box = $('[data-lessons]'); if (!box) return
-    const live = ls.some(l => l.src); SEL = curStep()
-    box.innerHTML = `<div class="cnow"><div class="cplay"><video playsinline controls preload="none" data-player aria-label="The video of the step"></video>${live ? '' : `<span class="csoon">${ic('lock')}Opens on Saturday 28 November at 9:00 (Rome)</span>`}</div><div class="cmeta" data-cmeta></div></div>
+    const live = ls.some(l => l.src); SEL = !HELLO() && !PROG.d.length ? 0 : curStep()
+    box.innerHTML = `<div class="cnow"><div class="cplay"><video playsinline controls preload="none" data-player aria-label="The video of the step"></video>${live ? '' : `<span class="csoon" data-csoon>${ic('lock')}Opens on Saturday 28 November at 9:00 (Rome)</span>`}</div><div class="cmeta" data-cmeta></div></div>
       <div class="clist" data-clist>${rowsHTML()}</div>
       ${live ? `<div class="bask" data-bask><div class="bask-h"><img src="/club/knot-96.webp" alt="" width="52" height="52"><div><b>Ask Buddy</b><small>Anything about this step or the course</small></div></div>
         <div class="bask-log" data-blog aria-live="polite"><p class="bb">Hi! I know the SAMAR course by heart. Ask me anything 👇</p></div>
@@ -666,10 +739,11 @@ const P = {
       const nx = e.target.closest('[data-nextstep]'); if (nx) { pick(+nx.dataset.nextstep, true, true); return }
       const r = e.target.closest('[data-step]'); if (!r) return
       const n = +r.dataset.step
+      if (n === 0) { pickIntro(true, true); return }
       if (!isOpenS(n)) { toast(!LS[n - 1].src ? 'This step opens on Saturday 28 November at 9:00' : `Finish step ${nn(n - 1)} to open it`); return }
       pick(n, true, true)
     })
-    pick(SEL, false, false); track(); askInit()
+    if (SEL === 0) pickIntro(false, false); else pick(SEL, false, false); track(); askInit()
     const cd = $('[data-cd]'), before = Date.now() < OPENS, tick = () => { const s = Math.max(0, Math.floor((OPENS - Date.now()) / 1000)); if (!s) { cd.hidden = true; return }
       const u = { d: Math.floor(s / 86400), h: Math.floor(s % 86400 / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 }
       cd.querySelectorAll('[data-u]').forEach(b => { b.textContent = b.dataset.u === 'd' ? u.d : String(u[b.dataset.u]).padStart(2, '0') }) }
@@ -686,7 +760,7 @@ const P = {
       busy = true; f.querySelector('button').disabled = true; inp.value = ''
       const sug = $('[data-bsug]'); if (sug) sug.hidden = true
       add('bu', q); const wait = add('bb wait', '…')
-      post('/api/club/ask', { m, q, step: SEL, history: H.slice(-6) }).then(r => {
+      post('/api/club/ask', { m, q, step: SEL || 1, history: H.slice(-6) }).then(r => {
         wait.classList.remove('wait')
         if (r.ok && r.d.a) { wait.textContent = r.d.a; H.push({ role: 'user', text: q }, { role: 'assistant', text: r.d.a }) }
         else wait.textContent = (r.d && r.d.error) || "I can't answer right now, try again in a minute."
@@ -697,6 +771,8 @@ const P = {
     $('[data-bask]').addEventListener('click', e => { const b = e.target.closest('[data-bq]'); if (b) ask(b.textContent) })
   }
   function pick(n, play, scroll) {
+    if (n === 0) return pickIntro(play, scroll)
+    const so = $('[data-csoon]'); if (so) so.hidden = false
     const l = LS[n - 1], v = $('[data-player]'); if (!l || !v) return
     SEL = n; $('[data-cmeta]').innerHTML = metaHTML(l)
     $$('[data-clist] .crow').forEach(r => { const on = +r.dataset.step === n; r.classList.toggle('sel', on); r.setAttribute('aria-current', String(on)) })
@@ -719,11 +795,12 @@ const P = {
   function track() {
     const v = $('[data-player]'); if (!v) return
     v.addEventListener('timeupdate', () => {
+      if (SEL === 0) { if (v.duration && v.currentTime / v.duration >= 0.9) markHello(); return }
       const n = SEL, d = v.duration; if (!d || !isFinite(d) || !isOpenS(n) || isDone(n)) return
       if (v.currentTime / d >= 0.9) return finish(n)
       if (Date.now() - lastSave > 15000 && v.currentTime > 5) { lastSave = Date.now(); saveAt(n, Math.floor(v.currentTime)) }
     })
-    v.addEventListener('pause', () => { const n = SEL; if (!isDone(n) && v.currentTime > 5 && v.duration && v.currentTime / v.duration < 0.9) saveAt(n, Math.floor(v.currentTime)) })
+    v.addEventListener('pause', () => { const n = SEL; if (!n) return; if (!isDone(n) && v.currentTime > 5 && v.duration && v.currentTime / v.duration < 0.9) saveAt(n, Math.floor(v.currentTime)) })
   }
   function finish(n) {
     if (finishing === n || isDone(n)) return; finishing = n
@@ -737,7 +814,7 @@ const P = {
     const pg = $('[data-cprog]'); if (pg) pg.innerHTML = progHTML()
     if (nx) { const r = $(`[data-clist] [data-step="${nx.n}"]`); if (r) r.classList.add('fresh') }
     paintHero()
-    if (!nx || LS.every(x => isDone(x.n))) { toast('Course finished · the Tower badge is yours'); if (!ALL) setTimeout(() => location.reload(), 2600); return }
+    if (!nx || LS.every(x => isDone(x.n))) { toast('Course finished · your certificate is ready'); if (!ALL) setTimeout(() => location.reload(), 2600); return }
     toast(isOpenS(nx.n) ? `Step ${nn(nx.n)} unlocked` : 'Step finished')
   }
   /* every copy of a badge gets its own ids (the same badge is in Home and in Profile; shared ids lose their colours) */
@@ -949,6 +1026,19 @@ const P = {
   }
 
   /* the course card of Home: the step you are on, the steps you watched (27/11) */
+  /* 28/11 (Nico: C1, R1 + R4, «al termine del corso lo possono sempre scaricare»): the certificate, or what it will be */
+  function certHTML() {
+    const { d } = CTX, c = d.certs && d.certs[0]
+    if (d.state !== 'open') return ''
+    if (!c) return `<div class="glass w wide2 span certw lockd"><span class="k">${ic('lock')}Your certificate<span class="r">${PROG.d.length} of ${LS.length || 11} steps</span></span>
+        <div class="certimg"><img src="/club/cert-sample.webp" alt="" loading="lazy"><span class="lk2">${ic('lock')}</span></div>
+        <p class="msmall">Finish the ${LS.length || 11} steps of SAMAR and your certificate arrives here, with your name on it. Yours to download for ever.</p></div>`
+    const base = `/api/club/cert?m=${encodeURIComponent(m)}&c=${encodeURIComponent(c.c)}`
+    return `<div class="glass w wide2 span certw"><span class="k">${ic('trophy')}Your certificate<span class="r">${esc(c.title)}</span></span>
+        <a class="certimg" href="${base}&f=pdf" download aria-label="Download your certificate as a PDF"><img src="${base}" alt="Your certificate of completion of ${esc(c.title)}, in the name of ${esc(c.name)}" loading="lazy"></a>
+        <div class="certb"><a class="btn cta" href="${base}&f=pdf" download>${ic('down')}<span>Download PDF</span></a><a class="btn li" href="${esc(c.li)}" target="_blank" rel="noopener">Add to LinkedIn</a></div>
+        <p class="msmall">Yours for ever: download it again from here any time. Certificate ID ${esc(c.id)}.</p></div>`
+  }
   function heroHTML() {
     const ls = LS, live = ls.some(l => l.src), before = Date.now() < OPENS, n = curStep(), cur = ls[n - 1] || { n: 1, t: '' }, k = PROG.d.length
     const left = Math.max(0, OPENS - Date.now()), dd = Math.floor(left / 864e5), hh = Math.floor(left / 36e5) % 24, mm = Math.floor(left / 6e4) % 60
@@ -1045,7 +1135,9 @@ const P = {
     const founder = nGift > 0, before = Date.now() < OPENS, open = d.state === 'open'
     // 27/11: progress and profile of this member (api/_lib/club-me.js); the Founder badge only for who has it (QA: a grey one
     // reminds a member they came late); Tower = the eleven steps watched
-    PROG = { d: (d.progress && d.progress.d) || [], t: (d.progress && d.progress.t) || {} }; ALL = !!d.allOpen; LS = d.lessons || []
+    PROG = { d: (d.progress && d.progress.d) || [], t: (d.progress && d.progress.t) || {}, h: d.progress && d.progress.h }; ALL = !!d.allOpen; LS = d.lessons || []
+    // 28/11 (Nico): «il welcome from Nico dura un giorno solo: dopo che la persona lo ha guardato e passano 24 ore da quando è entrata si toglie»
+    const joined = Math.max(Date.parse(d.since || '') || 0, OPENS), showHello = !(HELLO() && Date.now() - joined > 864e5)
     const BL = BADGES.filter(([k]) => k !== 'founder' || founder), courseDone = LS.length > 0 && LS.every(l => PROG.d.includes(l.n))
     const earned = BL.map(([k]) => (k === 'founder' && founder) || (k === 'first' && !!d.posted) || (k === 'tower' && courseDone)), nOn = earned.filter(Boolean).length
     const now = new Date(), hr = +new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Europe/Rome' }).format(now)
@@ -1071,17 +1163,15 @@ const P = {
       <div class="mtop"><div><p class="eyebrow">${esc(today)}</p><h1>${greet}, ${esc(first)}</h1></div></div>
       <div class="mgrid">
         <div class="cherow span full">${hero}</div>
-        <div class="glass w span"><span class="k">${ic('play')}A welcome from Nico<span class="r">1:58</span></span>
-          <div class="yt" data-hello><video playsinline preload="metadata" poster="/club/intro-nico-cover.webp" tabindex="0" aria-label="Play the welcome from Nico"><source src="/club/intro-nico-v2-720.mp4" media="(max-width: 700px)" type="video/mp4"><source src="/club/intro-nico-v2.mp4" type="video/mp4"></video></div></div>
+        ${showHello ? `<div class="glass w span"><span class="k">${ic('play')}A welcome from Nico<span class="r">1:58</span></span>
+          <div class="yt" data-hello><video playsinline preload="metadata" poster="/club/intro-nico-cover.webp" tabindex="0" aria-label="Play the welcome from Nico"><source src="/club/intro-nico-v2-720.mp4" media="(max-width: 700px)" type="video/mp4"><source src="/club/intro-nico-v2.mp4" type="video/mp4"></video></div></div>` : ''}
         <div class="glass w span lvl lvl2"><span class="k">${ic('spark')}Your badges<span class="r">${nOn} of ${BL.length}</span></span><div class="lvlrow">${ring(nOn / BL.length, 104, 12, 'url(#rg)', 'rgba(255,255,255,.14)', `<b class="rn">${nOn}<small>/${BL.length}</small></b>`)}<div class="medals">${BL.map((b, i) => medal(b, earned[i])).join('')}</div></div></div>
-        ${incoming('/club/v-stadium-760.webp', 'Incoming', 'New in the Vault', '4', 'Dec', 'A new build every Friday', 'vault')}
-        ${incoming('/club/v-house-760.webp', 'Every week', 'My comments on your builds', 'Mon', '', 'Post your build', 'feed')}
-        ${incoming('/club/v-plane-760.webp', open ? 'Yours' : 'Saturday', 'Your skills', '2', 'skills', open ? 'Yours to keep' : 'Opens Saturday, 9:00', 'vault')}
-        ${incoming('/club/v-miami-760.webp', open ? 'Open' : 'Saturday', 'All the full guides', String(d.guides ? d.guides.length : (d.counts && d.counts.guides) || ''), 'guides', open ? 'In the Vault' : 'Open Saturday, 9:00', 'vault')}
+        ${/* 28/11 (Nico): the four photo cards before the gift are gone, the gift card stays */ ''}${giftCard()}
       </div>
     </div>`
     const courseV = `<div data-v="course"><div class="mtop"><div><h1>Courses</h1><p class="msub">A new course every Friday, with the build of the week</p></div></div>
       <div class="ccourse" id="course-list">${courseBlock}</div>
+      ${d.state === 'open' ? `<div class="mgrid">${certHTML()}</div>` : ''}
       <div class="mgrid"><div class="glass w span nextc"><span class="k">${ic('lock')}Next course<span class="r">Friday 4 December</span></span><span class="big">4<small>Dec</small></span><p class="lede2">The next course comes with the build of the week.</p></div></div></div>`
     /* 27/11 (Nico, board «Le card del club», V2 «più fighe, da funnel»): each build as the cover of its funnel */
     const COVER = { towers: ['Three towers', 'You choose the view'], riyadh: ['The Riyadh', 'Mega tower'], stadium: ['A stadium', 'You pick your seat'], house: ['A house', 'That builds itself on scroll'], plane: ['A plane', 'You pick your seat'], miami: ['Miami', 'From the real map'] }
@@ -1101,9 +1191,10 @@ const P = {
       ${open ? `<div class="vxw" data-vx><div class="wrap vx-head"><span class="vx-cnt" data-vxc>1 / ${vxN}</span><span class="vx-hint" data-vxhint>Swipe${ic('arrow')}</span><span class="vx-arr"><button type="button" class="ctr" data-vxgo="-1" aria-label="Previous build">${ic('chev', 'flip')}</button><button type="button" class="ctr" data-vxgo="1" aria-label="Next build">${ic('chev')}</button></span></div>
       <div class="vx-track" data-vxt>${deck}</div><div class="vx-dots" data-vxd aria-hidden="true">${Array.from({ length: vxN }, (_, k) => `<i${k ? '' : ' class="on"'}></i>`).join('')}</div></div>
       <div class="mgrid">
+        ${founder ? `<div class="cherow span full" id="gift">${giftCard()}</div>` : ''}
         <div class="glass w span full wf" id="guides"><span class="k">${ic('doc')}All the full guides<span class="r">${(d.guides || []).length} guides</span></span><div class="files">${(d.guides || []).map(fl).join('')}</div></div>
         <div class="glass w span full wf" id="skills"><span class="k">${ic('code')}Your skills<span class="r">yours to keep</span></span><div class="files">${d.kit ? `<a class="fl" href="${esc(d.kit.href)}" download><b>ZIP</b><span>${esc(d.kit.name)}</span>${ic('down')}</a>` : ''}${d.skill ? fl(d.skill) : ''}${d.house ? fl(d.house) : ''}</div></div>
-      </div>` : `<div class="mgrid"><div class="glass w span full"><span class="k">${ic('lock')}Opens Saturday 28 November</span><p class="lede2">Your seat is reserved. The Vault, every Full guide and your skills open here on Saturday 28 November at 9:00 (Rome), when your first month starts.</p></div></div>`}
+      </div>` : `<div class="mgrid">${founder ? `<div class="cherow span full" id="gift">${giftCard()}</div>` : ''}<div class="glass w span full"><span class="k">${ic('lock')}Opens Saturday 28 November</span><p class="lede2">Your seat is reserved. The Vault, every Full guide and your skills open here on Saturday 28 November at 9:00 (Rome), when your first month starts.</p></div></div>`}
     </div>`
     const chal = `<div data-v="feed"><div class="mtop"><div><h1>Feed</h1><p class="msub">Every build of the club. I look at every post.</p></div></div><div data-feed><p class="msub" style="padding:24px">Loading the feed…</p></div></div>`
     const gifts = founder ? giftsView() : ''
@@ -1116,6 +1207,7 @@ const P = {
       </div>
       <div class="pmain">
         <div class="glass w wide2 badgesw"><span class="k">${ic('trophy')}Badges<span class="r">${nOn} of ${BL.length}</span></span><div class="medals lg">${BL.map((b, i) => medal(b, earned[i])).join('')}</div></div>
+        ${certHTML()}
         ${open ? `<div class="objs">${[['/club/course/step-05.webp', (d.lessons || []).length, 'course steps', GO_COURSE], ['/club/v-towers-760.webp', (d.vault || []).length, 'Vault builds', 'vault'], [founder ? '/club/v-plane-760.webp' : '/club/v-miami-760.webp', founder ? d.gifts.length : (d.guides || []).length, founder ? "founders' gifts" : 'Full guides', founder ? 'gift' : 'vault']].map(([im, n, l, go]) => `<a class="glass obj" href="#${go}" data-go="${go}"><img src="${im}" alt=""><b>${n}</b><span>${l}</span></a>`).join('')}</div>` : ''}
         <div class="glass w wide2"><span class="k">${ic('person')}Your membership</span>
           <p class="msmall">${d.portal ? `To cancel: <a href="${esc(d.portal)}" target="_blank" rel="noopener">open Stripe</a> (your email, then a code). ` : ''}To withdraw within 14 days: <a href="/withdraw">omnyalab.com/withdraw</a>.</p></div>
@@ -1130,6 +1222,7 @@ const P = {
     wire()
     loadFeed()
     appSetup()
+    opnDone(true)
   }
   const course_ = ls => course(ls)
 
@@ -1171,6 +1264,7 @@ const P = {
     // the Vault: on the computer the card under the pointer opens (board A)
     $$('.vx').forEach(c => c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click() } }))
     vxInit()
+    $$('[data-hello] video').forEach(v => v.addEventListener('timeupdate', () => { if (v.duration && v.currentTime / v.duration >= 0.9) markHello() }))
     $$('[data-hello] video').forEach(v => { const go = () => { if (!v.controls) { v.controls = true; v.play().catch(() => {}) } }
       v.addEventListener('click', go); v.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go() } }) })
     document.addEventListener('submit', e => { const f = e.target.closest('[data-cform]'); if (!f) return; e.preventDefault()
@@ -1224,7 +1318,9 @@ const P = {
 
   /* states before the member area: no link, the link went bad, the membership ended */
   const stateH = $('[data-state-h]')
+  const say = t => { stateH.textContent = t; stateH.classList.remove('sr'); opnDone(false) }
   function lost(msg) {
+    opnDone(false)
     root.innerHTML = `<div class="mtop"><div><p class="eyebrow">THE 3D FUTURE</p><h1>Log in to the club</h1></div></div><form class="glass mbox" data-lost novalidate><p>${esc(msg || 'Write the email you joined with. Your link to the club arrives in a minute, no password.')}</p>
       <label for="t3m-e" class="sr">Email</label><input id="t3m-e" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@studio.com" required>
       <button class="btn cta wide" type="submit">Send my link</button><p class="err" role="status" data-lost-msg></p><p class="lostjoin">Not a member yet? <a href="/the-3d-future">Join for €9/month</a></p></form>`
@@ -1239,10 +1335,10 @@ const P = {
   if (!m) { let k = ''; try { k = localStorage.getItem('t3f-m') || '' } catch (e) {}; if (k) location.replace(location.pathname + '?m=' + encodeURIComponent(k) + location.hash); else lost() }
   else fetch('/api/club/inside?m=' + encodeURIComponent(m)).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => {
     if (!ok) { try { if (localStorage.getItem('t3f-m') === m) localStorage.removeItem('t3f-m') } catch (e) {}; return lost(d.error) }
-    if (d.state === 'none') { stateH.textContent = 'We are getting your seat ready. Refresh this page in a minute.'; return }
-    if (d.state === 'ended') { root.innerHTML = `<div class="mtop"><div><h1>Your membership has ended</h1></div></div><div class="glass mbox"><p>Thank you for being part of it. If you want to come back, the doors are always open: <a href="/the-3d-future">omnyalab.com/the-3d-future</a>.</p></div>`; return }
+    if (d.state === 'none') { say('We are getting your seat ready. Refresh this page in a minute.'); return }
+    if (d.state === 'ended') { opnDone(false); root.innerHTML = `<div class="mtop"><div><h1>Your membership has ended</h1></div></div><div class="glass mbox"><p>Thank you for being part of it. If you want to come back, the doors are always open: <a href="/the-3d-future">omnyalab.com/the-3d-future</a>.</p></div>`; return }
     DATA = d; render(d)
-  }).catch(() => { stateH.textContent = 'Could not open the club right now, try again in a minute.' })
+  }).catch(() => { say('Could not open the club right now, try again in a minute.') })
 }
 
 </script>

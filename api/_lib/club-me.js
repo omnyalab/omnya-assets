@@ -7,7 +7,7 @@ import { randomBytes } from 'node:crypto';
 import { kv } from './store.js';
 
 const K = {
-  progress: 'omnya:club:progress', // hash: email → {"d":[1,2,3],"t":{"4":123}}
+  progress: 'omnya:club:progress', // hash: email → {"d":[1,2,3],"t":{"4":123},"f":"finished (ISO)","h":"welcome watched (ISO)"}
   profile: 'omnya:club:profile', // hash: email → {"name","ig","bio","ph"}
   avatar: 'omnya:club:avatar', // hash: photo id → JPEG, base64
 };
@@ -17,12 +17,25 @@ const IG = /^[A-Za-z0-9._]{1,30}$/;
 
 const read = async (key, email, empty) => { try { return JSON.parse((await kv('HGET', key, email)) || 'null') || empty; } catch { return empty; } };
 
-/** { d: [finished steps, ascending], t: { step: seconds } } */
+/** { d: [finished steps, ascending], t: { step: seconds }, f?: the day the course was finished, h?: when Nico's welcome was watched } */
 export async function getProgress(email) {
   const p = await read(K.progress, email, null);
   const d = Array.isArray(p?.d) ? p.d.filter((n) => Number.isInteger(n) && n > 0).sort((a, b) => a - b) : [];
   const t = p && typeof p.t === 'object' && p.t ? p.t : {};
-  return { d: [...new Set(d)], t };
+  const iso = (v) => (typeof v === 'string' && !isNaN(Date.parse(v)) ? v : undefined);
+  return { d: [...new Set(d)], t, ...(iso(p?.f) ? { f: p.f } : {}), ...(iso(p?.h) ? { h: p.h } : {}) };
+}
+/** 28/11 (Nico): «il welcome from Nico dura un giorno solo, dopo che la persona lo ha guardato»: the first time it is watched */
+export async function saveHello(email) {
+  const p = await getProgress(email);
+  if (!p.h) { p.h = new Date().toISOString(); await kv('HSET', K.progress, email, JSON.stringify(p)); }
+  return p;
+}
+/** 28/11: the day the course was finished, for the certificate (set once; for an old finish, the first time it is asked) */
+export async function finishedAt(email) {
+  const p = await getProgress(email);
+  if (!p.f) { p.f = new Date().toISOString(); await kv('HSET', K.progress, email, JSON.stringify(p)); }
+  return p.f;
 }
 /** A step is open when it is the first one, or the one before it is finished. */
 export const isOpen = (d, n) => n === 1 || d.includes(n - 1);
@@ -35,7 +48,7 @@ export async function saveProgress(email, n, { t = 0, done = false } = {}, steps
   if (!Number.isInteger(n) || n < 1 || n > steps) return null;
   const p = await getProgress(email);
   if (!isOpen(p.d, n)) return null;
-  if (done) { if (!p.d.includes(n)) p.d.push(n); p.d.sort((a, b) => a - b); delete p.t[n]; }
+  if (done) { if (!p.d.includes(n)) p.d.push(n); p.d.sort((a, b) => a - b); delete p.t[n]; if (!p.f && p.d.length >= steps) p.f = new Date().toISOString(); }
   else if (!p.d.includes(n)) { const s = Math.max(0, Math.min(36000, Math.round(Number(t) || 0))); if (s > 5) p.t[n] = s; }
   await kv('HSET', K.progress, email, JSON.stringify(p));
   return p;

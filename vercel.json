@@ -599,7 +599,8 @@
       "includeFiles": "private/learn/**"
     },
     "api/club.js": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": "private/cert/**"
     },
     "api/seats.js": {
       "includeFiles": "private/seats/**"

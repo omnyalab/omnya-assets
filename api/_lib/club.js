@@ -200,12 +200,12 @@ export async function insideData(email) {
   // since: the day the membership starts (a reservation starts with the doors, Sat 28/11 9:00 Rome), for the profile card
   // 27/11: everyone's own progress in the course and profile (api/_lib/club-me.js); Nico's preview has every step open
   const mine = async (e) => { const [progress, profile] = await Promise.all([getProgress(e).catch(() => ({ d: [], t: {} })), getProfile(e).catch(() => ({}))]); return { progress, profile }; };
-  if (cleanEmail(email) === PREVIEW_EMAIL) return openData({ name: 'Nico', email: PREVIEW_EMAIL, portal: PORTAL_URL, since: new Date(EARLY).toISOString(), ...(await feedFlags(PREVIEW_EMAIL)), ...(await mine(PREVIEW_EMAIL)), allOpen: true }, true);
+  if (cleanEmail(email) === PREVIEW_EMAIL) return openData({ name: 'Nico', fullName: 'Nico', email: PREVIEW_EMAIL, portal: PORTAL_URL, since: new Date(EARLY).toISOString(), ...(await feedFlags(PREVIEW_EMAIL)), ...(await mine(PREVIEW_EMAIL)), allOpen: true }, true);
   let m = null; try { m = JSON.parse((await kv('HGET', K.members, cleanEmail(email))) || 'null'); } catch {}
   if (!m) return { state: 'none' };
   const at = Date.parse(m.at || '') || 0;
   const me = await mine(cleanEmail(email));
-  const base = { name: me.profile.name || m.name, email: m.email, portal: PORTAL_URL, since: new Date(m.reserved ? Math.max(EARLY, at) : at || Date.now()).toISOString(), ...(await feedFlags(cleanEmail(email))), ...me };
+  const base = { name: me.profile.name || m.name, fullName: m.name || '', email: m.email, portal: PORTAL_URL, since: new Date(m.reserved ? Math.max(EARLY, at) : at || Date.now()).toISOString(), ...(await feedFlags(cleanEmail(email))), ...me };
   if (m.status === 'canceled') return { ...base, state: 'ended' };
   const founder = m.reserved && Number(m.rank) > 0 && Number(m.rank) <= CHEAP_SEATS ? Number(m.rank) : 0;
   // 25/11: the course shows, locked; 26/11: a founder sees the gift waiting for them (no files until the card is charged)

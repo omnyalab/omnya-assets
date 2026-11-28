@@ -29,7 +29,11 @@ import {
   limited, ipOf, receiptEmail, isBuyerEmail, isWaitlisted, fillWaitlist, backfill, lists, KEYS, PORTAL_URL,
   readMember, insideData, insideUrl, PREVIEW_EMAIL, noteBuild, sendInsideLink,
 } from './_lib/club.js';
-import { saveProgress, saveProfile, avatar, MAX_AVATAR } from './_lib/club-me.js';
+import { saveProgress, saveProfile, avatar, MAX_AVATAR, saveHello, finishedAt } from './_lib/club-me.js';
+import { CERT_COURSES, certId, certName, certSvg, linkedInUrl } from './_lib/club-cert.js';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { askBuddy } from './_lib/club-ask.js';
 import { feedMember, feed, addPost, like, comments, addComment, share, setHidden, photo, noteMessage, hideOk, setRemind, notifyCourse, LINK, MAX_IMG } from './_lib/club-feed.js';
 import { markMailed } from './_lib/drip.js';
@@ -61,6 +65,7 @@ export async function GET(req) {
   if (a === 'inside') return inside(req);
   if (a === 'feed' || a === 'comments') return feedGet(req, a);
   if (a === 'avatar') return avatarGet(req);
+  if (a === 'cert') return certGet(req);
   if (a === 'manifest') return manifest(req);
   if (a === 'img') return img(req);
   if (a === 'hide') return hideFromMail(req);
@@ -219,10 +224,45 @@ async function inside(req) {
   const email = readMember(new URL(req.url).searchParams.get('m'));
   if (!email) return fail(403, 'bad_link', 'This link is not right. Write your email and we send you yours.');
   try {
-    const d = await insideData(email), r = json(d);
+    const d = await insideData(email), r = json(withCerts(email, d));
     if (d.state === 'open') { const c = hlsCookie(); if (c) r.headers.append('Set-Cookie', c); }   // the key to the course films
     return r;
   } catch (e) { console.error('[club] inside', e.message); return fail(502, 'store', 'Could not open the club right now, try again in a minute.'); }
+}
+/* 28/11 (Nico, C1 + R1 + R4): a finished course gives a certificate, always there to download; the page gets its facts here */
+const courseDone = (d) => d.state === 'open' && (d.allOpen || (LESSONS.length > 0 && LESSONS.every((l) => (d.progress?.d || []).includes(l.n))));
+function withCerts(email, d) {
+  if (!courseDone(d)) return d;
+  const date = d.progress?.f || new Date().toISOString(), id = certId(email, 'samar');
+  return { ...d, certs: [{ c: 'samar', title: CERT_COURSES.samar.title, id, date, name: certName(d.fullName, d.profile?.name), li: linkedInUrl('samar', id, date) }] };
+}
+const CERT_ROOTS = [join(process.cwd(), 'private', 'cert'), fileURLToPath(new URL('../private/cert', import.meta.url))];
+const certFile = (f) => { for (const r of CERT_ROOTS) { try { readFileSync(join(r, f)); return join(r, f); } catch {} } throw new Error(`cert: missing ${f}`); };
+let certKnot;
+//   GET /api/club/cert?m=&c=samar         → the certificate as a picture (the page shows it)
+//   GET /api/club/cert?m=&c=samar&f=pdf   → the same, A4 landscape PDF at 300 dpi, to download and print
+async function certGet(req) {
+  const u = new URL(req.url), email = readMember(u.searchParams.get('m')), c = u.searchParams.get('c') || 'samar', pdf = u.searchParams.get('f') === 'pdf';
+  if (!email || !CERT_COURSES[c]) return new Response('Not found', { status: 404 });
+  if (await limited(req, 'cert', 30, 600)) return tooMany();
+  try {
+    const d = await insideData(email);
+    if (!courseDone(d)) return fail(403, 'not_done', 'Finish the eleven steps of the course to get your certificate.');
+    const date = d.allOpen ? new Date().toISOString() : d.progress?.f || (await finishedAt(email));
+    certKnot ||= `data:image/png;base64,${readFileSync(certFile('knot.png')).toString('base64')}`;
+    const svg = certSvg({ name: certName(d.fullName, d.profile?.name), course: c, date, id: certId(email, c), knot: certKnot });
+    const { Resvg } = await import('@resvg/resvg-js');
+    const fonts = ['cert-serif.ttf', 'cert-serif-bold.ttf', 'cert-italic.ttf', 'cert-script.ttf', 'Inter-Bold.otf'].map(certFile);
+    const png = new Resvg(svg, { fitTo: { mode: 'width', value: pdf ? 3508 : 1600 }, font: { loadSystemFonts: false, fontFiles: fonts, defaultFontFamily: 'Cert Serif' } }).render().asPng();
+    const head = { 'Cache-Control': 'private, no-store', 'X-Robots-Tag': 'noindex' };
+    if (!pdf) return new Response(png, { headers: { ...head, 'Content-Type': 'image/png' } });
+    const { PDFDocument } = await import('pdf-lib');
+    const doc = await PDFDocument.create(), img = await doc.embedPng(png), page = doc.addPage([841.89, 595.28]);
+    page.drawImage(img, { x: 0, y: 0, width: 841.89, height: 595.28 });
+    doc.setTitle(`${CERT_COURSES[c].title} · Certificate of Completion`); doc.setAuthor('THE 3D FUTURE · Omnya Lab'); doc.setCreator('omnyalab.com');
+    const out = await doc.save();
+    return new Response(out, { headers: { ...head, 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename="THE-3D-FUTURE-${CERT_COURSES[c].short}-Certificate.pdf"` } });
+  } catch (e) { console.error('[club] cert', e.message); return fail(502, 'cert', 'Could not make the certificate right now, try again in a minute.'); }
 }
 async function lostLink(req) {
   if (await limited(req, 'link', 5, 600)) return tooMany();
@@ -325,6 +365,10 @@ async function mePost(req, a) {
   if (await limited(req, a, a === 'progress' ? 240 : 20, 600)) return tooMany();
   try {
     const d = await insideData(email);
+    if (a === 'progress' && b.hello === true) { // 28/11: Nico's welcome was watched (it leaves Home a day after joining)
+      if (d.state !== 'open' && d.state !== 'waiting') return fail(403, 'not_yet', 'Not yet.');
+      return json(d.allOpen ? { preview: true } : await saveHello(email));
+    }
     if (a === 'progress') {
       if (d.state !== 'open') return fail(403, 'not_yet', 'The course opens on Saturday 28 November at 9:00 (Rome).');
       if (d.allOpen) return json({ d: [], t: {}, preview: true }); // Nico's preview: every step open, nothing saved
