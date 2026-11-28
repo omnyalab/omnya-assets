@@ -60,7 +60,7 @@ export const ASK = [
     { k: 'own', t: 'My own idea', img: 'miami' },
   ] },
   { k: 'use', t: 'What will you use it for?', kw: 'use it', o: [
-    { k: 'clients', t: 'To win clients', e: '🤝' },
+    { k: 'clients', t: 'For my clients', e: '🤝' }, // 28/11 Nico: «"to win clients" non mi piace»
     { k: 'projects', t: 'To sell my own projects', e: '🏗️' },
     { k: 'service', t: 'To start a 3D service', e: '🚀' },
     { k: 'learn', t: 'Just to learn', e: '🎓' },

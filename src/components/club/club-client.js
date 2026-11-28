@@ -266,8 +266,11 @@
     function front() { var w = cs[0].offsetWidth || 1, gap = cs.length > 1 ? cs[1].offsetLeft - cs[0].offsetLeft : w; return cs[Math.max(0, Math.min(cs.length - 1, Math.round(t.scrollLeft / gap)))]; }
     function to(k) { var el = cs.filter(function (x) { return x.dataset.tbk === k; })[0]; if (!el) return; t.scrollTo({ left: el.offsetLeft - cs[0].offsetLeft, behavior: RM ? 'auto' : 'smooth' }); mark(k); }
     t.addEventListener('scroll', function () { var f = front(); if (f && f.dataset.tbk !== ans.build) mark(f.dataset.tbk); }, { passive: true });
-    ps.forEach(function (p) { p.addEventListener('click', function () { to(p.dataset.tbgo); }); });
-    cs.forEach(function (x) { x.addEventListener('click', function () { if (ans.build === x.dataset.tbk) { go(Math.min(cardsJ.length, step + 1)); } else to(x.dataset.tbk); }); });
+    /* 28/11 Nico («devono schiacciare su uno senza pulsante»): no button on this card, a tap on a pill or on a photo picks
+       that build, the photo slides in front, and a moment later the plan comes in; swiping only browses */
+    function pick(k) { var n = step; to(k); clearTimeout(nextT); nextT = setTimeout(function () { if (step === n) { mark(k); go(Math.min(cardsJ.length, n + 1)); } }, RM ? 0 : 650); }
+    ps.forEach(function (p) { p.addEventListener('click', function () { pick(p.dataset.tbgo); }); });
+    cs.forEach(function (x) { x.addEventListener('click', function () { pick(x.dataset.tbk); }); });
   })();
   $$('[data-ask]', P).forEach(function (g) {
     var bs = $$('[data-pick]', g);
@@ -286,7 +289,7 @@
      what you will use it for, then what the club gives you for it */
   var PLANE = { clients: '🤝', projects: '🏗️', service: '🚀', learn: '🎓' };
   var PT = { tower: 'A tower where buyers choose their floor', stadium: 'A stadium where fans choose their seat', house: 'A house that builds itself on scroll', own: 'Your own idea, with the same method' };
-  var PG = { clients: 'to win clients', projects: 'to sell your own projects', service: 'to start your own 3D service', learn: 'just for you, at your pace' };
+  var PG = { clients: 'for your clients', projects: 'to sell your own projects', service: 'to start your own 3D service', learn: 'just for you, at your pace' };
   function plan() {
     var b = PT[ans.build] ? ans.build : 'tower', u = PG[ans.use] ? ans.use : 'learn';
     function put(k, v) { var el = $('[data-plan="' + k + '"]', P); if (el) el.textContent = v; }

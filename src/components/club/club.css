@@ -761,3 +761,12 @@ form.opts { gap: 16px }
 }
 /* card 9: once name and email are in, the payment takes the room of the list (already read), so Pay stays on screen */
 .jov.bud[data-stage="card"] .jcard .bud-now { display: none }
+
+/* 28/11 Nico: the two question cards have no button, the answers are the buttons: the pills of card 4 grow to a real
+   tap size (44 pt and up), the panel of card 3 runs down to where the button was */
+.jov.bud .jc.cur.jbuild .tb-pills { gap: 10px }
+.jov.bud .jc.cur.jbuild .tb-pills button { min-height: 48px; padding: 0 20px; font-size: 16px }
+@media (max-height: 700px) { .jov.bud .jc.cur.jbuild .tb-pills button { min-height: 44px; font-size: 15px } }
+/* card 3 without its button: the four answers grow into the panel instead of floating in the middle of it */
+.jov.bud .jc.cur.juse .jopts.bud-ask { grid-auto-rows: minmax(86px, 116px) }
+@media (max-height: 700px) { .jov.bud .jc.cur.juse .jopts.bud-ask { grid-auto-rows: minmax(64px, 96px) } }

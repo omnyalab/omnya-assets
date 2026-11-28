@@ -115,7 +115,7 @@ const BUILD4 = [
             <button type="button" class="jo" role="radio" aria-checked="false" data-pick={o.k}><span class="bud-e" aria-hidden="true"><i>{o.e}</i></span><span>{o.t}</span><Icon name="check" class="jok" /></button>
           ))}
         </div>
-        <button type="button" class="bud-go" data-jnext>Continue</button>
+        {/* 28/11 Nico: «devono schiacciare su uno senza pulsante»: no Continue, a tap on an answer is the only way on */}
       </section>
       <section class="jc jbuild" data-c="4" data-tb aria-labelledby="t3f-c4">
         <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c4" tabindex="-1" class="jq">What do you want to <em class="kw">build</em> first?</h2></div>
@@ -128,7 +128,7 @@ const BUILD4 = [
           ))}
         </div>
         <div class="tb-pills" data-tbp>{BUILD4.map((o, i) => <button type="button" aria-pressed={i === 0 ? 'true' : 'false'} data-tbgo={o.k}>{o.t}</button>)}</div>
-        <button type="button" class="bud-go" data-jnext>See my plan</button>
+        {/* 28/11 Nico: no «See my plan» button, a tap on a build (photo or pill) picks it and opens the plan */}
       </section>
       {/* 28/11 Nico («here is your plan deve essere personalizzato, based on your… arrivi a fare questo, con i coriandoli»):
            the build you picked as the picture, what you get to do with it, and what the club gives you for it, step by step */}
