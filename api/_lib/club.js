@@ -715,3 +715,8 @@ export async function checkPayments(stripe, { dry = false } = {}) {
   }
   return out;
 }
+
+/** 28/11: true when the member's page is paused for a payment (m.unpaid): the club's other routes refuse them too */
+export async function isPaused(email) {
+  try { const m = JSON.parse((await kv('HGET', K.members, cleanEmail(email))) || 'null'); return !!(m && m.unpaid); } catch { return false; }
+}

@@ -758,7 +758,7 @@ const P = {
   P.undo = '<path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>'
   P.door = '<path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M3 21h18"/><circle cx="14.5" cy="12" r="1" fill="currentColor"/>'
   const fl = f => `<a class="fl" href="${esc(f.zip ? f.href : f.href + (/\?/.test(f.href) ? '&' : '?') + 'dl=1')}" download><b>${f.zip ? 'ZIP' : 'PDF'}</b><span>${esc(f.name)}</span>${ic('down')}</a>`
-  const post = (u, b) => fetch(u, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json().catch(() => ({})).then(d => ({ ok: r.ok, d })))
+  const post = (u, b) => fetch(u, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(r => r.json().catch(() => ({})).then(d => { if (d && d.code === 'paused') location.reload(); return { ok: r.ok, d } })) /* 28/11: a paused member (payment) reloads into the pay page */
   /* 28/11 A1: the whole opening the first time of the day, a short one after; never longer than the club takes to load */
   const OPN = $('[data-opn]'), T0 = Date.now(); let OPN_MIN = 1700
   try { const t = new Date().toDateString(); if (localStorage.getItem('t3f-opn') === t) { OPN_MIN = 450; OPN && OPN.classList.add('quick') } else localStorage.setItem('t3f-opn', t) } catch (e) {}

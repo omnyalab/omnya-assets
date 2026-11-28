@@ -28,7 +28,7 @@ import {
   CLUB, ROUND, CHEAP_SEATS, EARLY, phaseAt, decide, priceId, seats, EMAIL, cleanEmail, cleanReceipt, firstName, signToken, readToken,
   limited, ipOf, receiptEmail, isBuyerEmail, isWaitlisted, fillWaitlist, backfill, lists, KEYS, PORTAL_URL,
   readMember, insideData, insideUrl, PREVIEW_EMAIL, noteBuild, sendInsideLink,
-  sendLoginCode, checkLoginCode, sessionCookie, sessionOf, setTester, welcomeReserved, checkPayments,
+  sendLoginCode, checkLoginCode, sessionCookie, sessionOf, setTester, welcomeReserved, checkPayments, isPaused, HLS_COOKIE,
 } from './_lib/club.js';
 import { saveProgress, saveProfile, avatar, MAX_AVATAR, MAX_COVER, saveHello, finishedAt } from './_lib/club-me.js';
 import { CERT_COURSES, certId, certName, certSvg, linkedInUrl } from './_lib/club-cert.js';
@@ -46,6 +46,7 @@ const json = (o, status = 200, cache = 'no-store') => new Response(JSON.stringif
 const fail = (status, code, error, extra = {}) => json({ error, code, ...extra }, status);
 const notConfigured = (extra = {}) => fail(503, 'not_configured', 'not configured yet', extra);
 const tooMany = () => fail(429, 'too_many', 'Too many tries, wait a few minutes.');
+const pausedFail = () => fail(403, 'paused', "Your payment didn't go through, so your club page is paused."); // 28/11: the page reloads and shows how to pay
 const action = (req) => { const u = new URL(req.url); return u.searchParams.get('action') || u.pathname.replace(/\/+$/, '').split('/').pop(); };
 async function body(req) { try { const b = await req.json(); return b && typeof b === 'object' && !Array.isArray(b) ? b : null; } catch { return null; } }
 const admin = (req) => {
@@ -263,6 +264,7 @@ async function inside(req) {
   try {
     const d = await insideData(email), r = json(withCerts(email, d));
     if (d.state === 'open') { const c = hlsCookie(); if (c) r.headers.append('Set-Cookie', c); }   // the key to the course films
+    if (d.state === 'unpaid') r.headers.append('Set-Cookie', `${HLS_COOKIE}=; Path=/club/course/v/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`); // 28/11: paused, the course films stop
     if (d.state !== 'ended') r.headers.append('Set-Cookie', sessionCookie(new URL(req.url).searchParams.get('m'))); // 28/11: this device remembers the member
     if (d.state !== 'ended') await kv('HSET', 'omnya:club:seen', email, new Date().toISOString()).catch(() => {}); // 28/11: who opened the club, and when (Nico: «è già entrato qualcuno?»)
     return r;
@@ -306,6 +308,7 @@ async function certGet(req) {
 //   GET /api/club/member?m=&u=   → a member's public profile, for whoever is in the club (read only)
 async function memberGet(req) {
   const u = new URL(req.url), me = await who(u.searchParams.get('m'));
+  if (me && me.paused) return pausedFail();
   if (!me) return fail(403, 'bad_link', 'Open the club from your own link.');
   if (await limited(req, 'member', 60, 600)) return tooMany();
   try { const p = await publicProfile(u.searchParams.get('u')); return p ? json(p) : fail(404, 'not_found', 'This profile is not available.'); }
@@ -348,6 +351,7 @@ async function sendBuild(req) {
   if (await limited(req, 'build', 6, 3600)) return tooMany();
   const b = await body(req), email = readMember(b?.m);
   if (!email) return fail(403, 'bad_link', 'Open the club from your own link to send your build.');
+  if (await isPaused(email)) return pausedFail();
   const link = String(b.link || '').trim().slice(0, 300), note = String(b.note || '').trim().slice(0, 1500);
   if (!/^https?:\/\/[^\s]+\.[^\s]+$/i.test(link)) return fail(400, 'bad_request', 'Paste the link of your build, like https://your-tower.netlify.app');
   try { await noteBuild(email, link, note); return json({ ok: true }); } catch (e) { console.error('[club] build', e.message); return fail(502, 'mail', 'Could not send it right now, try again in a minute.'); }
@@ -361,9 +365,10 @@ async function sendBuild(req) {
 //   POST /api/club/comment { m, id, text }   POST /api/club/share { m, id }   POST /api/club/msg { m, text }
 //   POST /api/club/hide    { m, id, hidden } (Nico's own page, the preview link) or ?key=IG_ADMIN_KEY
 //   POST /api/club/remind  { m, on }  → Friday's course email on/off      POST /api/club/notify?key= { subject, text, test? } → send it (N1)
-const who = async (m) => { const email = readMember(m); return email ? feedMember(email) : null; };
+const who = async (m) => { const email = readMember(m); if (!email) return null; if (await isPaused(email)) return { paused: true }; return feedMember(email); };
 async function feedGet(req, a) {
   const u = new URL(req.url), me = await who(u.searchParams.get('m'));
+  if (me && me.paused) return pausedFail();
   if (!me) return fail(403, 'bad_link', 'Open the club from your own link.');
   try {
     if (a === 'feed') return json(await feed(me));
@@ -390,6 +395,7 @@ async function feedPost(req, a) {
   const b = await body(req);
   if (!b) return fail(400, 'bad_request', 'bad request');
   const me = await who(b.m);
+  if (me && me.paused) return pausedFail();
   if (a === 'hide' && (admin(req) || me?.nico)) { const r = await setHidden(String(b.id || ''), b.hidden !== false); return r ? json(r) : fail(404, 'not_found', 'not found'); }
   if (!me) return fail(403, 'bad_link', 'Open the club from your own link.');
   const lim = { post: [10, 3600], like: [200, 600], comment: [40, 600], share: [60, 600], msg: [5, 3600], hide: [20, 600], remind: [20, 600] }[a];
@@ -435,6 +441,7 @@ async function mePost(req, a) {
   const b = await body(req);
   if (!b) return fail(400, 'bad_request', 'bad request');
   const email = readMember(b.m);
+  if (email && await isPaused(email)) return pausedFail();
   if (!email) return fail(403, 'bad_link', 'Open the club from your own link.');
   if (await limited(req, a, a === 'progress' ? 240 : 20, 600)) return tooMany();
   try {
@@ -466,6 +473,7 @@ async function askPost(req) {
   const b = await body(req);
   if (!b) return fail(400, 'bad_request', 'bad request');
   const email = readMember(b.m);
+  if (email && await isPaused(email)) return pausedFail();
   if (!email) return fail(403, 'bad_link', 'Open the club from your own link.');
   if (await limited(req, 'ask', 10, 60)) return tooMany();
   try {
