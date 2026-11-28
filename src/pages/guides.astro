@@ -12,13 +12,13 @@ import { OPEN, FOUNDERS_END, VALUE } from '../components/club/data';
     21,945 followers; stadium reel 2,548,472 views (Graph API, 24/11); €5,000+ sales this month (Nico, 24/11);
     4,800+ emails in 13 days (club page, 24/11). */
 const STATS = [
-  { n: '1.7M', l: 'views in 7 days' },
-  { n: '2.5M', l: 'views on one reel' },
-  { n: '+4,500', l: 'followers in 7 days' },
-  { n: '€5,000+', l: 'in sales in one month' },
-  { n: '4,800+', l: 'emails in 13 days' },
+  { n: '1.7M', l: 'views in 7 days', bv: 1 },
+  { n: '2.5M', l: 'views on one reel', bv: 3 },
+  { n: '+4,500', l: 'followers in 7 days', bv: 2 },
+  { n: '€5,000+', l: 'in sales in one month', bv: 5 },
+  { n: '4,800+', l: 'emails in 13 days', bv: 4 },
 ];
-const STATS_SRC = 'Our Instagram on 28 November 2026, Stripe and emails on 24 November';
+// 28/11 (Nico): no source line under the cards; the cards are the club's (photo of our builds, glass at the bottom, grain)
 
 const title = 'Every guide · Omnya Lab';
 const description = 'Every guide, Claude skill and course behind our reels, in one place. Start free, or get all of it inside THE 3D FUTURE.';
@@ -172,9 +172,14 @@ const check = '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true
     <div class="in">
       <h2 class="h2 c">What you can do <span class="kw">too</span></h2>
       <div class="stats">
-        {STATS.map((s) => <div class="stat"><b>{s.n}</b><span>{s.l}</span></div>)}
+        {STATS.map((s, i) => (
+          <div class:list={['stat', { big: i === 0 }]}>
+            <img src={`/club/bv-${s.bv}-800.webp`} srcset={`/club/bv-${s.bv}-800.webp 800w, /club/bv-${s.bv}.webp 1600w`} sizes={i === 0 ? '(min-width: 900px) 540px, 100vw' : '(min-width: 900px) 260px, 50vw'} alt="" loading="lazy" decoding="async">
+            <span class="gz" aria-hidden="true"></span><span class="grain" aria-hidden="true"></span>
+            <b>{s.n}</b><span class="l">{s.l}</span>
+          </div>
+        ))}
       </div>
-      <p class="src">{STATS_SRC}</p>
     </div>
   </section>
 
@@ -290,14 +295,28 @@ html[data-phase="after"] [data-when]:not([data-when~="after"]) { display: none !
 .ctx .t { font-size: 14px; line-height: 1.35 }
 .ctx .go { margin-top: auto; padding-top: 8px; font-size: 15px }
 
-.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px }
-@media (min-width: 900px) { .stats { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px } }
-.stat { padding: 20px; border-radius: 20px; background: rgba(255,255,255,.06); box-shadow: 0 0 0 1px var(--line) inset; display: flex; flex-direction: column; gap: 4px }
-.stat:first-child { grid-column: 1 / -1 }
-@media (min-width: 900px) { .stat:first-child { grid-column: auto } }
-.stat b { font: 800 40px/1 Geist, -apple-system, system-ui, sans-serif; letter-spacing: -.03em }
-.stat span { color: var(--mute); font-size: 15px }
-.src { margin: 16px 0 0; text-align: center; font-size: 13px; color: var(--faint) }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; max-width: 1056px; margin: 0 auto }
+@media (min-width: 900px) { .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px } }
+.stat { position: relative; isolation: isolate; overflow: hidden; aspect-ratio: 1; padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px; border-radius: 28px; border: 1px solid rgba(255,255,255,.2) }
+.stat > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -3; filter: saturate(1.15) }
+.stat::before { content: ''; position: absolute; inset: 0; z-index: -2; background: linear-gradient(180deg, rgba(8,10,20,.30), rgba(8,10,20,.18) 40%, rgba(8,10,20,.62)) }
+.gz { position: absolute; left: 0; right: 0; bottom: 0; height: 64%; z-index: -1; pointer-events: none; background: rgba(8,12,28,.16); -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, rgba(0,0,0,.6) 22%, #000 46%); mask-image: linear-gradient(180deg, transparent 0, rgba(0,0,0,.6) 22%, #000 46%) }
+.grain { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: .045; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>") }
+.stat b { font: 300 clamp(34px, 10vw, 44px)/1 "SF Pro Display", -apple-system, system-ui, sans-serif; letter-spacing: -.045em; white-space: nowrap; text-shadow: 0 2px 18px rgba(0,0,0,.35) }
+.stat .l { font-size: 13px; font-weight: 600; line-height: 1.25; text-wrap: balance }
+.stat.big { grid-column: 1 / -1; aspect-ratio: 2 / 1 }
+.stat.big b { font-size: 72px }
+.stat.big .l { font-size: 17px }
+@media (min-width: 900px) {
+  .stat { padding: 24px }
+  .stat b { font-size: clamp(40px, 4.4vw, 56px) }
+  .stat .l { font-size: 14px }
+  .stat.big { grid-column: span 2; grid-row: span 2; aspect-ratio: auto }
+  .stat.big b { font-size: 136px }
+  .stat.big .l { font-size: 19px }
+}
 
 .last .in { display: flex; flex-direction: column; align-items: center; gap: 16px }
 .last .btn { min-width: 260px }
