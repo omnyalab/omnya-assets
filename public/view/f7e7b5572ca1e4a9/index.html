@@ -52,6 +52,8 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .t1{font:500 4.48cqw var(--title);letter-spacing:-.015em;line-height:1.02;margin-top:.6cqw}
 .t1.m{font-size:3.33cqw}
 .t2{font:400 1.46cqw var(--text);opacity:.9;margin-top:.95cqw}
+/* la righetta verde sotto ogni scritta, come nei video (56 x 3 px su 1920) */
+.lb .ru{height:.16cqw;width:2.92cqw;background:#3f8a5f;margin-top:1.25cqw;border-radius:.1cqw}
 .pills{position:absolute;left:0;top:0;display:flex;gap:.9cqw;opacity:0}
 .pill{height:3.65cqw;padding:0 2.3cqw;border-radius:1.82cqw;background:rgba(63,138,95,.94);color:#fff;border:0;
   font:600 1.46cqw var(--title);display:flex;align-items:center;gap:.8cqw;white-space:nowrap;box-shadow:0 .5cqw 1.6cqw rgba(0,0,0,.25);cursor:pointer;pointer-events:none;transition:transform .12s,background .15s}
@@ -121,7 +123,7 @@ st.innerHTML=`<img class="fermo" src="s1.jpg" alt="Masaar III dall'alto"><video 
  <div class="ov"><div class="veil"></div><div class="grad"></div>
   <div class="mk">${VILLE.map((v,i)=>`<div class="pin" data-i="${i}" style="left:${v[0]/19.2}%;top:${v[1]/10.8}%">${v[3]}</div>`).join('')}</div>
   <div class="card"><div class="pd"></div><div class="av">AVAILABLE</div><div class="nr"></div><div class="sb"></div><div class="go">Choose this villa →</div></div>
-  <div class="lb" id="lb"><div class="eyebrow"></div><div class="t1"></div><div class="t2"></div></div>
+  <div class="lb" id="lb"><div class="eyebrow"></div><div class="t1"></div><div class="t2"></div><div class="ru"></div></div>
   <div class="pills" id="pills"></div><div class="wait" id="wait"></div></div>
  <div class="tap" id="tap"><span>▶ Tocca per partire</span></div>`;
 const vids=[...st.querySelectorAll('video')], fermo=st.querySelector('img.fermo');
@@ -281,6 +283,96 @@ ricomincia(); requestAnimationFrame(disegna);
   function tap(el,fn){var last=0;var go=function(e){e.preventDefault();e.stopPropagation();var n=Date.now();if(n-last<700)return;last=n;fn()};
     el.addEventListener('touchstart',function(){},{passive:true}); el.addEventListener('touchend',go,{passive:false}); el.addEventListener('click',go)}
   if(document.body) start(); else document.addEventListener('DOMContentLoaded',start);
+})();
+</script>
+<script>window.PANO_DIR='pano/';window.PANO_MARK='marchio_1920.png'</script>
+<style>
+/* 360: at every stop in a room, "360° view" opens the room's panorama; drag to look around */
+.pill.p3{background:rgba(14,15,18,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 0 0 .1cqw rgba(255,255,255,.35),0 .5cqw 1.6cqw rgba(0,0,0,.25)}
+.pill.p3:hover{background:rgba(30,32,38,.7)}
+.p3v{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .5s ease;touch-action:none;cursor:grab;z-index:3}
+.p3v.on{opacity:1;pointer-events:auto}
+.p3v.drag{cursor:grabbing}
+.p3v canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.p3v .gr3{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.38) 0%,rgba(0,0,0,0) 28%),linear-gradient(to top,rgba(0,0,0,.32) 0%,rgba(0,0,0,0) 26%)}
+.p3v .mk3{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.p3v .hd{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:grid;justify-items:center;gap:1cqw;color:#fff;font:600 1.5cqw var(--title);text-shadow:0 .1cqw 1cqw rgba(0,0,0,.5);pointer-events:none;opacity:0;transition:opacity .5s;padding:3cqw 5cqw;background:radial-gradient(ellipse 50% 50% at 50% 50%,rgba(0,0,0,.38),rgba(0,0,0,0) 100%)}
+.p3v .hd.on{opacity:1}
+.p3v .hd i{display:block;width:5cqw;height:5cqw;border-radius:50%;border:.2cqw solid #fff;position:relative;animation:p3h 1.8s ease-in-out infinite}
+.p3v .hd i::after{content:"";position:absolute;left:50%;top:50%;width:1cqw;height:1cqw;margin:-.5cqw;border-radius:50%;background:#fff}
+@keyframes p3h{0%,100%{transform:translateX(-1.6cqw)}50%{transform:translateX(1.6cqw)}}
+.p3v .bk{position:absolute;left:5.5%;bottom:9%;height:3.65cqw;padding:0 2.3cqw;border-radius:1.82cqw;border:0;background:rgba(63,138,95,.94);color:#fff;font:600 1.46cqw var(--title);display:flex;align-items:center;gap:.8cqw;cursor:pointer;box-shadow:0 .5cqw 1.6cqw rgba(0,0,0,.25)}
+.p3v .bk:hover{background:rgba(76,160,112,.98)}
+.p3v .nm{position:absolute;left:5.5%;top:7%;color:#fff;text-shadow:0 .1cqw 1.25cqw rgba(0,0,0,.45);pointer-events:none}
+.p3v .nm b{display:block;font:500 1.09cqw var(--text);letter-spacing:.34em;text-transform:uppercase;opacity:.9}
+.p3v .nm span{display:block;font:500 3.33cqw var(--title);letter-spacing:-.015em;margin-top:.5cqw}
+.p3v .ld{position:absolute;right:2.2cqw;top:2.2cqw;width:2.2cqw;height:2.2cqw;border-radius:50%;border:.25cqw solid rgba(255,255,255,.25);border-top-color:#fff;animation:gira .8s linear infinite;opacity:0}
+.p3v.wait .ld{opacity:1}
+@media (prefers-reduced-motion:reduce){.p3v,.p3v .hd{transition:none}.p3v .hd i{animation:none}}
+</style>
+<script>
+(function(){
+  // room -> panorama and the direction it opens on (yaw: 0 = centre of the panorama, + = right)
+  const STANZE={ingresso:['foyer',0],ritorno:['foyer',0],living:['living',112],pool:['pool',0],kitchen:['kitchen',-75],bedroom:['bedroom',25],vista:['terrace',-160]};
+  const DIR=window.PANO_DIR||'pano/', MARK=window.PANO_MARK||'';
+  const st=document.getElementById('st');
+  const box=document.createElement('div'); box.className='p3v';
+  box.innerHTML=`<canvas></canvas><div class="gr3"></div>${MARK?`<img class="mk3" src="${MARK}" alt="">`:''}<div class="nm"><b></b><span></span></div><div class="hd"><i></i>Drag to look around</div><button type="button" class="bk"><span>←</span>Back to the tour</button><div class="ld"></div>`;
+  st.appendChild(box);
+  const cv=box.querySelector('canvas'), hd=box.querySelector('.hd');
+  const gl=cv.getContext('webgl',{antialias:false,alpha:false,preserveDrawingBuffer:false});
+  if(!gl){return}
+  const vs='attribute vec2 p;varying vec2 q;void main(){q=p;gl_Position=vec4(p,0.,1.);}';
+  const fs='precision highp float;varying vec2 q;uniform sampler2D t;uniform float yaw,pit,tf,asp;'+
+    'void main(){vec3 d=normalize(vec3(q.x*tf*asp,q.y*tf,-1.));float c=cos(pit),s=sin(pit);d=vec3(d.x,d.y*c-d.z*s,d.y*s+d.z*c);'+
+    'float lon=atan(d.x,-d.z)+yaw;float lat=asin(clamp(d.y,-1.,1.));'+
+    'vec2 uv=vec2(fract(.5+lon/6.2831853),.5-lat/3.1415927);gl_FragColor=texture2D(t,uv);}';
+  const sh=(ty,src)=>{const o=gl.createShader(ty);gl.shaderSource(o,src);gl.compileShader(o);return o};
+  const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,vs));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);gl.useProgram(pr);
+  const bf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,bf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const ap=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(ap);gl.vertexAttribPointer(ap,2,gl.FLOAT,false,0,0);
+  const U={};['yaw','pit','tf','asp'].forEach(k=>U[k]=gl.getUniformLocation(pr,k));
+  const tx=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tx);
+  [[gl.TEXTURE_MIN_FILTER,gl.LINEAR],[gl.TEXTURE_MAG_FILTER,gl.LINEAR],[gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE],[gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE]].forEach(([a,b])=>gl.texParameteri(gl.TEXTURE_2D,a,b));
+  const MAXT=gl.getParameter(gl.MAX_TEXTURE_SIZE);
+  const cache={};
+  function img(nome){if(!cache[nome]){cache[nome]=new Promise(res=>{const i=new Image();i.decoding='async';i.onload=()=>res(i);i.onerror=()=>res(null);i.src=DIR+nome+'.jpg'})}return cache[nome]}
+  let V={yaw:0,pit:0,fov:75,vy:0,vp:0,open:false,caricato:null,mosso:false};
+  const R=Math.PI/180;
+  function size(){const r=Math.min(devicePixelRatio||1,2),w=Math.round(cv.clientWidth*r),h=Math.round(cv.clientHeight*r);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}gl.viewport(0,0,w,h)}
+  function draw(){if(!V.open)return;
+    if(!V.drag){V.yaw+=V.vy;V.pit+=V.vp;V.vy*=.9;V.vp*=.9}
+    V.pit=Math.max(-80,Math.min(80,V.pit));
+    size();gl.uniform1f(U.yaw,V.yaw*R);gl.uniform1f(U.pit,V.pit*R);gl.uniform1f(U.tf,Math.tan(V.fov*R/2));gl.uniform1f(U.asp,cv.width/cv.height);
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);requestAnimationFrame(draw)}
+  async function apri(passo){const s=STANZE[passo];if(!s)return;
+    S.fase='p360';V.open=true;V.yaw=s[1];V.pit=0;V.fov=75;V.vy=0;V.vp=0;V.mosso=false;
+    const L=PASSI[passo].lab;box.querySelector('.nm b').textContent=L.e;box.querySelector('.nm span').textContent=L.t;
+    box.classList.add('wait');const im=await img(s[0]);box.classList.remove('wait');if(!im||!V.open)return;
+    if(V.caricato!==s[0]){let src=im;if(im.naturalWidth>MAXT){const c=document.createElement('canvas');c.width=MAXT;c.height=MAXT/2;c.getContext('2d').drawImage(im,0,0,c.width,c.height);src=c}
+      gl.bindTexture(gl.TEXTURE_2D,tx);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGB,gl.RGB,gl.UNSIGNED_BYTE,src);V.caricato=s[0]}
+    box.classList.add('on');st.classList.add('in360');hd.classList.add('on');requestAnimationFrame(draw)}
+  function chiudi(){if(!V.open)return;V.open=false;box.classList.remove('on');st.classList.remove('in360');hd.classList.remove('on');S.fase='fermo'}
+  box.querySelector('.bk').addEventListener('click',e=>{e.stopPropagation();chiudi()});
+  addEventListener('keydown',e=>{if(e.key==='Escape')chiudi()});
+  // drag, inertia, pinch and wheel zoom
+  const pts=new Map();let pinch0=0,fov0=75;
+  cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY]);V.drag=true;box.classList.add('drag');
+    if(pts.size===2){const [a,b]=[...pts.values()];pinch0=Math.hypot(a[0]-b[0],a[1]-b[1]);fov0=V.fov}});
+  cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;const [x0,y0]=pts.get(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY]);
+    if(pts.size===2){const [a,b]=[...pts.values()];const d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(pinch0)V.fov=Math.max(35,Math.min(95,fov0*pinch0/d));return}
+    const k=V.fov/cv.clientHeight,dx=(e.clientX-x0)*k,dy=(e.clientY-y0)*k;V.yaw-=dx;V.pit+=dy;const cl=x=>Math.max(-2.5,Math.min(2.5,x));V.vy=cl(-dx*.6);V.vp=cl(dy*.6);
+    if(!V.mosso&&Math.abs(dx)+Math.abs(dy)>1){V.mosso=true;hd.classList.remove('on')}});
+  const su=e=>{pts.delete(e.pointerId);if(!pts.size){V.drag=false;box.classList.remove('drag')}pinch0=0};
+  cv.addEventListener('pointerup',su);cv.addEventListener('pointercancel',su);
+  cv.addEventListener('wheel',e=>{e.preventDefault();V.fov=Math.max(35,Math.min(95,V.fov*Math.exp(e.deltaY*.0012)))},{passive:false});
+  // the "360° view" pill at every stop in a room; the panorama loads while the camera is still moving
+  const orig=bottoni;
+  bottoni=function(b){orig(b);const s=STANZE[S.passo];if(!s)return;
+    const p=document.createElement('button');p.type='button';p.className='pill p3';p.innerHTML='360° view<span>↻</span>';
+    p.addEventListener('click',()=>{if(S.fase!=='fermo')return;p.classList.add('press');setTimeout(()=>p.classList.remove('press'),140);apri(S.passo)});
+    pills.insertBefore(p,pills.firstChild)};
+  const av=avvia;avvia=function(i){av(i);const s=STANZE[i];if(s)img(s[0])};
 })();
 </script>
 </body></html>
