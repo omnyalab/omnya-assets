@@ -1600,13 +1600,11 @@ const P = {
     root.innerHTML = `<div class="mtop"><div><p class="eyebrow">THE 3D FUTURE</p><h1>Log in to the club</h1></div></div><form class="glass mbox" data-lost novalidate><p data-lost-p>${esc(msg || 'Write the same email you used to join and pay, the one where your «you\'re in» email arrived, and we send you a 6-digit code: no password, and after that this phone or computer remembers you.')}</p>
       <div data-step-e><label for="t3m-e" class="sr">Email</label><input id="t3m-e" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@studio.com" required></div>
       <div data-step-c hidden><label for="t3m-c" class="sr">Code</label><input id="t3m-c" name="code" type="text" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="6-digit code"></div>
-      <button class="btn cta wide" type="submit" data-lost-btn>Send my code</button><p class="err" role="status" data-lost-msg></p><p class="lostjoin" data-lost-other hidden><a href="#">Use another email</a></p><p class="lostjoin">Not a member yet? <a href="/the-3d-future">Join now</a></p></form>`
+      <button class="btn cta wide" type="submit" data-lost-btn>Send my code</button><p class="err" role="status" data-lost-msg></p><p class="lostjoin">Not a member yet? <a href="/the-3d-future">Join now</a></p></form>`
     if (!$('[data-lbg]')) { app.classList.add('lostv'); app.insertAdjacentHTML('afterbegin', `<div class="lbg" data-lbg aria-hidden="true"><img src="${innerWidth >= 900 ? '/club/burj-1080.webp' : '/club/burj-phone.webp'}" alt=""><video muted playsinline loop preload="auto"></video><span></span></div>`)
       const v = $('[data-lbg] video'); if (!matchMedia('(prefers-reduced-motion: reduce)').matches) { v.src = innerWidth >= 900 ? '/club/burj-1080.mp4' : '/club/burj-phone.mp4'; v.addEventListener('playing', () => v.classList.add('on'), { once: true }); const pl = v.play(); if (pl && pl.catch) pl.catch(() => {}) } }
-    const f = $('[data-lost]'), msgEl = $('[data-lost-msg]'), btn = $('[data-lost-btn]'), pEl = $('[data-lost-p]'), stE = $('[data-step-e]'), stC = $('[data-step-c]'), other = $('[data-lost-other]')
+    const f = $('[data-lost]'), msgEl = $('[data-lost-msg]'), btn = $('[data-lost-btn]'), pEl = $('[data-lost-p]'), stE = $('[data-step-e]'), stC = $('[data-step-c]')
     let step = 'e', email = ''
-    const toEmail = () => { step = 'e'; stE.hidden = false; stC.hidden = true; other.hidden = true; btn.textContent = 'Send my code'; pEl.textContent = 'Write the same email you used to join and pay, the one where your «you\'re in» email arrived, and we send you a 6-digit code: no password, and after that this phone or computer remembers you.'; msgEl.textContent = ''; f.email.focus() }
-    $('a', other).addEventListener('click', e => { e.preventDefault(); toEmail() })
     f.code.addEventListener('input', () => { f.code.value = f.code.value.replace(/\D/g, '').slice(0, 6); if (f.code.value.length === 6) f.requestSubmit() })
     f.addEventListener('submit', e => {
       e.preventDefault(); msgEl.className = 'err'
@@ -1616,7 +1614,7 @@ const P = {
         btn.disabled = true; msgEl.textContent = ''
         post('/api/club/code', { email }).then(r => {
           if (!r.ok) { msgEl.textContent = r.d.error || 'Something went wrong, try again'; return }
-          step = 'c'; stE.hidden = true; stC.hidden = false; other.hidden = false; btn.textContent = 'Log in'
+          step = 'c'; stE.hidden = true; stC.hidden = false; btn.textContent = 'Log in'
           pEl.textContent = `If ${email} is in the club, a 6-digit code is on its way: type it here (and check the spam folder too).`
           f.code.value = ''; f.code.focus()
         }).catch(() => { msgEl.textContent = 'Something went wrong, try again' }).then(() => { btn.disabled = false })
