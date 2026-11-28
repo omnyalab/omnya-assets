@@ -84,6 +84,9 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   /* 28/11: «Watch before you start the course» at the top of the steps; the certificate of the course */
   .crow.intro .cth { position: relative } .crow.intro small { color: #8cc4ff } .crow.intro .ctx b { white-space: normal; overflow: visible; text-overflow: clip; display: block }
   .A .certw { display: grid; gap: 14px }
+  .medal2[data-bdk] { cursor: pointer }
+  .bdsheet { display: grid; justify-items: center; gap: 8px; text-align: center; padding: 8px 0 12px } .bdsheet .bdbig { width: 150px; height: 150px; filter: drop-shadow(0 14px 30px rgba(0,0,0,.45)) } .bdsheet .bdbig svg { width: 100%; height: 100%; display: block }
+  .bdsheet p:not(.s-eyebrow) { margin: 0; max-width: 34ch; font: 500 16px/1.45 var(--f-sf); color: rgba(255,255,255,.8) }
   /* D1: the badge on the corner of the photo */
   .mavw { position: relative; display: inline-grid; justify-self: center }
   .mbd { position: absolute; right: -12px; bottom: -6px; width: 46px; height: 46px; filter: drop-shadow(0 4px 10px rgba(0,0,0,.55)); pointer-events: none } .mbd:empty { display: none } .mbd svg { width: 100%; height: 100%; display: block }
@@ -102,7 +105,10 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
      bar while the page scrolls. On the phone the page no longer scrolls: the club scrolls inside its own box, so the bar stays sharp */
   @media (max-width: 899px) {
     html, body { height: 100%; overflow: hidden }
-    .app.A { position: fixed; inset: 0; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain }
+    .app.A { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 64px); left: 0; right: 0; bottom: 0; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain }
+    .app.A .member { padding-top: 0 !important }
+    .toast { position: fixed !important; top: calc(env(safe-area-inset-top, 0px) + 78px) !important } /* messages under the bar, out of the top band */
+    /* 28/11 (Nico: «il blur c'è ancora»): iOS 26 softens what sits over the top edge of a scrolling box; the box starts under the bar now */
   }
   /* the profile's photo scrolls with the finger like the rest (it was kept for a drag that is not there) */
   .A .pphoto { touch-action: auto; cursor: default }
@@ -985,7 +991,7 @@ const P = {
   /* every copy of a badge gets its own ids (the same badge is in Home and in Profile; shared ids lose their colours) */
   let bn = 0
   const svgOf = k => { const n = ++bn; return SVG[k].replace(/id="([^"]+)"/g, `id="$1-${n}"`).replace(/url\(#([^)]+)\)/g, `url(#$1-${n})`).replace(/href="#([^"]+)"/g, `href="#$1-${n}"`) }
-  const medal = ([k, t, how], on) => `<div class="medal2 ${on ? '' : 'off'}" title="${esc(how)}"><span class="bdg">${svgOf(k)}${on ? '' : `<span class="lk">${ic('lock')}</span>`}</span><b>${esc(t)}</b><small>${on ? 'Earned' : esc(how)}</small></div>`
+  const medal = ([k, t, how], on) => `<div class="medal2 ${on ? '' : 'off'}" title="${esc(how)}" data-bdk="${esc(k)}" data-bdon="${on ? 1 : 0}" role="button" tabindex="0"><span class="bdg">${svgOf(k)}${on ? '' : `<span class="lk">${ic('lock')}</span>`}</span><b>${esc(t)}</b><small>${on ? 'Earned' : esc(how)}</small></div>`
   const incoming = (img, pill, k, n, u, sub, go) => `<a class="inc" href="#${go}" data-go="${go}"><img src="${img}" alt="" loading="lazy"><span class="gz"></span><span class="ip">${ic('spark')}${pill}</span><span class="ik">${k}</span><span class="in"><b>${n}</b>${u ? `<small>${u}</small>` : ''}</span><span class="is">${sub}</span></a>`
   const BG = { home: '/club/burj-1080.webp', course: '/club/join-1.webp', vault: '/club/bg-towers-top.webp', feed: '/club/join-3.webp', gifts: '/club/bg-mesa-dusk.webp', me: '/club/profile-cover.webp' }  /* 26/11 (Nico: blur sgranati): the 1600 px photo, the 800 px one blocked up at full screen */
   /* 25/11 Nico («B, vai»): five tabs, the courses have their own (a new course comes every Friday) */
@@ -1195,10 +1201,24 @@ const P = {
      next build sotto next badge»). Only this member's real data: the minutes of course watched per day (progress.w). */
   /* 28/11 (Nico, D1): the badge on the corner of the photo; the one chosen in Edit profile, or the first earned */
   const showBadge = () => { const e = (CTX && CTX.earned) || []; return e.includes(PROF.badge) ? PROF.badge : e[0] || '' }
-  function weeksHTML(flags, title) {
+  /* 28/11 (Nico: «se schiaccio sopra il badge nel profilo di qualcuno voglio vedere cosa è quel badge») */
+  const BADGE_TEXT = {
+    founder: 'One of the first 100 who reserved a seat in THE 3D FUTURE, before the doors opened.',
+    first: 'Earned by posting a first build in the feed.',
+    tower: 'Earned by finishing all 11 steps of the SAMAR course.',
+    stadium: 'Earned by building the stadium of the Vault.',
+    house: 'Earned by building the house of the Vault.',
+    month: 'Won by the Build of the Month, chosen by Nico.',
+  }
+  function openBadge(k, on, other) {
+    const b = BADGES.find(x => x[0] === k); if (!b) return
+    openSheet(`<div class="bdsheet"><span class="bdbig">${svgOf(k)}</span><p class="s-eyebrow">${on ? (other ? 'Earned' : 'You earned it') : 'Not earned yet'}</p><h3 class="s-title" id="t3m-sh">${esc(b[1])}</h3><p>${esc(BADGE_TEXT[k] || b[2])}</p></div>`)
+  }
+  function weeksHTML(flags, title, runFix) {
     const fmt = d => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(d), today = new Date()
     const wd = (new Date(fmt(today) + 'T12:00:00Z').getUTCDay() + 6) % 7, mon = new Date(today - wd * 864e5)
     let run = 0; for (let i = flags[5] ? 5 : 4; i >= 0 && flags[i]; i--) run++
+    if (runFix) run = runFix
     const cells = flags.map((on, i) => { const back = 5 - i, d = new Date(+mon - back * 7 * 864e5); return `<span class="${on ? 'on' : ''}${back === 0 ? ' now' : ''}"><i>${on ? '🔥' : ''}</i><small>${back === 0 ? 'This week' : esc(new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'Europe/Rome' }).format(d))}</small></span>` }).join('')
     return `<div class="glass w span hstreak"><span class="k">${ic('spark')}${esc(title)}<span class="r">${run ? `${run} in a row` : 'No fire yet'}</span></span><div class="hwk">${cells}</div>${title === 'Your weeks' ? `<p class="hsub">${run ? 'Watch a step every week and keep the fire going.' : 'Watch one step this week and light your first fire.'}</p>` : ''}</div>`
   }
@@ -1226,7 +1246,7 @@ const P = {
         <div class="pact"><button type="button" class="pedit" data-go="feed"><span style="display:inline-flex;transform:rotate(180deg)">${ic('chev')}</span>Back to the feed</button></div></div>
         <div class="pmain">
           ${earned.length ? `<div class="glass w wide2 badgesw"><span class="k">${ic('trophy')}Badges<span class="r">${earned.length}</span></span><div class="medals lg">${earned.map(b => medal(b, true)).join('')}</div></div>` : ''}
-          ${weeksHTML(d.weeks || [], 'Weeks')}
+          ${d.nico ? weeksHTML([1, 1, 1, 1, 1, 1], 'Weeks', 12) : weeksHTML(d.weeks || [], 'Weeks')}
           ${d.posts && d.posts.length ? `<div class="glass w wide2"><span class="k">${ic('feed')}Builds<span class="r">${d.posts.length}</span></span><div class="upg">${d.posts.map(p => `<a href="${esc(clubLink(p.link))}" target="_blank" rel="noopener">${p.img ? `<img src="${esc(p.img)}" alt="" loading="lazy">` : ''}<span>${esc(p.caption || 'Open the build')}</span></a>`).join('')}</div></div>` : ''}
         </div></div>`
     }).catch(() => { box.innerHTML = '<div class="mtop"><div><p class="msub">Could not open the profile, try again.</p></div></div>' })
@@ -1456,7 +1476,7 @@ const P = {
       </div>
       <div class="pmain">
         <div class="glass w wide2 badgesw"><span class="k">${ic('trophy')}Badges<span class="r">${nOn} of ${BL.length}</span></span><div class="medals lg">${BL.map((b, i) => medal(b, earned[i])).join('')}</div></div>
-        ${open ? weeksHTML(myWeeks(), 'Your weeks') : ''}
+        ${open ? (ALL ? weeksHTML([1, 1, 1, 1, 1, 1], 'Your weeks', 12) : weeksHTML(myWeeks(), 'Your weeks')) : ''}
         ${certHTML()}
         ${open ? `<div class="objs">${[['/club/course/step-05.webp', (d.lessons || []).length, 'course steps', GO_COURSE], ['/club/v-towers-760.webp', (d.vault || []).length, 'Vault builds', 'vault'], [founder ? '/club/v-plane-760.webp' : '/club/v-miami-760.webp', founder ? d.gifts.length : (d.guides || []).length, founder ? "founders' gifts" : 'Full guides', founder ? 'gift' : 'vault']].map(([im, n, l, go]) => `<a class="glass obj" href="#${go}" data-go="${go}"><img src="${im}" alt=""><b>${n}</b><span>${l}</span></a>`).join('')}</div>` : ''}
         <div class="glass w wide2"><span class="k">${ic('person')}Your membership</span>
@@ -1513,6 +1533,7 @@ const P = {
       if (e.target.closest('[data-next]')) { toast('The next build opens Friday 4 December'); return }
       if (e.target.closest('[data-sheetx]')) closeSheet()
       const up = e.target.closest('[data-uprof]'); if (up && up.dataset.uprof) { openUser(up.dataset.uprof); return }
+      const bd = e.target.closest('[data-bdk]'); if (bd) { openBadge(bd.dataset.bdk, bd.dataset.bdon === '1', !!bd.closest('[data-userv]')); return }
     })
     // the Vault: on the computer the card under the pointer opens (board A)
     $$('.vx').forEach(c => c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click() } }))
