@@ -29,7 +29,7 @@ import {
   limited, ipOf, receiptEmail, isBuyerEmail, isWaitlisted, fillWaitlist, backfill, lists, KEYS, PORTAL_URL,
   readMember, insideData, insideUrl, PREVIEW_EMAIL, noteBuild, sendInsideLink,
 } from './_lib/club.js';
-import { saveProgress, saveProfile, avatar, MAX_AVATAR, saveHello, finishedAt } from './_lib/club-me.js';
+import { saveProgress, saveProfile, avatar, MAX_AVATAR, MAX_COVER, saveHello, finishedAt } from './_lib/club-me.js';
 import { CERT_COURSES, certId, certName, certSvg, linkedInUrl } from './_lib/club-cert.js';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -376,6 +376,7 @@ async function mePost(req, a) {
       return p ? json(p) : fail(403, 'locked', 'Finish the step before this one first.');
     }
     if (b.img && String(b.img).length > MAX_AVATAR) return fail(400, 'bad_image', 'That photo is too big, try another one.');
+    if (b.cover && String(b.cover).length > MAX_COVER) return fail(400, 'bad_image', 'That background is too big, try another photo.');
     return json({ profile: await saveProfile(email, b) });
   } catch (e) {
     if (e.code === 'bad_request' || e.code === 'bad_image') return fail(400, e.code, e.message);

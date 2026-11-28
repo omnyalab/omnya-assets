@@ -67,7 +67,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .opn-r circle { fill: none; stroke: url(#opg); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 704; stroke-dashoffset: 704; filter: drop-shadow(0 0 8px rgba(90,168,255,.55));
     animation: opn-draw 1.3s cubic-bezier(.6,0,.2,1) .2s forwards, opn-glow 2.4s ease-in-out 1.5s infinite }
   .opn-k { position: relative; width: 128px; height: 128px; filter: drop-shadow(0 12px 32px rgba(60,130,255,.6)); animation: opn-in .9s cubic-bezier(.2,.8,.2,1) both, opn-bre 2.4s ease-in-out .9s infinite }
-  .opn-w { font: 700 22px/1 var(--f-sfd); letter-spacing: .02em; color: #fff; white-space: nowrap; animation: opn-w 1s ease .7s both }
+  .opn-w { font: 700 26px/1 Geist, -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; letter-spacing: -.035em; color: #fff; white-space: nowrap; animation: opn-w 1s ease .7s both }
   .opn-w b { background: linear-gradient(180deg, #f2f9ff 0%, #a6d4ff 36%, #3f8cff 70%, #2457e0 100%); -webkit-background-clip: text; background-clip: text; color: transparent }
   .opn.quick .opn-k { animation-duration: .35s, 2.4s; animation-delay: 0s, .35s } .opn.quick .opn-r circle { animation-duration: .5s, 2.4s; animation-delay: 0s, .5s } .opn.quick .opn-w { animation-duration: .35s; animation-delay: .1s }
   .opn.out { pointer-events: none } .opn.out::before { opacity: 0 } .opn.gone { opacity: 0 }
@@ -76,11 +76,54 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   @keyframes opn-glow { 50% { opacity: .55 } }
   @keyframes opn-in { from { opacity: 0; transform: scale(.5) rotate(-40deg); filter: blur(14px) } to { opacity: 1; transform: none } }
   @keyframes opn-bre { 50% { transform: scale(1.05) } }
-  @keyframes opn-w { from { opacity: 0; letter-spacing: .4em; filter: blur(6px) } to { opacity: 1; letter-spacing: .02em; filter: none } }
+  @keyframes opn-w { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
   @media (prefers-reduced-motion: reduce) { .opn-k, .opn-w, .opn-r circle { animation: none !important; stroke-dashoffset: 0 } }
   /* 28/11: «Watch before you start the course» at the top of the steps; the certificate of the course */
   .crow.intro .cth { position: relative } .crow.intro small { color: #8cc4ff } .crow.intro .ctx b { white-space: normal; overflow: visible; text-overflow: clip; display: block }
   .A .certw { display: grid; gap: 14px }
+  /* Buddy bottom right */
+  .bfab { position: fixed; z-index: 70; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(96px + env(safe-area-inset-bottom, 0px)); width: 62px; height: 62px; padding: 0; border-radius: 50%; border: 1px solid rgba(190,220,255,.3);
+    background: radial-gradient(circle at 35% 30%, #27489a, #0c1a45 70%); box-shadow: 0 14px 32px rgba(0,0,0,.5), 0 0 0 5px rgba(90,168,255,.12); display: grid; place-items: center; cursor: pointer; animation: bfin .6s cubic-bezier(.2,.8,.2,1) both }
+  .bfab img { width: 44px; height: 44px; filter: drop-shadow(0 4px 10px rgba(60,130,255,.65)); animation: bbob 3.4s ease-in-out infinite }
+  .bfab[aria-expanded="true"] { box-shadow: 0 14px 32px rgba(0,0,0,.5), 0 0 0 3px #5aa8ff }
+  .bpop { position: fixed; z-index: 70; right: calc(max(16px, env(safe-area-inset-right, 0px)) + 72px); bottom: calc(110px + env(safe-area-inset-bottom, 0px)); width: max-content; max-width: min(280px, calc(100vw - 110px));
+    border-radius: 20px 20px 6px 20px; background: #fff; color: #0b1534; box-shadow: 0 16px 40px rgba(0,0,0,.45); transform-origin: 100% 100%; transform: scale(.85) translateY(8px); opacity: 0; transition: transform .35s cubic-bezier(.2,.9,.3,1.2), opacity .25s }
+  .bpop.on { transform: none; opacity: 1 }
+  .bpq { display: block; width: 100%; padding: 14px 44px 14px 16px; border: 0; background: none; color: inherit; text-align: left; font: 600 15.5px/1.35 var(--f-sf); cursor: pointer }
+  .bpx { position: absolute; top: 0; right: 0; width: 44px; height: 44px; border: 0; background: none; color: #6b7387; display: grid; place-items: center; cursor: pointer } .bpx .ic { width: 16px; height: 16px }
+  .bscrim { position: fixed; inset: 0; z-index: 79; background: rgba(3,8,24,.55); opacity: 0; transition: opacity .3s }
+  .bscrim.on { opacity: 1 }
+  .bpan { position: fixed; z-index: 80; left: 0; right: 0; bottom: 0; height: min(86dvh, 720px); display: grid; grid-template-rows: auto 1fr auto auto; gap: 12px; padding: 16px max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+    border-radius: 28px 28px 0 0; background: #0f1c44; border: 1px solid rgba(140,180,255,.22); box-shadow: 0 -20px 60px rgba(0,0,0,.5); color: #fff; transform: translateY(104%); transition: transform .38s cubic-bezier(.2,.8,.2,1) }
+  .bpan.on { transform: none }
+  .bph { display: flex; align-items: center; gap: 12px } .bph img { width: 44px; height: 44px; filter: drop-shadow(0 6px 14px rgba(40,110,255,.55)) }
+  .bph b { display: block; font: 700 19px/1.1 Geist, var(--f-sfd) } .bph small { display: block; margin-top: 3px; font: 500 13.5px/1.3 var(--f-sf); color: rgba(255,255,255,.7) }
+  .bpc { margin-left: auto; width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,.1); color: #fff; display: grid; place-items: center; cursor: pointer } .bpc .ic { width: 18px; height: 18px }
+  .blog { display: grid; align-content: start; gap: 8px; overflow-y: auto; overscroll-behavior: contain; min-height: 0; padding: 2px }
+  .blog p { margin: 0; max-width: 88%; padding: 11px 15px; border-radius: 20px; font: 500 16px/1.45 var(--f-sf); white-space: pre-line; overflow-wrap: anywhere }
+  .blog .bb { justify-self: start; background: #fff; color: #0b1534; border-bottom-left-radius: 6px } .blog .bu { justify-self: end; background: #1d5bd6; color: #fff; border-bottom-right-radius: 6px }
+  .blog .wait { animation: bwait 1s ease-in-out infinite }
+  .bsug { display: flex; flex-wrap: wrap; gap: 8px } .bsug:empty { display: none }
+  .bsug button { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.07); color: #fff; font: 600 14px/1.2 var(--f-sf); cursor: pointer; text-align: left }
+  .bform { display: flex; gap: 8px } .bform input { flex: 1; min-width: 0; min-height: 50px; padding: 0 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.08); color: #fff; font: 500 17px var(--f-sf) }
+  .bform input::placeholder { color: rgba(255,255,255,.5) } .bform input:focus { outline: none; border-color: #8cc4ff }
+  .bform button { width: 50px; height: 50px; flex: none; border: 0; border-radius: 16px; background: #58cc6a; color: #06260d; display: grid; place-items: center; cursor: pointer } .bform button .ic { width: 22px; height: 22px } .bform button:disabled { opacity: .5 }
+  @keyframes bfin { from { opacity: 0; transform: scale(.6) } to { opacity: 1; transform: none } }
+  @keyframes bbob { 50% { transform: translateY(-3px) rotate(6deg) } }
+  @keyframes bwait { 50% { opacity: .45 } }
+  @media (min-width: 900px) {
+    .bfab { right: 28px; bottom: 28px }
+    .bpop { right: 104px; bottom: 44px }
+    .bscrim { display: none }
+    .bpan { left: auto; right: 28px; bottom: 104px; width: 400px; height: min(620px, calc(100vh - 140px)); border-radius: 26px; transform: translateY(16px) scale(.97); opacity: 0; transition: transform .3s cubic-bezier(.2,.8,.2,1), opacity .25s }
+    .bpan.on { transform: none; opacity: 1 }
+  }
+  @media (prefers-reduced-motion: reduce) { .bfab, .bfab img, .blog .wait { animation: none } .bpan, .bpop { transition: opacity .2s } }
+  body.a2open .bfab, body.a2open .bpop, .sheetwrap:not([hidden]) ~ .bfab, .sheetwrap:not([hidden]) ~ .bpop, .mwrap:not([hidden]) ~ .bfab, .mwrap:not([hidden]) ~ .bpop { display: none }
+  .pcoved { position: relative; height: 128px; border-radius: 18px; background-size: cover; background-position: center; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; padding: 10px; overflow: hidden }
+  .pcoved::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,.55)) }
+  .pform .pcovb, .pform .pcovx { position: relative; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 0; background: rgba(255,255,255,.92); color: #0b1534; font: 600 14px/1 var(--f-sf); cursor: pointer }
+  .pform .pcovx { background: rgba(0,0,0,.45); color: #fff } .pcovb input { position: absolute; width: 1px; height: 1px; opacity: 0 } .pcovb .ic { width: 18px; height: 18px }
   .A .certimg { display: block; position: relative; border-radius: 14px; overflow: hidden; aspect-ratio: 1.414; background: #f3ead6; box-shadow: 0 18px 44px rgba(0,0,0,.45) }
   .A .certimg img { display: block; width: 100%; height: 100%; object-fit: cover }
   .A .certw.lockd .certimg img { filter: blur(5px) saturate(.8); transform: scale(1.04) }
@@ -253,7 +296,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   @media (max-width: 899px) {
     .mhd { display: flex; position: fixed; z-index: 44; left: 0; right: 0; top: 0; height: calc(env(safe-area-inset-top, 0px) + 64px); padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); align-items: center; pointer-events: none;
       background: #0b1534; box-shadow: 0 1px 0 rgba(255,255,255,.1) } /* 27/11 sera (Nico: «quel blur di merda sopra»): no soft shadow under the bar, a clean edge */
-    .mhd a { pointer-events: auto; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: #fff; text-decoration: none; font: 700 15px/1 var(--f-sfd); letter-spacing: .02em }
+    .mhd a { pointer-events: auto; display: inline-flex; align-items: center; gap: 10px; min-height: 44px; color: #fff; text-decoration: none; font: 700 18px/1 Geist, -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; letter-spacing: -.035em }
     .mhd a img { width: 28px; height: 28px; filter: drop-shadow(0 3px 10px rgba(40,110,255,.45)) }
     .mhd a b { background: linear-gradient(180deg, #f2f9ff 0%, #a6d4ff 36%, #3f8cff 70%, #2457e0 100%); -webkit-background-clip: text; background-clip: text; color: transparent }
     .hbfab { top: calc(env(safe-area-inset-top, 0px) + 8px) !important; right: max(12px, env(safe-area-inset-right, 0px)) !important; z-index: 46 !important }
@@ -304,6 +347,13 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .A .top { top: max(8px, env(safe-area-inset-top)) }
   .A .mbg { position: fixed; height: 100vh }
   .A .mbg img { transition: opacity .5s ease }
+  /* 28/11 (Nico: «c'è ancora quel fade blur sopra ogni volta e fa cagare, sistema o toglilo direttamente»): no blurred photo behind
+     the pages any more, a clean deep blue; the logo in the top bar is the real wordmark (Geist, tight like the club's logo) */
+  .A .mbg { display: none }
+  .app.A { background: radial-gradient(120% 520px at 50% 0%, #16306f 0%, #0d1c48 55%, #0b1534 100%) no-repeat, #0b1534 }
+  .A .top .wm { font: 700 17px/1 Geist, -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; letter-spacing: -.035em }
+  /* the profile photo fills its circle (the round gradient of .mav was resetting its size) */
+  .A .mav.ph { background-size: cover; background-position: center; background-repeat: no-repeat }
   .A .mtop { padding-top: 24px }
   .A .tabbar { position: fixed; left: 0; right: 0; bottom: 0; padding-bottom: max(16px, env(safe-area-inset-bottom)) }
   .A .member { padding-bottom: 112px }
@@ -695,7 +745,7 @@ const P = {
         <span class="cth"><img src="/club/intro-nico-cover.webp" alt="" loading="lazy"></span>
         <span class="ctx"><small>START HERE · 1:58</small><b>Watch before you start the course</b></span>
         <span class="cst">${ic(HELLO() ? 'check' : 'play')}</span></button>`
-  const introMeta = () => `<span class="cno">Before you start · 1:58${HELLO() ? `<span class="okc">${ic('check')}Watched</span>` : ''}</span><h3>Watch before you <em>start</em> the course</h3><p>A welcome from Nico: two minutes before step 01.</p>${isOpenS(1) ? `<button type="button" class="btn cta cnext" data-nextstep="1">${ic('play')}<span>Start step 01</span></button>` : ''}`
+  const introMeta = () => `<span class="cno">Before you start · 1:58${HELLO() ? `<span class="okc">${ic('check')}Watched</span>` : ''}</span><h3>Watch before you <em>start</em> the course</h3><p>Two minutes with me before step 01.</p>${isOpenS(1) ? `<button type="button" class="btn cta cnext" data-nextstep="1">${ic('play')}<span>Start step 01</span></button>` : ''}`
   function pickIntro(play, scroll) {
     const v = $('[data-player]'); if (!v) return
     SEL = 0; $('[data-cmeta]').innerHTML = introMeta()
@@ -729,10 +779,7 @@ const P = {
     const live = ls.some(l => l.src); SEL = !HELLO() && !PROG.d.length ? 0 : curStep()
     box.innerHTML = `<div class="cnow"><div class="cplay"><video playsinline controls preload="none" data-player aria-label="The video of the step"></video>${live ? '' : `<span class="csoon" data-csoon>${ic('lock')}Opens on Saturday 28 November at 9:00 (Rome)</span>`}</div><div class="cmeta" data-cmeta></div></div>
       <div class="clist" data-clist>${rowsHTML()}</div>
-      ${live ? `<div class="bask" data-bask><div class="bask-h"><img src="/club/knot-96.webp" alt="" width="52" height="52"><div><b>Ask Buddy</b><small>Anything about this step or the course</small></div></div>
-        <div class="bask-log" data-blog aria-live="polite"><p class="bb">Hi! I know the SAMAR course by heart. Ask me anything 👇</p></div>
-        <div class="bask-sug" data-bsug>${["What do I need before I start?", "How do I open the kit with Claude?", "How do I check my tower matches the photo?"].map(x => `<button type="button" data-bq>${esc(x)}</button>`).join('')}</div>
-        <form class="bask-f" data-bform novalidate><label class="sr" for="t3m-bq">Your question for Buddy</label><input id="t3m-bq" name="q" maxlength="600" autocomplete="off" placeholder="Ask Buddy…" enterkeyhint="send"><button type="submit" class="ctr" aria-label="Send">${ic('arrow')}</button></form></div>` : ''}`
+`
     const pg = $('[data-cprog]'); if (pg) pg.innerHTML = progHTML()
     $('[data-course]').hidden = false
     box.addEventListener('click', e => {
@@ -743,32 +790,80 @@ const P = {
       if (!isOpenS(n)) { toast(!LS[n - 1].src ? 'This step opens on Saturday 28 November at 9:00' : `Finish step ${nn(n - 1)} to open it`); return }
       pick(n, true, true)
     })
-    if (SEL === 0) pickIntro(false, false); else pick(SEL, false, false); track(); askInit()
+    if (SEL === 0) pickIntro(false, false); else pick(SEL, false, false); track()
     const cd = $('[data-cd]'), before = Date.now() < OPENS, tick = () => { const s = Math.max(0, Math.floor((OPENS - Date.now()) / 1000)); if (!s) { cd.hidden = true; return }
       const u = { d: Math.floor(s / 86400), h: Math.floor(s % 86400 / 3600), m: Math.floor(s % 3600 / 60), s: s % 60 }
       cd.querySelectorAll('[data-u]').forEach(b => { b.textContent = b.dataset.u === 'd' ? u.d : String(u[b.dataset.u]).padStart(2, '0') }) }
     if (cd) { tick(); if (before) setInterval(tick, 1000); else cd.hidden = true }
   }
-  /* 27/11 (Nico): Buddy answers questions about the course (api/club/ask: members only, no tools, a daily cap) */
-  function askInit() {
-    const f = $('[data-bform]'); if (!f) return
-    const log = $('[data-blog]'), inp = f.elements.q, H = []
-    let busy = false
+  /* 28/11 (Nico: «il buddy deve sempre uscire in basso a destra che ti fa domande, con il loghetto»; «niente testi di completamento,
+     umani alla Hormozi, gentili»): Buddy lives bottom right on every screen; once a day per screen he asks you something.
+     He answers through api/club/ask (members only, no tools, a daily cap). */
+  const BUD = {
+    home: [first => `Hey ${first}, want me to show you where to start?`, ['Where do I start?', 'What will I build?', 'How does the club work?']],
+    course: [() => `Stuck on step ${nn(SEL || 1)}? Tell me where and I'll get you moving.`, ['What do I need before I start?', 'How do I open the kit with Claude?', "My tower doesn't match the photo"]],
+    vault: [() => 'Not sure which build to open first? I can help you pick.', ['Which build should I start with?', "What's inside a build?"]],
+    feed: [() => "About to post? I'll tell you what makes a build stand out.", ['What makes a good post?', 'When does Nico comment?']],
+    me: [() => 'Need a hand with your profile or the app?', ['How do I put the club on my phone?', 'How do I change my background?']],
+    gifts: [() => 'Want to know which gift to open first?', ['Which gift should I start with?']],
+  }
+  let BH = [], bbusy = false, btimer = 0
+  const budOn = () => !!$('[data-bfab]')
+  function buddyInit() {
+    if (!CTX.d || CTX.d.state !== 'open' || budOn()) return
+    document.body.insertAdjacentHTML('beforeend', `<button type="button" class="bfab" data-bfab aria-label="Ask Buddy" aria-expanded="false"><img src="/club/knot-96.webp" alt="" width="42" height="42"></button>
+      <div class="bpop" data-bpop hidden><button type="button" class="bpq" data-bpq></button><button type="button" class="bpx" data-bpx aria-label="Not now">${ic('x')}</button></div>
+      <div class="bscrim" data-bscrim hidden></div>
+      <section class="bpan" data-bpan hidden role="dialog" aria-modal="true" aria-labelledby="t3m-bt">
+        <header class="bph"><img src="/club/knot-96.webp" alt="" width="44" height="44"><div><b id="t3m-bt">Buddy</b><small>Knows every step of SAMAR</small></div><button type="button" class="bpc" data-bclose aria-label="Close">${ic('x')}</button></header>
+        <div class="blog" data-blog aria-live="polite"></div>
+        <div class="bsug" data-bsug></div>
+        <form class="bform" data-bform novalidate><label class="sr" for="t3m-bq">Your question for Buddy</label><input id="t3m-bq" name="q" maxlength="600" autocomplete="off" placeholder="Ask Buddy…" enterkeyhint="send"><button type="submit" aria-label="Send">${ic('arrow')}</button></form>
+      </section>`)
+    const fab = $('[data-bfab]'), pan = $('[data-bpan]'), scrim = $('[data-bscrim]'), pop = $('[data-bpop]'), f = $('[data-bform]'), log = $('[data-blog]')
     const add = (cls, text) => { const p = document.createElement('p'); p.className = cls; p.textContent = text; log.appendChild(p); log.scrollTop = log.scrollHeight; return p }
-    const ask = q => {
-      q = String(q || '').trim(); if (!q || busy) return
-      busy = true; f.querySelector('button').disabled = true; inp.value = ''
-      const sug = $('[data-bsug]'); if (sug) sug.hidden = true
-      add('bu', q); const wait = add('bb wait', '…')
-      post('/api/club/ask', { m, q, step: SEL || 1, history: H.slice(-6) }).then(r => {
-        wait.classList.remove('wait')
-        if (r.ok && r.d.a) { wait.textContent = r.d.a; H.push({ role: 'user', text: q }, { role: 'assistant', text: r.d.a }) }
-        else wait.textContent = (r.d && r.d.error) || "I can't answer right now, try again in a minute."
-      }).catch(() => { wait.classList.remove('wait'); wait.textContent = "I can't answer right now, check your connection and try again." })
-        .then(() => { busy = false; f.querySelector('button').disabled = false; log.scrollTop = log.scrollHeight })
+    const chips = () => { const k = app.dataset.screen || 'home', q = (BUD[k] || BUD.home)[1]; $('[data-bsug]').innerHTML = q.map(x => `<button type="button" data-bq>${esc(x)}</button>`).join('') }
+    const open = opener => {
+      hidePop(); if (!pan.hidden) return
+      if (!log.children.length || opener) add('bb', opener || (BUD[app.dataset.screen] || BUD.home)[0](CTX.first))
+      chips(); pan.hidden = false; scrim.hidden = false; fab.setAttribute('aria-expanded', 'true')
+      requestAnimationFrame(() => { pan.classList.add('on'); scrim.classList.add('on') })
+      if (innerWidth > 899) f.q.focus()
     }
-    f.addEventListener('submit', e => { e.preventDefault(); ask(inp.value) })
-    $('[data-bask]').addEventListener('click', e => { const b = e.target.closest('[data-bq]'); if (b) ask(b.textContent) })
+    const close = () => { pan.classList.remove('on'); scrim.classList.remove('on'); fab.setAttribute('aria-expanded', 'false'); setTimeout(() => { pan.hidden = true; scrim.hidden = true }, 300) }
+    const ask = q => {
+      q = String(q || '').trim(); if (!q || bbusy) return
+      bbusy = true; f.querySelector('button').disabled = true; f.q.value = ''; $('[data-bsug]').innerHTML = ''
+      add('bu', q); const wait = add('bb wait', '…')
+      post('/api/club/ask', { m, q, step: SEL || 1, history: BH.slice(-6) }).then(r => {
+        wait.classList.remove('wait')
+        if (r.ok && r.d.a) { wait.textContent = r.d.a; BH.push({ role: 'user', text: q }, { role: 'assistant', text: r.d.a }) }
+        else wait.textContent = (r.d && r.d.error) || "I can't answer right now. Try again in a minute."
+      }).catch(() => { wait.classList.remove('wait'); wait.textContent = "I lost the connection. Try again in a minute." })
+        .then(() => { bbusy = false; f.querySelector('button').disabled = false; log.scrollTop = log.scrollHeight })
+    }
+    fab.addEventListener('click', () => pan.hidden ? open() : close())
+    $('[data-bclose]').addEventListener('click', close); scrim.addEventListener('click', close)
+    addEventListener('keydown', e => { if (e.key === 'Escape' && !pan.hidden) close() })
+    f.addEventListener('submit', e => { e.preventDefault(); ask(f.q.value) })
+    pan.addEventListener('click', e => { const b = e.target.closest('[data-bq]'); if (b) ask(b.textContent) })
+    $('[data-bpq]').addEventListener('click', () => open($('[data-bpq]').textContent))
+    $('[data-bpx]').addEventListener('click', hidePop)
+    buddyNudge(app.dataset.screen || 'home')
+  }
+  function hidePop() { const p = $('[data-bpop]'); if (p) { p.classList.remove('on'); setTimeout(() => { p.hidden = true }, 250) } clearTimeout(btimer) }
+  /* once a day per screen, after a few seconds there, Buddy asks the question of that screen; it goes away by itself */
+  function buddyNudge(k) {
+    if (!budOn()) return
+    clearTimeout(btimer); hidePop()
+    const key = 't3f-bq-' + k, today = new Date().toDateString()
+    try { if (localStorage.getItem(key) === today) return } catch (e) {}
+    btimer = setTimeout(() => {
+      const pan = $('[data-bpan]'), pop = $('[data-bpop]'); if (!pan.hidden || app.dataset.screen !== k || document.querySelector('.a2hs')) return
+      $('[data-bpq]').textContent = (BUD[k] || BUD.home)[0](CTX.first); pop.hidden = false; requestAnimationFrame(() => pop.classList.add('on'))
+      try { localStorage.setItem(key, today) } catch (e) {}
+      btimer = setTimeout(hidePop, 9000)
+    }, 4000)
   }
   function pick(n, play, scroll) {
     if (n === 0) return pickIntro(play, scroll)
@@ -815,7 +910,7 @@ const P = {
     if (nx) { const r = $(`[data-clist] [data-step="${nx.n}"]`); if (r) r.classList.add('fresh') }
     paintHero()
     if (!nx || LS.every(x => isDone(x.n))) { toast('Course finished · your certificate is ready'); if (!ALL) setTimeout(() => location.reload(), 2600); return }
-    toast(isOpenS(nx.n) ? `Step ${nn(nx.n)} unlocked` : 'Step finished')
+    toast(isOpenS(nx.n) ? `Step ${nn(nx.n)} unlocked` : 'Step finished'); setTimeout(() => a2hsMaybe(true), 2800)
   }
   /* every copy of a badge gets its own ids (the same badge is in Home and in Profile; shared ids lose their colours) */
   let bn = 0
@@ -1032,12 +1127,12 @@ const P = {
     if (d.state !== 'open') return ''
     if (!c) return `<div class="glass w wide2 span certw lockd"><span class="k">${ic('lock')}Your certificate<span class="r">${PROG.d.length} of ${LS.length || 11} steps</span></span>
         <div class="certimg"><img src="/club/cert-sample.webp" alt="" loading="lazy"><span class="lk2">${ic('lock')}</span></div>
-        <p class="msmall">Finish the ${LS.length || 11} steps of SAMAR and your certificate arrives here, with your name on it. Yours to download for ever.</p></div>`
+        <p class="msmall">Finish all ${LS.length || 11} steps of SAMAR and your certificate shows up here, with your name on it.</p></div>`
     const base = `/api/club/cert?m=${encodeURIComponent(m)}&c=${encodeURIComponent(c.c)}`
     return `<div class="glass w wide2 span certw"><span class="k">${ic('trophy')}Your certificate<span class="r">${esc(c.title)}</span></span>
         <a class="certimg" href="${base}&f=pdf" download aria-label="Download your certificate as a PDF"><img src="${base}" alt="Your certificate of completion of ${esc(c.title)}, in the name of ${esc(c.name)}" loading="lazy"></a>
         <div class="certb"><a class="btn cta" href="${base}&f=pdf" download>${ic('down')}<span>Download PDF</span></a><a class="btn li" href="${esc(c.li)}" target="_blank" rel="noopener">Add to LinkedIn</a></div>
-        <p class="msmall">Yours for ever: download it again from here any time. Certificate ID ${esc(c.id)}.</p></div>`
+        <p class="msmall">It stays here. Download it again whenever you want. ID ${esc(c.id)}</p></div>`
   }
   function heroHTML() {
     const ls = LS, live = ls.some(l => l.src), before = Date.now() < OPENS, n = curStep(), cur = ls[n - 1] || { n: 1, t: '' }, k = PROG.d.length
@@ -1060,11 +1155,12 @@ const P = {
 
   /* 27/11: Edit profile (photo, name, Instagram, one line), saved by /api/club/profile */
   function editProfile() {
-    const pr = PROF || {}, st = { img: '', noimg: false }
+    const pr = PROF || {}, st = { img: '', noimg: false, cover: '', nocover: false }
     const face = () => st.img || (!st.noimg && pr.av) ? `style="background-image:url(${esc(st.img || pr.av)})"` : ''
     openSheet(`<p class="s-eyebrow">Your profile</p><h3 class="s-title" id="t3m-sh">Edit profile</h3>
       <form class="pform" data-pform novalidate>
         <label class="pphotoed" data-pface ${face()} aria-label="Choose a photo">${st.img || pr.av ? '' : esc((pr.name || CTX.first || '·')[0].toUpperCase())}<span>${ic('cam')}</span><input type="file" accept="image/*" data-pfile></label>
+        <div class="pcoved" data-pcoved style="background-image:url(${esc(pr.cover || '/club/profile-cover-800.webp')})"><label class="pcovb">${ic('cam')}<span>Change background</span><input type="file" accept="image/*" data-pcfile></label>${pr.cover ? '<button type="button" class="pcovx" data-pcx>Use the club photo</button>' : ''}</div>
         <label>Name<input name="name" maxlength="40" autocomplete="name" value="${esc(pr.name || CTX.first || '')}" required></label>
         <label>Instagram<input name="ig" maxlength="40" autocapitalize="none" autocomplete="off" placeholder="@yourname" value="${pr.ig ? '@' + esc(pr.ig) : ''}"></label>
         <label>One line about you<input name="bio" maxlength="120" placeholder="Architect in Milan, towers and villas" value="${esc(pr.bio || '')}"></label>
@@ -1073,8 +1169,12 @@ const P = {
     $('[data-pfile]').addEventListener('change', e => { const file = e.target.files && e.target.files[0]; if (!file) return; x.className = 'ferr ok'; x.textContent = 'Getting your photo ready…'
       shrink(file, 512).then(r => { st.img = r.data; st.noimg = false; const fc = $('[data-pface]'); fc.style.backgroundImage = `url(${r.data})`; fc.firstChild && fc.firstChild.nodeType === 3 && (fc.firstChild.textContent = ''); x.textContent = '' })
         .catch(() => { x.className = 'ferr'; x.textContent = 'That photo did not open, try a JPG or PNG' }) })
-    f.addEventListener('submit', e => { e.preventDefault(); const b = $('button', f); b.disabled = true; x.textContent = ''
-      post('/api/club/profile', { m, name: f.name.value, ig: f.ig.value, bio: f.bio.value, ...(st.img ? { img: st.img } : {}) })
+    $('[data-pcfile]').addEventListener('change', e => { const file = e.target.files && e.target.files[0]; if (!file) return; x.className = 'ferr ok'; x.textContent = 'Getting your background ready…'
+      shrink(file, 1600).then(r => { st.cover = r.data; st.nocover = false; $('[data-pcoved]').style.backgroundImage = `url(${r.data})`; x.textContent = '' })
+        .catch(() => { x.className = 'ferr'; x.textContent = 'That photo did not open, try a JPG or PNG' }) })
+    const pcx = $('[data-pcx]'); if (pcx) pcx.addEventListener('click', () => { st.cover = ''; st.nocover = true; $('[data-pcoved]').style.backgroundImage = 'url(/club/profile-cover-800.webp)'; pcx.remove() })
+    f.addEventListener('submit', e => { e.preventDefault(); const b = $('button[type="submit"]', f); b.disabled = true; x.textContent = ''
+      post('/api/club/profile', { m, name: f.name.value, ig: f.ig.value, bio: f.bio.value, ...(st.img ? { img: st.img } : {}), ...(st.cover ? { cover: st.cover } : {}), ...(st.nocover ? { nocover: true } : {}) })
         .then(r => { b.disabled = false; if (!r.ok) { x.className = 'ferr'; x.textContent = r.d.error || 'Something went wrong, try again'; return }
           PROF = r.d.profile; if (CTX.d) CTX.d.profile = PROF; paintMe(); closeSheet(); toast('Profile saved') })
         .catch(() => { b.disabled = false; x.className = 'ferr'; x.textContent = 'Something went wrong, try again' }) })
@@ -1082,6 +1182,7 @@ const P = {
   function paintMe() {
     const first = CTX.first
     $$('[data-mav]').forEach(el => { const big = el.classList.contains('big'), w = document.createElement('div'); w.innerHTML = mavH(first, big ? 'big' : ''); el.replaceWith(w.firstChild) })
+    $$('[data-pcov]').forEach(im => { const u = PROF.cover || (im.classList.contains('pblur') ? '/club/profile-cover-800.webp' : '/club/profile-cover.webp'); if (im.getAttribute('src') !== u) im.src = u })
     const pn = $('[data-pn]'); if (pn) pn.textContent = PROF.name || first
     const pb = $('[data-pbio]'); if (pb) { pb.textContent = PROF.bio || ''; pb.hidden = !PROF.bio }
     const pi = $('[data-pig]'); if (pi) { pi.hidden = !PROF.ig; if (PROF.ig) { pi.href = 'https://instagram.com/' + encodeURIComponent(PROF.ig); pi.textContent = '@' + PROF.ig } }
@@ -1099,13 +1200,26 @@ const P = {
   function appSetup() {
     try { localStorage.setItem('t3f-m', m) } catch (e) {}
     if (!document.querySelector('link[rel="manifest"]')) { const l = document.createElement('link'); l.rel = 'manifest'; l.href = '/api/club/manifest?m=' + encodeURIComponent(m); document.head.appendChild(l) }
-    let seen = ''; try { seen = localStorage.getItem('t3f-a2hs') || '' } catch (e) {}
-    const ua = navigator.userAgent, phone = /iPhone|iPod|Android/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1 && innerWidth < 900)
-    if (standalone()) { try { localStorage.setItem('t3f-a2hs', 'app') } catch (e) {} return }
-    if (!phone || seen) return
-    setTimeout(() => a2hs(false), 2500)
+    /* 28/11 (Nico: «come facciamo a non rompere il cazzo alla gente affinché se la mettano»): never on the first visit, never
+       in the app; from the second day with a visit, or right after a finished step (a small win); at most 3 times, a week apart;
+       always there in the menu ≡ «Add the club to your phone» */
+    const v = A2(), today = new Date().toDateString()
+    if (!v.days) { let old = ''; try { old = localStorage.getItem('t3f-a2hs') || '' } catch (e) {}; if (old === 'app') v.app = 1; if (old === 'closed') { v.n = 1; v.at = Date.now() } }
+    if (v.day !== today) { v.days = (v.days || 0) + 1; v.day = today }
+    if (standalone()) v.app = 1
+    A2put(v)
+    if (v.days >= 2) setTimeout(() => a2hsMaybe(), 3000)
   }
-  function a2hs(fromMenu) {
+  const A2 = () => { try { return JSON.parse(localStorage.getItem('t3f-a2') || '{}') || {} } catch (e) { return {} } }
+  const A2put = o => { try { localStorage.setItem('t3f-a2', JSON.stringify(o)) } catch (e) {} }
+  const isPhone = () => { const ua = navigator.userAgent; return /iPhone|iPod|Android/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1 && innerWidth < 900) }
+  function a2hsMaybe(win) {
+    const v = A2()
+    if (standalone() || !isPhone() || v.app || (v.n || 0) >= 3 || Date.now() - (v.at || 0) < 7 * 864e5 || $('.a2hs')) return
+    const pan = $('[data-bpan]'); if (pan && !pan.hidden) return
+    A2put({ ...v, n: (v.n || 0) + 1, at: Date.now() }); hidePop(); a2hs(false, win)
+  }
+  function a2hs(fromMenu, win) {
     closeA2hs()
     const ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)
     const inapp = /Instagram|FBAN|FBAV|FB_IAB|GSA\/|Line\/|LinkedInApp|TikTok|Snapchat|Twitter/i.test(ua) || (ios && !/Safari\//.test(ua))
@@ -1114,7 +1228,7 @@ const P = {
     const head = (t, sub) => `<div class="ahd"><img src="/club/app-icon-180.png" alt=""><div><b>${t}</b><small>${sub}</small></div></div>`
     let body = ''
     if (ios && inapp) body = head('Open the club in Safari first', 'From this app you can\'t add it to your Home Screen.') + `<ol><li><i>1</i><span>Tap <b>···</b> or ${ic('share')} in this app</span></li><li><i>2</i><span>Tap <b>Open in Safari</b></span></li><li><i>3</i><span>Then this card shows you the rest</span></li></ol>`
-    else if (ios && saf26) body = head('Put the club on your Home Screen', 'One tap and you\'re in, every time. No link to look for.') + `<ol><li><i>1</i><span>Tap <b>≡</b> next to omnyalab.com below</span></li><li><i>2</i><span>Tap ${ic('share')} <b>Share</b></span></li><li><i>3</i><span>Tap <b>View More</b>, then <b>Add to Home Screen</b> and <b>Add</b></span></li></ol>`
+    else if (ios && saf26) body = head(win ? 'Nice work. Keep the club one tap away' : 'Put the club on your Home Screen', 'One tap and you\'re in, every time. No link to look for.') + `<ol><li><i>1</i><span>Tap <b>≡</b> next to omnyalab.com below</span></li><li><i>2</i><span>Tap ${ic('share')} <b>Share</b></span></li><li><i>3</i><span>Tap <b>View More</b>, then <b>Add to Home Screen</b> and <b>Add</b></span></li></ol>`
     else if (ios) body = head('Put the club on your Home Screen', 'One tap and you\'re in, every time. No link to look for.') + `<ol><li><i>1</i><span>Tap ${ic('share')} <b>Share</b> below</span></li><li><i>2</i><span>Tap <b>Add to Home Screen</b></span></li><li><i>3</i><span>Tap <b>Add</b>. Done.</span></li></ol>`
     else if (BIP) body = head('Install the club on your phone', 'It opens straight into your page, like an app.') + '<button class="abtn" type="button" data-ainstall>Install the app</button>'
     else body = head('Put the club on your Home Screen', 'It opens straight into your page, like an app.') + '<ol><li><i>1</i><span>Tap <b>⋮</b> at the top right</span></li><li><i>2</i><span>Tap <b>Add to Home screen</b> or <b>Install app</b></span></li></ol>'
@@ -1122,11 +1236,11 @@ const P = {
     c.innerHTML = `<button class="ax" type="button" data-ax aria-label="Close">${ic('x')}</button>${body}`
     document.body.appendChild(c); document.body.classList.add('a2open'); requestAnimationFrame(() => c.classList.add('on'))
     if (ios && !inapp) { const a = document.createElement('span'); a.className = 'a2arrow' + (saf26 ? ' left' : ''); a.innerHTML = ic('arrdown'); document.body.appendChild(a) }
-    c.querySelector('[data-ax]').addEventListener('click', () => { if (!fromMenu) try { localStorage.setItem('t3f-a2hs', 'closed') } catch (e) {}; closeA2hs() })
-    const ib = c.querySelector('[data-ainstall]'); if (ib) ib.addEventListener('click', () => { BIP.prompt(); BIP.userChoice.then(ch => { if (ch.outcome === 'accepted') { try { localStorage.setItem('t3f-a2hs', 'app') } catch (e) {} } BIP = null; closeA2hs() }) })
+    c.querySelector('[data-ax]').addEventListener('click', () => closeA2hs())
+    const ib = c.querySelector('[data-ainstall]'); if (ib) ib.addEventListener('click', () => { BIP.prompt(); BIP.userChoice.then(ch => { if (ch.outcome === 'accepted') A2put({ ...A2(), app: 1 }); BIP = null; closeA2hs() }) })
   }
   function closeA2hs() { $$('.a2hs, .a2arrow').forEach(x => x.remove()); document.body.classList.remove('a2open') }
-  addEventListener('appinstalled', () => { try { localStorage.setItem('t3f-a2hs', 'app') } catch (e) {}; closeA2hs() })
+  addEventListener('appinstalled', () => { A2put({ ...A2(), app: 1 }); closeA2hs() })
   function render(d) {
     const first = String(d.name || '').trim().split(/\s+/)[0] || 'friend', init = (first[0] || '·').toUpperCase()
     // 26/11 (Nico: «i regali si sbloccano solo da dentro la pagina quando uno è founder»): a founder (one of the first 100
@@ -1200,8 +1314,8 @@ const P = {
     const gifts = founder ? giftsView() : ''
     const me = `<div data-v="me"><div class="prof m3">
       <div class="pcard">
-        <div class="ptone" aria-hidden="true"><div class="pbw"><img class="pblur" src="/club/profile-cover-800.webp" alt=""></div></div>
-        <div class="pphoto"><img class="pimg" src="/club/profile-cover.webp" alt="" style="object-position:50% 40%"><div class="pfade"></div>
+        <div class="ptone" aria-hidden="true"><div class="pbw"><img class="pblur" src="${esc(PROF.cover || '/club/profile-cover-800.webp')}" alt="" data-pcov></div></div>
+        <div class="pphoto"><img class="pimg" src="${esc(PROF.cover || '/club/profile-cover.webp')}" alt="" style="object-position:50% 40%" data-pcov><div class="pfade"></div>
           <div class="pname">${mavH(first, 'big')}<h1 data-pn>${esc(PROF.name || first)}</h1><p>${role}${since ? (d.state === 'waiting' ? ' · starts ' : ' · since ') + since : ''}</p><p class="pbio" data-pbio${PROF.bio ? '' : ' hidden'}>${esc(PROF.bio || '')}</p>${PROF.ig ? `<a class="pig" data-pig href="https://instagram.com/${encodeURIComponent(PROF.ig)}" target="_blank" rel="noopener">@${esc(PROF.ig)}</a>` : '<a class="pig" data-pig hidden></a>'}</div></div>
         <div class="pact"><button type="button" class="pedit" data-editp>${ic('pen')}Edit profile</button><button type="button" class="btn cta" data-compose>${ic('plus')}<span>Post your build</span></button><a class="pcam ctr" href="#vault" data-go="vault" aria-label="Open the Vault">${ic('grid')}</a></div>
       </div>
@@ -1223,6 +1337,7 @@ const P = {
     loadFeed()
     appSetup()
     opnDone(true)
+    buddyInit()
   }
   const course_ = ls => course(ls)
 
@@ -1236,7 +1351,7 @@ const P = {
     if (k === 'gift') k = 'gifts'
     if (k === 'guides' || k === 'skills') { target = k; k = 'vault' }
     if (!SCREENS.includes(k) || !$(`[data-v="${k}"]`)) k = 'home'
-    app.dataset.screen = k
+    app.dataset.screen = k; if (budOn()) buddyNudge(k)
     $$('.links [data-go], .tabin [data-go]').forEach(a => { if (a.dataset.go === k) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current') })
     const bg = $('[data-mbg]'); if (bg && BG[k] && !bg.src.endsWith(BG[k])) bg.src = BG[k]
     if (push !== false && location.hash !== '#' + k) try { history.pushState(null, '', '#' + k) } catch (e) {}

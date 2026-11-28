@@ -13,6 +13,7 @@ const K = {
 };
 export { K as ME_KEYS };
 export const MAX_AVATAR = 260_000; // the data URL of a 512 px JPEG made small on the phone
+export const MAX_COVER = 700_000; // the background of the profile, 1600 px, made small on the phone
 const IG = /^[A-Za-z0-9._]{1,30}$/;
 
 const read = async (key, email, empty) => { try { return JSON.parse((await kv('HGET', key, email)) || 'null') || empty; } catch { return empty; } };
@@ -54,10 +55,10 @@ export async function saveProgress(email, n, { t = 0, done = false } = {}, steps
   return p;
 }
 
-/** { name, ig, bio, av } (av = the address of the photo, '' when there is none) */
+/** { name, ig, bio, av, cover } (av / cover = the address of the photo and of the background, '' when there is none) */
 export async function getProfile(email) {
   const p = await read(K.profile, email, {});
-  return { name: String(p.name || ''), ig: String(p.ig || ''), bio: String(p.bio || ''), av: p.ph ? `/api/club/avatar?id=${p.ph}` : '' };
+  return { name: String(p.name || ''), ig: String(p.ig || ''), bio: String(p.bio || ''), av: p.ph ? `/api/club/avatar?id=${p.ph}` : '', cover: p.cv ? `/api/club/avatar?id=${p.cv}` : '' };
 }
 /** The profiles of many members at once (the feed): email → { name, av } */
 export async function profilesOf(emails) {
@@ -90,7 +91,16 @@ export async function saveProfile(email, b) {
     if (ph) await kv('HDEL', K.avatar, ph).catch(() => {});
     ph = id;
   } else if (b?.noimg && ph) { await kv('HDEL', K.avatar, ph).catch(() => {}); ph = ''; }
-  await kv('HSET', K.profile, email, JSON.stringify({ name, ig, bio, ph }));
+  let cv = old.cv || '';
+  if (b?.cover) {
+    const m = /^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/.exec(String(b.cover));
+    if (!m || b.cover.length > MAX_COVER) throw bad('bad_image', 'That background did not work, try another photo.');
+    const id = randomBytes(9).toString('base64url');
+    await kv('HSET', K.avatar, id, `${m[1]}:${m[2]}`);
+    if (cv) await kv('HDEL', K.avatar, cv).catch(() => {});
+    cv = id;
+  } else if (b?.nocover && cv) { await kv('HDEL', K.avatar, cv).catch(() => {}); cv = ''; }
+  await kv('HSET', K.profile, email, JSON.stringify({ name, ig, bio, ph, ...(cv ? { cv } : {}) }));
   return getProfile(email);
 }
 /** [content type, bytes] of a photo, or null */
