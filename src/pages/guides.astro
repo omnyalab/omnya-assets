@@ -23,7 +23,7 @@ const STATS = [
 const title = 'Every guide · Omnya Lab';
 const description = 'Every guide, Claude skill and course behind our reels, in one place. Start free, or get all of it inside THE 3D FUTURE.';
 const canonical = new URL('/guides', Astro.site);
-const og = new URL('/og/omnya-lab.jpg', Astro.site);
+const og = new URL('/og/guides.jpg?v=1', Astro.site); // 28/11 Nico: B6 of the board EDAitRU35cptoS2Cyo9AHN
 
 /** newest first; t = the title of the funnel page ("with AI" left out, Nico's rule on titles) */
 // book = the Full's book on its watch page; sw = the moment its watch page moves the Full from €5.99 to €9.99
@@ -70,6 +70,10 @@ const check = '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true
 <meta property="og:description" content={description}>
 <meta property="og:url" content={canonical}>
 <meta property="og:image" content={og}>
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Everything we teach, the Omnya Lab guides">
+<meta name="twitter:image" content={og}>
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
