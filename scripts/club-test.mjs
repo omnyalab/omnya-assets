@@ -132,7 +132,7 @@ try {
   const ia = await insideData('a@test.club'), ib = await insideData('b@test.club');
   eq([ia.posted, ib.posted, ia.remind], [true, false, true], 'the First build badge after a post; Friday email on by default');
   await F.setRemind(B, false); eq((await insideData('b@test.club')).remind, false, 'Friday email turned off');
-  eq([ia.gifts.map((g) => g.cover), (await insideData('w@test.club')).giftList.map((g) => g.cover)].map((x) => x[0]), ['/learn/pk_pb01.webp', '/learn/pk_pb01.webp'], 'gift covers, open and waiting');
+  eq([ia.gifts.map((g) => g.cover), (((w) => w.giftList || w.gifts)(await insideData('w@test.club'))).map((g) => g.cover) /* 28/11: from 9:00 a reservation is open */].map((x) => x[0]), ['/learn/pk_pb01.webp', '/learn/pk_pb01.webp'], 'gift covers, open and waiting');
   const nt = await F.notifyCourse({ subject: 's', text: 'Hi {name} {link}' }, async () => {});
   eq([nt.members, nt.sent], [1, 1], 'Friday email: members who are in, minus who turned it off'); }
 

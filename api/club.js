@@ -28,7 +28,7 @@ import {
   CLUB, ROUND, CHEAP_SEATS, EARLY, phaseAt, decide, priceId, seats, EMAIL, cleanEmail, cleanReceipt, firstName, signToken, readToken,
   limited, ipOf, receiptEmail, isBuyerEmail, isWaitlisted, fillWaitlist, backfill, lists, KEYS, PORTAL_URL,
   readMember, insideData, insideUrl, PREVIEW_EMAIL, noteBuild, sendInsideLink,
-  sendLoginCode, checkLoginCode, sessionCookie, sessionOf, setTester,
+  sendLoginCode, checkLoginCode, sessionCookie, sessionOf, setTester, welcomeReserved,
 } from './_lib/club.js';
 import { saveProgress, saveProfile, avatar, MAX_AVATAR, MAX_COVER, saveHello, finishedAt } from './_lib/club-me.js';
 import { CERT_COURSES, certId, certName, certSvg, linkedInUrl } from './_lib/club-cert.js';
@@ -76,6 +76,10 @@ export async function GET(req) {
   if (a === 'preview') {
     if (!admin(req)) return new Response('Not found', { status: 404 });
     return json({ url: insideUrl(PREVIEW_EMAIL) });
+  }
+  if (a === 'welcomenow') { // 28/11 9:05: W1 to the reservations now, without waiting for the charge (&dry=1 only counts)
+    if (!admin(req)) return new Response('Not found', { status: 404 });
+    try { return json(await welcomeReserved({ dry: new URL(req.url).searchParams.get('dry') === '1' })); } catch (e) { return fail(502, 'store', e.message); }
   }
   if (a === 'tester') { // 28/11: Nico's own address logs in to his preview page with a code
     if (!admin(req)) return new Response('Not found', { status: 404 });

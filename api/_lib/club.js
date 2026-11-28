@@ -209,7 +209,9 @@ export async function insideData(email) {
   if (m.status === 'canceled') return { ...base, state: 'ended' };
   const founder = m.reserved && Number(m.rank) > 0 && Number(m.rank) <= CHEAP_SEATS ? Number(m.rank) : 0;
   // 25/11: the course shows, locked; 26/11: a founder sees the gift waiting for them (no files until the card is charged)
-  if (m.reserved && !m.welcomed) return { ...base, state: 'waiting', opens: new Date(EARLY).toISOString(), lessons: LESSONS.map((l) => ({ ...l, src: '' })), /* no stream before the doors open */ counts: { guides: CLUB_GUIDES.length, vault: CLUB_VAULT.length }, founder: !!founder, giftNames: founder ? FOUNDERS_GIFTS.map((g) => g.name) : [], giftList: founder ? FOUNDERS_GIFTS.map((g) => ({ name: g.name, cover: giftCover(g.file) })) : [] };
+  // 28/11 9:00 (Nico: «non addebita ora, ho già gente che scrive»): Stripe charges the reservations about an hour after the
+  // doors open, so from 9:00 a reservation is in right away; the welcome email still leaves with the charge
+  if (m.reserved && !m.welcomed && Date.now() < EARLY) return { ...base, state: 'waiting', opens: new Date(EARLY).toISOString(), lessons: LESSONS.map((l) => ({ ...l, src: '' })), /* no stream before the doors open */ counts: { guides: CLUB_GUIDES.length, vault: CLUB_VAULT.length }, founder: !!founder, giftNames: founder ? FOUNDERS_GIFTS.map((g) => g.name) : [], giftList: founder ? FOUNDERS_GIFTS.map((g) => ({ name: g.name, cover: giftCover(g.file) })) : [] };
   return { ...openData(base, !!founder), founder: !!founder }; // 26/11 (Nico): yes or no, never the number
 }
 function openData(base, gift) {
@@ -616,3 +618,26 @@ export async function checkLoginCode(email, code) {
 /** Set-Cookie of the remembered device: the member link itself, HttpOnly, one year */
 export const sessionCookie = (m) => `${SESSION_COOKIE}=${encodeURIComponent(m)}; Path=/; Max-Age=${SESSION_DAYS * 86400}; Secure; HttpOnly; SameSite=Lax`;
 export const sessionOf = (req) => { const c = (req.headers.get('cookie') || '').split(/;\s*/).find((x) => x.startsWith(`${SESSION_COOKIE}=`)); return c ? decodeURIComponent(c.slice(SESSION_COOKIE.length + 1)) : ''; };
+
+/** 28/11 9:05 (Nico: «mandala tu a mano»): the welcome email W1 to every reservation not welcomed yet, without waiting for
+    Stripe's charge (about an hour after the doors open). Same once key as clubCharged, so the charge never sends it again. */
+export async function welcomeReserved({ dry = false } = {}) {
+  const all = (await kv('HGETALL', K.members)) || [];
+  const out = { todo: 0, sent: 0, skipped: 0, errors: 0 };
+  for (let i = 0; i < all.length; i += 2) {
+    const email = all[i]; let m = null; try { m = JSON.parse(all[i + 1]); } catch {}
+    if (!m || !m.reserved || m.welcomed || m.status === 'canceled') continue;
+    out.todo++;
+    if (dry) continue;
+    if (!(await first('w1', `r:${m.session}`))) { out.skipped++; continue; }
+    const rank = Number(m.rank) || Number(await kv('HGET', K.rank, m.session)) || 0;
+    const founder = rank && rank <= CHEAP_SEATS ? rank : 0;
+    const v = { name: m.name, inside: insideUrl(email), portal: PORTAL_URL, founder, skill: '' };
+    try {
+      await sendMail({ to: `${m.name} <${email}>`, bcc: host.email, replyTo: host.email, subject: "you're in", text: welcomeText(v), html: welcomeHtml(v) });
+    } catch (e) { console.error('[club] welcome now', e.message); await kv('DEL', K.once('w1', `r:${m.session}`)).catch(() => {}); out.errors++; continue; }
+    await kv('HSET', K.members, email, JSON.stringify({ ...m, welcomed: new Date().toISOString(), ...(founder ? { gift: rank } : {}) })).catch(() => {});
+    out.sent++;
+  }
+  return out;
+}
