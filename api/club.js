@@ -28,7 +28,7 @@ import {
   CLUB, ROUND, CHEAP_SEATS, EARLY, phaseAt, decide, priceId, seats, EMAIL, cleanEmail, cleanReceipt, firstName, signToken, readToken,
   limited, ipOf, receiptEmail, isBuyerEmail, isWaitlisted, fillWaitlist, backfill, lists, KEYS, PORTAL_URL,
   readMember, insideData, insideUrl, PREVIEW_EMAIL, noteBuild, sendInsideLink,
-  sendLoginCode, checkLoginCode, sessionCookie, sessionOf,
+  sendLoginCode, checkLoginCode, sessionCookie, sessionOf, setTester,
 } from './_lib/club.js';
 import { saveProgress, saveProfile, avatar, MAX_AVATAR, MAX_COVER, saveHello, finishedAt } from './_lib/club-me.js';
 import { CERT_COURSES, certId, certName, certSvg, linkedInUrl } from './_lib/club-cert.js';
@@ -76,6 +76,13 @@ export async function GET(req) {
   if (a === 'preview') {
     if (!admin(req)) return new Response('Not found', { status: 404 });
     return json({ url: insideUrl(PREVIEW_EMAIL) });
+  }
+  if (a === 'tester') { // 28/11: Nico's own address logs in to his preview page with a code
+    if (!admin(req)) return new Response('Not found', { status: 404 });
+    const q = new URL(req.url).searchParams, email = cleanEmail(q.get('email'));
+    if (!EMAIL.test(email)) return fail(400, 'bad_request', 'email needed');
+    await setTester(email, q.get('off') !== '1');
+    return json({ ok: true, email, on: q.get('off') !== '1' });
   }
   if (a === 'admin') {
     if (!admin(req)) return new Response('Not found', { status: 404 });

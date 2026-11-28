@@ -574,10 +574,17 @@ export const SESSION_DAYS = 365;
 const CODE_TTL = 600, CODE_TRIES = 5;
 const codeKey = (email) => `omnya:club:code:${email}`;
 const codeHash = (email, code) => createHmac('sha256', String(tokenKey() || '')).update(`code|${email}|${code}`).digest('base64url');
-/** Sends the code to a member (or, for the preview address, to Nico's own box). False when the email is not in the club. */
+// 28/11 (Nico: «falla arrivare anche alla mia gmail, così vedo se va tutto»): Nico's own addresses that log in to his preview
+// page with a code, kept in Redis because the repo is public (GET /api/club/tester?key=IG_ADMIN_KEY&email=…[&off=1])
+const TESTERS = 'omnya:club:testers';
+export const isTester = async (email) => Number(await kv('SISMEMBER', TESTERS, email).catch(() => 0)) === 1;
+export const setTester = (email, on = true) => kv(on ? 'SADD' : 'SREM', TESTERS, email);
+/** Sends the code to a member (or, for the preview address, to Nico's own box; a tester gets it at their own address).
+    False when the email is not in the club. */
 export async function sendLoginCode(email) {
   let name = '', to = email;
   if (email === PREVIEW_EMAIL) { name = 'Nico'; to = host.email; }
+  else if (await isTester(email)) name = 'Nico';
   else {
     let m = null; try { m = JSON.parse((await kv('HGET', K.members, email)) || 'null'); } catch {}
     if (!m || m.status === 'canceled') return false;
@@ -604,7 +611,7 @@ export async function checkLoginCode(email, code) {
   if (got.length !== String(want).length || !timingSafeEqual(Buffer.from(got), Buffer.from(String(want)))) return null;
   await kv('DEL', codeKey(email));
   await kv('DEL', `${codeKey(email)}:n`);
-  return memberToken(email);
+  return memberToken(email !== PREVIEW_EMAIL && (await isTester(email)) ? PREVIEW_EMAIL : email); // a tester opens Nico's preview page
 }
 /** Set-Cookie of the remembered device: the member link itself, HttpOnly, one year */
 export const sessionCookie = (m) => `${SESSION_COOKIE}=${encodeURIComponent(m)}; Path=/; Max-Age=${SESSION_DAYS * 86400}; Secure; HttpOnly; SameSite=Lax`;
