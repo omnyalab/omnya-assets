@@ -133,7 +133,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .uprof .glass { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 22px; padding: 16px }
   .uprof .k { display: flex; align-items: center; gap: 8px; font: 600 14px/1 var(--f-sf); margin-bottom: 12px } .uprof .k .r { margin-left: auto; color: rgba(255,255,255,.6) } .uprof .k .ic { width: 18px; height: 18px }
   .uprof .medals { display: flex; flex-wrap: wrap; gap: 14px } .uprof .medal2 { width: 90px; display: grid; justify-items: center; gap: 4px; text-align: center; font: 600 12px/1.2 var(--f-sf) } .uprof .medal2 .bdg svg { width: 64px; height: 64px } .uprof .medal2 small { color: rgba(255,255,255,.6) }
-  .upg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px } .upg a { display: grid; gap: 6px; color: #fff; text-decoration: none; font: 500 13px/1.3 var(--f-sf) }
+  .upg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px } @media (min-width: 900px) { .upg { grid-template-columns: repeat(3, 1fr) } } .upg a { display: grid; gap: 6px; color: #fff; text-decoration: none; font: 500 13px/1.3 var(--f-sf) }
   .upg img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 16px; display: block } .upg span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: rgba(255,255,255,.8) }
   /* H7: your weeks (a fire for every week with study), your study this week, the next badge, the next build */
   .A .hchart { display: grid; gap: 14px }
@@ -425,6 +425,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .A .mav { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font: 700 17px/1 var(--f-sfd); color: #fff; background: linear-gradient(140deg, #8cc4ff, #2a74ff 55%, #1d4fd8); box-shadow: 0 0 0 2px rgba(255,255,255,.22), 0 8px 20px rgba(42,116,255,.45); flex: none }
   .A .top .lockup img { width: 32px; height: 32px; display: block; filter: drop-shadow(0 4px 12px rgba(40,110,255,.4)) }
   .A [data-v] { display: none }
+  .A[data-screen="user"] [data-v="user"] { display: block }
   .A[data-screen="home"] [data-v="home"], .A[data-screen="course"] [data-v="course"], .A[data-screen="vault"] [data-v="vault"], .A[data-screen="feed"] [data-v="feed"], .A[data-screen="gifts"] [data-v="gifts"], .A[data-screen="me"] [data-v="me"] { display: block }
   /* Nico's welcome inside the board's video widget (.yt) */
   .A .yt video { display: block; width: 100%; height: 100%; object-fit: cover; cursor: pointer }
@@ -1205,22 +1206,30 @@ const P = {
     return Array.from({ length: 6 }, (_, i) => { const back = 5 - i; let t = 0; for (let j = 0; j < 7; j++) t += W[fmt(new Date(mon - back * 7 * 864e5 + j * 864e5))] || 0; return t > 0 }) }
   /* 28/11 (Nico): someone's profile from the feed, read only (api/club/member: no email, no dates, no study minutes) */
   const clubLink = l => /^https:\/\/(www\.)?omnyalab\.com\//.test(l || '') ? l + (l.includes('?') ? '&' : '?') + 'from=club' : l
+  /* 28/11 (Nico: «nei profili delle persone lo sfondo e tutto deve essere uguale al profilo personale, solo i badge presi, le weeks
+     e le cose postate»): someone's profile is a page like your own, read only */
   function openUser(u) {
-    openSheet(`<div class="uprof" data-uprofbox><p class="msub">Opening the profile…</p></div>`)
+    const box = $('[data-userv]'); if (!box) return
+    box.innerHTML = '<div class="mtop"><div><p class="msub">Opening the profile…</p></div></div>'
+    show('user')
     fetch(`/api/club/member?m=${encodeURIComponent(m)}&u=${encodeURIComponent(u)}`).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => {
-      const box = $('[data-uprofbox]'); if (!box) return
-      if (!ok) { box.innerHTML = `<p class="msub">${esc(d.error || 'This profile is not available.')}</p>`; return }
-      const earned = BADGES.filter(([k]) => (k === 'founder' && d.founder) || (k === 'first' && d.posted) || (k === 'tower' && d.done))
+      if (!ok) { box.innerHTML = `<div class="mtop"><div><h1>Profile</h1><p class="msub">${esc(d.error || 'This profile is not available.')}</p></div></div>`; return }
+      const earned = BADGES.filter(([k]) => (k === 'founder' && (d.founder || d.nico)) || (k === 'first' && d.posted) || (k === 'tower' && d.done))
       const ring = d.nico ? 'gold' : 'lv' + Math.min(5, Math.max(1, earned.length))
       const bio = d.bio && !(d.nico && /founder of omnya/i.test(d.bio)) ? d.bio : ''
-      box.innerHTML = `<div class="upc" style="background-image:url(${esc(d.cover || '/club/profile-cover-800.webp')})"></div>
-        <div class="upn ${ring}"><span class="mavw"><span class="upav"${d.av ? ` style="background-image:url(${esc(d.av)})"` : ''}>${d.av ? '' : esc((d.name || '·')[0].toUpperCase())}</span>${d.badge && SVG[d.badge] ? `<span class="mbd">${svgOf(d.badge)}</span>` : ''}</span>
-          <h3 class="s-title" id="t3m-sh">${esc(d.name)}</h3>${d.nico ? '<p class="pgold">Founder of Omnya Lab</p>' : `<p class="uprole">${d.founder ? 'Founding member' : 'Member'}</p>`}
-          ${bio ? `<p class="upbio">${esc(bio)}</p>` : ''}${d.ig ? `<a class="upig" href="https://instagram.com/${encodeURIComponent(d.ig)}" target="_blank" rel="noopener">@${esc(d.ig)}</a>` : ''}</div>
-        ${earned.length ? `<div class="glass w upb"><span class="k">${ic('trophy')}Badges<span class="r">${earned.length}</span></span><div class="medals">${earned.map(b => medal(b, true)).join('')}</div></div>` : ''}
-        ${weeksHTML(d.weeks || [], 'Weeks')}
-        ${d.posts && d.posts.length ? `<div class="upg">${d.posts.map(p => `<a href="${esc(clubLink(p.link))}" target="_blank" rel="noopener">${p.img ? `<img src="${esc(p.img)}" alt="" loading="lazy">` : ''}<span>${esc(p.caption || 'Open the build')}</span></a>`).join('')}</div>` : ''}`
-    }).catch(() => { const box = $('[data-uprofbox]'); if (box) box.innerHTML = '<p class="msub">Could not open the profile, try again.</p>' })
+      const cov = d.cover || '/club/profile-cover.webp', cov8 = d.cover || '/club/profile-cover-800.webp'
+      const avh = d.av ? `<span class="mav big ph" style="background-image:url(${esc(d.av)})" aria-hidden="true"></span>` : `<span class="mav big" aria-hidden="true">${esc((d.name || '·')[0].toUpperCase())}</span>`
+      box.innerHTML = `<div class="prof m3"><div class="pcard">
+        <div class="ptone" aria-hidden="true"><div class="pbw"><img class="pblur" src="${esc(cov8)}" alt=""></div></div>
+        <div class="pphoto"><img class="pimg" src="${esc(cov)}" alt="" style="object-position:50% 40%"><div class="pfade"></div>
+          <div class="pname ${ring}"><span class="mavw">${avh}${d.badge && SVG[d.badge] ? `<span class="mbd">${svgOf(d.badge)}</span>` : ''}</span><h1>${esc(d.name)}</h1>${d.nico ? '<p class="pgold">Founder of Omnya Lab</p>' : `<p>${d.founder ? 'Founding member' : 'Member'}</p>`}${bio ? `<p class="pbio">${esc(bio)}</p>` : ''}${d.ig ? `<a class="pig" href="https://instagram.com/${encodeURIComponent(d.ig)}" target="_blank" rel="noopener">@${esc(d.ig)}</a>` : ''}</div></div>
+        <div class="pact"><button type="button" class="pedit" data-go="feed"><span style="display:inline-flex;transform:rotate(180deg)">${ic('chev')}</span>Back to the feed</button></div></div>
+        <div class="pmain">
+          ${earned.length ? `<div class="glass w wide2 badgesw"><span class="k">${ic('trophy')}Badges<span class="r">${earned.length}</span></span><div class="medals lg">${earned.map(b => medal(b, true)).join('')}</div></div>` : ''}
+          ${weeksHTML(d.weeks || [], 'Weeks')}
+          ${d.posts && d.posts.length ? `<div class="glass w wide2"><span class="k">${ic('feed')}Builds<span class="r">${d.posts.length}</span></span><div class="upg">${d.posts.map(p => `<a href="${esc(clubLink(p.link))}" target="_blank" rel="noopener">${p.img ? `<img src="${esc(p.img)}" alt="" loading="lazy">` : ''}<span>${esc(p.caption || 'Open the build')}</span></a>`).join('')}</div></div>` : ''}
+        </div></div>`
+    }).catch(() => { box.innerHTML = '<div class="mtop"><div><p class="msub">Could not open the profile, try again.</p></div></div>' })
   }
   function homeH7(BL, earned) {
     const fmt = d => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(d), W = PROG.w || {}
@@ -1456,7 +1465,7 @@ const P = {
     const tabs = `<div class="tabbar"><div class="tabin t${TABS.length}" role="tablist">${TABS.map(([k, i, t]) => `<button type="button" data-go="${k}">${ic(i)}<span>${t}</span></button>`).join('')}</div></div>`
     app.insertAdjacentHTML('afterbegin', '') // keep the background first
     root.insertAdjacentHTML('beforebegin', top + `<div class="mhd"><a href="#home" data-go="home" aria-label="THE 3D FUTURE, Home"><img src="/club/knot-96.webp" alt="" width="28" height="28">THE <b>3D</b> FUTURE</a></div>`)
-    root.innerHTML = home + courseV + vault + chal + gifts + me
+    root.innerHTML = home + courseV + vault + chal + gifts + me + '<div data-v="user" data-userv></div>'
     app.insertAdjacentHTML('beforeend', tabs)
     if (d.lessons) course_(d.lessons)
     document.body.insertAdjacentHTML('beforeend', `<button type="button" class="hbfab" data-menu aria-label="Open the menu" aria-expanded="false"><span></span><span></span><span></span>${founder ? '<i class="dotg" aria-hidden="true"></i>' : ''}</button>`)
@@ -1469,7 +1478,7 @@ const P = {
   const course_ = ls => course(ls)
 
   /* the screens: a tap on the bar shows one (board A), the address keeps it (#vault) */
-  const SCREENS = ['home', 'course', 'vault', 'feed', 'gifts', 'me']
+  const SCREENS = ['home', 'course', 'vault', 'feed', 'gifts', 'me', 'user']
   function show(k, push) {
     let target = null
     if (k === 'course-list') { k = 'course'; target = 'course-list' }
@@ -1477,6 +1486,7 @@ const P = {
     if (k === 'chal') k = 'feed'
     if (k === 'gift') k = 'gifts'
     if (k === 'guides' || k === 'skills') { target = k; k = 'vault' }
+    if (k === 'user' && !($('[data-userv]') || {}).innerHTML) k = 'feed'
     if (!SCREENS.includes(k) || !$(`[data-v="${k}"]`)) k = 'home'
     app.dataset.screen = k; if (budOn()) buddyNudge(k)
     $$('.links [data-go], .tabin [data-go]').forEach(a => { if (a.dataset.go === k) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current') })

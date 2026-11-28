@@ -88,6 +88,7 @@ export async function saveProfile(email, b, earned = []) {
   const name = String(b?.name ?? '').replace(/\s+/g, ' ').trim().slice(0, 40);
   const ig = String(b?.ig ?? '').trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/.*$/, '');
   const bio = String(b?.bio ?? '').replace(/\s+/g, ' ').trim().slice(0, 120);
+  if (/founder\W+(?:of\W+)?omnya|omnya\W+(?:lab\W+)?founder|ceo\W+(?:of\W+)?omnya/i.test(bio) && email !== 'preview@omnyalab.com') throw bad('bad_request', "That line is Nico's. Write one about you.");
   if (!name) throw bad('bad_request', 'Write your name.');
   if (ig && !IG.test(ig)) throw bad('bad_request', 'That Instagram name does not look right.');
   const old = await read(K.profile, email, {});

@@ -36,6 +36,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { askBuddy } from './_lib/club-ask.js';
+import { unsafeImage } from './_lib/club-mod.js';
 import { publicProfile, feedMember, feed, addPost, like, comments, addComment, share, setHidden, photo, noteMessage, hideOk, setRemind, notifyCourse, LINK, MAX_IMG } from './_lib/club-feed.js';
 import { markMailed } from './_lib/drip.js';
 
@@ -367,6 +368,7 @@ async function feedPost(req, a) {
       const link = String(b.link || '').trim().slice(0, 300), caption = String(b.caption || '').trim().replace(/\s+\n/g, '\n').slice(0, 600);
       if (!LINK.test(link)) return fail(400, 'bad_request', 'Paste the link of your build, like https://your-tower.netlify.app');
       if (b.img && (typeof b.img !== 'string' || b.img.length > MAX_IMG)) return fail(400, 'bad_image', 'That photo is too big, try another one.');
+      if (b.img && (await unsafeImage(b.img))) return fail(400, 'bad_image', "That photo can't go in the club. Try another one.");
       return json({ post: await addPost(me, { link, caption, img: b.img || '', w: b.w, h: b.h }) });
     }
     if (a === 'msg') {
@@ -417,6 +419,7 @@ async function mePost(req, a) {
     }
     if (b.img && String(b.img).length > MAX_AVATAR) return fail(400, 'bad_image', 'That photo is too big, try another one.');
     if (b.cover && String(b.cover).length > MAX_COVER) return fail(400, 'bad_image', 'That background is too big, try another photo.');
+    for (const im of [b.img, b.cover]) if (im && (await unsafeImage(im))) return fail(400, 'bad_image', "That photo can't go in the club. Try another one.");
     const done = LESSONS.every((l) => (d.progress?.d || []).includes(l.n));
     const earned = [(d.founder || (d.gifts && d.gifts.length) || (d.giftNames && d.giftNames.length)) && 'founder', d.posted && 'first', done && 'tower'].filter(Boolean);
     return json({ profile: await saveProfile(email, b, earned) });
