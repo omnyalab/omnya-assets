@@ -667,9 +667,13 @@ export async function checkPayments(stripe, { dry = false } = {}) {
     let sub = null; try { sub = await stripe.subscriptions.retrieve(m.subscription); } catch (e) { console.error('[club] paycheck sub', e.message); out.errors++; continue; }
     const first1 = String(m.name || '').split(/\s+/)[0];
     if (UNPAID.includes(sub.status)) {
-      if (m.unpaid) { out.blocked.push(first1); continue; }
       let payUrl = '', invoice = false;
-      try { const inv = sub.latest_invoice ? await stripe.invoices.retrieve(typeof sub.latest_invoice === 'string' ? sub.latest_invoice : sub.latest_invoice.id) : null; if (inv?.hosted_invoice_url && inv.status === 'open') { payUrl = inv.hosted_invoice_url; invoice = true; } } catch {}
+      try { const inv = sub.latest_invoice ? await stripe.invoices.retrieve(typeof sub.latest_invoice === 'string' ? sub.latest_invoice : sub.latest_invoice.id) : null; if (inv?.hosted_invoice_url && inv.status === 'open') { payUrl = inv.hosted_invoice_url; invoice = true; } } catch (e) { console.error('[club] paycheck invoice', e.message); }
+      if (m.unpaid) { // 28/11: already paused; the page button goes straight to the invoice once the key can read it (no second email)
+        out.blocked.push(first1);
+        if (invoice && m.payUrl !== payUrl && !dry) { await kv('HSET', K.members, email, JSON.stringify({ ...m, payUrl })); out.linked = (out.linked || 0) + 1; }
+        continue;
+      }
       if (!payUrl) payUrl = PORTAL_URL;
       out.blocked.push(first1);
       if (dry) continue;
