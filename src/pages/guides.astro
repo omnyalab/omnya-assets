@@ -5,7 +5,20 @@
 // then every free guide that is live today, each one opening its own funnel (opt-in → watch page → Full → thanks), so the
 // funnels keep doing the selling. No guide prices here: each funnel shows its own, and the hub never shows a price
 // the visitor won't find on the next page. Titles, covers and links are the ones of the live funnel pages.
-import { OPEN, FOUNDERS_END, PROOF, SOURCE, proofTxt, VALUE } from '../components/club/data';
+import { OPEN, FOUNDERS_END, VALUE } from '../components/club/data';
+
+/** 28/11 (Nico: «più generali, quello che puoi fare anche tu»): the hub's own numbers, not the club's.
+    Instagram of @omnyalab read by Tana (Graph API) on 28/11 09:00: 1,695,703 views and +4,574 followers in 7 days,
+    21,945 followers; stadium reel 2,548,472 views (Graph API, 24/11); €5,000+ sales this month (Nico, 24/11);
+    4,800+ emails in 13 days (club page, 24/11). */
+const STATS = [
+  { n: '1.7M', l: 'views in 7 days' },
+  { n: '2.5M', l: 'views on one reel' },
+  { n: '+4,500', l: 'followers in 7 days' },
+  { n: '€5,000+', l: 'in sales in one month' },
+  { n: '4,800+', l: 'emails in 13 days' },
+];
+const STATS_SRC = 'Our Instagram on 28 November 2026, Stripe and emails on 24 November';
 
 const title = 'Every guide · Omnya Lab';
 const description = 'Every guide, Claude skill and course behind our reels, in one place. Start free, or get all of it inside THE 3D FUTURE.';
@@ -157,11 +170,11 @@ const check = '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true
 
   <section class="sec">
     <div class="in">
-      <h2 class="h2 c">The <span class="kw">numbers</span> this method made us</h2>
+      <h2 class="h2 c">What you can do <span class="kw">too</span></h2>
       <div class="stats">
-        {PROOF.map((s) => <div class="stat"><b>{proofTxt(s)}</b><span>{s.l.replace('|', ' ')}</span></div>)}
+        {STATS.map((s) => <div class="stat"><b>{s.n}</b><span>{s.l}</span></div>)}
       </div>
-      <p class="src">{SOURCE}</p>
+      <p class="src">{STATS_SRC}</p>
     </div>
   </section>
 
