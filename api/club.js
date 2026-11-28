@@ -81,6 +81,21 @@ export async function GET(req) {
     if (!admin(req)) return new Response('Not found', { status: 404 });
     try { return json(await welcomeReserved({ dry: new URL(req.url).searchParams.get('dry') === '1' })); } catch (e) { return fail(502, 'store', e.message); }
   }
+  if (a === 'activity') { // 28/11 (Nico: «è già entrato qualcuno?»): per member, first name only: last opened, welcome video, steps done, minutes
+    if (!admin(req)) return new Response('Not found', { status: 404 });
+    const pairs = (x) => { const o = {}; for (let i = 0; i < (x?.length || 0); i += 2) o[x[i]] = x[i + 1]; return o; };
+    const [mem, seen, prog] = await Promise.all([kv('HGETALL', 'omnya:club:members'), kv('HGETALL', 'omnya:club:seen'), kv('HGETALL', 'omnya:club:progress')].map((p) => p.catch(() => [])));
+    const S = pairs(seen), P = pairs(prog), rows = [];
+    for (const [email, raw] of Object.entries(pairs(mem))) {
+      let m = {}; try { m = JSON.parse(raw); } catch {}
+      if (m.status === 'canceled') continue;
+      let p = {}; try { p = JSON.parse(P[email] || '{}') || {}; } catch {}
+      const mins = Object.values(p.w || {}).reduce((a, b) => a + (Number(b) || 0), 0);
+      rows.push({ name: String(m.name || '').split(/\s+/)[0], welcomed: !!m.welcomed, seen: S[email] || null, hello: !!p.h, steps: (p.d || []).length, mins: Math.round(mins / 60) }); // p.w holds seconds per Rome day
+    }
+    rows.sort((a, b) => String(b.seen || '').localeCompare(String(a.seen || '')));
+    return json({ members: rows.length, opened: rows.filter((r) => r.seen || r.hello || r.steps || r.mins).length, rows });
+  }
   if (a === 'tester') { // 28/11: Nico's own address logs in to his preview page with a code
     if (!admin(req)) return new Response('Not found', { status: 404 });
     const q = new URL(req.url).searchParams, email = cleanEmail(q.get('email'));
@@ -244,6 +259,7 @@ async function inside(req) {
     const d = await insideData(email), r = json(withCerts(email, d));
     if (d.state === 'open') { const c = hlsCookie(); if (c) r.headers.append('Set-Cookie', c); }   // the key to the course films
     if (d.state !== 'ended') r.headers.append('Set-Cookie', sessionCookie(new URL(req.url).searchParams.get('m'))); // 28/11: this device remembers the member
+    if (d.state !== 'ended') await kv('HSET', 'omnya:club:seen', email, new Date().toISOString()).catch(() => {}); // 28/11: who opened the club, and when (Nico: «è già entrato qualcuno?»)
     return r;
   } catch (e) { console.error('[club] inside', e.message); return fail(502, 'store', 'Could not open the club right now, try again in a minute.'); }
 }
