@@ -28,6 +28,7 @@ import {
   CLUB, ROUND, CHEAP_SEATS, EARLY, phaseAt, decide, priceId, seats, EMAIL, cleanEmail, cleanReceipt, firstName, signToken, readToken,
   limited, ipOf, receiptEmail, isBuyerEmail, isWaitlisted, fillWaitlist, backfill, lists, KEYS, PORTAL_URL,
   readMember, insideData, insideUrl, PREVIEW_EMAIL, noteBuild, sendInsideLink,
+  sendLoginCode, checkLoginCode, sessionCookie, sessionOf,
 } from './_lib/club.js';
 import { saveProgress, saveProfile, avatar, MAX_AVATAR, MAX_COVER, saveHello, finishedAt } from './_lib/club-me.js';
 import { CERT_COURSES, certId, certName, certSvg, linkedInUrl } from './_lib/club-cert.js';
@@ -63,6 +64,7 @@ export async function GET(req) {
   if (a === 'seats') return getSeats(req);
   if (a === 'welcome') return welcome(req);
   if (a === 'inside') return inside(req);
+  if (a === 'session') return session(req);
   if (a === 'feed' || a === 'comments') return feedGet(req, a);
   if (a === 'avatar') return avatarGet(req);
   if (a === 'cert') return certGet(req);
@@ -86,6 +88,8 @@ export async function POST(req) {
   if (a === 'checkout') return checkout(req);
   if (a === 'withdraw') return withdraw(req);
   if (a === 'link') return lostLink(req);
+  if (a === 'code') return loginCode(req);
+  if (a === 'signin') return signIn(req);
   if (a === 'build') return sendBuild(req);
   if (['post', 'like', 'comment', 'share', 'msg', 'hide', 'remind'].includes(a)) return feedPost(req, a);
   if (a === 'progress' || a === 'profile') return mePost(req, a);
@@ -226,6 +230,7 @@ async function inside(req) {
   try {
     const d = await insideData(email), r = json(withCerts(email, d));
     if (d.state === 'open') { const c = hlsCookie(); if (c) r.headers.append('Set-Cookie', c); }   // the key to the course films
+    if (d.state !== 'ended') r.headers.append('Set-Cookie', sessionCookie(new URL(req.url).searchParams.get('m'))); // 28/11: this device remembers the member
     return r;
   } catch (e) { console.error('[club] inside', e.message); return fail(502, 'store', 'Could not open the club right now, try again in a minute.'); }
 }
@@ -270,6 +275,32 @@ async function lostLink(req) {
   if (!EMAIL.test(email)) return fail(400, 'bad_request', 'That email does not look right.');
   try { await sendInsideLink(email); } catch (e) { console.error('[club] link', e.message); }
   return json({ ok: true }); // the same answer for everyone: the page never says who is a member
+}
+// 28/11 (Nico: «l'accesso si fa ora»): log in with a 6-digit code, then the device remembers the member for a year
+//   POST /api/club/code   { email }        → the code goes to the member's email (the same answer for everyone)
+//   POST /api/club/signin { email, code }  → { m } + the cookie t3f_s, or 403
+//   GET  /api/club/session                 → { m } from the cookie, or 404 (the page then shows the log in)
+async function loginCode(req) {
+  if (await limited(req, 'code', 6, 600)) return tooMany();
+  const b = await body(req), email = cleanEmail(b?.email);
+  if (!EMAIL.test(email)) return fail(400, 'bad_request', 'That email does not look right.');
+  try { await sendLoginCode(email); } catch (e) { console.error('[club] code', e.message); return fail(502, 'mail', 'Could not send the code right now, try again in a minute.'); }
+  return json({ ok: true }); // the page never says who is a member
+}
+async function signIn(req) {
+  if (await limited(req, 'signin', 12, 600)) return tooMany();
+  const b = await body(req), email = cleanEmail(b?.email);
+  if (!EMAIL.test(email)) return fail(400, 'bad_request', 'That email does not look right.');
+  let m = null;
+  try { m = await checkLoginCode(email, b?.code); } catch (e) { console.error('[club] signin', e.message); return fail(502, 'store', 'Could not check the code right now, try again in a minute.'); }
+  if (!m) return fail(403, 'bad_code', 'That code is not right or it expired, ask for a new one.');
+  const r = json({ ok: true, m });
+  r.headers.append('Set-Cookie', sessionCookie(m));
+  return r;
+}
+function session(req) {
+  const m = sessionOf(req);
+  return m && readMember(m) ? json({ m }) : fail(404, 'no_session', 'not logged in');
 }
 async function sendBuild(req) {
   if (await limited(req, 'build', 6, 3600)) return tooMany();

@@ -12,7 +12,7 @@
 //   60 s. Only the real number, never one written by hand.
 // - The proof of a guide purchase is the Stripe receipt number (1415-7362) or the email paid with, checked here against
 //   what Stripe says was paid (never an Omnya City house).
-import { createHmac, timingSafeEqual } from 'node:crypto';
+import { createHmac, timingSafeEqual, randomInt } from 'node:crypto';
 import { kv } from './store.js';
 import { sendMail } from './mail.js';
 import { host } from './config.js';
@@ -565,3 +565,47 @@ export async function lists() {
     counts: { buyers: Number(await kv('SCARD', K.buyers)), receipts: Number(await kv('HLEN', K.receipts)), waitlist: Number(await kv('SCARD', K.waitlist)) },
   };
 }
+
+// ---- 28/11 (Nico: «l'accesso si fa ora»): log in with a 6-digit code sent to the member's email, then a 1-year cookie
+// remembers that phone or computer (a cookie the server sets, so Safari does not drop it after 7 days like localStorage).
+// The member links ?m= of the welcome email keep working and set the same cookie.
+export const SESSION_COOKIE = 't3f_s';
+export const SESSION_DAYS = 365;
+const CODE_TTL = 600, CODE_TRIES = 5;
+const codeKey = (email) => `omnya:club:code:${email}`;
+const codeHash = (email, code) => createHmac('sha256', String(tokenKey() || '')).update(`code|${email}|${code}`).digest('base64url');
+/** Sends the code to a member (or, for the preview address, to Nico's own box). False when the email is not in the club. */
+export async function sendLoginCode(email) {
+  let name = '', to = email;
+  if (email === PREVIEW_EMAIL) { name = 'Nico'; to = host.email; }
+  else {
+    let m = null; try { m = JSON.parse((await kv('HGET', K.members, email)) || 'null'); } catch {}
+    if (!m || m.status === 'canceled') return false;
+    name = firstName(m.name);
+  }
+  if (!tokenKey()) throw new Error('club: no key for the login code');
+  const code = String(randomInt(0, 1000000)).padStart(6, '0');
+  await kv('SET', codeKey(email), codeHash(email, code), 'EX', CODE_TTL);
+  await kv('DEL', `${codeKey(email)}:n`);
+  const text = `Hey ${name}, your code for THE 3D FUTURE is ${code}\n\nType it on the page and you're in, it works for the next 10 minutes, and after that this phone or computer remembers you, so next time you go straight in.\n\nIf you didn't ask for it, just ignore this email.\n\nNico`;
+  await sendMail({ to: `${name} <${to}>`, replyTo: host.email, subject: `${code} is your code for THE 3D FUTURE`, text });
+  return true;
+}
+/** The member link (?m=) when the code is right, null otherwise; five wrong tries burn the code. */
+export async function checkLoginCode(email, code) {
+  const c = String(code || '').replace(/\D/g, '');
+  if (c.length !== 6) return null;
+  const want = await kv('GET', codeKey(email));
+  if (!want) return null;
+  const n = Number(await kv('INCR', `${codeKey(email)}:n`));
+  if (n === 1) await kv('EXPIRE', `${codeKey(email)}:n`, CODE_TTL);
+  if (n > CODE_TRIES) { await kv('DEL', codeKey(email)); return null; }
+  const got = codeHash(email, c);
+  if (got.length !== String(want).length || !timingSafeEqual(Buffer.from(got), Buffer.from(String(want)))) return null;
+  await kv('DEL', codeKey(email));
+  await kv('DEL', `${codeKey(email)}:n`);
+  return memberToken(email);
+}
+/** Set-Cookie of the remembered device: the member link itself, HttpOnly, one year */
+export const sessionCookie = (m) => `${SESSION_COOKIE}=${encodeURIComponent(m)}; Path=/; Max-Age=${SESSION_DAYS * 86400}; Secure; HttpOnly; SameSite=Lax`;
+export const sessionOf = (req) => { const c = (req.headers.get('cookie') || '').split(/;\s*/).find((x) => x.startsWith(`${SESSION_COOKIE}=`)); return c ? decodeURIComponent(c.slice(SESSION_COOKIE.length + 1)) : ''; };

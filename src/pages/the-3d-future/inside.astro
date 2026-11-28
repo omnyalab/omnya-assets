@@ -1484,20 +1484,45 @@ const P = {
   /* states before the member area: no link, the link went bad, the membership ended */
   const stateH = $('[data-state-h]')
   const say = t => { stateH.textContent = t; stateH.classList.remove('sr'); opnDone(false) }
+  /* 28/11 (Nico: «l'accesso si fa ora»): log in with a 6-digit code sent to the email, then this device remembers the member
+     (localStorage 't3f-m' and the 1-year cookie the server sets); the member link of the welcome email keeps working */
   function lost(msg) {
     opnDone(false)
-    root.innerHTML = `<div class="mtop"><div><p class="eyebrow">THE 3D FUTURE</p><h1>Log in to the club</h1></div></div><form class="glass mbox" data-lost novalidate><p>${esc(msg || 'Write the email you joined with. Your link to the club arrives in a minute, no password.')}</p>
-      <label for="t3m-e" class="sr">Email</label><input id="t3m-e" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@studio.com" required>
-      <button class="btn cta wide" type="submit">Send my link</button><p class="err" role="status" data-lost-msg></p><p class="lostjoin">Not a member yet? <a href="/the-3d-future">Join for €9/month</a></p></form>`
-    $('[data-lost]').addEventListener('submit', e => {
-      e.preventDefault(); const f = e.currentTarget, msg = $('[data-lost-msg]'), btn = $('button', f), email = f.email.value.trim()
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.textContent = 'That email does not look right'; return }
-      btn.disabled = true; msg.textContent = ''
-      post('/api/club/link', { email }).then(r => { msg.className = r.ok ? 'err ok' : 'err'; msg.textContent = r.ok ? 'If that email is a member, your link is on its way. Check your inbox (and the spam folder).' : (r.d.error || 'Something went wrong, try again') })
-        .catch(() => { msg.textContent = 'Something went wrong, try again' }).then(() => { btn.disabled = false })
+    root.innerHTML = `<div class="mtop"><div><p class="eyebrow">THE 3D FUTURE</p><h1>Log in to the club</h1></div></div><form class="glass mbox" data-lost novalidate><p data-lost-p>${esc(msg || 'Write the email you joined with and we send you a 6-digit code, no password, and after that this phone or computer remembers you.')}</p>
+      <div data-step-e><label for="t3m-e" class="sr">Email</label><input id="t3m-e" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@studio.com" required></div>
+      <div data-step-c hidden><label for="t3m-c" class="sr">Code</label><input id="t3m-c" name="code" type="text" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="6-digit code"></div>
+      <button class="btn cta wide" type="submit" data-lost-btn>Send my code</button><p class="err" role="status" data-lost-msg></p><p class="lostjoin" data-lost-other hidden><a href="#">Use another email</a></p><p class="lostjoin">Not a member yet? <a href="/the-3d-future">Join for €9/month</a></p></form>`
+    const f = $('[data-lost]'), msgEl = $('[data-lost-msg]'), btn = $('[data-lost-btn]'), pEl = $('[data-lost-p]'), stE = $('[data-step-e]'), stC = $('[data-step-c]'), other = $('[data-lost-other]')
+    let step = 'e', email = ''
+    const toEmail = () => { step = 'e'; stE.hidden = false; stC.hidden = true; other.hidden = true; btn.textContent = 'Send my code'; pEl.textContent = 'Write the email you joined with and we send you a 6-digit code, no password, and after that this phone or computer remembers you.'; msgEl.textContent = ''; f.email.focus() }
+    $('a', other).addEventListener('click', e => { e.preventDefault(); toEmail() })
+    f.code.addEventListener('input', () => { f.code.value = f.code.value.replace(/\D/g, '').slice(0, 6); if (f.code.value.length === 6) f.requestSubmit() })
+    f.addEventListener('submit', e => {
+      e.preventDefault(); msgEl.className = 'err'
+      if (step === 'e') {
+        email = f.email.value.trim()
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msgEl.textContent = 'That email does not look right'; return }
+        btn.disabled = true; msgEl.textContent = ''
+        post('/api/club/code', { email }).then(r => {
+          if (!r.ok) { msgEl.textContent = r.d.error || 'Something went wrong, try again'; return }
+          step = 'c'; stE.hidden = true; stC.hidden = false; other.hidden = false; btn.textContent = 'Log in'
+          pEl.textContent = `If ${email} is in the club, a 6-digit code is on its way: type it here (and check the spam folder too).`
+          f.code.value = ''; f.code.focus()
+        }).catch(() => { msgEl.textContent = 'Something went wrong, try again' }).then(() => { btn.disabled = false })
+        return
+      }
+      const code = f.code.value.replace(/\D/g, '')
+      if (code.length !== 6) { msgEl.textContent = 'The code has 6 digits'; return }
+      btn.disabled = true; msgEl.textContent = ''
+      post('/api/club/signin', { email, code }).then(r => {
+        if (!r.ok || !r.d.m) { msgEl.textContent = r.d.error || 'That code is not right, try again'; btn.disabled = false; return }
+        try { localStorage.setItem('t3f-m', r.d.m) } catch (e) {}
+        msgEl.className = 'err ok'; msgEl.textContent = "You're in"
+        location.replace(location.pathname + '?m=' + encodeURIComponent(r.d.m) + location.hash)
+      }).catch(() => { msgEl.textContent = 'Something went wrong, try again'; btn.disabled = false })
     })
   }
-  if (!m) { let k = ''; try { k = localStorage.getItem('t3f-m') || '' } catch (e) {}; if (k) location.replace(location.pathname + '?m=' + encodeURIComponent(k) + location.hash); else lost() }
+  if (!m) { let k = ''; try { k = localStorage.getItem('t3f-m') || '' } catch (e) {}; if (k) location.replace(location.pathname + '?m=' + encodeURIComponent(k) + location.hash); else fetch('/api/club/session').then(r => r.ok ? r.json() : null).then(d => { if (d && d.m) { try { localStorage.setItem('t3f-m', d.m) } catch (e) {}; location.replace(location.pathname + '?m=' + encodeURIComponent(d.m) + location.hash) } else lost() }).catch(() => lost()) }
   else fetch('/api/club/inside?m=' + encodeURIComponent(m)).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => {
     if (!ok) { try { if (localStorage.getItem('t3f-m') === m) localStorage.removeItem('t3f-m') } catch (e) {}; return lost(d.error) }
     if (d.state === 'none') { say('We are getting your seat ready. Refresh this page in a minute.'); return }
