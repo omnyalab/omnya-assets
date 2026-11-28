@@ -969,7 +969,7 @@ const P = {
       <button class="fpm" type="button" data-cmt="${p.id}">${p.comments ? (p.comments === 1 ? 'See the comment' : `See all ${p.comments} comments`) : 'Add a comment'}</button></article>`
   function compBar() {
     const me = (FEED && FEED.me) || {}
-    return `<button type="button" class="glass fcomp" data-compose${me.canPost ? '' : ' aria-disabled="true"'}>${av(CTX.first)}<span class="fake">${me.canPost ? 'Post your build…' : canPostMsg()}</span><span class="btn cta">${ic('plus')}<span>Post</span></span></button>`
+    return `<button type="button" class="glass fcomp" data-compose${me.canPost ? '' : ' aria-disabled="true"'}>${av(PROF.name || CTX.first, PROF.av || me.av)}<span class="fake">${me.canPost ? 'Post your build…' : canPostMsg()}</span><span class="btn cta">${ic('plus')}<span>Post</span></span></button>`
   }
   const howW = () => `<div class="glass fhow"><span class="k">${ic('spark')}How the feed works</span><ol><li><i>1</i><span>Paste the link of your build, then add a photo of it</span></li><li><i>2</i><span>Everyone in the club sees it, likes it and comments</span></li><li><i>3</i><span>I look at every post and write to you privately with what works and what I'd change</span></li></ol></div>`
   function emptyW() {
