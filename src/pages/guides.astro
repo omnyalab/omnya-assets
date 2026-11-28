@@ -13,20 +13,24 @@ const canonical = new URL('/guides', Astro.site);
 const og = new URL('/og/omnya-lab.jpg', Astro.site);
 
 /** newest first; t = the title of the funnel page ("with AI" left out, Nico's rule on titles) */
+// book = the Full's book on its watch page; sw = the moment its watch page moves the Full from €5.99 to €9.99
+// (window.__ry2 there), null = €5.99 with no switch (read 28/11 from src/pages/<slug>/watch.astro)
+const SW = '2026-11-28T23:59:59+01:00';
 const GUIDES = [
-  { w: 'Rome', t: 'How to build ancient Rome in one shot', href: '/the-rome-blueprint', img: '/learn/ro_cover_book.webp' },
-  { w: 'Dubai Villa', t: 'How to build a villa you pick on the map', href: '/the-dubai-villa-blueprint', img: '/learn/dv_cover_book.webp' },
-  { w: 'Plane', t: 'How to build a plane where you pick your own seat', href: '/the-plane-blueprint', img: '/learn/pl_cover_book.webp' },
-  { w: 'Riyadh', t: 'How to build a mega tower you drive from your phone', href: '/the-riyadh-blueprint', img: '/learn/ry_cover_book.webp' },
-  { w: 'Miami', t: 'How to build Miami from the real map with Claude', href: '/the-miami-blueprint', img: '/learn/mi_cover_book.webp' },
-  { w: 'Stadium', t: 'How to build a stadium where you pick your own seat', href: '/the-stadium-blueprint', img: '/learn/sd_cover_book.webp' },
-  { w: 'Build', t: 'How to build a house that builds itself', href: '/the-build-blueprint', img: '/learn/bd_cover_book.webp' },
-  { w: 'Towers', t: 'How to build three towers you choose the view of', href: '/the-towers-blueprint', img: '/learn/tt_cover_book.webp' },
-  { w: 'Tower', t: 'How to build a tower that sells', href: '/the-tower-blueprint', img: '/learn/tw_cover_free.webp' },
-  { w: '3D to film', t: 'How to make a 3D that sells', href: '/3d-to-film', img: '/learn/3d_cover_free.webp' },
-  { w: 'City', t: 'How to build a 3D city that goes viral', href: '/the-city-blueprint', img: '/learn/ct_cover_free.webp' },
+  { w: 'Rome', t: 'How to build ancient Rome in one shot', href: '/the-rome-blueprint', img: '/learn/ro_cover_book.webp', book: '/learn/ro_book_tight.webp', sw: null },
+  { w: 'Dubai Villa', t: 'How to build a villa you pick on the map', href: '/the-dubai-villa-blueprint', img: '/learn/dv_cover_book.webp', book: '/learn/dv_book_tight.webp', sw: SW },
+  { w: 'Plane', t: 'How to build a plane where you pick your own seat', href: '/the-plane-blueprint', img: '/learn/pl_cover_book.webp', book: '/learn/pl_book_tight.webp', sw: SW },
+  { w: 'Riyadh', t: 'How to build a mega tower you drive from your phone', href: '/the-riyadh-blueprint', img: '/learn/ry_cover_book.webp', book: '/learn/ry_book_tight.webp', sw: SW },
+  { w: 'Miami', t: 'How to build Miami from the real map with Claude', href: '/the-miami-blueprint', img: '/learn/mi_cover_book.webp', book: '/learn/mi_book_tight.webp', sw: null },
+  { w: 'Stadium', t: 'How to build a stadium where you pick your own seat', href: '/the-stadium-blueprint', img: '/learn/sd_cover_book.webp', book: '/learn/sd_book_tight.webp', sw: SW },
+  { w: 'Build', t: 'How to build a house that builds itself', href: '/the-build-blueprint', img: '/learn/bd_cover_book.webp', book: '/learn/bd_book_tight.webp', sw: SW },
+  { w: 'Towers', t: 'How to build three towers you choose the view of', href: '/the-towers-blueprint', img: '/learn/tt_cover_book.webp', book: '/learn/tt_book_tight.webp', sw: null },
+  { w: 'Tower', t: 'How to build a tower that sells', href: '/the-tower-blueprint', img: '/learn/tw_cover_free.webp', book: '/learn/tw_book.webp', sw: null },
+  { w: '3D to film', t: 'How to make a 3D that sells', href: '/3d-to-film', img: '/learn/3d_cover_free.webp', book: '/learn/3d_book.webp', sw: null },
+  { w: 'City', t: 'How to build a 3D city that goes viral', href: '/the-city-blueprint', img: '/learn/ct_cover_free.webp', book: '/learn/ct_book.webp', sw: null },
 ];
-const START = { w: '3D AI Mastery', t: 'How to build any 3D with Claude, step by step', href: '/the-3d-ai-mastery', img: '/learn/mx_cover_book.webp' };
+const START = { w: '3D AI Mastery', t: 'How to build any 3D with Claude, step by step', href: '/the-3d-ai-mastery', img: '/learn/mx_cover_book.webp', book: '/learn/mx_book_tight.webp', sw: SW };
+const FULL = [START, ...GUIDES];
 const CLUB = '/the-3d-future';
 const arrow = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const check = '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -72,43 +76,16 @@ const check = '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true
       <h1>Everything <span class="kw">we teach</span></h1>
       <p class="sub">Every guide, Claude skill and course behind our reels, in one place</p>
       <div class="ctas">
-        <a class="btn cta" href={CLUB}>
-          <span data-when="early open">Get all of it for €9/month</span><span data-when="after">Get all of it for €19/month</span>
-          <Fragment set:html={arrow} />
-        </a>
-        <a class="btn ghost" href="#free">Start free</a>
-      </div>
-      <p class="tag" data-when="early"><i></i>The club opens for everyone today at 18:00</p>
-      <p class="tag" data-when="open"><i></i>The €9 founders' price ends Friday 4 December</p>
-    </div>
-  </section>
-
-  <section class="sec" id="all">
-    <div class="in">
-      <div class="offer">
-        <span class="obg" style="background-image:url(/club/course/step-01.webp)" aria-hidden="true"></span><span class="oveil" aria-hidden="true"></span>
-        <div class="ol">
-          <p class="ok">All of it</p>
-          <h2>THE <span class="kw">3D</span> FUTURE</h2>
-          <ul class="rows">
-            {VALUE.map(([t, v]) => <li><span class="ck"><Fragment set:html={check} /></span><span class="rt">{t}</span>{v && <span class="rv">{v}</span>}</li>)}
-          </ul>
-        </div>
-        <div class="or">
-          <p class="was"><s>€150+ on our site</s></p>
-          <p class="price"><b data-when="early open">€9</b><b data-when="after">€19</b><span>a month</span></p>
-          <p class="lock" data-when="early open">locked for as long as you stay, if you join by Friday 4 December</p>
-          <p class="lock" data-when="after">€9 a month if you bought one of our guides</p>
-          <a class="btn cta wide" href={CLUB}>Join THE 3D FUTURE <Fragment set:html={arrow} /></a>
-          <p class="fine">Cancel in one tap, whenever you want</p>
-        </div>
+        <a class="btn cta" href="#free">Start free <Fragment set:html={arrow} /></a>
+        <a class="btn ghost" href="#all">See how we do all of it</a>
       </div>
     </div>
   </section>
 
   <section class="sec" id="free">
     <div class="in">
-      <h2 class="h2">Or start <span class="kw">free</span></h2>
+      <h2 class="h2">The <span class="kw">free</span> guides</h2>
+      <p class="lead">The method behind each of our reels, yours for free</p>
       <a class="start" href={START.href}>
         <span class="sbg" style={`background-image:url(${START.img})`} aria-hidden="true"></span>
         <span class="cover"><img src={START.img} alt="" loading="lazy" decoding="async"></span>
@@ -129,6 +106,53 @@ const check = '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true
           </li>
         ))}
       </ul>
+    </div>
+  </section>
+
+  <section class="sec" id="full">
+    <div class="in">
+      <h2 class="h2">The <span class="kw">full</span> guides</h2>
+      <p class="lead">Every prompt word for word, the 3D code and the files, one-time, yours forever</p>
+      <ul class="grid">
+        {FULL.map((g) => (
+          <li>
+            <a class="card fcard" href={`${g.href}/watch#offer`} data-sw={g.sw ? Date.parse(g.sw) : undefined}>
+              <span class="cbox"><span class="cbg" style={`background-image:url(${g.img})`} aria-hidden="true"></span><img src={g.book} alt="" loading="lazy" decoding="async"></span>
+              <span class="ctx"><b class="w">{g.w}</b><span class="fp"><s>€29</s><b data-fp>€5.99</b></span><span class="go">Get it <Fragment set:html={arrow} /></span></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <script is:inline>
+        /* the same switch as each watch page: €5.99 until its moment, then €9.99 (?at= previews, like the top of the page) */
+        (function () { var q = new URLSearchParams(location.search), at = Date.parse((q.get('at') || '').replace(' ', '+')), t = isNaN(at) ? Date.now() : at;
+          document.querySelectorAll('[data-sw]').forEach(function (a) { if (t > +a.dataset.sw) a.querySelector('[data-fp]').textContent = '€9.99'; }); })();
+      </script>
+    </div>
+  </section>
+
+  <section class="sec" id="all">
+    <div class="in">
+      <h2 class="h2">How we do <span class="kw">all of it</span></h2>
+      <p class="lead">Every full guide, the Claude skills we use, and video courses where we build each project with you, in our club</p>
+      <div class="offer">
+        <span class="obg" style="background-image:url(/club/course/step-01.webp)" aria-hidden="true"></span><span class="oveil" aria-hidden="true"></span>
+        <div class="ol">
+                    <h2>THE <span class="kw">3D</span> FUTURE</h2>
+          <ul class="rows">
+            {VALUE.map(([t, v]) => <li><span class="ck"><Fragment set:html={check} /></span><span class="rt">{t}</span>{v && <span class="rv">{v}</span>}</li>)}
+          </ul>
+        </div>
+        <div class="or">
+          <p class="was"><s>€150+ on our site</s></p>
+          <p class="price"><b data-when="early open">€9</b><b data-when="after">€19</b><span>a month</span></p>
+          <p class="lock" data-when="early open">locked for as long as you stay, if you join by Friday 4 December</p>
+          <p class="lock" data-when="after">€9 a month if you bought one of our guides</p>
+          <p class="tag" data-when="early"><i></i>Open for everyone today at 18:00</p>
+          <a class="btn cta wide" href={CLUB}>Join THE 3D FUTURE <Fragment set:html={arrow} /></a>
+          <p class="fine">Cancel in one tap, whenever you want</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -176,6 +200,12 @@ html[data-phase="after"] [data-when]:not([data-when~="after"]) { display: none !
 @media (min-width: 900px) { .in { padding: 0 32px } }
 .kw { background: linear-gradient(100deg, #b9ddff 0%, #5aa8ff 52%, #2a74ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent }
 .c { text-align: center }
+.lead { margin: -8px 0 24px; max-width: 46ch; color: var(--mute); font-size: 17px; text-wrap: balance }
+.fp { display: flex; align-items: baseline; gap: 8px; margin-top: 2px }
+.fp s { color: var(--faint); font-size: 15px }
+.fp b { font: 800 26px/1 Geist, -apple-system, system-ui, sans-serif; letter-spacing: -.02em }
+.fcard .cbox img { object-fit: contain; padding: 20px 20px 8px; filter: drop-shadow(0 14px 22px rgba(0,0,0,.5)) }
+.or .tag { margin: 0 0 14px }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 26px; border-radius: 999px; font: 600 17px/1 inherit; letter-spacing: -.01em; transition: background .2s, transform .15s }
 .btn:active { transform: scale(.98) }
