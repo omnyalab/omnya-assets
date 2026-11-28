@@ -5,12 +5,12 @@
 // Nothing here is invented: the feed is only what members posted. Few Redis commands per call (the free plan counts them):
 //   posts  HASH  id → post JSON            counts HASH  l:<id> likes · c:<id> comments · s:<id> shares
 //   liked  SET   per member, the ids they like      cmts LIST per post, comment JSON      img STRING per post, the photo
-import { profilesOf } from './club-me.js';
+import { profilesOf, getProfile, getProgress } from './club-me.js';
 import { createHmac, randomBytes } from 'node:crypto';
 import { kv } from './store.js';
 import { sendMail } from './mail.js';
 import { host } from './config.js';
-import { KEYS, PREVIEW_EMAIL, EARLY, cleanEmail, firstName, insideUrl } from './club.js';
+import { KEYS, PREVIEW_EMAIL, EARLY, cleanEmail, firstName, insideUrl, LESSONS } from './club.js';
 
 const FK = {
   posts: 'omnya:club:feed:posts',
@@ -53,6 +53,31 @@ const pub = (p, counts, mine, me) => ({
 });
 const asMap = (arr) => { const o = {}; for (let i = 0; i + 1 < (arr || []).length; i += 2) o[arr[i]] = arr[i + 1]; return o; };
 
+/** 28/11 (Nico: «se uno schiaccia sul profilo di una persona sul feed va dentro il suo profilo, solo vedere, non tutte le cose»):
+ * a member is known on the page by a signed id, never by the email. */
+export const uidOf = (email) => createHmac('sha256', signKey() || 'omnya-club-uid').update(`uid|${cleanEmail(email)}`).digest('base64url').slice(0, 16);
+const romeDay = (d) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(d);
+/** the last six weeks (Monday first, Rome), oldest first: true when there was some course watched that week */
+function weeksOf(w = {}) {
+  const now = new Date(), wd = (new Date(romeDay(now) + 'T12:00:00Z').getUTCDay() + 6) % 7, mon = +now - wd * 864e5;
+  return Array.from({ length: 6 }, (_, i) => { const back = 5 - i; let s = 0; for (let j = 0; j < 7; j++) s += Number(w[romeDay(new Date(mon - back * 7 * 864e5 + j * 864e5))]) || 0; return s > 0; });
+}
+/** What anyone in the club can see of a member: name, photo, background, line, Instagram, badges earned, weeks, their builds.
+ * Never the email, the date they joined, how long they studied, their place in line. */
+export async function publicProfile(uid) {
+  if (!/^[A-Za-z0-9_-]{16}$/.test(String(uid || ''))) return null;
+  const rows = asMap(await kv('HGETALL', FK.posts)), all = [];
+  for (const v of Object.values(rows)) { try { all.push(JSON.parse(v)); } catch {} }
+  const emails = new Set([PREVIEW_EMAIL, ...all.map((p) => p.email)]);
+  const email = [...emails].find((e) => uidOf(e) === uid); if (!email) return null;
+  const who = await feedMember(email); if (!who) return null;
+  const [prof, prog] = await Promise.all([getProfile(email), getProgress(email)]);
+  const posts = all.filter((p) => p.email === email && !p.hidden).sort((a, b) => (a.at < b.at ? 1 : -1)).slice(0, 30)
+    .map((p) => ({ id: p.id, link: p.link, caption: p.caption || '', img: p.img ? `/api/club/img?id=${p.id}` : '' }));
+  return { name: prof.name || who.name, av: prof.av, cover: prof.cover, bio: prof.bio, ig: prof.ig, founder: !!who.founder, nico: !!who.nico,
+    posted: posts.length > 0, done: LESSONS.every((l) => prog.d.includes(l.n)), weeks: weeksOf(prog.w), posts };
+}
+
 /** The feed, newest first: 3 commands whatever the number of posts. Hidden posts only for Nico (marked hidden). */
 export async function feed(me) {
   const [rows, counts, liked] = [asMap(await kv('HGETALL', FK.posts)), asMap(await kv('HGETALL', FK.n)), new Set((await kv('SMEMBERS', FK.liked(me.email))) || [])];
@@ -61,7 +86,7 @@ export async function feed(me) {
   posts.sort((a, b) => (a.at < b.at ? 1 : -1));
   const top = posts.slice(0, 200), pr = await profilesOf(top.map((p) => p.email)).catch(() => ({}));
   // 27/11: the name and photo each member has now in their profile (an old post follows a new name)
-  for (const p of top) { const x = pr[p.email]; if (x) { if (x.name) p.name = x.name; p.av = x.av; } delete p.email; }
+  for (const p of top) { const x = pr[p.email]; if (x) { if (x.name) p.name = x.name; p.av = x.av; } p.u = uidOf(p.email); delete p.email; }
   return { posts: top, me: { name: me.name, founder: me.founder, nico: me.nico, canPost: me.open, av: (await profilesOf([me.email]).catch(() => ({})))[me.email]?.av || '' } };
 }
 

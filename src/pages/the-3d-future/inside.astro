@@ -83,15 +83,45 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   /* 28/11: «Watch before you start the course» at the top of the steps; the certificate of the course */
   .crow.intro .cth { position: relative } .crow.intro small { color: #8cc4ff } .crow.intro .ctx b { white-space: normal; overflow: visible; text-overflow: clip; display: block }
   .A .certw { display: grid; gap: 14px }
+  /* 28/11 (Nico: «il blur che esce ancora, guarda le tre righette in alto a destra»): iOS 26 softens whatever is under the status
+     bar while the page scrolls. On the phone the page no longer scrolls: the club scrolls inside its own box, so the bar stays sharp */
+  @media (max-width: 899px) {
+    html, body { height: 100%; overflow: hidden }
+    .app.A { position: fixed; inset: 0; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain }
+  }
+  /* the profile's photo scrolls with the finger like the rest (it was kept for a drag that is not there) */
+  .A .pphoto { touch-action: auto; cursor: default }
+  /* the ring around the profile photo: gold only for Nico; for members its colour changes with the badges earned */
+  .A .pname.lv1 { --ring: #8cc4ff; --rglow: rgba(42,116,255,.55) } .A .pname.lv2 { --ring: #6fe08a; --rglow: rgba(47,191,91,.5) } .A .pname.lv3 { --ring: #c39bff; --rglow: rgba(140,90,255,.55) }
+  .A .pname.lv4 { --ring: #ffb24d; --rglow: rgba(255,122,26,.5) } .A .pname.lv5 { --ring: #ff7ad9; --rglow: rgba(255,60,180,.5) } .A .pname.gold { --ring: #f3cf7a; --rglow: rgba(240,180,60,.6) }
+  .app.A .pname .mav.big { box-shadow: 0 0 0 4px rgba(11,21,52,.55), 0 0 0 7px var(--ring, #8cc4ff), 0 18px 44px var(--rglow, rgba(42,116,255,.55)) }
+  .A .pname p.pgold, .pgold { justify-self: center; margin: 0; padding: 7px 16px; border-radius: 999px; background: linear-gradient(135deg, #fff3c9, #eec26a 42%, #c4902f 75%, #f6dd98); color: #2a1a00; font: 700 15px/1.1 var(--f-sfd); letter-spacing: -.005em;
+    border: 1px solid rgba(255,244,210,.9); box-shadow: 0 8px 24px rgba(232,184,90,.45), inset 0 1px 0 rgba(255,255,255,.7); -webkit-backdrop-filter: none; backdrop-filter: none }
+  /* the weeks with a fire, the same in Home, the profile and someone's profile */
+  .hstreak { display: grid; gap: 14px } .hwk { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px } .hwk span { display: grid; justify-items: center; gap: 6px }
+  .hwk i { width: 100%; aspect-ratio: 1; max-width: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 24px; font-style: normal; background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,.1) }
+  .hwk .on i { background: radial-gradient(circle at 50% 70%, #ffcf5c, #ff7a1a 55%, #d9480f); box-shadow: 0 8px 22px rgba(255,122,26,.45), inset 0 1px 0 rgba(255,255,255,.4) }
+  .hwk .now i { box-shadow: inset 0 0 0 2px #ffb347, 0 0 0 4px rgba(255,179,71,.15) } .hwk .now.on i { box-shadow: 0 8px 22px rgba(255,122,26,.45), 0 0 0 3px #fff }
+  .hwk small { font: 600 11px/1.1 var(--f-sf); color: rgba(255,255,255,.65); text-align: center } .hwk .now small { color: #ffcf8a } .hsub { margin: 0; font: 500 15px/1.4 var(--f-sf); color: rgba(255,255,255,.75) }
+  /* someone's profile, from the feed */
+  .A .fpu { appearance: none; border: 0; padding: 0; background: none; border-radius: 50%; cursor: pointer; flex: none } .A .fpn[data-uprof] { cursor: pointer }
+  .uprof { display: grid; gap: 16px; color: #fff }
+  .upc { height: 150px; margin: -4px -4px 0; border-radius: 22px; background-size: cover; background-position: center }
+  .upn { display: grid; justify-items: center; gap: 8px; margin-top: -64px; text-align: center }
+  .upav { width: 96px; height: 96px; border-radius: 50%; display: grid; place-items: center; font: 700 40px/1 Geist, var(--f-sfd); color: #fff; background: linear-gradient(140deg, #8cc4ff, #2a74ff 55%, #1d4fd8) center/cover no-repeat;
+    box-shadow: 0 0 0 4px #161a26, 0 0 0 7px var(--ring, #8cc4ff), 0 16px 40px var(--rglow, rgba(42,116,255,.5)) }
+  .upav[style] { color: transparent }
+  .upn.lv1 { --ring: #8cc4ff; --rglow: rgba(42,116,255,.55) } .upn.lv2 { --ring: #6fe08a; --rglow: rgba(47,191,91,.5) } .upn.lv3 { --ring: #c39bff; --rglow: rgba(140,90,255,.55) }
+  .upn.lv4 { --ring: #ffb24d; --rglow: rgba(255,122,26,.5) } .upn.lv5 { --ring: #ff7ad9; --rglow: rgba(255,60,180,.5) } .upn.gold { --ring: #f3cf7a; --rglow: rgba(240,180,60,.6) }
+  .upn .s-title { margin: 6px 0 0 } .uprole { margin: 0; padding: 5px 12px; border-radius: 999px; background: rgba(255,255,255,.1); font: 600 14px/1.2 var(--f-sf) }
+  .upbio { margin: 0; font: 400 15px/1.45 var(--f-sf); color: rgba(255,255,255,.85); max-width: 36ch } .upig { color: #8cc4ff; font: 600 15px/1 var(--f-sf); text-decoration: none; padding: 8px }
+  .uprof .glass { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 22px; padding: 16px }
+  .uprof .k { display: flex; align-items: center; gap: 8px; font: 600 14px/1 var(--f-sf); margin-bottom: 12px } .uprof .k .r { margin-left: auto; color: rgba(255,255,255,.6) } .uprof .k .ic { width: 18px; height: 18px }
+  .uprof .medals { display: flex; flex-wrap: wrap; gap: 14px } .uprof .medal2 { width: 90px; display: grid; justify-items: center; gap: 4px; text-align: center; font: 600 12px/1.2 var(--f-sf) } .uprof .medal2 .bdg svg { width: 64px; height: 64px } .uprof .medal2 small { color: rgba(255,255,255,.6) }
+  .upg { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px } .upg a { display: grid; gap: 6px; color: #fff; text-decoration: none; font: 500 13px/1.3 var(--f-sf) }
+  .upg img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 16px; display: block } .upg span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: rgba(255,255,255,.8) }
   /* H7: your weeks (a fire for every week with study), your study this week, the next badge, the next build */
-  .A .hstreak, .A .hchart { display: grid; gap: 14px }
-  .A .hwk { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px }
-  .A .hwk span { display: grid; justify-items: center; gap: 6px }
-  .A .hwk i { width: 100%; aspect-ratio: 1; max-width: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 24px; font-style: normal; background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,.1) }
-  .A .hwk .on i { background: radial-gradient(circle at 50% 70%, #ffcf5c, #ff7a1a 55%, #d9480f); box-shadow: 0 8px 22px rgba(255,122,26,.45), inset 0 1px 0 rgba(255,255,255,.4) }
-  .A .hwk .now i { box-shadow: inset 0 0 0 2px #ffb347, 0 0 0 4px rgba(255,179,71,.15) } .A .hwk .now.on i { box-shadow: 0 8px 22px rgba(255,122,26,.45), 0 0 0 3px #fff }
-  .A .hwk small { font: 600 11px/1.1 var(--f-sf); color: rgba(255,255,255,.65); text-align: center } .A .hwk .now small { color: #ffcf8a }
-  .A .hsub { margin: 0; font: 500 15px/1.4 var(--f-sf); color: rgba(255,255,255,.75) }
+  .A .hchart { display: grid; gap: 14px }
   .A .hbars { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; height: 150px; align-items: end }
   .A .hbars span { height: 100%; display: grid; grid-template-rows: 18px 1fr 18px; justify-items: center; align-items: end; gap: 4px }
   .A .hbars i { display: block; width: 100%; max-width: 30px; border-radius: 8px 8px 4px 4px; background: linear-gradient(180deg, #8cc4ff, #2a74ff); align-self: end }
@@ -986,8 +1016,8 @@ const P = {
   const acts = p => `<button type="button" data-like="${p.id}" aria-pressed="${!!p.liked}" aria-label="Like">${ic('heart')}<b>${p.likes || ''}</b></button><button type="button" data-cmt="${p.id}" aria-label="Comments">${ic('bubble')}<b>${p.comments || ''}</b></button><button type="button" data-share="${p.id}" aria-label="Share">${ic('send')}<b>${p.shares || ''}</b></button><span class="sp"></span>${FEED && FEED.me.nico ? `<button type="button" class="fhide" data-hide="${p.id}" data-on="${p.hidden ? '0' : '1'}">${p.hidden ? ic('eye') + 'Show' : ic('x') + 'Hide'}</button>` : ''}`
   const who2 = p => `${esc(p.name)}${p.nico ? '<span class="fnico">Nico</span>' : ''}`
   const postCard = p => `<article class="glass fp${p.hidden ? ' hid' : ''}" data-post="${p.id}">
-      <header class="fph">${av(p.name, p.av)}<span class="fpn"><b>${who2(p)}</b><small>${ago(p.at)}${p.founder ? '<span class="fdot"></span>Founding member' : ''}${p.hidden ? '<span class="fdot"></span>Hidden from the club' : ''}</small></span><a class="fpo" href="${esc(p.link)}" target="_blank" rel="noopener">${ic('eye')}Open the build</a></header>
-      ${p.img ? `<a class="fpimg" href="${esc(p.link)}" target="_blank" rel="noopener" aria-label="Open ${esc(p.name)}'s build"><img src="${esc(p.img)}" alt="" loading="lazy"></a>` : ''}
+      <header class="fph"><button type="button" class="fpu" data-uprof="${esc(p.u || '')}" aria-label="Open ${esc(p.name)}'s profile">${av(p.name, p.av)}</button><span class="fpn" data-uprof="${esc(p.u || '')}"><b>${who2(p)}</b><small>${ago(p.at)}${p.founder ? '<span class="fdot"></span>Founding member' : ''}${p.hidden ? '<span class="fdot"></span>Hidden from the club' : ''}</small></span><a class="fpo" href="${esc(clubLink(p.link))}" target="_blank" rel="noopener">${ic('eye')}Open the build</a></header>
+      ${p.img ? `<a class="fpimg" href="${esc(clubLink(p.link))}" target="_blank" rel="noopener" aria-label="Open ${esc(p.name)}'s build"><img src="${esc(p.img)}" alt="" loading="lazy"></a>` : ''}
       <div class="fpa">${acts(p)}</div>
       ${p.caption ? `<p class="fpc"><b>${esc(p.name)}</b>${esc(p.caption)}</p>` : ''}
       <button class="fpm" type="button" data-cmt="${p.id}">${p.comments ? (p.comments === 1 ? 'See the comment' : `See all ${p.comments} comments`) : 'Add a comment'}</button></article>`
@@ -1147,6 +1177,34 @@ const P = {
   /* the course card of Home: the step you are on, the steps you watched (27/11) */
   /* 28/11 (Nico: «la home mi piace la H7 … your fridays più bello, un grafico sotto per vedere quanto sta studiando ogni giorno,
      next build sotto next badge»). Only this member's real data: the minutes of course watched per day (progress.w). */
+  function weeksHTML(flags, title) {
+    const fmt = d => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(d), today = new Date()
+    const wd = (new Date(fmt(today) + 'T12:00:00Z').getUTCDay() + 6) % 7, mon = new Date(today - wd * 864e5)
+    let run = 0; for (let i = flags[5] ? 5 : 4; i >= 0 && flags[i]; i--) run++
+    const cells = flags.map((on, i) => { const back = 5 - i, d = new Date(+mon - back * 7 * 864e5); return `<span class="${on ? 'on' : ''}${back === 0 ? ' now' : ''}"><i>${on ? '🔥' : ''}</i><small>${back === 0 ? 'This week' : esc(new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'Europe/Rome' }).format(d))}</small></span>` }).join('')
+    return `<div class="glass w span hstreak"><span class="k">${ic('spark')}${esc(title)}<span class="r">${run ? `${run} in a row` : 'No fire yet'}</span></span><div class="hwk">${cells}</div>${title === 'Your weeks' ? `<p class="hsub">${run ? 'Watch a step every week and keep the fire going.' : 'Watch one step this week and light your first fire.'}</p>` : ''}</div>`
+  }
+  const myWeeks = () => { const W = PROG.w || {}, fmt = d => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(d), today = new Date(), wd = (new Date(fmt(today) + 'T12:00:00Z').getUTCDay() + 6) % 7, mon = +today - wd * 864e5
+    return Array.from({ length: 6 }, (_, i) => { const back = 5 - i; let t = 0; for (let j = 0; j < 7; j++) t += W[fmt(new Date(mon - back * 7 * 864e5 + j * 864e5))] || 0; return t > 0 }) }
+  /* 28/11 (Nico): someone's profile from the feed, read only (api/club/member: no email, no dates, no study minutes) */
+  const clubLink = l => /^https:\/\/(www\.)?omnyalab\.com\//.test(l || '') ? l + (l.includes('?') ? '&' : '?') + 'from=club' : l
+  function openUser(u) {
+    openSheet(`<div class="uprof" data-uprofbox><p class="msub">Opening the profile…</p></div>`)
+    fetch(`/api/club/member?m=${encodeURIComponent(m)}&u=${encodeURIComponent(u)}`).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => {
+      const box = $('[data-uprofbox]'); if (!box) return
+      if (!ok) { box.innerHTML = `<p class="msub">${esc(d.error || 'This profile is not available.')}</p>`; return }
+      const earned = BADGES.filter(([k]) => (k === 'founder' && d.founder) || (k === 'first' && d.posted) || (k === 'tower' && d.done))
+      const ring = d.nico ? 'gold' : 'lv' + Math.min(5, Math.max(1, earned.length))
+      const bio = d.bio && !(d.nico && /founder of omnya/i.test(d.bio)) ? d.bio : ''
+      box.innerHTML = `<div class="upc" style="background-image:url(${esc(d.cover || '/club/profile-cover-800.webp')})"></div>
+        <div class="upn ${ring}"><span class="upav"${d.av ? ` style="background-image:url(${esc(d.av)})"` : ''}>${d.av ? '' : esc((d.name || '·')[0].toUpperCase())}</span>
+          <h3 class="s-title" id="t3m-sh">${esc(d.name)}</h3>${d.nico ? '<p class="pgold">Founder of Omnya Lab</p>' : `<p class="uprole">${d.founder ? 'Founding member' : 'Member'}</p>`}
+          ${bio ? `<p class="upbio">${esc(bio)}</p>` : ''}${d.ig ? `<a class="upig" href="https://instagram.com/${encodeURIComponent(d.ig)}" target="_blank" rel="noopener">@${esc(d.ig)}</a>` : ''}</div>
+        ${earned.length ? `<div class="glass w upb"><span class="k">${ic('trophy')}Badges<span class="r">${earned.length}</span></span><div class="medals">${earned.map(b => medal(b, true)).join('')}</div></div>` : ''}
+        ${weeksHTML(d.weeks || [], 'Weeks')}
+        ${d.posts && d.posts.length ? `<div class="upg">${d.posts.map(p => `<a href="${esc(clubLink(p.link))}" target="_blank" rel="noopener">${p.img ? `<img src="${esc(p.img)}" alt="" loading="lazy">` : ''}<span>${esc(p.caption || 'Open the build')}</span></a>`).join('')}</div>` : ''}`
+    }).catch(() => { const box = $('[data-uprofbox]'); if (box) box.innerHTML = '<p class="msub">Could not open the profile, try again.</p>' })
+  }
   function homeH7(BL, earned) {
     const fmt = d => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(d), W = PROG.w || {}
     const today = new Date(), dayMs = 864e5
@@ -1162,9 +1220,7 @@ const P = {
     const left = Math.max(0, fri - today), u = [Math.floor(left / dayMs), Math.floor(left / 36e5) % 24, Math.floor(left / 6e4) % 60]
     const friDay = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Europe/Rome' }).format(fri)
     const nb = BL.findIndex((b, i) => !earned[i])
-    return `<div class="glass w span hstreak"><span class="k">${ic('spark')}Your weeks<span class="r">${run ? `${run} in a row` : 'Start your run'}</span></span>
-        <div class="hwk">${weeks.map(w => `<span class="${w.on ? 'on' : ''}${w.now ? ' now' : ''}"><i>${w.on ? '🔥' : ''}</i><small>${w.now ? 'This week' : esc(w.l)}</small></span>`).join('')}</div>
-        <p class="hsub">${run ? 'Watch a step every week and keep the fire going.' : 'Watch one step this week and light your first fire.'}</p></div>
+    return `${weeksHTML(weeks.map(w => w.on), 'Your weeks')}
       <div class="glass w span hchart"><span class="k">${ic('play')}Your study this week<span class="r">${tot} min</span></span>
         <div class="hbars">${days.map(x => `<span class="${x.today ? 'td' : ''}${x.future ? ' fu' : ''}"><em>${x.min ? x.min : ''}</em><i style="height:${Math.max(4, Math.round(x.min / max * 100))}%"></i><small>${x.l}</small></span>`).join('')}</div></div>
       ${nb >= 0 ? `<div class="glass w span nbadge"><span class="nbb">${svgOf(BL[nb][0])}</span><span><small>Your next badge</small><b>${esc(BL[nb][1])}</b><span>${esc(BL[nb][2])}</span></span></div>` : ''}
@@ -1233,7 +1289,7 @@ const P = {
     $$('[data-mav]').forEach(el => { const big = el.classList.contains('big'), w = document.createElement('div'); w.innerHTML = mavH(first, big ? 'big' : ''); el.replaceWith(w.firstChild) })
     $$('[data-pcov]').forEach(im => { const u = PROF.cover || (im.classList.contains('pblur') ? '/club/profile-cover-800.webp' : '/club/profile-cover.webp'); if (im.getAttribute('src') !== u) im.src = u })
     const pn = $('[data-pn]'); if (pn) pn.textContent = PROF.name || first
-    const pb = $('[data-pbio]'); if (pb) { pb.textContent = PROF.bio || ''; pb.hidden = !PROF.bio }
+    const pb = $('[data-pbio]'); if (pb) { pb.textContent = PROF.bio || ''; pb.hidden = !PROF.bio || (ALL && /founder of omnya/i.test(PROF.bio)) }
     const pi = $('[data-pig]'); if (pi) { pi.hidden = !PROF.ig; if (PROF.ig) { pi.href = 'https://instagram.com/' + encodeURIComponent(PROF.ig); pi.textContent = '@' + PROF.ig } }
     const h1 = $('[data-v="home"] .mtop h1'); if (h1 && PROF.name) h1.textContent = h1.textContent.replace(/, .*$/, ', ' + PROF.name.split(' ')[0])
     if (FEED) loadFeed()
@@ -1366,11 +1422,12 @@ const P = {
       <div class="pcard">
         <div class="ptone" aria-hidden="true"><div class="pbw"><img class="pblur" src="${esc(PROF.cover || '/club/profile-cover-800.webp')}" alt="" data-pcov></div></div>
         <div class="pphoto"><img class="pimg" src="${esc(PROF.cover || '/club/profile-cover.webp')}" alt="" style="object-position:50% 40%" data-pcov><div class="pfade"></div>
-          <div class="pname">${mavH(first, 'big')}<h1 data-pn>${esc(PROF.name || first)}</h1><p>${role}${since ? (d.state === 'waiting' ? ' · starts ' : ' · since ') + since : ''}</p><p class="pbio" data-pbio${PROF.bio ? '' : ' hidden'}>${esc(PROF.bio || '')}</p>${PROF.ig ? `<a class="pig" data-pig href="https://instagram.com/${encodeURIComponent(PROF.ig)}" target="_blank" rel="noopener">@${esc(PROF.ig)}</a>` : '<a class="pig" data-pig hidden></a>'}</div></div>
+          <div class="pname ${d.allOpen ? 'gold' : 'lv' + Math.min(5, Math.max(1, nOn))}">${mavH(first, 'big')}<h1 data-pn>${esc(PROF.name || first)}</h1>${d.allOpen ? '<p class="pgold">Founder of Omnya Lab</p>' : `<p>${role}${since ? (d.state === 'waiting' ? ' · starts ' : ' · since ') + since : ''}</p>`}<p class="pbio" data-pbio${PROF.bio && !(d.allOpen && /founder of omnya/i.test(PROF.bio)) ? '' : ' hidden'}>${esc(PROF.bio || '')}</p>${PROF.ig ? `<a class="pig" data-pig href="https://instagram.com/${encodeURIComponent(PROF.ig)}" target="_blank" rel="noopener">@${esc(PROF.ig)}</a>` : '<a class="pig" data-pig hidden></a>'}</div></div>
         <div class="pact"><button type="button" class="pedit" data-editp>${ic('pen')}Edit profile</button><button type="button" class="btn cta" data-compose>${ic('plus')}<span>Post your build</span></button><a class="pcam ctr" href="#vault" data-go="vault" aria-label="Open the Vault">${ic('grid')}</a></div>
       </div>
       <div class="pmain">
         <div class="glass w wide2 badgesw"><span class="k">${ic('trophy')}Badges<span class="r">${nOn} of ${BL.length}</span></span><div class="medals lg">${BL.map((b, i) => medal(b, earned[i])).join('')}</div></div>
+        ${open ? weeksHTML(myWeeks(), 'Your weeks') : ''}
         ${certHTML()}
         ${open ? `<div class="objs">${[['/club/course/step-05.webp', (d.lessons || []).length, 'course steps', GO_COURSE], ['/club/v-towers-760.webp', (d.vault || []).length, 'Vault builds', 'vault'], [founder ? '/club/v-plane-760.webp' : '/club/v-miami-760.webp', founder ? d.gifts.length : (d.guides || []).length, founder ? "founders' gifts" : 'Full guides', founder ? 'gift' : 'vault']].map(([im, n, l, go]) => `<a class="glass obj" href="#${go}" data-go="${go}"><img src="${im}" alt=""><b>${n}</b><span>${l}</span></a>`).join('')}</div>` : ''}
         <div class="glass w wide2"><span class="k">${ic('person')}Your membership</span>
@@ -1407,7 +1464,7 @@ const P = {
     if (push !== false && location.hash !== '#' + k) try { history.pushState(null, '', '#' + k) } catch (e) {}
     // the cards of a screen that was hidden come in when it shows
     setTimeout(() => $$(`[data-v="${k}"] .steps2 li`).forEach(li => li.classList.add('in')), 350)
-    if (target) setTimeout(() => { const el = document.getElementById(target); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }) }, 40); else if (push !== false) scrollTo({ top: 0 })
+    if (target) setTimeout(() => { const el = document.getElementById(target); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }) }, 40); else if (push !== false) (innerWidth < 900 ? app : window).scrollTo({ top: 0 })
   }
   function wire() {
     document.addEventListener('click', e => {
@@ -1425,6 +1482,7 @@ const P = {
       const b = e.target.closest("[data-vb]"); if (b) { openBuild(+b.dataset.vb); return }
       if (e.target.closest('[data-next]')) { toast('The next build opens Friday 4 December'); return }
       if (e.target.closest('[data-sheetx]')) closeSheet()
+      const up = e.target.closest('[data-uprof]'); if (up && up.dataset.uprof) { openUser(up.dataset.uprof); return }
     })
     // the Vault: on the computer the card under the pointer opens (board A)
     $$('.vx').forEach(c => c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); c.click() } }))

@@ -36,7 +36,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { askBuddy } from './_lib/club-ask.js';
-import { feedMember, feed, addPost, like, comments, addComment, share, setHidden, photo, noteMessage, hideOk, setRemind, notifyCourse, LINK, MAX_IMG } from './_lib/club-feed.js';
+import { publicProfile, feedMember, feed, addPost, like, comments, addComment, share, setHidden, photo, noteMessage, hideOk, setRemind, notifyCourse, LINK, MAX_IMG } from './_lib/club-feed.js';
 import { markMailed } from './_lib/drip.js';
 
 const SITE = 'https://www.omnyalab.com';
@@ -68,6 +68,7 @@ export async function GET(req) {
   if (a === 'feed' || a === 'comments') return feedGet(req, a);
   if (a === 'avatar') return avatarGet(req);
   if (a === 'cert') return certGet(req);
+  if (a === 'member') return memberGet(req);
   if (a === 'manifest') return manifest(req);
   if (a === 'img') return img(req);
   if (a === 'hide') return hideFromMail(req);
@@ -268,6 +269,14 @@ async function certGet(req) {
     const out = await doc.save();
     return new Response(out, { headers: { ...head, 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename="THE-3D-FUTURE-${CERT_COURSES[c].short}-Certificate.pdf"` } });
   } catch (e) { console.error('[club] cert', e.message); return fail(502, 'cert', 'Could not make the certificate right now, try again in a minute.'); }
+}
+//   GET /api/club/member?m=&u=   → a member's public profile, for whoever is in the club (read only)
+async function memberGet(req) {
+  const u = new URL(req.url), me = await who(u.searchParams.get('m'));
+  if (!me) return fail(403, 'bad_link', 'Open the club from your own link.');
+  if (await limited(req, 'member', 60, 600)) return tooMany();
+  try { const p = await publicProfile(u.searchParams.get('u')); return p ? json(p) : fail(404, 'not_found', 'This profile is not available.'); }
+  catch (e) { console.error('[club] member', e.message); return fail(502, 'store', 'Something went wrong, try again in a minute.'); }
 }
 async function lostLink(req) {
   if (await limited(req, 'link', 5, 600)) return tooMany();

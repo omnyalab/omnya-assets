@@ -1,3 +1,26 @@
+/* 28/11 (Nico: «quando entro a vedere la build mi mette subito a schermo intero, mi serve una X in alto a destra»): a build opened
+   from the club (?from=club, or the club's Home Screen app) always has a round X top right that goes back to the club. */
+(function () {
+  if (window.__omnyaBack) return; window.__omnyaBack = true;
+  var fromClub = /[?&]from=club\b/.test(location.search) || /\/the-3d-future/.test(document.referrer || '');
+  var app = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+  if (!fromClub && !app) return;
+  function back() {
+    try { if (document.fullscreenElement) document.exitFullscreen(); else if (document.webkitFullscreenElement) document.webkitExitFullscreen(); } catch (e) {}
+    if (history.length > 1) { history.back(); setTimeout(function () { location.href = '/the-3d-future/inside#feed'; }, 500); }
+    else { try { window.close(); } catch (e) {} setTimeout(function () { location.href = '/the-3d-future/inside#feed'; }, 250); }
+  }
+  function add() {
+    var st = document.createElement('style');
+    st.textContent = '.club-x{position:fixed;z-index:2147483646;top:calc(max(12px, env(safe-area-inset-top, 0px)) + 4px);right:max(14px, env(safe-area-inset-right, 0px));width:44px;height:44px;margin:0;padding:0;border:0;border-radius:50%;display:grid;place-items:center;color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent;background:rgba(16,20,28,.5);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.55),0 6px 18px rgba(0,0,0,.3)}.club-x svg{width:18px;height:18px}.club-x:active{transform:scale(.92)}';
+    document.head.appendChild(st);
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'club-x'; b.setAttribute('aria-label', 'Back to the club');
+    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>';
+    b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); back(); });
+    document.body.appendChild(b);
+  }
+  if (document.body) add(); else document.addEventListener('DOMContentLoaded', add);
+})();
 /* /demo/fullscreen.js (12/11, Nico): on a phone turned sideways the 3D demos fill the whole screen.
    - Android (and any browser that lets a page go full screen): the first tap goes full screen and keeps the
      phone in landscape. The X leaves full screen.
