@@ -1484,7 +1484,7 @@ const P = {
       </div></div></div>`
     const tabs = `<div class="tabbar"><div class="tabin t${TABS.length}" role="tablist">${TABS.map(([k, i, t]) => `<button type="button" data-go="${k}">${ic(i)}<span>${t}</span></button>`).join('')}</div></div>`
     app.insertAdjacentHTML('afterbegin', '') // keep the background first
-    root.insertAdjacentHTML('beforebegin', top + `<div class="mhd"><a href="#home" data-go="home" aria-label="THE 3D FUTURE, Home"><img src="/club/knot-96.webp" alt="" width="28" height="28">THE <b>3D</b> FUTURE</a></div>`)
+    root.insertAdjacentHTML('beforebegin', top); document.body.insertAdjacentHTML('afterbegin', `<div class="mhd"><a href="#home" data-go="home" aria-label="THE 3D FUTURE, Home"><img src="/club/knot-96.webp" alt="" width="28" height="28">THE <b>3D</b> FUTURE</a></div>`)
     root.innerHTML = home + courseV + vault + chal + gifts + me + '<div data-v="user" data-userv></div>'
     app.insertAdjacentHTML('beforeend', tabs)
     if (d.lessons) course_(d.lessons)
