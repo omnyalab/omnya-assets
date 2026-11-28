@@ -170,16 +170,20 @@ You add your card tonight and nothing is charged. Tomorrow your month starts at 
 
 Nico`,
   },
+  // 28/11 (Nico: «you're almost in» for who is on the list without a card, alla Hormozi): who reserved is skipped
+  // (seats: true) and gets W1 «you're in» from the Saturday charge
   e4a: {
-    subject: 'The doors are open for you',
+    subject: "You're almost in",
     img: { src: '/club/mail/sv-the-vault.jpg', alt: 'A small spoiler: the Vault of the club page, six builds from our reels with their files' },
     body: `Hey {name},
 
-THE 3D FUTURE is open, and you're on the list, so you're in nine hours before everyone else, at the founders' price: €9 a month, locked for as long as you stay.
+The doors of THE 3D FUTURE just opened and you're almost in, because you're on the list, so you can join now, nine hours before everyone else, and the only step left is your card, which locks your seat at the founders' price of €9 a month for as long as you stay.
 
 {img}
 
-The moment you join, your page opens with the course where you build your own tower step by step, the Vault with six builds from our reels and their files, every Full guide and the Feed, where everyone posts their builds and I comment on them, and a new course comes in every Friday. The founders' price lasts only until Friday 4 December, then it goes up to €19 and the founders' round doesn't open again:
+The moment you join, your own club page opens with the first course, 11 short steps where you see every click and build your own tower, the kind where buyers choose their floor, and next to it the Vault with six builds from our reels and their files, every Full guide and the Feed, where everyone posts their builds and I comment on every single one, and then a new course lands every Friday with the build of the week.
+
+The €9 lasts until Friday 4 December at 23:59 (Rome), then it goes up to €19 and the founders' round doesn't come back, and if you follow the 11 steps, send me your build and it still isn't live within 7 days, your first month is on us. Join with this same email, so the site knows you're on the list, it takes a minute:
 {link}
 
 Nico`,

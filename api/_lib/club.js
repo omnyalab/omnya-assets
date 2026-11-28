@@ -428,9 +428,10 @@ export function welcomeText({ name, inside, skill, portal, founder }) {
   // 23/11: the first 100 of the founders' round also get the founders' gift, theirs to keep. 26/11 (Nico: «i regali si
   // sbloccano solo da dentro la pagina quando uno è founder»): no gift links in the email any more (a link in an email can
   // be forwarded to anyone), only the line that says where they are: the members' page shows them to the founder alone
-  const gift = founder ? `\n\nYou're one of our founders, so your founders' gift is unlocked inside your club page, only for you: our three playbooks and the full 3D AI Mastery course, yours to keep.` : '';
-  // 25/11 (Nico: «tutto nel sito»): the club is our own page, the link below is the member's own (no Skool)
-  return `You're in, ${name}.\n\nThis is your link to the club, it's yours so keep it: your courses, the Vault with every build and its files, and the Full guides are all there:\n${inside}\n\nYour House Builder skill is yours to keep, here:\n${skill}${gift}\n\nStart with the first video course, your own tower step by step, and when it's done send it to me from the club page: I look at every first build myself.\n\n${cancel}\n\nTo withdraw within 14 days: ${WITHDRAW}\n\nNico`;
+  const gift = founder ? `\n\nAnd because you saved your seat before the doors opened, you're one of our founders, so your founders' gift is already waiting inside your club page, only for you: our three playbooks and the full 3D AI Mastery course, yours to keep.` : '';
+  // 25/11 (Nico: «tutto nel sito»): the club is our own page, the link below is the member's own (no Skool).
+  // 28/11 (Nico: «che cazzo c'entra» the House Builder skill): no skill link any more, the text rewritten alla Hormozi
+  return `You're in, ${name}, and from today you're not just watching our reels, you're building them with us.\n\nThis is your own link to the club and it works like a key, so keep it and don't share it: your courses, the Vault with the files of every build, the Full guides and the Feed are all behind it, and if you open it on your phone and add it to your Home Screen, the club is one tap away like an app:\n${inside}${gift}\n\nStart with the first course, 11 short steps where you see every click and build your own tower, the kind where buyers choose their floor, and when it's live send it to me from the club page, because I look at every first build myself.\n\n${cancel}\n\nTo withdraw within 14 days: ${WITHDRAW}\n\nNico`;
 }
 /** R1 (25/11), the reservation email: the card is saved, nothing is charged until the doors open on Saturday 28/11 at
     9:00 Rome; the first 100 who reserve get the founders' gift, unlocked inside their club page once the card is charged. */
