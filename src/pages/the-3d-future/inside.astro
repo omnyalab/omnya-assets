@@ -353,7 +353,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .app.A { background: radial-gradient(120% 520px at 50% 0%, #16306f 0%, #0d1c48 55%, #0b1534 100%) no-repeat, #0b1534 }
   .A .top .wm { font: 700 17px/1 Geist, -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; letter-spacing: -.035em }
   /* the profile photo fills its circle (the round gradient of .mav was resetting its size) */
-  .A .mav.ph { background-size: cover; background-position: center; background-repeat: no-repeat }
+  .A .mav.ph, .A .uav.ph, .uav.ph, .mav.ph { background-size: cover !important; background-position: center !important; background-repeat: no-repeat !important }
   .A .mtop { padding-top: 24px }
   .A .tabbar { position: fixed; left: 0; right: 0; bottom: 0; padding-bottom: max(16px, env(safe-area-inset-bottom)) }
   .A .member { padding-bottom: 112px }
