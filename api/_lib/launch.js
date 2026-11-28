@@ -177,7 +177,7 @@ Nico`,
     img: { src: '/club/mail/sv-the-vault.jpg', alt: 'A small spoiler: the Vault of the club page, six builds from our reels with their files' },
     body: `Hey {name},
 
-The doors of THE 3D FUTURE just opened and you're almost in, because you're on the list, so you can join now, nine hours before everyone else, and the only step left is your card, which locks your seat at the founders' price of €9 a month for as long as you stay.
+The doors of THE 3D FUTURE just opened and you're almost in, because you're on the list, so you can join now, before everyone else gets in at 18:00 (Rome), and the only step left is your card, which locks your seat at the founders' price of €9 a month for as long as you stay.
 
 {img}
 

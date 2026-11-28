@@ -286,8 +286,10 @@ async function launchTick(now) {
     let seatsLeft;
     if (m.seats) {
       const r = await fetch(`${SITE}/api/club/seats`, { headers: { 'Cache-Control': 'no-cache' } }).then((x) => x.json()).catch(() => null);
-      if (!r || typeof r.left !== 'number') return { launch: m.id, error: 'seats not readable, retry next tick' };
-      seatsLeft = r.left;
+      // 28/11: since 26/11 16:17 (2d38add, «non si deve sapere quante persone sono dentro») /api/club/seats has no number,
+      // only { giftsLeft, phase }: that stopped every launch mail from e2b on. The page answering is enough, no mail uses the count
+      if (!r || (typeof r.left !== 'number' && typeof r.giftsLeft !== 'boolean')) return { launch: m.id, error: 'seats not readable, retry next tick' };
+      seatsLeft = typeof r.left === 'number' ? r.left : null;
     }
     // who already got a note of the series today gets this one tomorrow at the same hour (never two of ours in one day)
     const pp = await redis('HGETALL', `${K}people`);
