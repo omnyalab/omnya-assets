@@ -207,6 +207,7 @@ export async function insideData(email) {
   const me = await mine(cleanEmail(email));
   const base = { name: me.profile.name || m.name, fullName: m.name || '', email: m.email, portal: PORTAL_URL, since: new Date(m.reserved ? Math.max(EARLY, at) : at || Date.now()).toISOString(), ...(await feedFlags(cleanEmail(email))), ...me };
   if (m.status === 'canceled') return { ...base, state: 'ended' };
+  if (m.unpaid) return { ...base, state: 'unpaid', payUrl: m.payUrl || PORTAL_URL }; // 28/11: the payment failed, the page is paused until it goes through
   const founder = m.reserved && Number(m.rank) > 0 && Number(m.rank) <= CHEAP_SEATS ? Number(m.rank) : 0;
   // 25/11: the course shows, locked; 26/11: a founder sees the gift waiting for them (no files until the card is charged)
   // 28/11 9:00 (Nico: «non addebita ora, ho già gente che scrive»): Stripe charges the reservations about an hour after the
@@ -518,6 +519,7 @@ export async function clubCharged(stripe, charge) {
   const email = cus ? await kv('HGET', K.byCustomer, cus) : null;
   if (!email) return null;
   let m = null; try { m = JSON.parse((await kv('HGET', K.members, email)) || 'null'); } catch {}
+  if (m && m.unpaid) { const { unpaid, payUrl, payStatus, ...rest } = m; m = rest; await kv('HSET', K.members, email, JSON.stringify(m)); } // 28/11: a payment that goes through opens the page again
   if (!m || !m.reserved || m.welcomed) return null;
   const portal = PORTAL_URL;
   if (!memberToken(email)) throw new Error('club: no key to sign the member link');
@@ -638,6 +640,57 @@ export async function welcomeReserved({ dry = false } = {}) {
     } catch (e) { console.error('[club] welcome now', e.message); await kv('DEL', K.once('w1', `r:${m.session}`)).catch(() => {}); out.errors++; continue; }
     await kv('HSET', K.members, email, JSON.stringify({ ...m, welcomed: new Date().toISOString(), ...(founder ? { gift: rank } : {}) })).catch(() => {});
     out.sent++;
+  }
+  return out;
+}
+
+// ---- 28/11 10:05 (Nico: «tanti pagamenti non vanno: blocca l'accesso subito, anche se sono dentro, e mandagli una mail») ----
+// A member whose Stripe subscription is past_due/unpaid/incomplete is paused (m.unpaid): the club page shows only how to pay,
+// one email with the link to pay; the next successful charge (clubCharged, or this check) opens the page again.
+const UNPAID = ['past_due', 'unpaid', 'incomplete', 'incomplete_expired'];
+export function unpaidText({ name, link, invoice }) {
+  const how = invoice
+    ? `It takes a minute to fix: open this link, pay with any card you like, and your page opens again straight away:\n${link}`
+    : `It takes a minute to fix: open this link, log in with this email, put in a card that works, and your page opens again as soon as the payment goes through:\n${link}`;
+  return `Hey ${name}, your payment for THE 3D FUTURE didn't go through, so your club page is paused for now, and everything is still there waiting for you: your course, the Vault and your place in the Feed.\n\n${how}\n\nIf you think it's a mistake, just reply to this email and I'll look at it myself.\n\nNico`;
+}
+/** Checks every reservation/member against Stripe. dry: only counts. Returns first names only. */
+export async function checkPayments(stripe, { dry = false } = {}) {
+  if (!stripe) throw new Error('club: no Stripe key');
+  const all = (await kv('HGETALL', K.members)) || [];
+  const out = { checked: 0, paid: 0, waiting: 0, blocked: [], reopened: [], mailed: 0, errors: 0 };
+  const since = Math.floor(EARLY / 1000) - 3600;
+  for (let i = 0; i < all.length; i += 2) {
+    const email = all[i]; let m = null; try { m = JSON.parse(all[i + 1]); } catch {}
+    if (!m || !m.subscription || m.status === 'canceled') continue;
+    out.checked++;
+    let sub = null; try { sub = await stripe.subscriptions.retrieve(m.subscription); } catch (e) { console.error('[club] paycheck sub', e.message); out.errors++; continue; }
+    const first1 = String(m.name || '').split(/\s+/)[0];
+    if (UNPAID.includes(sub.status)) {
+      if (m.unpaid) { out.blocked.push(first1); continue; }
+      let payUrl = '', invoice = false;
+      try { const inv = sub.latest_invoice ? await stripe.invoices.retrieve(typeof sub.latest_invoice === 'string' ? sub.latest_invoice : sub.latest_invoice.id) : null; if (inv?.hosted_invoice_url && inv.status === 'open') { payUrl = inv.hosted_invoice_url; invoice = true; } } catch {}
+      if (!payUrl) payUrl = PORTAL_URL;
+      out.blocked.push(first1);
+      if (dry) continue;
+      await kv('HSET', K.members, email, JSON.stringify({ ...m, unpaid: new Date().toISOString(), payUrl, payStatus: sub.status }));
+      if (await first('unpaid', `${m.subscription}:${sub.latest_invoice?.id || sub.latest_invoice || ''}`)) {
+        try {
+          await sendMail({ to: `${m.name} <${email}>`, bcc: host.email, replyTo: host.email, subject: "your payment didn't go through", text: unpaidText({ name: firstName(m.name), link: payUrl, invoice }) });
+          out.mailed++;
+        } catch (e) { console.error('[club] paycheck mail', e.message); out.errors++; }
+      }
+      continue;
+    }
+    if (sub.status === 'active' || sub.status === 'trialing') {
+      let paid = false;
+      try { const ch = await stripe.charges.list({ customer: typeof sub.customer === 'string' ? sub.customer : sub.customer?.id, created: { gte: since }, limit: 10 }); paid = ch.data.some((c) => c.status === 'succeeded' && c.amount > 0); } catch (e) { console.error('[club] paycheck charges', e.message); }
+      if (paid) out.paid++; else out.waiting++;
+      if (m.unpaid && paid) {
+        out.reopened.push(first1);
+        if (!dry) { const { unpaid, payUrl, payStatus, ...rest } = m; await kv('HSET', K.members, email, JSON.stringify(rest)); }
+      }
+    }
   }
   return out;
 }

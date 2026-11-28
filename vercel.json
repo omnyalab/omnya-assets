@@ -11,6 +11,10 @@
     {
       "path": "/api/contract?tick=1",
       "schedule": "7 * * * *"
+    },
+    {
+      "path": "/api/club/paycheck",
+      "schedule": "*/10 * * * *"
     }
   ],
   "redirects": [

@@ -1635,6 +1635,7 @@ const P = {
   else fetch('/api/club/inside?m=' + encodeURIComponent(m)).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => {
     if (!ok) { try { if (localStorage.getItem('t3f-m') === m) localStorage.removeItem('t3f-m') } catch (e) {}; return lost(d.error) }
     if (d.state === 'none') { say('We are getting your seat ready. Refresh this page in a minute.'); return }
+    if (d.state === 'unpaid') { opnDone(false); root.innerHTML = `<div class="mtop"><div><p class="eyebrow">THE 3D FUTURE</p><h1>Your payment didn't go through</h1></div></div><div class="glass mbox"><p>Your club page is paused for now, and everything is still here waiting for you: your course, the Vault and your place in the Feed. Pay with a card that works and it opens again straight away.</p><a class="btn cta wide" href="${esc(d.payUrl || '')}" target="_blank" rel="noopener">Pay and open my page</a><p class="lostjoin">Already paid? Refresh this page in a minute. Something wrong? <a href="mailto:info@omnyalab.com">Write to us</a></p></div>`; return } // 28/11: a failed payment pauses the page
     if (d.state === 'ended') { opnDone(false); root.innerHTML = `<div class="mtop"><div><h1>Your membership has ended</h1></div></div><div class="glass mbox"><p>Thank you for being part of it. If you want to come back, the doors are always open: <a href="/the-3d-future">omnyalab.com/the-3d-future</a>.</p></div>`; return }
     DATA = d; render(d)
   }).catch(() => { say('Could not open the club right now, try again in a minute.') })
