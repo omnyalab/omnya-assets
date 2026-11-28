@@ -4,7 +4,7 @@
 
 /** Round 1 (Europe/Rome, +01:00 for the whole window), the same instants as api/_lib/club.js */
 export const EARLY = '2026-11-28T09:00:00+01:00'; // doors open for the waitlist and the guide buyers
-export const OPEN = '2026-11-28T18:00:00+01:00'; // doors open for everyone
+export const OPEN = '2026-11-28T14:50:00+01:00'; // doors open for everyone (28/11 Nico: «apri le porte ora», carousel at 15:00; was 18:00)
 // 24/11 Nico: «le porte son sempre aperte»: 4/12 23:59 ends only the founders' €9, the doors stay open at €19
 export const FOUNDERS_END = '2026-12-05T00:00:00+01:00'; // the first moment after Fri 4/12 23:59
 export const SEATS = 100; // the founders' gifts (23/11): the whole round is €9

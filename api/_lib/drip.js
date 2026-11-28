@@ -64,7 +64,7 @@ export function readToken(tok) {
 // The four notes. {link} is the one link of the note (tracked), the rest is plain text.
 // club = 'soon' | 'open': THE 3D FUTURE doors (DRIP_FUTURE_OPEN), so mail 4 says it right. 24/11 Nico: «le porte son
 // sempre aperte»: once open they never close (4/12 ends only the founders' €9), so there is no 'closed' any more.
-const OPEN = () => Date.parse(process.env.DRIP_FUTURE_OPEN || '2026-11-28T17:00:00Z'); // 28/11 18:00 Rome, open to everyone (club plan L1; 9:00 is only for its list and buyers)
+const OPEN = () => Date.parse(process.env.DRIP_FUTURE_OPEN || '2026-11-28T13:50:00Z'); // 28/11 18:00 Rome, open to everyone (club plan L1; 9:00 is only for its list and buyers)
 export const clubState = (ms = Date.now()) => (ms < OPEN() ? 'soon' : 'open');
 // the end of every P.S. (and of mail 4): the club's door, said the way it is that day
 const door = (club, link) =>

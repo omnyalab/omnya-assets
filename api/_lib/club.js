@@ -30,7 +30,7 @@ export const EARLY = Date.parse('2026-11-28T09:00:00+01:00');
 export const RESERVE_FROM = Date.parse('2026-11-25T00:00:00+01:00');
 // 20/11 (Nico): the Stripe customer portal is on (cancel at the end of the paid period, with the reason asked); its login link
 export const PORTAL_URL = process.env.CLUB_PORTAL_URL || 'https://billing.stripe.com/p/login/9B66oGet7bIs3hAeyN8so00';
-export const OPEN = Date.parse('2026-11-28T18:00:00+01:00');
+export const OPEN = Date.parse('2026-11-28T14:50:00+01:00'); // 28/11 Nico: «apri le porte ora» (carousel at 15:00), was 18:00
 export const FOUNDERS_END = Date.parse('2026-12-05T00:00:00+01:00');
 export const CHEAP_SEATS = 100;
 // 23/11 Nico: in the founders' round (28/11-4/12) everyone who joins pays €9 (€90 a year), locked; the 100 are now the
