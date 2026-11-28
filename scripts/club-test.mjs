@@ -66,10 +66,12 @@ eq(tok.length < 60, true, 'the token is short');
 // the receipt number as people type it
 eq(['#1415-7362', ' 1415-7362 ', '1415 7362', '# 1415-7362', '14157362', 'abcd-efgh', ''].map(cleanReceipt), ['1415-7362', '1415-7362', '1415-7362', '1415-7362', '', '', ''], 'receipt numbers');
 
-// W1 word for word (20/11), with the withdrawal line
+// W1 word for word (28/11, Nico: no House Builder skill, rewritten alla Hormozi), with the withdrawal line
 eq(welcomeText({ name: 'Marco', inside: 'I', skill: 'K', portal: 'P' }),
-  "You're in, Marco.\n\nThis is your link to the club, it's yours so keep it: your courses, the Vault with every build and its files, and the Full guides are all there:\nI\n\nYour House Builder skill is yours to keep, here:\nK\n\nStart with the first video course, your own tower step by step, and when it's done send it to me from the club page: I look at every first build myself.\n\nIf you ever want to cancel, it's one tap here: P\n\nTo withdraw within 14 days: omnyalab.com/withdraw\n\nNico",
-  'W1 text (25/11: the club page, no Skool)');
+  "You're in, Marco, and from today you're not just watching our reels, you're building them with us.\n\nThis is your own link to the club and it works like a key, so keep it and don't share it: your courses, the Vault with the files of every build, the Full guides and the Feed are all behind it, and if you open it on your phone and add it to your Home Screen, the club is one tap away like an app:\nI\n\nStart with the first course, 11 short steps where you see every click and build your own tower, the kind where buyers choose their floor, and when it's live send it to me from the club page, because I look at every first build myself.\n\nIf you ever want to cancel, it's one tap here: P\n\nTo withdraw within 14 days: omnyalab.com/withdraw\n\nNico",
+  'W1 text (28/11: the club page, no skill)');
+eq(welcomeText({ name: 'Marco', inside: 'I', skill: 'K', portal: 'P', founder: 3 }).split('\n\n')[2].startsWith("And because you saved your seat before the doors opened, you're one of our founders"), true, 'W1 founder line after the link');
+eq(/House Builder|\nK\n/.test(welcomeText({ name: 'Marco', inside: 'I', skill: 'K', portal: 'P', founder: 3 })), false, 'W1 without the skill (28/11)');
 // 25/11: the member's own link
 const mt = memberToken('Marco@Example.com');
 eq(readMember(mt), 'marco@example.com', 'member link reads back (email in lower case)');
@@ -78,7 +80,7 @@ eq(readMember(signToken('e:marco@example.com')), null, 'a buyer token is not a m
 eq(readToken(mt), null, 'a member link is not a buyer token');
 
 // without the portal link the cancel line asks to reply (20/11)
-eq(welcomeText({ name: 'Marco', inside: 'I', skill: 'K', portal: '' }).split('\n\n')[4], 'Reply to this email to cancel.', 'W1 cancel line without the portal');
+eq(welcomeText({ name: 'Marco', inside: 'I', skill: 'K', portal: '' }).split('\n\n')[3], 'Reply to this email to cancel.', 'W1 cancel line without the portal');
 
 // the four live prices are the base, the env variable wins when set
 // 25/11: Nico's preview of the members' page: open, with the gift, without touching the store
