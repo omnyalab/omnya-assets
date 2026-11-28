@@ -1,0 +1,265 @@
+---
+// /guides (28/11/2026, Nico: «un funnel dove si trova tutto, tutte le guide»): the one link for who asks "how do you do it"
+// in the DMs. PROPOSAL, not online until Nico says «pubblica».
+// One offer on top (THE 3D FUTURE: all the full guides, the courses and the skills, the club's own value stack and price),
+// then every free guide that is live today, each one opening its own funnel (opt-in → watch page → Full → thanks), so the
+// funnels keep doing the selling. No guide prices here: each funnel shows its own, and the hub never shows a price
+// the visitor won't find on the next page. Titles, covers and links are the ones of the live funnel pages.
+import { OPEN, FOUNDERS_END, PROOF, SOURCE, proofTxt, VALUE } from '../components/club/data';
+
+const title = 'Every guide · Omnya Lab';
+const description = 'Every guide, Claude skill and course behind our reels, in one place. Start free, or get all of it inside THE 3D FUTURE.';
+const canonical = new URL('/guides', Astro.site);
+const og = new URL('/og/omnya-lab.jpg', Astro.site);
+
+/** newest first; t = the title of the funnel page ("with AI" left out, Nico's rule on titles) */
+const GUIDES = [
+  { w: 'Rome', t: 'How to build ancient Rome in one shot', href: '/the-rome-blueprint', img: '/learn/ro_cover_book.webp' },
+  { w: 'Dubai Villa', t: 'How to build a villa you pick on the map', href: '/the-dubai-villa-blueprint', img: '/learn/dv_cover_book.webp' },
+  { w: 'Plane', t: 'How to build a plane where you pick your own seat', href: '/the-plane-blueprint', img: '/learn/pl_cover_book.webp' },
+  { w: 'Riyadh', t: 'How to build a mega tower you drive from your phone', href: '/the-riyadh-blueprint', img: '/learn/ry_cover_book.webp' },
+  { w: 'Miami', t: 'How to build Miami from the real map with Claude', href: '/the-miami-blueprint', img: '/learn/mi_cover_book.webp' },
+  { w: 'Stadium', t: 'How to build a stadium where you pick your own seat', href: '/the-stadium-blueprint', img: '/learn/sd_cover_book.webp' },
+  { w: 'Build', t: 'How to build a house that builds itself', href: '/the-build-blueprint', img: '/learn/bd_cover_book.webp' },
+  { w: 'Towers', t: 'How to build three towers you choose the view of', href: '/the-towers-blueprint', img: '/learn/tt_cover_book.webp' },
+  { w: 'Tower', t: 'How to build a tower that sells', href: '/the-tower-blueprint', img: '/learn/tw_cover_free.webp' },
+  { w: '3D to film', t: 'How to make a 3D that sells', href: '/3d-to-film', img: '/learn/3d_cover_free.webp' },
+  { w: 'City', t: 'How to build a 3D city that goes viral', href: '/the-city-blueprint', img: '/learn/ct_cover_free.webp' },
+];
+const START = { w: '3D AI Mastery', t: 'How to build any 3D with Claude, step by step', href: '/the-3d-ai-mastery', img: '/learn/mx_cover_book.webp' };
+const CLUB = '/the-3d-future';
+const arrow = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M3 8h9M8.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const check = '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+---
+<!doctype html>
+<html lang="en" data-phase="open" data-t-open={Date.parse(OPEN)} data-t-close={Date.parse(FOUNDERS_END)}>
+<head>
+<meta charset="utf-8">
+<title>{title}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script is:inline>
+/* the club's price of the moment, before the first paint (Europe/Rome, the same clock as /the-3d-future; ?at= previews) */
+(function () { var h = document.documentElement, q = new URLSearchParams(location.search);
+  var at = Date.parse((q.get('at') || '').replace(' ', '+')), t = isNaN(at) ? Date.now() : at;
+  h.setAttribute('data-phase', t < +h.dataset.tOpen ? 'early' : t < +h.dataset.tClose ? 'open' : 'after'); })();
+</script>
+<meta name="description" content={description}>
+<link rel="canonical" href={canonical}>
+<meta name="theme-color" content="#0b1534">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Omnya Lab">
+<meta property="og:title" content={title}>
+<meta property="og:description" content={description}>
+<meta property="og:url" content={canonical}>
+<meta property="og:image" content={og}>
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@700;800&display=swap" rel="stylesheet">
+{import.meta.env.PROD && <script is:inline defer src="/_vercel/insights/script.js"></script>}
+<script is:inline defer src="/consent.js"></script>
+</head>
+<body>
+<main class="g">
+
+  <section class="hero">
+    <picture class="hbg" aria-hidden="true"><source media="(min-width: 900px)" srcset="/club/burj-1080.webp"><img src="/club/burj-phone.webp" alt="" fetchpriority="high" decoding="async"></picture>
+    <span class="hfade" aria-hidden="true"></span>
+    <div class="in hin">
+      <a class="logo" href="/" aria-label="Omnya Lab"><img src="/club/knot-96.webp" alt="" width="40" height="40"></a>
+      <h1>Everything <span class="kw">we teach</span></h1>
+      <p class="sub">Every guide, Claude skill and course behind our reels, in one place</p>
+      <div class="ctas">
+        <a class="btn cta" href={CLUB}>
+          <span data-when="early open">Get all of it for €9/month</span><span data-when="after">Get all of it for €19/month</span>
+          <Fragment set:html={arrow} />
+        </a>
+        <a class="btn ghost" href="#free">Start free</a>
+      </div>
+      <p class="tag" data-when="early"><i></i>The club opens for everyone today at 18:00</p>
+      <p class="tag" data-when="open"><i></i>The €9 founders' price ends Friday 4 December</p>
+    </div>
+  </section>
+
+  <section class="sec" id="all">
+    <div class="in">
+      <div class="offer">
+        <span class="obg" style="background-image:url(/club/course/step-01.webp)" aria-hidden="true"></span><span class="oveil" aria-hidden="true"></span>
+        <div class="ol">
+          <p class="ok">All of it</p>
+          <h2>THE <span class="kw">3D</span> FUTURE</h2>
+          <ul class="rows">
+            {VALUE.map(([t, v]) => <li><span class="ck"><Fragment set:html={check} /></span><span class="rt">{t}</span>{v && <span class="rv">{v}</span>}</li>)}
+          </ul>
+        </div>
+        <div class="or">
+          <p class="was"><s>€150+ on our site</s></p>
+          <p class="price"><b data-when="early open">€9</b><b data-when="after">€19</b><span>a month</span></p>
+          <p class="lock" data-when="early open">locked for as long as you stay, if you join by Friday 4 December</p>
+          <p class="lock" data-when="after">€9 a month if you bought one of our guides</p>
+          <a class="btn cta wide" href={CLUB}>Join THE 3D FUTURE <Fragment set:html={arrow} /></a>
+          <p class="fine">Cancel in one tap, whenever you want</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="free">
+    <div class="in">
+      <h2 class="h2">Or start <span class="kw">free</span></h2>
+      <a class="start" href={START.href}>
+        <span class="sbg" style={`background-image:url(${START.img})`} aria-hidden="true"></span>
+        <span class="cover"><img src={START.img} alt="" loading="lazy" decoding="async"></span>
+        <span class="stx">
+          <span class="pill">Start here</span>
+          <b class="w">{START.w}</b>
+          <span class="t">{START.t}</span>
+          <span class="go">Get the free guide <Fragment set:html={arrow} /></span>
+        </span>
+      </a>
+      <ul class="grid">
+        {GUIDES.map((g) => (
+          <li>
+            <a class="card" href={g.href}>
+              <span class="cbox"><span class="cbg" style={`background-image:url(${g.img})`} aria-hidden="true"></span><img src={g.img} alt="" loading="lazy" decoding="async"></span>
+              <span class="ctx"><b class="w">{g.w}</b><span class="t">{g.t}</span><span class="go">Free guide <Fragment set:html={arrow} /></span></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="in">
+      <h2 class="h2 c">The <span class="kw">numbers</span> this method made us</h2>
+      <div class="stats">
+        {PROOF.map((s) => <div class="stat"><b>{proofTxt(s)}</b><span>{s.l.replace('|', ' ')}</span></div>)}
+      </div>
+      <p class="src">{SOURCE}</p>
+    </div>
+  </section>
+
+  <section class="sec last">
+    <div class="in c">
+      <h2 class="h2">Build the <span class="kw">3D</span> that sells</h2>
+      <a class="btn cta" href={CLUB}>
+        <span data-when="early open">Join for €9/month</span><span data-when="after">Join for €19/month</span>
+        <Fragment set:html={arrow} />
+      </a>
+      <a class="lnk" href="#free">or start with a free guide</a>
+    </div>
+  </section>
+
+  <footer class="foot"><a href="/">Omnya Lab</a> · <a href="/privacy-policy">Privacy</a> · <a href="/terms">Terms</a></footer>
+</main>
+</body>
+</html>
+
+<style is:global>
+@font-face { font-family: 'SF Pro Display'; src: url('/fonts/sfprodisplay-regular.woff2') format('woff2'); font-weight: 400; font-display: swap }
+@font-face { font-family: 'SF Pro Display'; src: url('/fonts/sfprodisplay-semibold.woff2') format('woff2'); font-weight: 600; font-display: swap }
+@font-face { font-family: 'SF Pro Display'; src: url('/fonts/sfprodisplay-bold.woff2') format('woff2'); font-weight: 700; font-display: swap }
+:root { color-scheme: dark; background: #0b1534; -webkit-text-size-adjust: 100% }
+* { box-sizing: border-box }
+body { margin: 0; background: #0b1534; color: #fff; font: 400 16px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, system-ui, sans-serif }
+img { display: block; max-width: 100% }
+a { color: inherit; text-decoration: none }
+html[data-phase="early"] [data-when]:not([data-when~="early"]),
+html[data-phase="open"] [data-when]:not([data-when~="open"]),
+html[data-phase="after"] [data-when]:not([data-when~="after"]) { display: none !important }
+
+.g { --mute: rgba(255,255,255,.74); --faint: rgba(255,255,255,.52); --line: rgba(255,255,255,.12); --apple: #0071e3; --apple-hi: #0a7cf0; overflow-x: clip }
+.in { max-width: 1120px; margin: 0 auto; padding: 0 16px }
+@media (min-width: 900px) { .in { padding: 0 32px } }
+.kw { background: linear-gradient(100deg, #b9ddff 0%, #5aa8ff 52%, #2a74ff 100%); -webkit-background-clip: text; background-clip: text; color: transparent }
+.c { text-align: center }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 52px; padding: 0 26px; border-radius: 999px; font: 600 17px/1 inherit; letter-spacing: -.01em; transition: background .2s, transform .15s }
+.btn:active { transform: scale(.98) }
+.btn.cta { background: var(--apple); color: #fff; box-shadow: 0 1px 0 rgba(255,255,255,.18) inset, 0 8px 24px rgba(0,113,227,.35) }
+.btn.cta:hover { background: var(--apple-hi) }
+.btn.ghost { background: rgba(255,255,255,.12); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: 0 0 0 1px rgba(255,255,255,.18) inset }
+.btn.ghost:hover { background: rgba(255,255,255,.18) }
+.btn.wide { width: 100% }
+
+/* hero: the Burj in the fog of the club, title over it */
+.hero { position: relative; min-height: min(88svh, 760px); display: flex; align-items: flex-end; padding: 0 0 56px; isolation: isolate }
+.hbg, .hbg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2 }
+.hfade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(11,21,52,.35) 0%, rgba(11,21,52,.15) 35%, rgba(11,21,52,.85) 78%, #0b1534 100%) }
+.hin { width: 100%; text-align: center }
+.logo { position: absolute; top: max(16px, env(safe-area-inset-top)); left: 50%; translate: -50% 0 }
+.logo img { width: 40px; height: 40px }
+.hero h1 { margin: 0; font: 800 clamp(48px, 13vw, 112px)/.92 Geist, -apple-system, system-ui, sans-serif; letter-spacing: -.035em; text-transform: uppercase; text-wrap: balance }
+.sub { margin: 16px auto 0; max-width: 30ch; font-size: clamp(18px, 2.2vw, 22px); color: var(--mute); text-wrap: balance }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 28px }
+.ctas .btn { flex: 1 1 220px; max-width: 320px }
+.tag { display: inline-flex; align-items: center; gap: 8px; margin: 18px 0 0; font-size: 14px; color: var(--mute) }
+.tag i { width: 8px; height: 8px; border-radius: 50%; background: #58cc6a; box-shadow: 0 0 0 4px rgba(88,204,106,.2) }
+
+.sec { padding: 56px 0 }
+@media (min-width: 900px) { .sec { padding: 88px 0 } }
+.h2 { margin: 0 0 24px; font: 800 clamp(34px, 6vw, 56px)/1 Geist, -apple-system, system-ui, sans-serif; letter-spacing: -.03em }
+
+/* the offer: the club's value stack, its price, one button */
+.offer { position: relative; display: grid; gap: 24px; padding: 24px; border-radius: 28px; overflow: hidden; isolation: isolate; box-shadow: 0 0 0 1px var(--line) inset }
+@media (min-width: 900px) { .offer { grid-template-columns: 1.4fr 1fr; gap: 40px; padding: 40px } }
+.obg { position: absolute; inset: -40px; z-index: -2; background-size: cover; background-position: center; filter: blur(28px) saturate(1.2) }
+.oveil { position: absolute; inset: 0; z-index: -1; background: linear-gradient(160deg, rgba(11,21,52,.72), rgba(11,21,52,.9)) }
+.ok { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--faint) }
+.offer h2 { margin: 6px 0 20px; font: 800 clamp(36px, 6vw, 56px)/1 Geist, -apple-system, system-ui, sans-serif; letter-spacing: -.03em }
+.rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px }
+.rows li { display: grid; grid-template-columns: 24px 1fr auto; gap: 12px; align-items: start; font-size: 17px }
+.ck { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #2a74ff; color: #fff }
+.rv { color: var(--faint); font-size: 15px; white-space: nowrap; padding-top: 1px }
+.or { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 24px; border-radius: 22px; background: rgba(255,255,255,.07); box-shadow: 0 0 0 1px var(--line) inset }
+.was { margin: 0; color: var(--faint) }
+.price { margin: 4px 0 0; display: flex; align-items: baseline; gap: 8px }
+.price b { font: 800 72px/1 Geist, -apple-system, system-ui, sans-serif; letter-spacing: -.04em }
+.price span { color: var(--mute) }
+.lock { margin: 8px 0 20px; max-width: 28ch; color: var(--mute); font-size: 15px }
+.fine { margin: 12px 0 0; font-size: 14px; color: var(--faint) }
+
+/* free: Mastery first and big, then every funnel */
+.start { position: relative; display: grid; grid-template-columns: 120px 1fr; gap: 20px; align-items: center; padding: 20px; border-radius: 24px; overflow: hidden; isolation: isolate; box-shadow: 0 0 0 1px rgba(90,168,255,.45) inset, 0 20px 60px -20px rgba(42,116,255,.55); margin-bottom: 16px }
+@media (min-width: 900px) { .start { grid-template-columns: 200px 1fr; gap: 32px; padding: 28px; margin-bottom: 24px } }
+.sbg { position: absolute; inset: -40px; z-index: -2; background-size: cover; background-position: center; filter: blur(30px) saturate(1.3); opacity: .55 }
+.start::after { content: ''; position: absolute; inset: 0; z-index: -1; background: rgba(11,21,52,.55) }
+.cover img { width: 100%; border-radius: 10px; box-shadow: 0 14px 30px rgba(0,0,0,.45) }
+.stx { display: flex; flex-direction: column; align-items: flex-start; gap: 6px }
+.pill { padding: 5px 12px; border-radius: 999px; background: #2a74ff; font-size: 13px; font-weight: 600 }
+.w { font: 800 clamp(24px, 3.2vw, 36px)/1.05 Geist, -apple-system, system-ui, sans-serif; letter-spacing: -.02em }
+.t { color: var(--mute); font-size: 16px; text-wrap: balance }
+.go { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; font-weight: 600; color: #8cc4ff }
+.start:hover .go, .card:hover .go { color: #fff }
+
+.grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px }
+@media (min-width: 700px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)) } }
+@media (min-width: 1000px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px } }
+.card { display: flex; flex-direction: column; height: 100%; border-radius: 20px; overflow: hidden; background: rgba(255,255,255,.06); box-shadow: 0 0 0 1px var(--line) inset; transition: transform .2s, background .2s }
+.card:hover { transform: translateY(-3px); background: rgba(255,255,255,.1) }
+.cbox { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden }
+.cbg { position: absolute; inset: -30px; background-size: cover; background-position: center; filter: blur(22px) saturate(1.2); opacity: .7 }
+.cbox img { position: relative; width: 100%; height: 100%; object-fit: contain; padding: 14px 14px 0 }
+.ctx { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px 18px; flex: 1 }
+.ctx .w { font-size: 20px }
+.ctx .t { font-size: 14px; line-height: 1.35 }
+.ctx .go { margin-top: auto; padding-top: 8px; font-size: 15px }
+
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px }
+@media (min-width: 900px) { .stats { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px } }
+.stat { padding: 20px; border-radius: 20px; background: rgba(255,255,255,.06); box-shadow: 0 0 0 1px var(--line) inset; display: flex; flex-direction: column; gap: 4px }
+.stat:first-child { grid-column: 1 / -1 }
+@media (min-width: 900px) { .stat:first-child { grid-column: auto } }
+.stat b { font: 800 40px/1 Geist, -apple-system, system-ui, sans-serif; letter-spacing: -.03em }
+.stat span { color: var(--mute); font-size: 15px }
+.src { margin: 16px 0 0; text-align: center; font-size: 13px; color: var(--faint) }
+
+.last .in { display: flex; flex-direction: column; align-items: center; gap: 16px }
+.last .btn { min-width: 260px }
+.lnk { color: var(--mute); text-decoration: underline; text-underline-offset: 3px; font-size: 15px }
+.foot { padding: 32px 16px calc(32px + env(safe-area-inset-bottom)); text-align: center; font-size: 13px; color: var(--faint); border-top: 1px solid var(--line) }
+.foot a:hover { color: #fff }
+</style>
