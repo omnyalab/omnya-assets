@@ -24,7 +24,8 @@ export async function getProgress(email) {
   const d = Array.isArray(p?.d) ? p.d.filter((n) => Number.isInteger(n) && n > 0).sort((a, b) => a - b) : [];
   const t = p && typeof p.t === 'object' && p.t ? p.t : {};
   const iso = (v) => (typeof v === 'string' && !isNaN(Date.parse(v)) ? v : undefined);
-  return { d: [...new Set(d)], t, ...(iso(p?.f) ? { f: p.f } : {}), ...(iso(p?.h) ? { h: p.h } : {}) };
+  const w = p && typeof p.w === 'object' && p.w ? p.w : {};
+  return { d: [...new Set(d)], t, w, ...(iso(p?.f) ? { f: p.f } : {}), ...(iso(p?.h) ? { h: p.h } : {}) };
 }
 /** 28/11 (Nico): «il welcome from Nico dura un giorno solo, dopo che la persona lo ha guardato»: the first time it is watched */
 export async function saveHello(email) {
@@ -44,13 +45,21 @@ export const isOpen = (d, n) => n === 1 || d.includes(n - 1);
  * Saves where the member is in step n (t seconds) and, with done, marks it finished. A step that is not open yet is refused,
  * so nobody can skip ahead by calling the address by hand. Returns the new progress, or null when the step is not open.
  */
-export async function saveProgress(email, n, { t = 0, done = false } = {}, steps = 11) {
+/** 28/11 (Nico: «un grafico per vedere quanto sta studiando ogni giorno»): seconds watched, by day in Rome, the last 70 days */
+const romeDay = (d = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(d);
+function addWatch(p, sec) {
+  const s = Math.max(0, Math.min(120, Math.round(Number(sec) || 0))); if (!s) return;
+  const day = romeDay(); p.w = p.w || {}; p.w[day] = Math.min(86400, (p.w[day] || 0) + s);
+  const keep = romeDay(new Date(Date.now() - 70 * 864e5)); for (const k of Object.keys(p.w)) if (k < keep) delete p.w[k];
+}
+export async function saveProgress(email, n, { t = 0, done = false, w = 0 } = {}, steps = 11) {
   n = Number(n);
   if (!Number.isInteger(n) || n < 1 || n > steps) return null;
   const p = await getProgress(email);
   if (!isOpen(p.d, n)) return null;
   if (done) { if (!p.d.includes(n)) p.d.push(n); p.d.sort((a, b) => a - b); delete p.t[n]; if (!p.f && p.d.length >= steps) p.f = new Date().toISOString(); }
   else if (!p.d.includes(n)) { const s = Math.max(0, Math.min(36000, Math.round(Number(t) || 0))); if (s > 5) p.t[n] = s; }
+  addWatch(p, w);
   await kv('HSET', K.progress, email, JSON.stringify(p));
   return p;
 }

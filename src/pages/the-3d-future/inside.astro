@@ -83,6 +83,24 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   /* 28/11: «Watch before you start the course» at the top of the steps; the certificate of the course */
   .crow.intro .cth { position: relative } .crow.intro small { color: #8cc4ff } .crow.intro .ctx b { white-space: normal; overflow: visible; text-overflow: clip; display: block }
   .A .certw { display: grid; gap: 14px }
+  /* H7: your weeks (a fire for every week with study), your study this week, the next badge, the next build */
+  .A .hstreak, .A .hchart { display: grid; gap: 14px }
+  .A .hwk { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px }
+  .A .hwk span { display: grid; justify-items: center; gap: 6px }
+  .A .hwk i { width: 100%; aspect-ratio: 1; max-width: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 24px; font-style: normal; background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,.1) }
+  .A .hwk .on i { background: radial-gradient(circle at 50% 70%, #ffcf5c, #ff7a1a 55%, #d9480f); box-shadow: 0 8px 22px rgba(255,122,26,.45), inset 0 1px 0 rgba(255,255,255,.4) }
+  .A .hwk .now i { box-shadow: inset 0 0 0 2px #ffb347, 0 0 0 4px rgba(255,179,71,.15) } .A .hwk .now.on i { box-shadow: 0 8px 22px rgba(255,122,26,.45), 0 0 0 3px #fff }
+  .A .hwk small { font: 600 11px/1.1 var(--f-sf); color: rgba(255,255,255,.65); text-align: center } .A .hwk .now small { color: #ffcf8a }
+  .A .hsub { margin: 0; font: 500 15px/1.4 var(--f-sf); color: rgba(255,255,255,.75) }
+  .A .hbars { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; height: 150px; align-items: end }
+  .A .hbars span { height: 100%; display: grid; grid-template-rows: 18px 1fr 18px; justify-items: center; align-items: end; gap: 4px }
+  .A .hbars i { display: block; width: 100%; max-width: 30px; border-radius: 8px 8px 4px 4px; background: linear-gradient(180deg, #8cc4ff, #2a74ff); align-self: end }
+  .A .hbars .fu i { background: rgba(255,255,255,.08) } .A .hbars .td i { background: linear-gradient(180deg, #9ff0a8, #2fbf5b); box-shadow: 0 6px 18px rgba(47,191,91,.4) }
+  .A .hbars em { font: 700 12px/1 var(--f-sfd); font-style: normal; color: #fff } .A .hbars small { font: 700 12px/1 var(--f-sf); color: rgba(255,255,255,.6) } .A .hbars .td small { color: #9ff0a8 }
+  .A .nfcd { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px } .A .nfcd span { display: grid; justify-items: center; gap: 4px; padding: 12px 0; border-radius: 16px; background: rgba(255,255,255,.07) }
+  .A .nfcd b { font: 800 30px/1 var(--f-sfd) } .A .nfcd small { font: 600 12px/1 var(--f-sf); color: rgba(255,255,255,.65) }
+  .A .nbadge { display: grid; grid-template-columns: 76px 1fr; gap: 14px; align-items: center } .A .nbb svg { width: 76px; height: 76px; display: block }
+  .A .nbadge small { display: block; font: 700 12px/1 var(--f-sf); letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.65) } .A .nbadge b { display: block; margin: 4px 0; font: 800 22px/1.1 var(--f-sfd) } .A .nbadge span span { font: 500 14.5px/1.35 var(--f-sf); color: rgba(255,255,255,.75) }
   /* Buddy bottom right */
   .bfab { position: fixed; z-index: 70; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(96px + env(safe-area-inset-bottom, 0px)); width: 62px; height: 62px; padding: 0; border-radius: 50%; border: 1px solid rgba(190,220,255,.3);
     background: radial-gradient(circle at 35% 30%, #27489a, #0c1a45 70%); box-shadow: 0 14px 32px rgba(0,0,0,.5), 0 0 0 5px rgba(90,168,255,.12); display: grid; place-items: center; cursor: pointer; animation: bfin .6s cubic-bezier(.2,.8,.2,1) both }
@@ -888,9 +906,13 @@ const P = {
       if (play) { start(); v.play().catch(() => {}) } else v.addEventListener('play', start, { once: true })
     }).catch(() => { v.src = l.src; seek() })
   }
-  const saveAt = (n, t) => { PROG.t[n] = t; if (!ALL) post('/api/club/progress', { m, n, t }).catch(() => {}) }
+  let WACC = 0, WLAST = -1
+  const takeW = () => { const w = Math.round(WACC); WACC -= w; if (w > 0) { const k = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(new Date()); PROG.w = PROG.w || {}; PROG.w[k] = (PROG.w[k] || 0) + w } return w }
+  const saveAt = (n, t) => { PROG.t[n] = t; const w = takeW(); if (!ALL) post('/api/club/progress', { m, n, t, w }).catch(() => {}) }
   function track() {
     const v = $('[data-player]'); if (!v) return
+    v.addEventListener('timeupdate', () => { if (!v.paused && WLAST >= 0) { const dt = v.currentTime - WLAST; if (dt > 0 && dt < 3) WACC += dt } WLAST = v.currentTime })
+    v.addEventListener('seeking', () => { WLAST = -1 })
     v.addEventListener('timeupdate', () => {
       if (SEL === 0) { if (v.duration && v.currentTime / v.duration >= 0.9) markHello(); return }
       const n = SEL, d = v.duration; if (!d || !isFinite(d) || !isOpenS(n) || isDone(n)) return
@@ -903,7 +925,7 @@ const P = {
     if (finishing === n || isDone(n)) return; finishing = n
     const done = () => { finishing = 0; afterFinish(n) }
     if (ALL) { PROG.d.push(n); delete PROG.t[n]; return done() }
-    post('/api/club/progress', { m, n, done: true }).then(r => { if (r.ok && Array.isArray(r.d.d)) { PROG = { d: r.d.d, t: r.d.t || {} }; done() } else finishing = 0 }).catch(() => { finishing = 0 })
+    post('/api/club/progress', { m, n, done: true, w: takeW() }).then(r => { if (r.ok && Array.isArray(r.d.d)) { PROG = { d: r.d.d, t: r.d.t || {} }; done() } else finishing = 0 }).catch(() => { finishing = 0 })
   }
   function afterFinish(n) {
     const nx = LS[n]
@@ -1123,6 +1145,31 @@ const P = {
   }
 
   /* the course card of Home: the step you are on, the steps you watched (27/11) */
+  /* 28/11 (Nico: «la home mi piace la H7 … your fridays più bello, un grafico sotto per vedere quanto sta studiando ogni giorno,
+     next build sotto next badge»). Only this member's real data: the minutes of course watched per day (progress.w). */
+  function homeH7(BL, earned) {
+    const fmt = d => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(d), W = PROG.w || {}
+    const today = new Date(), dayMs = 864e5
+    // the seven days of this week, Monday first (Rome)
+    const wd = (new Date(fmt(today) + 'T12:00:00Z').getUTCDay() + 6) % 7, mon = new Date(today - wd * dayMs)
+    const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(+mon + i * dayMs), k = fmt(d); return { k, l: 'MTWTFSS'[i], min: Math.round((W[k] || 0) / 60), today: i === wd, future: i > wd } })
+    const max = Math.max(10, ...days.map(x => x.min)), tot = days.reduce((a, x) => a + x.min, 0)
+    // weeks in a row with some study (this week counts as soon as there is a minute)
+    const weekMin = back => { let s = 0; for (let i = 0; i < 7; i++) s += W[fmt(new Date(+mon - back * 7 * dayMs + i * dayMs))] || 0; return s }
+    let run = 0; for (let b = weekMin(0) > 0 ? 0 : 1; b < 10 && weekMin(b) > 0; b++) run++
+    const weeks = Array.from({ length: 6 }, (_, i) => { const back = 5 - i, on = weekMin(back) > 0, d = new Date(+mon - back * 7 * dayMs); return { on, now: back === 0, l: new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'Europe/Rome' }).format(d) } })
+    const fri = new Date(today); fri.setUTCHours(8, 0, 0, 0); fri.setUTCDate(fri.getUTCDate() + ((5 - fri.getUTCDay() + 7) % 7)); if (fri <= today) fri.setUTCDate(fri.getUTCDate() + 7)
+    const left = Math.max(0, fri - today), u = [Math.floor(left / dayMs), Math.floor(left / 36e5) % 24, Math.floor(left / 6e4) % 60]
+    const friDay = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Europe/Rome' }).format(fri)
+    const nb = BL.findIndex((b, i) => !earned[i])
+    return `<div class="glass w span hstreak"><span class="k">${ic('spark')}Your weeks<span class="r">${run ? `${run} in a row` : 'Start your run'}</span></span>
+        <div class="hwk">${weeks.map(w => `<span class="${w.on ? 'on' : ''}${w.now ? ' now' : ''}"><i>${w.on ? '🔥' : ''}</i><small>${w.now ? 'This week' : esc(w.l)}</small></span>`).join('')}</div>
+        <p class="hsub">${run ? 'Watch a step every week and keep the fire going.' : 'Watch one step this week and light your first fire.'}</p></div>
+      <div class="glass w span hchart"><span class="k">${ic('play')}Your study this week<span class="r">${tot} min</span></span>
+        <div class="hbars">${days.map(x => `<span class="${x.today ? 'td' : ''}${x.future ? ' fu' : ''}"><em>${x.min ? x.min : ''}</em><i style="height:${Math.max(4, Math.round(x.min / max * 100))}%"></i><small>${x.l}</small></span>`).join('')}</div></div>
+      ${nb >= 0 ? `<div class="glass w span nbadge"><span class="nbb">${svgOf(BL[nb][0])}</span><span><small>Your next badge</small><b>${esc(BL[nb][1])}</b><span>${esc(BL[nb][2])}</span></span></div>` : ''}
+      <div class="glass w span nfri"><span class="k">${ic('cal')}Next build<span class="r">${esc(friDay)}</span></span><div class="nfcd">${[['days', u[0]], ['hours', u[1]], ['min', u[2]]].map(([l, v]) => `<span><b>${v}</b><small>${l}</small></span>`).join('')}</div></div>`
+  }
   /* 28/11 (Nico: C1, R1 + R4, «al termine del corso lo possono sempre scaricare»): the certificate, or what it will be */
   function certHTML() {
     const { d } = CTX, c = d.certs && d.certs[0]
@@ -1251,7 +1298,7 @@ const P = {
     const founder = nGift > 0, before = Date.now() < OPENS, open = d.state === 'open'
     // 27/11: progress and profile of this member (api/_lib/club-me.js); the Founder badge only for who has it (QA: a grey one
     // reminds a member they came late); Tower = the eleven steps watched
-    PROG = { d: (d.progress && d.progress.d) || [], t: (d.progress && d.progress.t) || {}, h: d.progress && d.progress.h }; ALL = !!d.allOpen; LS = d.lessons || []
+    PROG = { d: (d.progress && d.progress.d) || [], t: (d.progress && d.progress.t) || {}, h: d.progress && d.progress.h, w: (d.progress && d.progress.w) || {} }; ALL = !!d.allOpen; LS = d.lessons || []
     // 28/11 (Nico): «il welcome from Nico dura un giorno solo: dopo che la persona lo ha guardato e passano 24 ore da quando è entrata si toglie»
     const joined = Math.max(Date.parse(d.since || '') || 0, OPENS), showHello = !(HELLO() && Date.now() - joined > 864e5)
     const BL = BADGES.filter(([k]) => k !== 'founder' || founder), courseDone = LS.length > 0 && LS.every(l => PROG.d.includes(l.n))
@@ -1279,6 +1326,7 @@ const P = {
       <div class="mtop"><div><p class="eyebrow">${esc(today)}</p><h1>${greet}, ${esc(first)}</h1></div></div>
       <div class="mgrid">
         <div class="cherow span full">${hero}</div>
+        ${homeH7(BL, earned)}
         ${showHello ? `<div class="glass w span"><span class="k">${ic('play')}A welcome from Nico<span class="r">1:58</span></span>
           <div class="yt" data-hello><video playsinline preload="metadata" poster="/club/intro-nico-cover.webp" tabindex="0" aria-label="Play the welcome from Nico"><source src="/club/intro-nico-v2-720.mp4" media="(max-width: 700px)" type="video/mp4"><source src="/club/intro-nico-v2.mp4" type="video/mp4"></video></div></div>` : ''}
         <div class="glass w span lvl lvl2"><span class="k">${ic('spark')}Your badges<span class="r">${nOn} of ${BL.length}</span></span><div class="lvlrow">${ring(nOn / BL.length, 104, 12, 'url(#rg)', 'rgba(255,255,255,.14)', `<b class="rn">${nOn}<small>/${BL.length}</small></b>`)}<div class="medals">${BL.map((b, i) => medal(b, earned[i])).join('')}</div></div></div>

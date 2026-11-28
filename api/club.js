@@ -372,7 +372,7 @@ async function mePost(req, a) {
     if (a === 'progress') {
       if (d.state !== 'open') return fail(403, 'not_yet', 'The course opens on Saturday 28 November at 9:00 (Rome).');
       if (d.allOpen) return json({ d: [], t: {}, preview: true }); // Nico's preview: every step open, nothing saved
-      const p = await saveProgress(email, b.n, { t: b.t, done: b.done === true }, LESSONS.length);
+      const p = await saveProgress(email, b.n, { t: b.t, done: b.done === true, w: b.w }, LESSONS.length);
       return p ? json(p) : fail(403, 'locked', 'Finish the step before this one first.');
     }
     if (b.img && String(b.img).length > MAX_AVATAR) return fail(400, 'bad_image', 'That photo is too big, try another one.');
