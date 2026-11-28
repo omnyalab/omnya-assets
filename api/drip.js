@@ -499,9 +499,9 @@ export async function GET(request) {
     await sendResend({ to, from: 'Nico <info@omnyalab.com>', replyTo: host.email, subject: r.subject, html: r.html, text: r.text, headers: r.headers });
     return json({ ok: true, sent: r.subject, variant: r.variant, to, seatsImg: r.seatsImg });
   }
-  if (q.get('launch') === '1') { // who would get each mail today, and what went
+  if (q.get('launch') === '1') { // who would get each mail today, and what went (28/11: &lid=<id> one mail only, &nopeople=1 skips the list, the full view timed out)
     const out = { on: (await redis('GET', `${LK}on`)) === '1', mails: [] };
-    for (const m of LAUNCH) out.mails.push({ ...m, people: (await launchList(m)).length, sent: Number(await redis('SCARD', `${LK}${m.id}:sent`)), go: m.hold ? (await redis('GET', `${LK}${m.id}:go`)) === '1' : undefined, done: !!(await redis('GET', `${LK}${m.id}:done`)), error: await redis('GET', `${LK}${m.id}:error`) });
+    for (const m of LAUNCH.filter((x) => !q.get('lid') || x.id === q.get('lid'))) out.mails.push({ ...m, people: q.get('nopeople') ? null : (await launchList(m)).length, sent: Number(await redis('SCARD', `${LK}${m.id}:sent`)), go: m.hold ? (await redis('GET', `${LK}${m.id}:go`)) === '1' : undefined, done: !!(await redis('GET', `${LK}${m.id}:done`)), error: await redis('GET', `${LK}${m.id}:error`) });
     return json(out);
   }
   if (q.get('loadold') === '1') return json({ ok: true, old: await loadOld(Date.now()) });
