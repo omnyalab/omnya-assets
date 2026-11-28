@@ -3,7 +3,12 @@
 // panel; step 3 is the Apple Invites card. The same panel holds the checkout from Saturday 28/11 (name and email, then
 // the Stripe fields of api/club.js inside our page). Driven by club-client.js; both open as full-screen dialogs.
 import Icon from './Icon.astro';
-import { WANTS, VALUE } from './data';
+import { WANTS, VALUE, ASK, DROPS, vImg } from './data';
+const USE = ASK.find((a) => a.k === 'use')!;
+/* 28/11 (Nico: «cosa trovo dentro al corso, una card o due»): the 11 steps of the SAMAR course as they are in the members'
+   page (api/_lib/club.js COURSE: titles and lengths), thumbs in public/club/course */
+const COURSE: [string, string][] = [["What you'll build", '2:38'], ['Set up your kit', '4:31'], ['Inside the engine', '3:12'], ['References and real measures', '2:20'], ['The tower in 3D', '4:12'], ['The apartment inside', '3:57'], ['The camera', '3:05'], ['The photos', '4:08'], ['The clips', '3:26'], ['The real page', '2:37'], ['The reel and the sale', '2:32']];
+const nn = (i: number) => String(i + 1).padStart(2, '0');
 const BUILD4 = [
   { k: 'tower', t: 'Tower', s: 'Buyers choose their floor in 3D' },
   { k: 'stadium', t: 'Stadium', s: 'Fans choose their seat in 3D' },
@@ -78,34 +83,39 @@ const BUILD4 = [
   <div class="jwrap">
     <div class="jtop">
       <button type="button" class="rb ctr" data-jback aria-label="Back"><Icon name="back" /></button>
-      <div class="jprog jbar" role="progressbar" aria-valuemin="1" aria-valuemax="7" aria-valuenow="1" aria-label="Card 1 of 7" data-jprog><i data-jbar></i></div>
+      <div class="jprog jbar" role="progressbar" aria-valuemin="1" aria-valuemax="9" aria-valuenow="1" aria-label="Card 1 of 9" data-jprog><i data-jbar></i></div>
       <button type="button" class="rb ctr" data-close aria-label="Close"><Icon name="x" /></button>
     </div>
     <div class="jdeck">
       {/* 27/11 (Nico, board «Le card del club»: E1 and T2): the link opens Buddy's cards. 1 what you'll build (our tower),
-           2 our real numbers, 3 what is inside, 4 the one question, as one big photo you swipe (T2); 5-7 as before */}
+           2 how, in 3 steps (since 28/11, in place of our numbers), 3 what you will use it for, 4 what you build first, as one
+           big photo you swipe (T2), 5 your plan from the two answers, 6 the course step by step, 7 the Vault, 8 the offer, 9 name and email */}
       <section class="jc cur jhero" data-c="1" aria-labelledby="t3f-c1">
-        <a class="bud-login" href="/login">Log in</a>
         <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c1" tabindex="-1" class="jq">Hi! I'm Buddy. Look what you'll learn to <em class="kw">build</em> 👇</h2></div>
-        <div class="bud-hero"><img src="/club/join/hero.webp" alt="SAMAR, the tower of our course, at sunset by the sea" width="900" height="1117" decoding="async"><span>A tower where buyers choose their floor, then fly inside</span></div>
+        <div class="bud-hero"><div class="bh-v"><video src="/club/join/hero-loop.mp4" poster="/club/join/hero-loop.webp" autoplay muted loop playsinline preload="auto" aria-label="Burj Al Waha: a buyer picks floor 11B and flies inside" data-hero-v></video></div><span>A tower where buyers choose their floor, then fly inside</span></div>
         <button type="button" class="bud-go" data-jnext>Show me how</button>
         <button type="button" class="bud-page" data-close>See the whole page</button>
       </section>
-      <section class="jc jproof" data-c="2" aria-labelledby="t3f-c2">
-        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c2" tabindex="-1" class="jq">We build these with Claude, no code. Here is what it did for <em class="kw">us</em>:</h2></div>
-        <!-- 28/11 Nico: «non dire i sales, essere più generali» (N3): no money, no numbers to keep up to date -->
-        <div class="bud-proof">
-          <div><b>Millions</b><small>of views on our reels</small></div>
-          <div><b>Every week</b><small>developers write to us</small></div>
-          <div><b>Worldwide</b><small>from Dubai to Mumbai</small></div>
-        </div>
-        <button type="button" class="bud-go" data-jnext>What's inside?</button>
+      {/* 28/11 Nico («togliamo la card di quello che abbiamo fatto, sembriamo dei cazzoni… un'altra card per spiegare tutto
+           stra bene, deve capirsi cosa imparano, e poi cosa vogliono fare con questo»): 2 how it works, the three steps of the
+           carousel (the 3D, the photos, the page); 3 one question, what you will use it for (a tap answers and moves on) */}
+      <section class="jc jhow" data-c="2" aria-labelledby="t3f-c2">
+        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c2" tabindex="-1" class="jq">Here's <em class="kw">how</em>, in 3 steps. No code, you just type 👇</h2></div>
+        <ol class="bud-how">
+          <li><img src="/club/join/how-3d.webp" alt="" width="240" height="240" loading="lazy" decoding="async"><div><b>The 3D</b><small>You tell Claude what you want, it builds the 3D</small></div></li>
+          <li><img src="/club/join/how-photo.webp" alt="" width="240" height="240" loading="lazy" decoding="async"><div><b>The photos</b><small>Your 3D turns into real photos and video</small></div></li>
+          <li><img src="/club/join/how-page.webp" alt="" width="240" height="240" loading="lazy" decoding="async"><div><b>The page</b><small>One link your clients open on their phone</small></div></li>
+        </ol>
+        <button type="button" class="bud-go" data-jnext>I can do that</button>
       </section>
-      <section class="jc jin" data-c="3" aria-labelledby="t3f-c3">
-        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c3" tabindex="-1" class="jq">Inside the club you learn it <em class="kw">step by step</em> 👇</h2></div>
-        <div class="bud-mock"><img src="/club/join/inside.webp" alt="The course inside the club: the player and the list of the steps" width="780" height="1310" loading="lazy" decoding="async">
-          <ul><li><b>Step-by-step video courses</b><small>SAMAR first: 11 steps</small></li><li><b>A new build every Friday</b><small>with the files and the skills</small></li><li><b>My comments every Monday</b><small>on what you build</small></li></ul></div>
-        <button type="button" class="bud-go" data-jnext>I want it</button>
+      <section class="jc juse" data-c="3" data-ask="use" aria-labelledby="t3f-c3">
+        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c3" tabindex="-1" class="jq">What will you <em class="kw">use it</em> for?</h2></div>
+        <div class="jopts bud-ask" role="radiogroup" aria-labelledby="t3f-c3">
+          {USE.o.map((o) => (
+            <button type="button" class="jo" role="radio" aria-checked="false" data-pick={o.k}><span class="bud-e" aria-hidden="true"><i>{o.e}</i></span><span>{o.t}</span><Icon name="check" class="jok" /></button>
+          ))}
+        </div>
+        <button type="button" class="bud-go" data-jnext>Continue</button>
       </section>
       <section class="jc jbuild" data-c="4" data-tb aria-labelledby="t3f-c4">
         <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c4" tabindex="-1" class="jq">What do you want to <em class="kw">build</em> first?</h2></div>
@@ -120,30 +130,55 @@ const BUILD4 = [
         <div class="tb-pills" data-tbp>{BUILD4.map((o, i) => <button type="button" aria-pressed={i === 0 ? 'true' : 'false'} data-tbgo={o.k}>{o.t}</button>)}</div>
         <button type="button" class="bud-go" data-jnext>See my plan</button>
       </section>
+      {/* 28/11 Nico («here is your plan deve essere personalizzato, based on your… arrivi a fare questo, con i coriandoli»):
+           the build you picked as the picture, what you get to do with it, and what the club gives you for it, step by step */}
       <section class="jc jplan" data-c="5" aria-labelledby="t3f-c5">
-        <div class="bud-conf" aria-hidden="true">{Array.from({ length: 18 }, (_, k) => <i style={`left:${(k * 37) % 100}%;top:${-((k * 13) % 60)}%;background:${['#58cc6a', '#ffc800', '#5aa8ff', '#ff5f8f'][k % 4]};animation-delay:${(k % 6) * 0.35}s`}></i>)}</div>
-        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c5" tabindex="-1" class="jq">Here is your plan! 🎉</h2></div>
-        <div class="bud-rows">
-          <div><span aria-hidden="true">🏙️</span><b data-plan="build"></b></div>
-          <div><span aria-hidden="true">📅</span><b>A new build every Friday, my comments on your builds every Monday</b></div>
-          <div><span aria-hidden="true">🎓</span><b>From zero: every message to Claude, word for word</b></div>
+        <div class="bud-burst" aria-hidden="true" data-burst></div>
+        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c5" tabindex="-1" class="jq">Based on your answers, here's your <em class="kw">plan</em> 🎉</h2></div>
+        <div class="bud-plan">
+          <div class="bp-hero"><img src="/club/join/t-tower.webp" alt="" width="900" height="900" decoding="async" data-plan-img>
+            <div class="bp-t"><small>You'll build</small><b data-plan="title">A tower where buyers choose their floor</b><span class="bp-goal"><i aria-hidden="true" data-plan-e="use">🎓</i><span data-plan="goal">just for you, at your pace</span></span></div></div>
+          <ol class="bp-steps">
+            <li><b data-plan="build">SAMAR, floor by floor · the 11&#8209;step course</b></li>
+            <li><b>A new build every Friday, with the files and the skills</b></li>
+            <li><b>My comments on your builds every Monday</b></li>
+          </ol>
+        </div>
+        <button type="button" class="bud-go" data-jnext>Show me the course</button>
+      </section>
+      {/* 28/11 (Nico): 6 what is inside the course, the real steps; 7 the Vault, the six builds open from day one */}
+      <section class="jc jcourse" data-c="6" aria-labelledby="t3f-c6">
+        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c6" tabindex="-1" class="jq">Inside the course, <em class="kw">step by step</em> 👇</h2></div>
+        <div class="bud-course">
+          <div class="bc-top"><img src="/club/course/poster-01.webp" alt="" width="1280" height="720" loading="lazy" decoding="async"><span class="bc-chip">SAMAR · 11 steps · 37 min</span><span class="bc-play" aria-hidden="true"></span></div>
+          <ol class="bc-list" aria-label="The 11 steps of the course">
+            {COURSE.map(([t, l], i) => <li><img src={`/club/course/thumb-${nn(i)}.webp`} alt="" width="320" height="180" loading="lazy" decoding="async" /><b><span>{nn(i)}</span>{t}</b><em>{l}</em></li>)}
+          </ol>
+        </div>
+        <button type="button" class="bud-go" data-jnext>What else is inside?</button>
+      </section>
+      <section class="jc jvault" data-c="7" aria-labelledby="t3f-c7">
+        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c7" tabindex="-1" class="jq">Plus the Vault: 6 builds from our reels, open from <em class="kw">day one</em> 👇</h2></div>
+        <div class="bud-vault">
+          <ul>{DROPS.map((d) => <li><img src={vImg(d.img)} alt="" width="760" height="760" loading="lazy" decoding="async" /><b>{d.w}</b><small>{d.type}</small></li>)}</ul>
+          <p>Each one with the files, the prompts and the Claude skills</p>
         </div>
         <button type="button" class="bud-go" data-jnext>What do I get?</button>
       </section>
-      <section class="jc joffer" data-c="6" aria-labelledby="t3f-c6">
-        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c6" tabindex="-1" class="jq">Everything you get 👇</h2></div>
+      <section class="jc joffer" data-c="8" aria-labelledby="t3f-c8">
+        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c8" tabindex="-1" class="jq">Everything you get 👇</h2></div>
         <div class="bud-stack">
           {VALUE.map(([t, v]) => <div><i aria-hidden="true">✓</i><span>{t}</span>{/€/.test(v) ? <s>{v.replace(' on our site', '')}</s> : <em>{v || 'weekly'}</em>}</div>)}
-          <div class="bud-tot"><span>On our site</span><s>€150+</s></div>
-          <div class="bud-you"><span data-when="before">You pay today</span><span data-when="early open after">You pay</span><b data-when="before">€0</b><b data-when="early open after"><span data-payeur>€9</span><small>/month</small></b></div>
+          <div class="bud-tot"><span>Usually</span><s>€150+</s></div>
+          <div class="bud-you"><span data-when="before">You pay today</span><span data-when="early open after">Here you pay</span><b data-when="before">€0</b><b data-when="early open after"><span data-payeur>€9</span><small>/month</small></b></div>
         </div>
         <p class="bud-chip hot" data-when="before">🎁 <span>The first 100 who reserve get the <b>founders' gift</b>. Then <b>€9/month</b> from Saturday 28 November.</span></p>
         <p class="bud-chip hot" data-when="early open" data-fbox>⏳ <span>Founders' price ends in <b data-fleft>…</b> · then €19</span></p>
         <p class="bud-chip safe">🛡️ <span data-when="before">Cancel before Saturday and you pay nothing · 14 days to withdraw</span><span data-when="early open after">Cancel whenever you want · 14 days to withdraw</span></p>
         <button type="button" class="bud-go" data-jnext><span data-when="before">Reserve my seat</span><span data-when="early open after">Lock <span data-payeur>€9</span>/month</span></button>
       </section>
-      <section class="jc jcard" data-c="7" aria-labelledby="t3f-c7">
-        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c7" tabindex="-1" class="jq"><span data-when="before">Last step! Your seat, nothing charged today 🔑</span><span data-when="early open after">Last step! In a minute you're inside 🔑</span></h2></div>
+      <section class="jc jcard" data-c="9" aria-labelledby="t3f-c9">
+        <div class="bud-say"><img src="/club/knot-96.webp" alt="" width="64" height="64"><h2 id="t3f-c9" tabindex="-1" class="jq"><span data-when="before">Last step! Your seat, nothing charged today 🔑</span><span data-when="early open after">Last step! In a minute you're inside 🔑</span></h2></div>
         <div class="bud-now">
           <span class="k" data-when="before">On Saturday at 9:00 (Rome)</span><span class="k" data-when="early open after">Right after you join</span>
           <div><i aria-hidden="true">✓</i><span>Your own link to the club, by email</span></div>

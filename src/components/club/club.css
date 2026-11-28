@@ -615,3 +615,149 @@ form.opts { gap: 16px }
 .tb-pills button { appearance: none; min-height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08); color: #fff; font: 700 14px/1 var(--f-sf); cursor: pointer }
 .tb-pills button[aria-pressed="true"] { background: #fff; color: #0b1534; border-color: #fff }
 @media (max-height: 700px) { .bud-hero { max-height: 40vh } .tb { max-height: 38vh } .bud-proof b { font-size: 36px } }
+
+/* ===== 28/11 (Nico, board «Funnel dal carosello»): every card the same big frame (Buddy on top, one big panel, the button always
+   at the same place at the bottom), no «Log in» on card 1, card 2 how it works in 3 steps, card 3 what you will use it for,
+   and the green button G: glossy instead of the flat 2D one, its words in normal case, rounded, not spaced out ===== */
+.jov.bud .jdeck { align-self: stretch; display: grid }
+.jov.bud .jc.cur { min-height: calc(100svh - 112px); display: flex; flex-direction: column; gap: 16px; padding-bottom: 58px; position: relative }
+.jov.bud .jc.cur > .bud-go, .jov.bud .jc.cur .jform, .jov.bud .jc.cur > .jpay { margin-top: auto }
+.jov.bud .jc.cur .jform .bud-go { margin-top: 6px }
+/* «See the whole page» and «Secure payment by Stripe» sit in the bottom margin, so every button is at the same height */
+.jov.bud .jc.cur > .bud-page { position: absolute; left: 0; right: 0; bottom: 6px; margin: 0 auto }
+.jov.bud .jc.cur > p.small { position: absolute; left: 0; right: 0; bottom: 18px }
+/* the big panel, the same glass on every card */
+.jov.bud .bud-how, .jov.bud .bud-ask, .jov.bud .bud-mock, .jov.bud .bud-rows, .jov.bud .bud-stack, .jov.bud .bud-now { border-radius: 26px; background: linear-gradient(160deg, rgba(255,255,255,.10), rgba(255,255,255,.03)); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 0 0 1.5px rgba(140,180,255,.2), 0 14px 30px rgba(0,0,0,.25) }
+.jov.bud .bud-hero { aspect-ratio: auto; max-height: none; flex: 1 1 auto; min-height: 260px }
+.jov.bud .jc.cur .tb-track { flex: 1 1 auto; min-height: 260px; grid-auto-rows: 100% }
+.jov.bud .jc.cur .tb { aspect-ratio: auto; max-height: none; height: 100% }
+.jov.bud .bud-mock { flex: 1 1 auto; padding: 18px; align-items: center }
+.jov.bud .bud-mock li b { font-size: 17px } .jov.bud .bud-mock li small { font-size: 14.5px }
+.jov.bud .bud-rows { flex: 1 1 auto; align-content: center; padding: 18px; gap: 14px }
+.jov.bud .bud-rows div { padding: 18px; background: rgba(255,255,255,.07) }
+.jov.bud .bud-rows b { font-size: 17.5px }
+.jov.bud .bud-stack { flex: 1 1 auto; align-content: space-evenly; padding: 18px 16px }
+.jov.bud .bud-now { flex: 1 1 auto; align-content: center; gap: 16px; padding: 20px 18px }
+.jov.bud .bud-now > div { font-size: 16.5px; grid-template-columns: 26px 1fr; gap: 12px } .jov.bud .bud-now > div i { width: 26px; height: 26px; font-size: 13px }
+/* card 2: the three steps of the carousel, one photo each, joined by the blue thread */
+.bud-how { --hi: 96px; flex: 1 1 auto; margin: 0; padding: 14px; list-style: none; display: grid; grid-template-rows: repeat(3, 1fr); gap: 12px; counter-reset: how }
+.bud-how li { position: relative; display: grid; grid-template-columns: var(--hi) minmax(0, 1fr); gap: 16px; align-items: center; padding: 10px; border-radius: 20px; background: rgba(255,255,255,.06); counter-increment: how }
+.bud-how img { position: relative; z-index: 1; width: var(--hi); height: var(--hi); border-radius: 16px; object-fit: cover; box-shadow: 0 8px 20px rgba(0,0,0,.4), 0 0 0 2px rgba(255,255,255,.14) }
+.bud-how li::before { content: counter(how); position: absolute; z-index: 2; left: 2px; top: calc(50% - var(--hi) / 2 - 8px); width: 28px; height: 28px; border-radius: 50%; background: #58cc6a; color: #052610; font: 800 15px/28px ui-rounded, "SF Pro Rounded", var(--f-sfd); text-align: center; box-shadow: 0 3px 8px rgba(0,0,0,.35) }
+.bud-how li:not(:last-child)::after { content: ""; position: absolute; left: calc(10px + var(--hi) / 2 - 1.5px); top: calc(50% + var(--hi) / 2); height: calc(100% + 12px - var(--hi)); width: 3px; border-radius: 2px; background: linear-gradient(180deg, #5aa8ff, #2f7bff); box-shadow: 0 0 10px rgba(90,168,255,.6) }
+.bud-how b { display: block; font: 800 21px/1.1 var(--f-sfd); letter-spacing: -.02em }
+.bud-how small { display: block; margin-top: 5px; font: 500 15.5px/1.3 var(--f-sf); color: rgba(255,255,255,.8) }
+/* card 3: the answers in the same big panel */
+.jov.bud .bud-ask { flex: 1 1 auto; align-content: center; padding: 18px 16px }
+.jov.bud .bud-ask { gap: 14px }
+.jov.bud .jopts.bud-ask:not(.tiles) .jo { min-height: 86px; grid-template-columns: 52px minmax(0, 1fr) 24px; gap: 14px; font-size: 18px; border-radius: 22px }
+.jov.bud .jopts.bud-ask:not(.tiles) .bud-e { width: 52px; height: 52px; border-radius: 15px; font-size: 28px }
+/* the button G */
+.bud-go, .btn.cta.bud-go { position: relative; overflow: hidden; isolation: isolate; min-height: 60px; border-radius: 999px; text-transform: none; letter-spacing: -.01em;
+  font: 700 19px/1 ui-rounded, "SF Pro Rounded", var(--f-sfd) !important; color: #052610 !important; text-shadow: 0 1px 0 rgba(255,255,255,.25);
+  background: linear-gradient(180deg, #7ee88d 0%, #52c866 50%, #34a84b 100%) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.6), inset 0 -2px 0 rgba(10,80,30,.35), inset 0 0 0 1px #c8ffd040, 0 0 0 4px #6fe0801f, 0 14px 34px -10px #52c866cc, 0 0 42px -8px #52c86699 !important; transition: transform .12s ease, box-shadow .2s ease }
+.bud-go::before { content: ""; position: absolute; inset: 0 0 52% 0; z-index: -1; border-radius: 999px 999px 40% 40%; background: linear-gradient(180deg, rgba(255,255,255,.3), rgba(255,255,255,0)) }
+.bud-go::after { content: "→"; margin-left: 8px; font-weight: 700 }
+.jform .bud-go::after, [data-pay].bud-go::after { content: ""; margin: 0 }
+.bud-go:active { transform: translateY(2px) scale(.985); box-shadow: inset 0 1px 0 rgba(255,255,255,.45), inset 0 0 0 1px #c8ffd040, 0 0 0 4px #6fe08014, 0 8px 22px -10px #52c866cc !important }
+/* short phones (iPhone SE, 667 high): the same frame, a bit tighter, so the button stays on screen */
+@media (max-height: 700px) {
+  .jov.bud .jc.cur { gap: 10px; padding-bottom: 46px; min-height: calc(100svh - 100px) }
+  .jov.bud .bud-say img { width: 50px; height: 50px }
+  .jov.bud .bud-say .jq { font-size: 17px !important; padding: 10px 14px }
+  .jov.bud .bud-hero, .jov.bud .jc.cur .tb-track { min-height: 190px }
+  .bud-how { --hi: 70px; padding: 10px; gap: 8px } .bud-how li { gap: 12px; padding: 8px } .bud-how li:not(:last-child)::after { left: calc(8px + var(--hi) / 2 - 1.5px); height: calc(100% + 8px - var(--hi)) }
+  .bud-how b { font-size: 18px } .bud-how small { font-size: 14px; margin-top: 3px }
+  .jov.bud .bud-ask { padding: 12px; gap: 10px } .jov.bud .jopts.bud-ask:not(.tiles) .jo { min-height: 64px; font-size: 17px; grid-template-columns: 42px minmax(0, 1fr) 22px } .jov.bud .jopts.bud-ask:not(.tiles) .bud-e { width: 42px; height: 42px; font-size: 23px }
+  .jov.bud .bud-stack { padding: 10px 12px; gap: 4px } .jov.bud .bud-stack > div { font-size: 12.5px; line-height: 1.2 }
+  .jov.bud .bud-stack .bud-tot { padding-top: 4px } .jov.bud .bud-stack .bud-you b { font-size: 40px }
+  .jov.bud .bud-chip { padding: 7px 12px; font-size: 12px; line-height: 1.25 }
+  .jov.bud .bud-rows { padding: 12px; gap: 8px } .jov.bud .bud-rows div { padding: 11px } .jov.bud .bud-rows b { font-size: 15px }
+  .jov.bud .tb-pills button { min-height: 34px }
+  .bud-go, .btn.cta.bud-go { min-height: 54px; font-size: 17.5px !important }
+  .jov.bud .bud-now { padding: 12px 14px; gap: 6px } .jov.bud .bud-now > div { font-size: 13.5px }
+}
+
+/* 28/11 (Nico): card 1 is the loop of the carousel cover (a buyer picks a floor and flies inside), 5 s, then again */
+.bud-hero video { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; background: #0b1534 }
+/* card 3: each answer has its emoji big in a coloured tile, floating over its own shadow like the founders' gift; the picked one pops */
+.jov.bud .jopts.bud-ask .jo[data-pick="clients"] { --c1: #ffd36b; --c2: #ff8a3d; --dl: 0s }
+.jov.bud .jopts.bud-ask .jo[data-pick="projects"] { --c1: #7cc4ff; --c2: #2f6bff; --dl: -.7s }
+.jov.bud .jopts.bud-ask .jo[data-pick="service"] { --c1: #ff8fc0; --c2: #9b6bff; --dl: -1.4s }
+.jov.bud .jopts.bud-ask .jo[data-pick="learn"] { --c1: #9df0a8; --c2: #2fb36b; --dl: -2.1s }
+.jov.bud .jopts.bud-ask:not(.tiles) .jo { grid-template-columns: 60px minmax(0, 1fr) 24px; background: linear-gradient(100deg, color-mix(in srgb, var(--c2) 22%, #172757), #172757 62%); box-shadow: 0 6px 0 #0d1838, inset 0 0 0 2px color-mix(in srgb, var(--c1) 30%, transparent) }
+.jov.bud .jopts.bud-ask:not(.tiles) .jo[aria-checked="true"] { background: linear-gradient(100deg, color-mix(in srgb, var(--c2) 62%, #1a347f), color-mix(in srgb, var(--c1) 22%, #1a347f)); box-shadow: 0 6px 0 color-mix(in srgb, var(--c2) 55%, #0d1838), inset 0 0 0 2.5px var(--c1), 0 14px 30px -10px var(--c2) }
+.jov.bud .jopts.bud-ask:not(.tiles) .bud-e { position: relative; width: 60px; height: 60px; border-radius: 19px; font-size: 0; overflow: visible;
+  background: radial-gradient(110% 110% at 28% 18%, color-mix(in srgb, var(--c1) 70%, transparent), color-mix(in srgb, var(--c2) 38%, transparent) 72%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), inset 0 -3px 6px rgba(0,0,0,.18), 0 10px 20px -8px var(--c2) }
+.jov.bud .bud-e i { position: absolute; z-index: 1; left: 50%; bottom: 7px; margin-left: -26px; width: 52px; text-align: center; font-style: normal; font-size: 50px; line-height: 1; filter: drop-shadow(0 9px 6px rgba(3,8,26,.5)) drop-shadow(0 4px 14px color-mix(in srgb, var(--c2) 70%, transparent)); animation: budfloat 2.8s ease-in-out infinite; animation-delay: var(--dl, 0s); transform-origin: 50% 90% }
+.jov.bud .bud-e::after { content: ""; position: absolute; left: 50%; bottom: 4px; width: 34px; height: 8px; margin-left: -17px; border-radius: 50%; background: rgba(3,8,26,.6); filter: blur(3px); animation: budshade 2.8s ease-in-out infinite; animation-delay: var(--dl, 0s) }
+.jov.bud .jo[aria-checked="true"] .bud-e i { animation: budpop .55s cubic-bezier(.3,1.7,.5,1) both, budfloat 2.8s ease-in-out .55s infinite }
+@keyframes budfloat { 0%, 100% { transform: translateY(-4px) rotate(-8deg) } 50% { transform: translateY(-17px) rotate(8deg) } }
+@keyframes budshade { 0%, 100% { transform: scaleX(1); opacity: .6 } 50% { transform: scaleX(.65); opacity: .3 } }
+@keyframes budpop { 0% { transform: translateY(-4px) scale(1) } 45% { transform: translateY(-26px) scale(1.3) rotate(-12deg) } 100% { transform: translateY(-10px) scale(1.1) rotate(0) } }
+/* card 5: your plan, from the two answers, with a burst of confetti */
+.jov.bud .jplan > .bud-burst { position: absolute; left: 0; right: 0; top: 46%; height: 0; z-index: 6; pointer-events: none; overflow: visible }
+.bud-burst i { position: absolute; top: 0; width: 11px; height: 17px; border-radius: 2px; will-change: transform, opacity }
+.jov.bud .bud-plan { flex: 1 1 auto; display: flex; flex-direction: column; gap: 14px; padding: 12px }
+.bp-hero { position: relative; isolation: isolate; overflow: hidden; flex: 1 1 auto; min-height: 190px; border-radius: 20px; box-shadow: 0 12px 28px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.14) }
+.bp-hero img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover }
+.bp-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(5,9,21,0) 30%, rgba(5,9,21,.9)) }
+.bp-t { position: absolute; left: 16px; right: 16px; bottom: 14px; display: grid; gap: 8px; justify-items: start }
+.bp-t small { font: 800 12px/1 var(--f-sfd); letter-spacing: .1em; text-transform: uppercase; color: #9be15d }
+.bp-t b { font: 800 24px/1.1 var(--f-sfd); letter-spacing: -.025em; text-wrap: balance }
+.bp-goal { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 14px 0 8px; border-radius: 999px; background: rgba(255,255,255,.18); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); font: 700 15px/1.2 var(--f-sfd) }
+.bp-goal i { font-style: normal; font-size: 20px; line-height: 1 }
+.bp-steps { margin: 0; padding: 2px 4px 4px; list-style: none; display: grid; gap: 12px; counter-reset: bp }
+.bp-steps li { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; align-items: start; counter-increment: bp }
+.bp-steps li::before { content: counter(bp); width: 28px; height: 28px; border-radius: 50%; background: #58cc6a; color: #052610; font: 800 15px/28px ui-rounded, "SF Pro Rounded", var(--f-sfd); text-align: center; box-shadow: 0 3px 8px rgba(0,0,0,.3) }
+.bp-steps li:not(:last-child)::after { content: ""; position: absolute; left: 12.5px; top: 30px; height: calc(100% - 20px); width: 3px; border-radius: 2px; background: linear-gradient(180deg, #5aa8ff, #2f7bff); box-shadow: 0 0 8px rgba(90,168,255,.6) }
+.bp-steps b { padding-top: 4px; font: 650 16.5px/1.3 var(--f-sfd); letter-spacing: -.01em }
+@media (max-height: 700px) {
+  .jov.bud .jopts.bud-ask:not(.tiles) .jo { grid-template-columns: 48px minmax(0, 1fr) 22px } .jov.bud .jopts.bud-ask:not(.tiles) .bud-e { width: 48px; height: 48px; border-radius: 15px } .jov.bud .bud-e i { font-size: 40px; width: 42px; margin-left: -21px; bottom: 5px }
+  .jov.bud .bud-plan { gap: 8px; padding: 10px } .bp-hero { min-height: 130px } .bp-t b { font-size: 19px } .bp-goal { min-height: 30px; font-size: 13.5px } .bp-goal i { font-size: 17px }
+  .bp-steps { gap: 8px } .bp-steps b { font-size: 14px } .bp-steps li::before { width: 24px; height: 24px; font-size: 13px; line-height: 24px } .bp-steps li { grid-template-columns: 24px minmax(0, 1fr); gap: 10px } .bp-steps li:not(:last-child)::after { left: 10.5px; top: 26px }
+}
+@media (prefers-reduced-motion: reduce) { .jov.bud .bud-e i, .jov.bud .bud-e::after { animation: none } }
+
+/* card 1: the words under the video, like a caption, so the floor card of the video (16A, 11B…) is never covered */
+.jov.bud .jhero .bud-hero { display: grid; grid-template-rows: minmax(0, 1fr) auto; background: #0e1838 }
+.jov.bud .jhero .bud-hero::after { display: none }
+.jov.bud .jhero .bud-hero { flex: 1 1 0 }
+.jov.bud .jhero .bh-v { position: relative; min-height: 0; overflow: hidden }
+.jov.bud .jhero .bh-v video { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 80% }
+.jov.bud .jhero .bud-hero span { position: relative; left: auto; right: auto; bottom: auto; padding: 14px 18px 16px; background: linear-gradient(180deg, #16275a, #0e1838); box-shadow: inset 0 1px 0 rgba(255,255,255,.12) }
+@media (max-height: 700px) { .jov.bud .jhero .bud-hero span { padding: 10px 14px 12px; font-size: 16px } }
+
+/* the emoji leaves its tile: the tile is a frame it jumps out of, the shadow stays on the tile */
+.jov.bud .jopts.bud-ask:not(.tiles) .jo { overflow: visible }
+.jov.bud .jopts.bud-ask:not(.tiles) .bud-e { box-shadow: inset 0 1px 0 rgba(255,255,255,.4), inset 0 -3px 6px rgba(0,0,0,.18), inset 0 0 0 1.5px color-mix(in srgb, var(--c1) 55%, transparent), 0 10px 20px -8px var(--c2) }
+/* card 6: the course, the first step big, then every step with its length (the list scrolls) */
+.jov.bud .bud-course { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; padding: 10px; border-radius: 26px; background: linear-gradient(160deg, rgba(255,255,255,.10), rgba(255,255,255,.03)); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 0 0 1.5px rgba(140,180,255,.2), 0 14px 30px rgba(0,0,0,.25) }
+.bc-top { position: relative; isolation: isolate; overflow: hidden; flex: none; aspect-ratio: 16 / 9; border-radius: 18px; box-shadow: 0 10px 24px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.14) }
+.bc-top img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover }
+.bc-play { position: absolute; right: 10px; bottom: 10px; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.22); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.5), 0 8px 20px rgba(0,0,0,.35) }
+.bc-play::before { content: ""; position: absolute; left: 17px; top: 13px; border: 9px solid transparent; border-left: 14px solid #fff; border-right: 0 }
+.bc-chip { position: absolute; left: 10px; top: 10px; display: inline-flex; align-items: center; min-height: 28px; padding: 0 11px; border-radius: 999px; background: rgba(8,14,34,.72); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); font: 700 12.5px/1 var(--f-sfd); color: #fff }
+.bc-list { flex: 1 1 0; min-height: 0; margin: 0; padding: 2px 2px 14px; list-style: none; display: grid; align-content: start; gap: 8px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; -webkit-mask-image: linear-gradient(180deg, #000 85%, transparent); mask-image: linear-gradient(180deg, #000 85%, transparent) }
+.bc-list::-webkit-scrollbar { display: none }
+.bc-list li { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 6px 10px 6px 6px; border-radius: 14px; background: rgba(255,255,255,.06) }
+.bc-list img { width: 72px; height: 40px; border-radius: 8px; object-fit: cover }
+.bc-list b { font: 650 15px/1.25 var(--f-sfd); letter-spacing: -.01em } .bc-list b span { color: #8cc4ff; margin-right: 6px; font-variant-numeric: tabular-nums }
+.bc-list em { font: 600 13px/1 var(--f-sf); font-style: normal; color: rgba(255,255,255,.6); font-variant-numeric: tabular-nums }
+/* card 7: the Vault, the six builds as six photos */
+.jov.bud .bud-vault { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; padding: 10px; border-radius: 26px; background: linear-gradient(160deg, rgba(255,255,255,.10), rgba(255,255,255,.03)); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), inset 0 0 0 1.5px rgba(140,180,255,.2), 0 14px 30px rgba(0,0,0,.25) }
+.bud-vault ul { flex: 1 1 0; min-height: 0; margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 8px }
+.bud-vault li { position: relative; isolation: isolate; overflow: hidden; border-radius: 16px; display: flex; flex-direction: column; justify-content: flex-end; padding: 8px 9px; box-shadow: 0 8px 18px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.14) }
+.bud-vault li img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover }
+.bud-vault li::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(5,9,21,0) 45%, rgba(5,9,21,.88)) }
+.bud-vault li b { font: 800 15px/1.1 var(--f-sfd); letter-spacing: -.02em } .bud-vault li small { font: 600 11.5px/1.2 var(--f-sf); color: rgba(255,255,255,.78) }
+.bud-vault p { margin: 0; text-align: center; font: 600 14.5px/1.3 var(--f-sf); color: rgba(255,255,255,.85) }
+@media (max-height: 700px) {
+  .bc-play { width: 36px; height: 36px } .bc-play::before { left: 14px; top: 10px; border-width: 8px; border-left-width: 12px } .bc-chip { min-height: 24px; font-size: 11px }
+  .bc-list li { grid-template-columns: 60px minmax(0, 1fr) auto; gap: 10px } .bc-list img { width: 60px; height: 34px } .bc-list b { font-size: 13.5px }
+  .bud-vault li b { font-size: 13.5px } .bud-vault li small { font-size: 10.5px } .bud-vault p { font-size: 13px }
+}
+/* card 9: once name and email are in, the payment takes the room of the list (already read), so Pay stays on screen */
+.jov.bud[data-stage="card"] .jcard .bud-now { display: none }

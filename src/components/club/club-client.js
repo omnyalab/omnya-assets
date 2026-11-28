@@ -247,10 +247,10 @@
     clearTimeout(nextT); step = n; P.dataset.step = String(n);
     cardsJ.forEach(function (c) { var k = +c.dataset.c; c.classList.toggle('cur', k === n); c.classList.toggle('past', k < n); c.setAttribute('aria-hidden', k === n ? 'false' : 'true'); c.inert = k !== n; });
     bgs.forEach(function (b) { b.classList.toggle('on', +b.dataset.bg === n); });
-    // 27/11 (Nico, board «Buddy»): seven cards, one green bar that fills
+    // 27/11 (Nico, board «Buddy»): one green bar that fills (nine cards since 28/11)
     var NC = cardsJ.length, bar = $('[data-jbar]', P); if (bar) bar.style.width = (n / NC * 100).toFixed(1) + '%';
     var pr = $('[data-jprog]', P); pr.setAttribute('aria-valuenow', String(n)); pr.setAttribute('aria-label', 'Card ' + n + ' of ' + NC);
-    if (n === 5) plan();
+    if (cardsJ[n - 1] && cardsJ[n - 1].classList.contains('jplan')) { plan(); burst(); }
     fleft();
     P.setAttribute('aria-labelledby', 't3f-c' + n); P.scrollTop = 0;
     if (focus !== false) focusHead($('#t3f-c' + n));
@@ -279,11 +279,42 @@
   });
   /* card 5: the plan, written from the answers (nothing invented: what the club has for that answer) */
   var PLAN = {
-    build: { tower: 'SAMAR, floor by floor · the 11-step course', stadium: 'The Stadium · its build is in the Vault', house: 'The House Builder skill · yours to keep', own: 'SAMAR, floor by floor · the 11-step course' },
-    use: { clients: 'A page developers pay for', projects: 'Your projects shown before they are built', service: 'A 3D service you can sell', learn: 'The 3D that sells, step by step' },
+    build: { tower: 'SAMAR, floor by floor · the 11\u2011step course', stadium: 'The Stadium · its build is in the Vault', house: 'The House Builder skill · yours to keep', own: 'SAMAR, floor by floor · the 11\u2011step course' },
     now: { new: 'You start from step 01, nothing skipped', images: 'Your images become a page buyers use', sell: 'Faster builds, with Claude doing the work' }
   };
-  function plan() { ['build'].forEach(function (k) { var el = $('[data-plan="' + k + '"]', P); if (el) el.textContent = PLAN[k][ans[k]] || PLAN[k][Object.keys(PLAN[k])[0]]; }); }
+  /* 28/11 (Nico): card 5 says what you get to do, from the two answers: the build you picked as the picture and the title,
+     what you will use it for, then what the club gives you for it */
+  var PLANE = { clients: '🤝', projects: '🏗️', service: '🚀', learn: '🎓' };
+  var PT = { tower: 'A tower where buyers choose their floor', stadium: 'A stadium where fans choose their seat', house: 'A house that builds itself on scroll', own: 'Your own idea, with the same method' };
+  var PG = { clients: 'to win clients', projects: 'to sell your own projects', service: 'to start your own 3D service', learn: 'just for you, at your pace' };
+  function plan() {
+    var b = PT[ans.build] ? ans.build : 'tower', u = PG[ans.use] ? ans.use : 'learn';
+    function put(k, v) { var el = $('[data-plan="' + k + '"]', P); if (el) el.textContent = v; }
+    put('title', PT[b]); put('goal', PG[u]); put('build', PLAN.build[b]);
+    var e = $('[data-plan-e="use"]', P); if (e) e.textContent = PLANE[u];
+    var im = $('[data-plan-img]', P); if (im) im.src = '/club/join/t-' + b + '.webp';
+  }
+  /* the confetti come out of the plan in one burst, then fall (none with Reduce Motion) */
+  function burst() {
+    var box = $('[data-burst]', P); if (!box || RM || !box.animate) return;
+    box.textContent = '';
+    var C = ['#58cc6a', '#ffc800', '#5aa8ff', '#ff5f8f', '#9b6bff', '#ff9f43'], W = box.offsetWidth || 360;
+    for (var i = 0; i < 110; i++) {
+      var c = document.createElement('i'), a = (-90 + (Math.random() * 140 - 70)) * Math.PI / 180, v = 260 + Math.random() * 320;
+      var dx = Math.cos(a) * v, dy = Math.sin(a) * v, r = Math.random() * 720 - 360, d = 1500 + Math.random() * 1100;
+      c.style.background = C[i % C.length]; c.style.left = (W / 2 + (Math.random() * 60 - 30)) + 'px';
+      if (i % 3 === 0) c.style.borderRadius = '50%';
+      box.appendChild(c);
+      c.animate([
+        { transform: 'translate(0,0) rotate(0deg) scale(.6)', opacity: 1 },
+        { transform: 'translate(' + dx + 'px,' + dy + 'px) rotate(' + r + 'deg) scale(1)', opacity: 1, offset: .32 },
+        { transform: 'translate(' + dx * 1.25 + 'px,' + (dy + 620) + 'px) rotate(' + r * 2.5 + 'deg) scale(1)', opacity: 0 }
+      ], { duration: d, delay: Math.random() * 120, easing: 'cubic-bezier(.15,.75,.35,1)', fill: 'forwards' });
+    }
+  }
+  /* card 1: the loop of the carousel cover; with Reduce Motion it stays on its first frame */
+  (function () { var v = $('[data-hero-v]', P); if (v && RM) { v.removeAttribute('autoplay'); try { v.pause(); } catch (e) {} } })();
+
   /* card 6: the founders' price ends on Fri 4/12 23:59 Rome (FOUNDERS_END = Sat 5/12 00:00) */
   var FEND = Date.parse('2026-12-05T00:00:00+01:00'), fT = null;
   function fleft() {
@@ -359,7 +390,9 @@
         return Promise.resolve(co).then(function (co) {
           return co.loadActions().then(function (a) {
             if (a.type !== 'success') throw new Error('');
-            pel = co.createPaymentElement({ layout: 'tabs', wallets: { link: 'never' } });
+            // 28/11 (Nico: «con tutti i pagamenti soliti, anche Klarna»): the same order as the funnels since 26/11, card,
+            // Apple Pay / Google Pay, Klarna, Amazon Pay, the rest (Satispay…) after
+            pel = co.createPaymentElement({ layout: 'tabs', paymentMethodOrder: ['card', 'apple_pay', 'google_pay', 'klarna', 'amazon_pay'], wallets: { link: 'never' } });
             pbox.className = 'paybox'; pel.mount(pbox); actions = a.actions;
             // 26/11 (Nico: «fai che puoi pagare in dollari, in qualsiasi valuta»): who joins from abroad sees Stripe's
             // currency selector above the card (euro or their own money), and the monthly price on the card follows it

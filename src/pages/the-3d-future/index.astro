@@ -16,7 +16,7 @@
 import '../../components/club/club.css';
 import Icon from '../../components/club/Icon.astro';
 import ClubPanels from '../../components/club/ClubPanels.astro';
-import { EARLY, OPEN, FOUNDERS_END, SUB, PROOF, SOURCE, proofTxt, DROPS, INSIDE, VALUE, FAQ, bv, bvSet, vImg, vSet, kw } from '../../components/club/data';
+import { EARLY, OPEN, FOUNDERS_END, SUB, DROPS, INSIDE, VALUE, FAQ, vImg, vSet, kw } from '../../components/club/data';
 import client from '../../components/club/club-client.js?raw';
 
 const title = 'THE 3D FUTURE · Omnya Lab';
@@ -127,25 +127,7 @@ const cdParts = [['d', 'days'], ['h', 'hours'], ['m', 'min'], ['s', 'sec']];
     </div>
   </section>
 
-  {/* ---------- the numbers ---------- */}
-  <section class="sec" id="results" data-tint="#2c3a63">
-    <div class="secbg soft" aria-hidden="true"><img src="/club/bg-towers-top.webp" alt="" loading="lazy" decoding="async"></div>
-    <div class="wrap">
-      <div class="head center"><h2>The <em class="kw">numbers</em> this method made us</h2></div>
-      <div class="stats">
-        {PROOF.map((s) => (
-          <div class:list={['stat', { big1: s.big }]}>
-            <img src={bv(s.bv, 800)} srcset={bvSet(s.bv)} sizes={s.big ? '(min-width: 900px) 576px, 100vw' : '(min-width: 900px) 288px, 50vw'} alt="" loading="lazy" decoding="async">
-            <span class="gz"></span><span class="grain"></span>
-            <span class:list={['n', { long: proofTxt(s).length >= 6 }]} data-count={s.n} data-dec={s.dec || 0} data-pre={s.pre || ''} data-suf={s.suf || ''}>{proofTxt(s)}</span>
-            <span class="l">{s.l.split('|').map((x, i) => <>{i > 0 && <br />}{x}</>)}</span>
-          </div>
-        ))}
-      </div>
-      <p class="src">{SOURCE}</p>
-    </div>
-  </section>
-
+  {/* 28/11 Nico («togli»): no more section of our numbers (views, followers, sales), the same as Buddy's card */}
   {/* ---------- the Vault ---------- */}
   <section class="sec" id="vault" data-tint="#2b3d5e">
     <div class="secbg soft" aria-hidden="true"><img src="/club/bg-burj-fog.webp" alt="" loading="lazy" decoding="async"></div>
