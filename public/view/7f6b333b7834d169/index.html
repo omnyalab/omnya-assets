@@ -376,4 +376,12 @@ ricomincia(); requestAnimationFrame(disegna);
   const av=avvia;avvia=function(i){av(i);const s=STANZE[i];if(s)img(s[0])};
 })();
 </script>
+<style>
+/* la scritta sotto il logo Omnya (già dentro i video, al centro): stessa trasparenza e ombra del logo (Nico 28/11: T4) */
+.omsub{position:absolute;left:0;right:0;top:57.6%;text-align:center;color:#fff;font:600 .98cqw var(--text);letter-spacing:.3em;text-indent:.3em;text-transform:uppercase;opacity:.58;pointer-events:none;
+  text-shadow:0 1px 1px rgba(0,0,0,.35),0 2px 14px rgba(0,0,0,.4)}
+</style>
+<script>
+(function(){const st=document.getElementById('st'),d=document.createElement('div');d.className='omsub';d.textContent='Images, films & interactive 3D';st.insertBefore(d,st.querySelector('.ov'))})();
+</script>
 </body></html>
