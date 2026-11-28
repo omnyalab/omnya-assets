@@ -66,15 +66,17 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .opn-r { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); overflow: visible }
   .opn-r circle { fill: none; stroke: url(#opg); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 704; stroke-dashoffset: 704; filter: drop-shadow(0 0 8px rgba(90,168,255,.55));
     animation: opn-draw 1.3s cubic-bezier(.6,0,.2,1) .2s forwards, opn-glow 2.4s ease-in-out 1.5s infinite }
-  .opn-k { position: relative; width: 128px; height: 128px; filter: drop-shadow(0 12px 32px rgba(60,130,255,.6)); animation: opn-in .9s cubic-bezier(.2,.8,.2,1) both, opn-bre 2.4s ease-in-out .9s infinite }
+  /* 28/11 (Nico: «il quadrato al centro rimane sfuocato mentre carica, deve sfuocarsi sempre di meno»): the knot starts blurred and gets
+     sharper the whole time the club loads, until it is perfectly crisp (same filter list at both ends, so the browser can blend it) */
+  .opn-k { position: relative; width: 128px; height: 128px; filter: blur(0px) drop-shadow(0 10px 22px rgba(60,130,255,.45)); animation: opn-in 1.6s cubic-bezier(.25,.6,.25,1) both, opn-bre 2.4s ease-in-out 1.6s infinite }
   .opn-w { font: 700 26px/1 Geist, -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif; letter-spacing: -.035em; color: #fff; white-space: nowrap; animation: opn-w 1s ease .7s both }
   .opn-w b { background: linear-gradient(180deg, #f2f9ff 0%, #a6d4ff 36%, #3f8cff 70%, #2457e0 100%); -webkit-background-clip: text; background-clip: text; color: transparent }
-  .opn.quick .opn-k { animation-duration: .35s, 2.4s; animation-delay: 0s, .35s } .opn.quick .opn-r circle { animation-duration: .5s, 2.4s; animation-delay: 0s, .5s } .opn.quick .opn-w { animation-duration: .35s; animation-delay: .1s }
+  .opn.quick .opn-k { animation-duration: .45s, 2.4s; animation-delay: 0s, .45s } .opn.quick .opn-r circle { animation-duration: .5s, 2.4s; animation-delay: 0s, .5s } .opn.quick .opn-w { animation-duration: .35s; animation-delay: .1s }
   .opn.out { pointer-events: none } .opn.out::before { opacity: 0 } .opn.gone { opacity: 0 }
   .opn.out .opn-r, .opn.out .opn-w { opacity: 0; transition: opacity .25s ease }
   @keyframes opn-draw { to { stroke-dashoffset: 0 } }
   @keyframes opn-glow { 50% { opacity: .55 } }
-  @keyframes opn-in { from { opacity: 0; transform: scale(.5) rotate(-40deg); filter: blur(14px) } to { opacity: 1; transform: none } }
+  @keyframes opn-in { 0% { opacity: 0; transform: scale(.6) rotate(-30deg); filter: blur(18px) drop-shadow(0 10px 22px rgba(60,130,255,0)) } 20% { opacity: 1 } 100% { opacity: 1; transform: none; filter: blur(0px) drop-shadow(0 10px 22px rgba(60,130,255,.45)) } }
   @keyframes opn-bre { 50% { transform: scale(1.05) } }
   @keyframes opn-w { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: none } }
   @media (prefers-reduced-motion: reduce) { .opn-k, .opn-w, .opn-r circle { animation: none !important; stroke-dashoffset: 0 } }
