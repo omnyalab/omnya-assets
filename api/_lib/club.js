@@ -519,7 +519,7 @@ export async function clubCharged(stripe, charge) {
   const email = cus ? await kv('HGET', K.byCustomer, cus) : null;
   if (!email) return null;
   let m = null; try { m = JSON.parse((await kv('HGET', K.members, email)) || 'null'); } catch {}
-  if (m && m.unpaid) { const { unpaid, payUrl, payStatus, ...rest } = m; m = rest; await kv('HSET', K.members, email, JSON.stringify(m)); } // 28/11: a payment that goes through opens the page again
+  if (m && m.unpaid) { const was = m; const { unpaid, payUrl, payStatus, ...rest } = m; m = rest; await kv('HSET', K.members, email, JSON.stringify(m)); await sendBackIn(email, was); } // 28/11: a payment that goes through opens the page again, with the «you're back in» email
   if (!m || !m.reserved || m.welcomed) return null;
   const portal = PORTAL_URL;
   if (!memberToken(email)) throw new Error('club: no key to sign the member link');
@@ -695,7 +695,7 @@ export async function checkPayments(stripe, { dry = false } = {}) {
       if (paid) out.paid++;
       if (m.unpaid && paid) {
         out.reopened.push(first1);
-        if (!dry) { const { unpaid, payUrl, payStatus, ...rest } = m; await kv('HSET', K.members, email, JSON.stringify(rest)); }
+        if (!dry) { const { unpaid, payUrl, payStatus, ...rest } = m; await kv('HSET', K.members, email, JSON.stringify(rest)); if (await sendBackIn(email, m)) out.mailed++; }
       }
       if (!paid) { // 28/11 10:30 (Nico: «ferma anche le persone in pending»): no payment yet → paused too, one email to pay or confirm
         let inv = null; try { inv = sub.latest_invoice ? await stripe.invoices.retrieve(typeof sub.latest_invoice === 'string' ? sub.latest_invoice : sub.latest_invoice.id, { expand: ['payment_intent'] }) : null; } catch (e) { console.error('[club] paycheck pending invoice', e.message); }
@@ -719,4 +719,14 @@ export async function checkPayments(stripe, { dry = false } = {}) {
 /** 28/11: true when the member's page is paused for a payment (m.unpaid): the club's other routes refuse them too */
 export async function isPaused(email) {
   try { const m = JSON.parse((await kv('HGET', K.members, cleanEmail(email))) || 'null'); return !!(m && m.unpaid); } catch { return false; }
+}
+
+/** 28/11 (Nico: «appena il pagamento va, gli rigiri un'altra mail che può rientrare»): once per pause, when it opens again */
+export function backInText({ name, link }) {
+  return `Hey ${name}, your payment went through, so your club page is open again, with everything right where you left it: your course, the Vault and the Feed.\n\nHere's your link, the same as before:\n${link}\n\nPick up where you stopped, and when your tower is live send it to me from the club page, because I look at every first build myself.\n\nNico`;
+}
+export async function sendBackIn(email, m) {
+  if (!(await first('backin', `${email}:${m.unpaid || ''}`))) return false;
+  try { await sendMail({ to: `${m.name} <${email}>`, bcc: host.email, replyTo: host.email, subject: "you're back in", text: backInText({ name: firstName(m.name), link: insideUrl(email) }) }); return true; }
+  catch (e) { console.error('[club] back in mail', e.message); await kv('DEL', K.once('backin', `${email}:${m.unpaid || ''}`)).catch(() => {}); return false; }
 }
