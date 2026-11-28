@@ -1488,13 +1488,13 @@ const P = {
      (localStorage 't3f-m' and the 1-year cookie the server sets); the member link of the welcome email keeps working */
   function lost(msg) {
     opnDone(false)
-    root.innerHTML = `<div class="mtop"><div><p class="eyebrow">THE 3D FUTURE</p><h1>Log in to the club</h1></div></div><form class="glass mbox" data-lost novalidate><p data-lost-p>${esc(msg || 'Write the email you joined with and we send you a 6-digit code, no password, and after that this phone or computer remembers you.')}</p>
+    root.innerHTML = `<div class="mtop"><div><p class="eyebrow">THE 3D FUTURE</p><h1>Log in to the club</h1></div></div><form class="glass mbox" data-lost novalidate><p data-lost-p>${esc(msg || 'Write the same email you used to join and pay, the one where your «you\'re in» email arrived, and we send you a 6-digit code: no password, and after that this phone or computer remembers you.')}</p>
       <div data-step-e><label for="t3m-e" class="sr">Email</label><input id="t3m-e" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@studio.com" required></div>
       <div data-step-c hidden><label for="t3m-c" class="sr">Code</label><input id="t3m-c" name="code" type="text" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="6-digit code"></div>
       <button class="btn cta wide" type="submit" data-lost-btn>Send my code</button><p class="err" role="status" data-lost-msg></p><p class="lostjoin" data-lost-other hidden><a href="#">Use another email</a></p><p class="lostjoin">Not a member yet? <a href="/the-3d-future">Join for €9/month</a></p></form>`
     const f = $('[data-lost]'), msgEl = $('[data-lost-msg]'), btn = $('[data-lost-btn]'), pEl = $('[data-lost-p]'), stE = $('[data-step-e]'), stC = $('[data-step-c]'), other = $('[data-lost-other]')
     let step = 'e', email = ''
-    const toEmail = () => { step = 'e'; stE.hidden = false; stC.hidden = true; other.hidden = true; btn.textContent = 'Send my code'; pEl.textContent = 'Write the email you joined with and we send you a 6-digit code, no password, and after that this phone or computer remembers you.'; msgEl.textContent = ''; f.email.focus() }
+    const toEmail = () => { step = 'e'; stE.hidden = false; stC.hidden = true; other.hidden = true; btn.textContent = 'Send my code'; pEl.textContent = 'Write the same email you used to join and pay, the one where your «you\'re in» email arrived, and we send you a 6-digit code: no password, and after that this phone or computer remembers you.'; msgEl.textContent = ''; f.email.focus() }
     $('a', other).addEventListener('click', e => { e.preventDefault(); toEmail() })
     f.code.addEventListener('input', () => { f.code.value = f.code.value.replace(/\D/g, '').slice(0, 6); if (f.code.value.length === 6) f.requestSubmit() })
     f.addEventListener('submit', e => {

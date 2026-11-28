@@ -226,7 +226,7 @@ async function checkout(req) {
 //   POST /api/club/build { m, link, note }  → the build goes to Nico by email
 async function inside(req) {
   const email = readMember(new URL(req.url).searchParams.get('m'));
-  if (!email) return fail(403, 'bad_link', 'This link is not right. Write the email you joined with and we send you a 6-digit code.');
+  if (!email) return fail(403, 'bad_link', 'This link is not right. Write the same email you used to join and pay, and we send you a 6-digit code.');
   try {
     const d = await insideData(email), r = json(withCerts(email, d));
     if (d.state === 'open') { const c = hlsCookie(); if (c) r.headers.append('Set-Cookie', c); }   // the key to the course films
