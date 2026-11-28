@@ -417,7 +417,9 @@ async function mePost(req, a) {
     }
     if (b.img && String(b.img).length > MAX_AVATAR) return fail(400, 'bad_image', 'That photo is too big, try another one.');
     if (b.cover && String(b.cover).length > MAX_COVER) return fail(400, 'bad_image', 'That background is too big, try another photo.');
-    return json({ profile: await saveProfile(email, b) });
+    const done = LESSONS.every((l) => (d.progress?.d || []).includes(l.n));
+    const earned = [(d.founder || (d.gifts && d.gifts.length) || (d.giftNames && d.giftNames.length)) && 'founder', d.posted && 'first', done && 'tower'].filter(Boolean);
+    return json({ profile: await saveProfile(email, b, earned) });
   } catch (e) {
     if (e.code === 'bad_request' || e.code === 'bad_image') return fail(400, e.code, e.message);
     console.error('[club] me', a, e.message);

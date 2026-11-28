@@ -38,7 +38,8 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="3D Future">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+{/* 28/11 (Nico: «il blur sopra le tre stanghette esce ancora»): an opaque status bar, so iOS 26 has nothing to soften under the clock */}
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -83,6 +84,20 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   /* 28/11: «Watch before you start the course» at the top of the steps; the certificate of the course */
   .crow.intro .cth { position: relative } .crow.intro small { color: #8cc4ff } .crow.intro .ctx b { white-space: normal; overflow: visible; text-overflow: clip; display: block }
   .A .certw { display: grid; gap: 14px }
+  /* D1: the badge on the corner of the photo */
+  .mavw { position: relative; display: inline-grid; justify-self: center }
+  .mbd { position: absolute; right: -12px; bottom: -6px; width: 46px; height: 46px; filter: drop-shadow(0 4px 10px rgba(0,0,0,.55)); pointer-events: none } .mbd:empty { display: none } .mbd svg { width: 100%; height: 100%; display: block }
+  .upn .mbd { right: -10px; bottom: -4px; width: 44px; height: 44px }
+  .pbdpick { display: grid; gap: 6px } .pbdpick b { font: 700 15px/1.2 var(--f-sf) } .pbdpick small { font: 500 13px/1.3 var(--f-sf); color: rgba(255,255,255,.65) }
+  .pbdrow { display: flex; gap: 10px; flex-wrap: wrap } .pbdrow button { width: 72px; height: 72px; padding: 6px; border: 0; border-radius: 18px; background: rgba(255,255,255,.06); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); cursor: pointer }
+  .pbdrow button[aria-pressed="true"] { background: rgba(243,207,122,.16); box-shadow: inset 0 0 0 2px #f3cf7a } .pbdrow svg { width: 100%; height: 100%; display: block }
+  .A .mavlink { display: inline-flex; border-radius: 50%; text-decoration: none }
+  /* the log in: the Burj moving from night to day, blurred, behind the card */
+  .lbg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none }
+  .lbg img, .lbg video { position: absolute; inset: -40px; width: calc(100% + 80px); height: calc(100% + 80px); object-fit: cover; filter: blur(14px) saturate(1.15) brightness(.8) }
+  .lbg video { opacity: 0; transition: opacity 1.2s ease } .lbg video.on { opacity: 1 }
+  .lbg span { position: absolute; inset: 0; background: radial-gradient(120% 70% at 50% 30%, rgba(11,21,52,.2), rgba(8,14,34,.78)) }
+  .app.lostv .member { position: relative; z-index: 1 }
   /* 28/11 (Nico: «il blur che esce ancora, guarda le tre righette in alto a destra»): iOS 26 softens whatever is under the status
      bar while the page scrolls. On the phone the page no longer scrolls: the club scrolls inside its own box, so the bar stays sharp */
   @media (max-width: 899px) {
@@ -659,7 +674,7 @@ const SVG = Object.fromEntries(BADGES.map(([k]) => [k, badgeB2(k)]));
   .A .hbg, .hbfab { width: 44px; height: 44px; flex: none; display: grid; place-content: center; gap: 5px; border-radius: 50%; border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.12); cursor: pointer; padding: 0 }
   .A .hbg span, .hbfab span { display: block; width: 18px; height: 2px; border-radius: 2px; background: #fff; transition: transform .3s, opacity .2s }
   .A .topin .rgt { display: flex; align-items: center; gap: 8px }
-  .hbfab { position: fixed; z-index: 45; top: max(12px, env(safe-area-inset-top)); right: 12px; width: 48px; height: 48px; background: rgba(12,15,26,.6); -webkit-backdrop-filter: blur(24px) saturate(160%); backdrop-filter: blur(24px) saturate(160%); box-shadow: 0 8px 24px rgba(0,0,0,.3) }
+  .hbfab { position: fixed; z-index: 45; top: max(12px, env(safe-area-inset-top)); right: 12px; width: 48px; height: 48px; background: #16224a; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none } /* 28/11: no glass blur on the menu button, its lines and the dot stay sharp */
   .hbfab .dotg { position: absolute; right: 2px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: #ffae55; box-shadow: 0 0 0 2px #0b1534 }
   @media (min-width: 900px) { .hbfab { display: none } }
   .mwrap[hidden] { display: none } .mwrap { position: fixed; inset: 0; z-index: 70 }
@@ -1177,6 +1192,8 @@ const P = {
   /* the course card of Home: the step you are on, the steps you watched (27/11) */
   /* 28/11 (Nico: «la home mi piace la H7 … your fridays più bello, un grafico sotto per vedere quanto sta studiando ogni giorno,
      next build sotto next badge»). Only this member's real data: the minutes of course watched per day (progress.w). */
+  /* 28/11 (Nico, D1): the badge on the corner of the photo; the one chosen in Edit profile, or the first earned */
+  const showBadge = () => { const e = (CTX && CTX.earned) || []; return e.includes(PROF.badge) ? PROF.badge : e[0] || '' }
   function weeksHTML(flags, title) {
     const fmt = d => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(d), today = new Date()
     const wd = (new Date(fmt(today) + 'T12:00:00Z').getUTCDay() + 6) % 7, mon = new Date(today - wd * 864e5)
@@ -1197,7 +1214,7 @@ const P = {
       const ring = d.nico ? 'gold' : 'lv' + Math.min(5, Math.max(1, earned.length))
       const bio = d.bio && !(d.nico && /founder of omnya/i.test(d.bio)) ? d.bio : ''
       box.innerHTML = `<div class="upc" style="background-image:url(${esc(d.cover || '/club/profile-cover-800.webp')})"></div>
-        <div class="upn ${ring}"><span class="upav"${d.av ? ` style="background-image:url(${esc(d.av)})"` : ''}>${d.av ? '' : esc((d.name || '·')[0].toUpperCase())}</span>
+        <div class="upn ${ring}"><span class="mavw"><span class="upav"${d.av ? ` style="background-image:url(${esc(d.av)})"` : ''}>${d.av ? '' : esc((d.name || '·')[0].toUpperCase())}</span>${d.badge && SVG[d.badge] ? `<span class="mbd">${svgOf(d.badge)}</span>` : ''}</span>
           <h3 class="s-title" id="t3m-sh">${esc(d.name)}</h3>${d.nico ? '<p class="pgold">Founder of Omnya Lab</p>' : `<p class="uprole">${d.founder ? 'Founding member' : 'Member'}</p>`}
           ${bio ? `<p class="upbio">${esc(bio)}</p>` : ''}${d.ig ? `<a class="upig" href="https://instagram.com/${encodeURIComponent(d.ig)}" target="_blank" rel="noopener">@${esc(d.ig)}</a>` : ''}</div>
         ${earned.length ? `<div class="glass w upb"><span class="k">${ic('trophy')}Badges<span class="r">${earned.length}</span></span><div class="medals">${earned.map(b => medal(b, true)).join('')}</div></div>` : ''}
@@ -1260,12 +1277,13 @@ const P = {
 
   /* 27/11: Edit profile (photo, name, Instagram, one line), saved by /api/club/profile */
   function editProfile() {
-    const pr = PROF || {}, st = { img: '', noimg: false, cover: '', nocover: false }
+    const pr = PROF || {}, st = { img: '', noimg: false, cover: '', nocover: false, badge: showBadge() }
     const face = () => st.img || (!st.noimg && pr.av) ? `style="background-image:url(${esc(st.img || pr.av)})"` : ''
     openSheet(`<p class="s-eyebrow">Your profile</p><h3 class="s-title" id="t3m-sh">Edit profile</h3>
       <form class="pform" data-pform novalidate>
         <label class="pphotoed" data-pface ${face()} aria-label="Choose a photo">${st.img || pr.av ? '' : esc((pr.name || CTX.first || '·')[0].toUpperCase())}<span>${ic('cam')}</span><input type="file" accept="image/*" data-pfile></label>
         <div class="pcoved" data-pcoved style="background-image:url(${esc(pr.cover || '/club/profile-cover-800.webp')})"><label class="pcovb">${ic('cam')}<span>Change background</span><input type="file" accept="image/*" data-pcfile></label>${pr.cover ? '<button type="button" class="pcovx" data-pcx>Use the club photo</button>' : ''}</div>
+        ${(CTX.earned || []).length ? `<div class="pbdpick"><b>Badge on your photo</b><small>One at a time, from the ones you've earned</small><div class="pbdrow">${CTX.earned.map(k => `<button type="button" data-pbd="${k}" aria-pressed="${k === st.badge}" aria-label="${esc((BADGES.find(b => b[0] === k) || [k, k])[1])}">${svgOf(k)}</button>`).join('')}</div></div>` : ''}
         <label>Name<input name="name" maxlength="40" autocomplete="name" value="${esc(pr.name || CTX.first || '')}" required></label>
         <label>Instagram<input name="ig" maxlength="40" autocapitalize="none" autocomplete="off" placeholder="@yourname" value="${pr.ig ? '@' + esc(pr.ig) : ''}"></label>
         <label>One line about you<input name="bio" maxlength="120" placeholder="Architect in Milan, towers and villas" value="${esc(pr.bio || '')}"></label>
@@ -1274,12 +1292,13 @@ const P = {
     $('[data-pfile]').addEventListener('change', e => { const file = e.target.files && e.target.files[0]; if (!file) return; x.className = 'ferr ok'; x.textContent = 'Getting your photo ready…'
       shrink(file, 512).then(r => { st.img = r.data; st.noimg = false; const fc = $('[data-pface]'); fc.style.backgroundImage = `url(${r.data})`; fc.firstChild && fc.firstChild.nodeType === 3 && (fc.firstChild.textContent = ''); x.textContent = '' })
         .catch(() => { x.className = 'ferr'; x.textContent = 'That photo did not open, try a JPG or PNG' }) })
+    $$('[data-pbd]').forEach(bt => bt.addEventListener('click', () => { st.badge = bt.dataset.pbd; $$('[data-pbd]').forEach(x => x.setAttribute('aria-pressed', String(x === bt))) }))
     $('[data-pcfile]').addEventListener('change', e => { const file = e.target.files && e.target.files[0]; if (!file) return; x.className = 'ferr ok'; x.textContent = 'Getting your background ready…'
       shrink(file, 1600).then(r => { st.cover = r.data; st.nocover = false; $('[data-pcoved]').style.backgroundImage = `url(${r.data})`; x.textContent = '' })
         .catch(() => { x.className = 'ferr'; x.textContent = 'That photo did not open, try a JPG or PNG' }) })
     const pcx = $('[data-pcx]'); if (pcx) pcx.addEventListener('click', () => { st.cover = ''; st.nocover = true; $('[data-pcoved]').style.backgroundImage = 'url(/club/profile-cover-800.webp)'; pcx.remove() })
     f.addEventListener('submit', e => { e.preventDefault(); const b = $('button[type="submit"]', f); b.disabled = true; x.textContent = ''
-      post('/api/club/profile', { m, name: f.name.value, ig: f.ig.value, bio: f.bio.value, ...(st.img ? { img: st.img } : {}), ...(st.cover ? { cover: st.cover } : {}), ...(st.nocover ? { nocover: true } : {}) })
+      post('/api/club/profile', { m, name: f.name.value, ig: f.ig.value, bio: f.bio.value, ...(st.img ? { img: st.img } : {}), ...(st.cover ? { cover: st.cover } : {}), ...(st.nocover ? { nocover: true } : {}), badge: st.badge })
         .then(r => { b.disabled = false; if (!r.ok) { x.className = 'ferr'; x.textContent = r.d.error || 'Something went wrong, try again'; return }
           PROF = r.d.profile; if (CTX.d) CTX.d.profile = PROF; paintMe(); closeSheet(); toast('Profile saved') })
         .catch(() => { b.disabled = false; x.className = 'ferr'; x.textContent = 'Something went wrong, try again' }) })
@@ -1288,6 +1307,7 @@ const P = {
     const first = CTX.first
     $$('[data-mav]').forEach(el => { const big = el.classList.contains('big'), w = document.createElement('div'); w.innerHTML = mavH(first, big ? 'big' : ''); el.replaceWith(w.firstChild) })
     $$('[data-pcov]').forEach(im => { const u = PROF.cover || (im.classList.contains('pblur') ? '/club/profile-cover-800.webp' : '/club/profile-cover.webp'); if (im.getAttribute('src') !== u) im.src = u })
+    const mb = $('[data-mbd]'); if (mb) mb.innerHTML = showBadge() ? svgOf(showBadge()) : ''
     const pn = $('[data-pn]'); if (pn) pn.textContent = PROF.name || first
     const pb = $('[data-pbio]'); if (pb) { pb.textContent = PROF.bio || ''; pb.hidden = !PROF.bio || (ALL && /founder of omnya/i.test(PROF.bio)) }
     const pi = $('[data-pig]'); if (pi) { pi.hidden = !PROF.ig; if (PROF.ig) { pi.href = 'https://instagram.com/' + encodeURIComponent(PROF.ig); pi.textContent = '@' + PROF.ig } }
@@ -1364,10 +1384,10 @@ const P = {
     const today = new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Europe/Rome' }).format(now)
     const since = d.since && !isNaN(Date.parse(d.since)) ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', timeZone: 'Europe/Rome' }).format(new Date(d.since)) : ''
     const role = founder ? 'Founding member' : d.state === 'waiting' ? 'Seat reserved' : 'Member'
-    CTX = { d, founder, open, first }
+    CTX = { d, founder, open, first, earned: BL.filter((b, i) => earned[i]).map(b => b[0]) }
     PROF = d.profile || {}
     const top = `<nav class="top mnav" aria-label="THE 3D FUTURE"><div class="topin"><a class="lockup" href="/the-3d-future"><img src="/club/knot-96.webp" alt="" width="32" height="32"><span class="wm">THE <b>3D</b> FUTURE</span></a>
-      <div class="links">${TABS.map(([k, , t]) => `<a href="#${k}" data-go="${k}">${t}</a>`).join('')}</div><span class="rgt">${mavH(first, '')}<button type="button" class="hbg" data-menu aria-label="Open the menu" aria-expanded="false"><span></span><span></span><span></span></button></span></div></nav>`
+      <div class="links">${TABS.map(([k, , t]) => `<a href="#${k}" data-go="${k}">${t}</a>`).join('')}</div><span class="rgt"><a class="mavlink" href="#me" data-go="me" aria-label="Your profile">${mavH(first, '')}</a><button type="button" class="hbg" data-menu aria-label="Open the menu" aria-expanded="false"><span></span><span></span><span></span></button></span></div></nav>`
     const courseBlock = `<section class="course" data-course hidden>
         <div class="chead"><span class="eyebrow">Your first course</span><h2>SAMAR, <span class="g">floor by floor</span></h2>
           <p>Eleven steps, from an empty folder to a tower online where buyers choose their floor, built the real way we build them for our clients.</p>
@@ -1422,7 +1442,7 @@ const P = {
       <div class="pcard">
         <div class="ptone" aria-hidden="true"><div class="pbw"><img class="pblur" src="${esc(PROF.cover || '/club/profile-cover-800.webp')}" alt="" data-pcov></div></div>
         <div class="pphoto"><img class="pimg" src="${esc(PROF.cover || '/club/profile-cover.webp')}" alt="" style="object-position:50% 40%" data-pcov><div class="pfade"></div>
-          <div class="pname ${d.allOpen ? 'gold' : 'lv' + Math.min(5, Math.max(1, nOn))}">${mavH(first, 'big')}<h1 data-pn>${esc(PROF.name || first)}</h1>${d.allOpen ? '<p class="pgold">Founder of Omnya Lab</p>' : `<p>${role}${since ? (d.state === 'waiting' ? ' · starts ' : ' · since ') + since : ''}</p>`}<p class="pbio" data-pbio${PROF.bio && !(d.allOpen && /founder of omnya/i.test(PROF.bio)) ? '' : ' hidden'}>${esc(PROF.bio || '')}</p>${PROF.ig ? `<a class="pig" data-pig href="https://instagram.com/${encodeURIComponent(PROF.ig)}" target="_blank" rel="noopener">@${esc(PROF.ig)}</a>` : '<a class="pig" data-pig hidden></a>'}</div></div>
+          <div class="pname ${d.allOpen ? 'gold' : 'lv' + Math.min(5, Math.max(1, nOn))}"><span class="mavw">${mavH(first, 'big')}<span class="mbd" data-mbd>${showBadge() ? svgOf(showBadge()) : ''}</span></span><h1 data-pn>${esc(PROF.name || first)}</h1>${d.allOpen ? '<p class="pgold">Founder of Omnya Lab</p>' : `<p>${role}${since ? (d.state === 'waiting' ? ' · starts ' : ' · since ') + since : ''}</p>`}<p class="pbio" data-pbio${PROF.bio && !(d.allOpen && /founder of omnya/i.test(PROF.bio)) ? '' : ' hidden'}>${esc(PROF.bio || '')}</p>${PROF.ig ? `<a class="pig" data-pig href="https://instagram.com/${encodeURIComponent(PROF.ig)}" target="_blank" rel="noopener">@${esc(PROF.ig)}</a>` : '<a class="pig" data-pig hidden></a>'}</div></div>
         <div class="pact"><button type="button" class="pedit" data-editp>${ic('pen')}Edit profile</button><button type="button" class="btn cta" data-compose>${ic('plus')}<span>Post your build</span></button><a class="pcam ctr" href="#vault" data-go="vault" aria-label="Open the Vault">${ic('grid')}</a></div>
       </div>
       <div class="pmain">
@@ -1549,7 +1569,9 @@ const P = {
     root.innerHTML = `<div class="mtop"><div><p class="eyebrow">THE 3D FUTURE</p><h1>Log in to the club</h1></div></div><form class="glass mbox" data-lost novalidate><p data-lost-p>${esc(msg || 'Write the same email you used to join and pay, the one where your «you\'re in» email arrived, and we send you a 6-digit code: no password, and after that this phone or computer remembers you.')}</p>
       <div data-step-e><label for="t3m-e" class="sr">Email</label><input id="t3m-e" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@studio.com" required></div>
       <div data-step-c hidden><label for="t3m-c" class="sr">Code</label><input id="t3m-c" name="code" type="text" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="6-digit code"></div>
-      <button class="btn cta wide" type="submit" data-lost-btn>Send my code</button><p class="err" role="status" data-lost-msg></p><p class="lostjoin" data-lost-other hidden><a href="#">Use another email</a></p><p class="lostjoin">Not a member yet? <a href="/the-3d-future">Join for €9/month</a></p></form>`
+      <button class="btn cta wide" type="submit" data-lost-btn>Send my code</button><p class="err" role="status" data-lost-msg></p><p class="lostjoin" data-lost-other hidden><a href="#">Use another email</a></p><p class="lostjoin">Not a member yet? <a href="/the-3d-future">Join now</a></p></form>`
+    if (!$('[data-lbg]')) { app.classList.add('lostv'); app.insertAdjacentHTML('afterbegin', `<div class="lbg" data-lbg aria-hidden="true"><img src="${innerWidth >= 900 ? '/club/burj-1080.webp' : '/club/burj-phone.webp'}" alt=""><video muted playsinline loop preload="auto"></video><span></span></div>`)
+      const v = $('[data-lbg] video'); if (!matchMedia('(prefers-reduced-motion: reduce)').matches) { v.src = innerWidth >= 900 ? '/club/burj-1080.mp4' : '/club/burj-phone.mp4'; v.addEventListener('playing', () => v.classList.add('on'), { once: true }); const pl = v.play(); if (pl && pl.catch) pl.catch(() => {}) } }
     const f = $('[data-lost]'), msgEl = $('[data-lost-msg]'), btn = $('[data-lost-btn]'), pEl = $('[data-lost-p]'), stE = $('[data-step-e]'), stC = $('[data-step-c]'), other = $('[data-lost-other]')
     let step = 'e', email = ''
     const toEmail = () => { step = 'e'; stE.hidden = false; stC.hidden = true; other.hidden = true; btn.textContent = 'Send my code'; pEl.textContent = 'Write the same email you used to join and pay, the one where your «you\'re in» email arrived, and we send you a 6-digit code: no password, and after that this phone or computer remembers you.'; msgEl.textContent = ''; f.email.focus() }

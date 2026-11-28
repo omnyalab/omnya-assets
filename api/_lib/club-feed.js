@@ -74,8 +74,9 @@ export async function publicProfile(uid) {
   const [prof, prog] = await Promise.all([getProfile(email), getProgress(email)]);
   const posts = all.filter((p) => p.email === email && !p.hidden).sort((a, b) => (a.at < b.at ? 1 : -1)).slice(0, 30)
     .map((p) => ({ id: p.id, link: p.link, caption: p.caption || '', img: p.img ? `/api/club/img?id=${p.id}` : '' }));
+  const done = LESSONS.every((l) => prog.d.includes(l.n)), earned = [(who.founder || who.nico) && 'founder', posts.length > 0 && 'first', done && 'tower'].filter(Boolean);
   return { name: prof.name || who.name, av: prof.av, cover: prof.cover, bio: prof.bio, ig: prof.ig, founder: !!who.founder, nico: !!who.nico,
-    posted: posts.length > 0, done: LESSONS.every((l) => prog.d.includes(l.n)), weeks: weeksOf(prog.w), posts };
+    posted: posts.length > 0, done, badge: earned.includes(prof.badge) ? prof.badge : earned[0] || '', weeks: weeksOf(prog.w), posts };
 }
 
 /** The feed, newest first: 3 commands whatever the number of posts. Hidden posts only for Nico (marked hidden). */

@@ -67,7 +67,7 @@ export async function saveProgress(email, n, { t = 0, done = false, w = 0 } = {}
 /** { name, ig, bio, av, cover } (av / cover = the address of the photo and of the background, '' when there is none) */
 export async function getProfile(email) {
   const p = await read(K.profile, email, {});
-  return { name: String(p.name || ''), ig: String(p.ig || ''), bio: String(p.bio || ''), av: p.ph ? `/api/club/avatar?id=${p.ph}` : '', cover: p.cv ? `/api/club/avatar?id=${p.cv}` : '' };
+  return { name: String(p.name || ''), ig: String(p.ig || ''), bio: String(p.bio || ''), av: p.ph ? `/api/club/avatar?id=${p.ph}` : '', cover: p.cv ? `/api/club/avatar?id=${p.cv}` : '', badge: String(p.bd || '') };
 }
 /** The profiles of many members at once (the feed): email → { name, av } */
 export async function profilesOf(emails) {
@@ -84,7 +84,7 @@ const bad = (code, msg) => Object.assign(new Error(msg), { code });
  * Saves the profile. name 1-40 characters, ig without the @ (letters, numbers, . and _), bio up to 120, img a JPEG data URL
  * (a new photo), noimg true to remove it. Throws { code: 'bad_request' | 'bad_image' } with a message for the member.
  */
-export async function saveProfile(email, b) {
+export async function saveProfile(email, b, earned = []) {
   const name = String(b?.name ?? '').replace(/\s+/g, ' ').trim().slice(0, 40);
   const ig = String(b?.ig ?? '').trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/.*$/, '');
   const bio = String(b?.bio ?? '').replace(/\s+/g, ' ').trim().slice(0, 120);
@@ -109,7 +109,9 @@ export async function saveProfile(email, b) {
     if (cv) await kv('HDEL', K.avatar, cv).catch(() => {});
     cv = id;
   } else if (b?.nocover && cv) { await kv('HDEL', K.avatar, cv).catch(() => {}); cv = ''; }
-  await kv('HSET', K.profile, email, JSON.stringify({ name, ig, bio, ph, ...(cv ? { cv } : {}) }));
+  // 28/11 (Nico, D1): the badge on the corner of the photo, one at a time, only one already earned
+  let bd = old.bd || ''; if (typeof b?.badge === 'string') bd = earned.includes(b.badge) ? b.badge : '';
+  await kv('HSET', K.profile, email, JSON.stringify({ name, ig, bio, ph, ...(cv ? { cv } : {}), ...(bd ? { bd } : {}) }));
   return getProfile(email);
 }
 /** [content type, bytes] of a photo, or null */
